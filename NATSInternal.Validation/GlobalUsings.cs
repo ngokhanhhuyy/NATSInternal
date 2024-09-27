@@ -1,0 +1,15 @@
+global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Reflection;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Hosting;
+global using NATSInternal.Services.Dtos;
+global using NATSInternal.Services.Extensions;
+global using NATSInternal.Services.Localization;
+global using NATSInternal.Services.Interfaces;
+global using NATSInternal.Validation;
+global using NATSInternal.Validation.Rules;
+global using NATSInternal.Validation.Validators;
+global using FluentValidation;
+global using ImageMagick;

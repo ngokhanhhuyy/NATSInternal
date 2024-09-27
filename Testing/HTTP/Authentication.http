@@ -1,0 +1,101 @@
+@host = http://localhost:5000/api
+
+# @name GetAccessToken
+// @no-log
+POST {{host}}/authentication/getAccessToken?includeExchangeToken=False
+Content-Type: application/json
+
+{
+    "userName": "ngokhanhhuyy",
+    "password": "Huyy47b1"
+}
+
+###
+
+@accessToken = {{GetAccessToken.response.body.$.accessToken}}
+
+###
+# @name GetAccessCookie
+// @no-log
+POST {{host}}/authentication/getAccessCookie
+Content-Type: application/json
+
+{
+    "userName": "ngokhanhhuyy",
+    "password": "Huyy47b1"
+}
+
+###
+@accessCookie = {{GetAccessCookie.response.headers.Set-Cookie}}
+
+###
+# @name ProductDetail
+// @no-log
+GET {{host}}/product/1
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name SupplyList
+// @no-log
+GET {{host}}/supply?month=7&year=2024&productId=1
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name DebtIncurrenceList
+GET {{host}}/debtIncurrence
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name DebtIncurrenceCreate
+POST {{host}}/debtIncurrence
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+{
+    "amount": 2000000,
+    "note": null,
+    "incurredDateTime": null,
+    "customerId": 8
+}
+
+###
+# @name DebtPaymentList
+GET {{host}}/debtPayment
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name DebtPaymentCreate
+POST {{host}}/debtPayment
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+{
+    "amount": 2000000,  
+    "note": null,
+    "paidDateTime": null,
+    "customerId": 2
+}
+
+###
+# @name HealthCheck
+// @no-log
+GET {{host}}/healthcheck/ping
+Content-Type: application/json
+
+###
+# @name ResourceAccess-AccessingUsers
+// @no-log
+GET {{host}}/resourceAccess/accessingUsers?type=Customer&primaryId=11&mode=0
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name ResourceAccess-Status
+// @no-log
+GET {{host}}/resourceAccess/status
+Content-Type: application/json
+Cookie: {{accessCookie}}

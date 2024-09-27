@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal.Services", "NATSInternal.Services\NATSInternal.Services.csproj", "{8F66EE8E-0420-4127-BAD1-C94E785E27DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal.Validation", "NATSInternal.Validation\NATSInternal.Validation.csproj", "{A8566B46-AC7D-494D-922E-0E6D476C98CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal", "NATSInternal.MVC\NATSInternal.MVC.csproj", "{16F4793A-616D-4275-8E0C-10541887FE5D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8F66EE8E-0420-4127-BAD1-C94E785E27DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F66EE8E-0420-4127-BAD1-C94E785E27DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F66EE8E-0420-4127-BAD1-C94E785E27DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F66EE8E-0420-4127-BAD1-C94E785E27DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8566B46-AC7D-494D-922E-0E6D476C98CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8566B46-AC7D-494D-922E-0E6D476C98CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8566B46-AC7D-494D-922E-0E6D476C98CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8566B46-AC7D-494D-922E-0E6D476C98CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16F4793A-616D-4275-8E0C-10541887FE5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16F4793A-616D-4275-8E0C-10541887FE5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16F4793A-616D-4275-8E0C-10541887FE5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16F4793A-616D-4275-8E0C-10541887FE5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DEAA54A-CF19-4F5F-885F-25E8D0477978}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DEAA54A-CF19-4F5F-885F-25E8D0477978}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DEAA54A-CF19-4F5F-885F-25E8D0477978}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DEAA54A-CF19-4F5F-885F-25E8D0477978}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
