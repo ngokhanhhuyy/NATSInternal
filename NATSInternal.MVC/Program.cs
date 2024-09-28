@@ -216,10 +216,5 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}");
-app.UseEndpoints(endpoint =>
-{
-    endpoint.MapControllers();
-    endpoint.MapHub<ApplicationHub>("/Api/Hub");
-});
 app.UseStaticFiles();
 app.Run();

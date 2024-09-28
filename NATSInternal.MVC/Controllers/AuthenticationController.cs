@@ -1,5 +1,6 @@
 ﻿namespace NATSInternal.Controllers;
 
+[Authorize]
 public class AuthenticationController : Controller
 {
     private readonly IAuthenticationService _authenticationService;
@@ -25,11 +26,12 @@ public class AuthenticationController : Controller
         return View(new SignInModel());
     }
 
+    [HttpPost("SignIn")]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(
-        SignInModel model,
-        [FromQuery] string returningUrl)
+    public async Task<IActionResult> SignIn(
+            SignInModel model,
+            [FromQuery] string returningUrl)
     {
         if (User.Identity.IsAuthenticated)
         {
