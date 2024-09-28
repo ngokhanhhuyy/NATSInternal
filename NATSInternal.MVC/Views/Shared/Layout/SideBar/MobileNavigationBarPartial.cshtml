@@ -1,0 +1,7 @@
+﻿<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas-navbar">
+    <div class="offcanvas-body">
+        @await Html.PartialAsync(
+            "~/Views/Shared/Layout/SideBar/NavigationBarPartial.cshtml",
+            new NavigationBarModel { KeepExpanded = true })
+    </div>
+</div>

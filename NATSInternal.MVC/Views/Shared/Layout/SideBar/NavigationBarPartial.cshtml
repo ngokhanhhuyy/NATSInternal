@@ -1,0 +1,82 @@
+﻿@model NavigationBarModel
+@functions {
+    private string NavigationBarClassName => Model.KeepExpanded ? "keep-expanded" : null;
+
+    private string ItemClassName(string itemName)
+    {
+        if (ViewBag.PageName == itemName)
+        {
+            return "selected";
+        }
+        return null;
+    }
+}
+
+<ul class="w-100" id="navbar" class='@NavigationBarClassName'>
+    <li class='@ItemClassName("Home")'>
+        <a href="/home">
+            <i class="bi bi-house"></i>
+            <span>Trang chủ</span>
+        </a>
+    </li>
+    <li class='@ItemClassName("Customer")'>
+        <a href="/CustomerList">
+            <i class="bi bi-person-circle"></i>
+            <span>@DisplayNames.Customer</span>
+        </a>
+    </li>
+    <li class='@ItemClassName("Product")'>
+        <a href="/home">
+            <i class="bi bi-box-seam"></i>
+            <span>@DisplayNames.Product</span>
+        </a>
+    </li>
+    <li class='@ItemClassName("Supply")'>
+        <a href="/home">
+            <i class="bi bi-truck"></i>
+            <span>@DisplayNames.Supply</span>
+        </a>
+    </li>
+    <li class='@ItemClassName("Order")'>
+        <a href="/orders">
+            <i class="bi bi-cart4"></i>
+            <span>@DisplayNames.Order</span>
+        </a>
+    </li>
+    <li class='@ItemClassName("Treatment")'>
+        <a href="/home">
+            <i class="bi bi-magic"></i>
+            <span>@DisplayNames.Treatment</span>
+        </a>
+    </li>
+    <li class='@ItemClassName("Consultant")'>
+        <a href="/Consultant">
+            <i class="bi bi-patch-question"></i>
+            <span>Tư vấn</span>
+        </a>
+    </li>
+    <li class='@ItemClassName("Stock")'>
+        <a href="/home">
+            <i class="bi bi-archive"></i>
+            <span>Kho hàng</span>
+        </a>
+    </li>
+    <li class='@ItemClassName("Debt")'>
+        <a href="/Debt">
+            <i class="bi bi-hourglass-bottom"></i>
+            <span>Khoản nợ</span>
+        </a>
+    </li>
+    <li class='@ItemClassName("Expense")'>
+        <a href="/Expense">
+            <i class="bi bi-cash-coin"></i>
+            <span>@DisplayNames.Expense</span>
+        </a>
+    </li>
+    <li class='@ItemClassName("User")'>
+        <a asp-action="UserList" asp-controller="User">
+            <i class="bi bi-person-badge"></i>
+            <span>@DisplayNames.User</span>
+        </a>
+    </li>
+</ul>

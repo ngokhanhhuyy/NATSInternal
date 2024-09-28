@@ -38,6 +38,6 @@ public class NotificationComponent : ViewComponent
                 },
             }
         };
-        return View("/Views/Shared/_Notifications.cshtml", model);
+        return View("~/Views/Shared/Layout/TopBar/NotificationComponent.cshtml", model);
     }
 }

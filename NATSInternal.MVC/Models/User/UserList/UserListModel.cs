@@ -1,18 +1,16 @@
 namespace NATSInternal.Models;
 
-public class UserListModel
+public class UserListModel : ListModel<UserBasicModel>
 {
-    public string OrderByField { get; set; }
-    public bool OrderByAscending { get; set; } = true;
+    public override bool OrderByAscending { get; set; } = true;
     public RoleBasicModel Role { get; set; }
     public string Content { get; set; }
-    public int Page { get; set; } = 1;
-    public int ResultsPerPage { get; set; } = 15;
-    public int PageCount { get; set; }
     public List<UserBasicModel> Results { get; set; }
     public List<RoleBasicModel> RoleOptions { get; set; }
 
-    public void MapFromResponseDtos(
+    public UserListModel() { }
+
+    public void MapFromResponseDto(
             UserListResponseDto responseDto,
             RoleListResponseDto roleListResponseDto)
     {
@@ -23,14 +21,14 @@ public class UserListModel
         RoleOptions = roleListResponseDto.Items
             .Select(RoleBasicModel.FromResponseDto)
             .ToList();
-        Role ??= RoleOptions.OrderBy(r => r.PowerLevel).First();
     }
 
     public UserListRequestDto ToRequestDto()
     {
         return new UserListRequestDto
         {
-            OrderByField = OrderByField ?? nameof(UserListRequestDto.FieldToBeOrdered.LastName),
+            OrderByField = OrderByField ??
+                nameof(UserListRequestDto.FieldToBeOrdered.LastName),
             OrderByAscending = OrderByAscending,
             RoleId = Role?.Id,
             Content = Content,

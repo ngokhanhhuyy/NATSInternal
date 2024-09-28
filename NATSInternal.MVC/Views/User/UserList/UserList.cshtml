@@ -4,37 +4,10 @@
 }
 @functions {
     private string FormId => "user-list-form";
-    private PaginationRangeModel largeScreenPagination => Html.PaginationRange(
-        Model.Page,
-        Model.PageCount,
-        5);
-    private PaginationRangeModel smallScreenPagination => Html.PaginationRange(
-        Model.Page,
-        Model.PageCount,
-        3);
-
     private string RoleButtonClassName(string roleName)
     { 
         string color = Html.RoleBootstrapColor(roleName);
         return $"bg-{color} bg-opacity-10 border-{color}-subtle text-{color}";
-    }
-
-    private string PaginationButtonClassName(int page)
-    {
-        string className = "";
-        if (page == Model.Page)
-        {
-            className += "active";
-        }
-
-        bool exceedLeft = page < smallScreenPagination.StartingPage;
-        bool exceedRight = page > smallScreenPagination.EndingPage;
-        if (exceedLeft || exceedRight)
-        {
-            className += " d-sm-flex d-none";
-        }
-
-        return className;
     }
 }
 
@@ -149,25 +122,7 @@
             </div>
             
             <!-- Pagination -->
-            @if (Model.PageCount > 1)
-            {
-                <div class="col col-12 d-flex flex-row justify-content-center mb-5"
-                    v-if="model.pageCount > 1">
-                    <button class="btn mx-1 btn-outline-primary page-button"
-                            disabled="@(Model.Page == 1)">
-                        Trang đầu
-                    </button>
-                    @for (int i = largeScreenPagination.StartingPage; i <= largeScreenPagination.EndingPage; i++)
-                    {
-                        <button class="btn mx-1 btn-outline-primary page-button @PaginationButtonClassName(i)">
-                        </button>
-                    }
-                    <button class="btn mx-1 btn-outline-primary page-button"
-                            disabled="@(Model.Page == Model.PageCount)">
-                        Trang cuối
-                    </button>
-                </div>
-            }
+            @await Html.PartialAsync("~/Views/Shared/Layout/MainPaginationPartial.cshtml")
             
         </div>
         <div class="col col-xl-4 col-lg-12 col-md-12 col-sm-12 col-12">

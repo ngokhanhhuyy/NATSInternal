@@ -2,7 +2,11 @@ using NATSInternal.Middlewares;
 using System.Security.Claims;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+builder.Services.AddControllersWithViews()
+    .AddRazorOptions(options =>
+    {
+        options.ViewLocationFormats.Add("/{0}View.cshtml");
+    }).AddRazorRuntimeCompilation();
 builder.Services.AddSignalR();
 
 // Connection string - EF Core.

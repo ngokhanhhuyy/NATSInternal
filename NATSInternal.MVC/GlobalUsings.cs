@@ -23,6 +23,7 @@ global using NATSInternal.Services.Interfaces;
 global using NATSInternal.Services.Localization;
 global using NATSInternal.Services.Tasks;
 global using NATSInternal.Validation.Extensions;
+global using NATSInternal.Validation.Validators;
 
 global using IAuthorizationService = NATSInternal.Services.Interfaces.IAuthorizationService;
 global using FluentValidation;
