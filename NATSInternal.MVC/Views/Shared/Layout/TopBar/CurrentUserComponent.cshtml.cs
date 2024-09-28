@@ -13,6 +13,6 @@ public class CurrentUserComponent : ViewComponent
     {
         UserDetailResponseDto responseDto = _authorizationService.GetUserDetail();
         UserDetailModel model = UserDetailModel.FromResponseDto(responseDto);
-        return View("/Views/Shared/_CurrentUser.cshtml", model);
+        return View("~/Views/Shared/Layout/TopBar/CurrentUserComponent.cshtml", model);
     }
 }

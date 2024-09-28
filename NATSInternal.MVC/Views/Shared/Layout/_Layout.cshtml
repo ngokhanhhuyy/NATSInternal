@@ -1,10 +1,21 @@
-﻿<!DOCTYPE html>
+﻿@{
+    NavigationBarModel navigationBarModel = new NavigationBarModel
+    {
+        KeepExpanded = true
+    };
+}
+
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <title>@await RenderSectionAsync("PageTitle") - NATSInternal</title>
     <link href="~/css/style.css" type="text/css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link href="~/css/mainLayout.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"
+            rel="stylesheet">
+    <link href="~/@(nameof(NATSInternal)).styles.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
             crossorigin="anonymous"></script>
@@ -24,8 +35,8 @@
             <div class="row">
                 <!-- Main logo (top left corner)-->
                 <div class="col col-auto d-flex flex-row bg-white border-end border-bottom border-default'
-                        overflow-hidden ps-3 p-2 align-items-center"
-                     id="main-logo">
+                            overflow-hidden ps-3 p-2 align-items-center"
+                        id="main-logo">
                     <img src="/images/main-logo.png">
                     <div class="flex-fill d-lg-block d-md-none d-sm-none d-none">
                         <span class="text-primary fs-5 ms-2">NATSInternal</span>
@@ -36,7 +47,7 @@
                     <div class="row gx-md-4 gx-sm-3 gx-3 h-100 w-100 flex-row justify-content-end align-items-center">
                         <!-- Search bar -->
                         <div class="col col-auto h-100 flex-fill d-md-flex d-sm-none d-none">
-                            <partial name="_SearchBar" />
+                            <partial name="Layout/TopBar/SearchBarPartial" />
                         </div>
 
                         <!-- Add order -->
@@ -65,13 +76,12 @@
 
                         <!-- Navigation bar + toggler (only display on extra small screen) -->
                         <div class="col col-auto h-100 d-sm-none d-flex">
-                            <button class="btn bg-default border border-primary-subtle p-0"
-                                    type="button" id="navbar-toggler"
-                                    data-bs-toggle="offcanvas" data-bs-target="#offcanvas-navbar"
+                            <button class="btn bg-default border border-primary-subtle p-0" type="button"
+                                    id="navbar-toggler" data-bs-toggle="offcanvas" data-bs-target="#offcanvas-navbar"
                                     aria-controls="offcanvas-navbar" aria-label="Toggle navigation">
                                 <i class="bi bi-list"></i>
                             </button>
-                            <partial name="_MobileNavigationBar" />
+                            @await Html.PartialAsync("~/Views/Shared/Layout/SideBar/MobileNavigationBarPartial.cshtml")
                         </div>
                     </div>
                 </div>
@@ -80,9 +90,9 @@
             <div class="row flex-fill">
                 <!-- Sidebar -->
                 <div class="col col-auto d-sm-flex d-none flex-column align-items-center
-                        bg-white border-end border-default"
-                     id="sidebar">
-                    <partial name="_NavigationBar" model="new NavigationBarModel { KeepExpanded = false }" />
+                            bg-white border-end border-default"
+                        id="sidebar">
+                    @await Html.PartialAsync("SideBar/NavigationBarPartial.cshtml", navigationBarModel)
                 </div>
 
                 <!-- Main content -->

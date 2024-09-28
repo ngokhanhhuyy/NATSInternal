@@ -4,3 +4,7 @@ obj/
 
 # Ignore VS Code settings
 .vscode/
+.vs/
+.idea/
+NATSInternal.sln.DotSettings.user
+.github/
