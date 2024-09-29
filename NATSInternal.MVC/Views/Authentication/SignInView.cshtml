@@ -1,11 +1,12 @@
 ﻿@model SignInModel
 @{
     Layout = null;
+    int a = "123";
 }
 
 <!DOCTYPE html>
 <html lang="vi">
-    <head>
+    <head>`
         <title>Đăng nhập - NATSAdmin</title>
         <link rel="stylesheet" href="~/css/style.css" />
         <link rel="stylesheet" href="~/css/signin.css" />
@@ -22,9 +23,7 @@
                     <div class="col col-4 d-flex align-items-center">
                         <div class="block bg-white border border-primary-subtle
                                     rounded-3 shadow-sm w-100 p-3">
-                            <form asp-action="SignIn" asp-controller="Authentication"
-                                    method="post" class="d-none" id="signin-form"
-                                    novalidate>
+                            <form asp-action="SignIn" asp-controller="Authentication" novalidate>
                                 <div class="form-group mb-3">
                                     <div class="form-floating">
                                         <input asp-for="UserName" type="text"
@@ -49,8 +48,7 @@
                                     <span asp-validation-for="Password"></span>
                                 </div>
                                 <div class="form-group">
-                                    <button type="submit" form="signin-form"
-                                            class="btn btn-primary w-100">
+                                    <button type="submit" class="btn btn-primary w-100">
                                         Đăng nhập
                                     </button>
                                 </div>
