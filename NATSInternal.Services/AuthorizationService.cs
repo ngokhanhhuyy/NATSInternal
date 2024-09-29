@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services;
 
-public class AuthorizationService : IAuthorizationService
+internal class AuthorizationService : IAuthorizationInternalService
 {
     private readonly DatabaseContext _context;
     private User _user;

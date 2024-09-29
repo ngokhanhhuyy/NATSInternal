@@ -15,12 +15,12 @@ public class UserBasicResponseDto
     public RoleBasicResponseDto Role { get; set; }
     public UserBasicAuthorizationResponseDto Authorization { get; set; }
 
-    public UserBasicResponseDto(User user)
+    internal UserBasicResponseDto(User user)
     {
         MapFromEntity(user);
     }
 
-    public UserBasicResponseDto(
+    internal UserBasicResponseDto(
             User user,
             UserBasicAuthorizationResponseDto authorizationResponseDto)
     {

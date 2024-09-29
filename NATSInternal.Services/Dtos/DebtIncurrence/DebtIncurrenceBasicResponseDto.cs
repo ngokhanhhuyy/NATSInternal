@@ -10,12 +10,12 @@ public class DebtIncurrenceBasicResponseDto
     public CustomerBasicResponseDto Customer { get; set; }
     public DebtIncurrenceAuthorizationResponseDto Authorization { get; set; }
 
-    public DebtIncurrenceBasicResponseDto(DebtIncurrence debt)
+    internal DebtIncurrenceBasicResponseDto(DebtIncurrence debt)
     {
         MapFromEntity(debt);
     }
 
-    public DebtIncurrenceBasicResponseDto(
+    internal DebtIncurrenceBasicResponseDto(
             DebtIncurrence debt,
             DebtIncurrenceAuthorizationResponseDto authorization)
     {

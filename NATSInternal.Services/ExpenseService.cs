@@ -1,19 +1,19 @@
 namespace NATSInternal.Services;
 
 /// <inheritdoc cref="IExpenseService" />
-public class ExpenseService : LockableEntityService, IExpenseService
+internal class ExpenseService : LockableEntityService, IExpenseService
 {
     private readonly DatabaseContext _context;
     private readonly IPhotoService _photoService;
-    private readonly IAuthorizationService _authorizationService;
-    private readonly IStatsService _statsService;
+    private readonly IAuthorizationInternalService _authorizationService;
+    private readonly IStatsInternalService _statsService;
     private static MonthYearResponseDto _earliestRecordedMonthYear;
 
     public ExpenseService(
             DatabaseContext context,
             IPhotoService photoService,
-            IAuthorizationService authorizationService,
-            IStatsService statsService)
+            IAuthorizationInternalService authorizationService,
+            IStatsInternalService statsService)
     {
         _context = context;
         _photoService = photoService;

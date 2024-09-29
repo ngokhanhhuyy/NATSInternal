@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services.Entities;
 
 [Table("notification_received_users")]
-public class NotificationReceivedUser
+internal class NotificationReceivedUser
 {
     [Column("received_notification_id")]
     [Key]

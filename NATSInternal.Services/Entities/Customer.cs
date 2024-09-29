@@ -1,7 +1,7 @@
 namespace NATSInternal.Services.Entities;
 
 [Table("customers")]
-public class Customer
+internal class Customer
 {
     [Column("id")]
     [Key]

@@ -9,10 +9,12 @@ global using Microsoft.AspNetCore.Mvc.Rendering;
 global using Microsoft.AspNetCore.SignalR;
 
 global using NATSInternal.Extensions;
+global using NATSInternal.Helpers;
 global using NATSInternal.Hubs;
 global using NATSInternal.Hubs.Notifier;
 global using NATSInternal.Hubs.ResourceAccess;
 global using NATSInternal.Models;
+global using NATSInternal.Tasks;
 global using NATSInternal.Services;
 global using NATSInternal.Services.Constants;
 global using NATSInternal.Services.Dtos;
@@ -21,7 +23,6 @@ global using NATSInternal.Services.Exceptions;
 global using NATSInternal.Services.Extensions;
 global using NATSInternal.Services.Interfaces;
 global using NATSInternal.Services.Localization;
-global using NATSInternal.Services.Tasks;
 global using NATSInternal.Validation.Extensions;
 global using NATSInternal.Validation.Validators;
 

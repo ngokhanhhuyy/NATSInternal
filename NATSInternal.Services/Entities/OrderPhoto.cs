@@ -1,7 +1,7 @@
 namespace NATSInternal.Services.Entities;
 
 [Table("order_photos")]
-public class OrderPhoto
+internal class OrderPhoto
 {
     [Column("id")]
     [Key]

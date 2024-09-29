@@ -1,10 +1,12 @@
 namespace NATSInternal.Models;
 
-public class ListModel<TModel>
+public interface IListModel<TModel>
 {
-    public virtual string OrderByField { get; set; }
-    public virtual bool OrderByAscending { get; set; }
-    public virtual int Page { get; set; } = 1;
-    public virtual int ResultsPerPage { get; set; } = 15;
-    public virtual int PageCount { get; set; }
-    public List<TModel> Items { get; set; }
+    string OrderByField { get; set; }
+    bool OrderByAscending { get; set; }
+    int Page { get; set; }
+    int ResultsPerPage { get; set; }
+    int PageCount { get; set; }
+    List<TModel> Items { get; set; }
+    PaginationRangeModel PaginationRanges { get; }
+}

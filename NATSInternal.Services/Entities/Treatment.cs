@@ -1,7 +1,7 @@
 namespace NATSInternal.Services.Entities;
 
 [Table("treatments")]
-public class Treatment : LockableEntity
+internal class Treatment : LockableEntity
 {
     [Column("id")]
     [Key]

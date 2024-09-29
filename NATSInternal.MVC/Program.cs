@@ -5,7 +5,8 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews()
     .AddRazorOptions(options =>
     {
-        options.ViewLocationFormats.Add("/{0}View.cshtml");
+        options.ViewLocationFormats.Add("~/Views/{1}/{0}View.cshtml");
+        options.PageViewLocationFormats.Add("~/Views/{1}/{0}Partial.cshtml");
     }).AddRazorRuntimeCompilation();
 builder.Services.AddSignalR();
 
@@ -23,7 +24,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.Name = "NATSInternalAuthenticationCookie";
     options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.LoginPath = "/Login";
+    options.LoginPath = "/SignIn";
     options.LogoutPath = "/Logout";
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
 

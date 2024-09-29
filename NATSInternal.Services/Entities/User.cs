@@ -1,7 +1,7 @@
 namespace NATSInternal.Services.Entities;
 
 [Table("users")]
-public class User : IdentityUser<int>
+internal class User : IdentityUser<int>
 {
     [Column("first_name")]
     [Required]

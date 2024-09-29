@@ -18,7 +18,7 @@ public class OrderUpdateHistoryResponseDto
     public List<OrderItemUpdateHistoryDataDto> OldItems => _oldData.Items;
     public List<OrderItemUpdateHistoryDataDto> NewItems => _newData.Items;
     
-    public OrderUpdateHistoryResponseDto(OrderUpdateHistory updateHistory)
+    internal OrderUpdateHistoryResponseDto(OrderUpdateHistory updateHistory)
     {
         _oldData = JsonSerializer
             .Deserialize<OrderUpdateHistoryDataDto>(updateHistory.OldData);

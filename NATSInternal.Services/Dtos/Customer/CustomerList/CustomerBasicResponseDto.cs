@@ -11,12 +11,12 @@ public class CustomerBasicResponseDto
     public long? DebtAmount { get; set; }
     public CustomerAuthorizationResponseDto Authorization { get; set; }
 
-    public CustomerBasicResponseDto(Customer customer)
+    internal CustomerBasicResponseDto(Customer customer)
     {
         MapFromEntity(customer);
     }
 
-    public CustomerBasicResponseDto(
+    internal CustomerBasicResponseDto(
             Customer customer,
             CustomerAuthorizationResponseDto authorization)
     {

@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Entities;
 
-public class Brand
+internal class Brand
 {
     [Column("id")]
     [Key]

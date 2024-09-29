@@ -12,7 +12,7 @@ public class UserPersonalInformationResponseDto
     public string Email { get; set; }
     public string AvatarUrl { get; set; }
 
-    public UserPersonalInformationResponseDto(User user)
+    internal UserPersonalInformationResponseDto(User user)
     {
         FirstName = user.FirstName;
         MiddleName = user.MiddleName;

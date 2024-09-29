@@ -8,7 +8,7 @@ public class UserUserInformationResponseDto
     public string Note { get; set; }
     public RoleDetailResponseDto Role { get; set; }
 
-    public UserUserInformationResponseDto(User user)
+    internal UserUserInformationResponseDto(User user)
     {
         JoiningDate = user.JoiningDate;
         CreatedDateTime = user.CreatedDateTime;

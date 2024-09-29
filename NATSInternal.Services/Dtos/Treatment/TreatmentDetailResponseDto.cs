@@ -21,7 +21,7 @@ public class TreatmentDetailResponseDto
     public TreatmentAuthorizationResponseDto Authorization { get; set; }
     public List<TreatmentUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
-    public TreatmentDetailResponseDto(
+    internal TreatmentDetailResponseDto(
             Treatment treatment,
             TreatmentAuthorizationResponseDto authorization,
             bool mapUpdateHistories = false)

@@ -9,7 +9,7 @@ public class TreatmentUpdateHistoryDataDto
     public TreatmentTherapistUpdateHistoryDataDto Therapist { get; set; }
     public List<TreatmentItemUpdateHistoryDataDto> Items { get; set; }
     
-    public TreatmentUpdateHistoryDataDto(Treatment treatment)
+    internal TreatmentUpdateHistoryDataDto(Treatment treatment)
     {
         PaidDateTime = treatment.PaidDateTime;
         ServiceAmount = treatment.ServiceAmount;

@@ -7,7 +7,7 @@ public class SupplyItemResponseDto
     public int SuppliedQuantity { get; set; }
     public ProductBasicResponseDto Product { get; set; }
 
-    public SupplyItemResponseDto(SupplyItem item)
+    internal SupplyItemResponseDto(SupplyItem item)
     {
         Id = item.Id;
         Amount = item.Amount;

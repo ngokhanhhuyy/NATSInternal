@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 namespace NATSInternal.Services;
 
 /// <inheritdoc cref="IAuthenticationService" />
-public class AuthenticationService : IAuthenticationService
+internal class AuthenticationService : IAuthenticationService
 {
     private readonly DatabaseContext _context;
     private readonly UserManager<User> _userManager;
@@ -186,6 +186,22 @@ public class AuthenticationService : IAuthenticationService
         await _signInManager.SignOutAsync();
     }
 
+    /// <inheritdoc />
+    public async Task CleanExpiredRefreshTokens()
+    {
+        DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
+        List<UserRefreshToken> expiredRefreshTokens = await _context.UserRefreshTokens
+            .Where(t => t.ExpiringDateTime < currentDateTime)
+            .ToListAsync();
+
+        foreach (UserRefreshToken refreshToken in expiredRefreshTokens)
+        {
+            _context.UserRefreshTokens.Remove(refreshToken);
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
     /// <summary>
     /// Generate an access token assiocated to the specified <c>User</c> with the
     /// specified <c>DateTime</c> object representing the expiring datetime.
@@ -219,10 +235,10 @@ public class AuthenticationService : IAuthenticationService
     }
 
     /// <summary>
-    /// Generate a random <see cref="string"/> as a refresh token.
+    /// Generate a random <see cref="string"/> value representing a refresh token.
     /// </summary>
-    /// <returns>The refresh token.</returns>
-    private string GenerateRefreshToken()
+    /// <returns>A random <see cref="string"/> value representing a refresh token.</returns>
+    private static string GenerateRefreshToken()
     {
         const int tokenLength = 64;
         Random random = new Random();

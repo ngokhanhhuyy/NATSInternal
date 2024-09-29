@@ -6,7 +6,7 @@ public class DebtIncurrenceUpdateHistoryDataDto
     public string Note { get; set; }
     public DateTime IncurredDateTime { get; set; }
     
-    public DebtIncurrenceUpdateHistoryDataDto(DebtIncurrence debt)
+    internal DebtIncurrenceUpdateHistoryDataDto(DebtIncurrence debt)
     {
         Amount = debt.Amount;
         Note = debt.Note;

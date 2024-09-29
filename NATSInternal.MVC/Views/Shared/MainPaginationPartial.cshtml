@@ -1,4 +1,4 @@
-@model ListModel<object>
+@model PaginationRangeModel
 @functions {
     private string PaginationButtonClassName(int page)
     {
@@ -21,8 +21,7 @@
 
 @if (Model.PageCount > 1)
 {
-    <div class="col col-12 d-flex flex-row justify-content-center mb-5"
-        v-if="model.pageCount > 1">
+    <div class="d-flex flex-row justify-content-center mb-5">
         <button class="btn mx-1 btn-outline-primary page-button"
                 disabled="@(Model.Page == 1)">
             Trang đầu

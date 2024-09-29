@@ -8,7 +8,7 @@ public class OrderItemResponseDto
     public int Quantity { get; set; }
     public ProductBasicResponseDto Product { get; set; }
 
-    public OrderItemResponseDto(OrderItem item)
+    internal OrderItemResponseDto(OrderItem item)
     {
         Id = item.Id;
         Amount = item.Amount;

@@ -1,3 +1,5 @@
+using NATSInternal.Helpers;
+
 namespace NATSInternal.Models;
 
 public class UserBasicModel
@@ -14,21 +16,21 @@ public class UserBasicModel
     public string AvatarUrl { get; set; }
     public RoleBasicModel Role { get; set; }
 
-    public static UserBasicModel FromResponseDto(UserBasicResponseDto responseDto)
+    public UserBasicModel(UserBasicResponseDto responseDto)
     {
-        return new UserBasicModel
-        {
-            Id = responseDto.Id,
-            UserName = responseDto.UserName,
-            FirstName = responseDto.FirstName,
-            MiddleName = responseDto.MiddleName,
-            LastName = responseDto.LastName,
-            FullName = responseDto.FullName,
-            Gender = responseDto.Gender,
-            Birthday = responseDto.Birthday,
-            JoiningDate = responseDto.JoiningDate,
-            AvatarUrl = responseDto.AvatarUrl,
-            Role = RoleBasicModel.FromResponseDto(responseDto.Role)
-        };
+        Id = responseDto.Id;
+        UserName = responseDto.UserName;
+        FirstName = responseDto.FirstName;
+        MiddleName = responseDto.MiddleName;
+        LastName = responseDto.LastName;
+        FullName = responseDto.FullName;
+        Gender = responseDto.Gender;
+        Birthday = responseDto.Birthday;
+        JoiningDate = responseDto.JoiningDate;
+
+        AvatarUrl = responseDto.AvatarUrl;
+        AvatarUrl ??= $"https://ui-avatars.com/api/?name={FullName.Replace(" ", "+")}" +
+            "&background=random&size=256";;
+        Role = RoleBasicModel.FromResponseDto(responseDto.Role);
     }
 }

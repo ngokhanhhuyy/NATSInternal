@@ -1,17 +1,17 @@
 ﻿namespace NATSInternal.Services;
 
 /// <inheritdoc cref="IDebtIncurrenceService" />
-public class DebtIncurrenceService : LockableEntityService, IDebtIncurrenceService
+internal class DebtIncurrenceService : LockableEntityService, IDebtIncurrenceService
 {
     private readonly DatabaseContext _context;
-    private readonly IStatsService _statsService;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly IStatsInternalService _statsService;
+    private readonly IAuthorizationInternalService _authorizationService;
     private static MonthYearResponseDto _earliestRecordedMonthYear;
 
     public DebtIncurrenceService(
             DatabaseContext context,
-            IStatsService statsService,
-            IAuthorizationService authorizationService)
+            IStatsInternalService statsService,
+            IAuthorizationInternalService authorizationService)
     {
         _context = context;
         _statsService = statsService;

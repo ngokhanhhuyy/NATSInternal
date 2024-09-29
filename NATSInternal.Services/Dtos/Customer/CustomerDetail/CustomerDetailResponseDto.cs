@@ -23,9 +23,9 @@ public record CustomerDetailResponseDto
     public List<CustomerDebtOperationResponseDto> DebtOperations { get; set; }
     public CustomerAuthorizationResponseDto Authorization { get; set; }
 
-    public CustomerDetailResponseDto(
+    internal CustomerDetailResponseDto(
             Customer customer,
-            IAuthorizationService authorizationService)
+            IAuthorizationInternalService authorizationService)
     {
         Id = customer.Id;
         FirstName = customer.FirstName;

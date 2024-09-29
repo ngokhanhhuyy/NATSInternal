@@ -9,7 +9,7 @@ public class NotificationResponseDto
     public UserBasicResponseDto CreatedUser { get; set; }
     public bool IsRead { get; set; }
     
-    public NotificationResponseDto(Notification notification, int currentUserId)
+    internal NotificationResponseDto(Notification notification, int currentUserId)
     {
         Id = notification.Id;
         Type = notification.Type;

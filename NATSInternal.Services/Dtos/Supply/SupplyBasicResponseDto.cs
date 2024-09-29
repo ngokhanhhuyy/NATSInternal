@@ -10,12 +10,12 @@ public class SupplyBasicResponseDto
     public string FirstPhotoUrl { get; set; }
     public SupplyAuthorizationResponseDto Authorization { get; set; }
 
-    public SupplyBasicResponseDto(Supply supply)
+    internal SupplyBasicResponseDto(Supply supply)
     {
         MapFromEntity(supply);
     }
 
-    public SupplyBasicResponseDto(Supply supply, SupplyAuthorizationResponseDto authorization)
+    internal SupplyBasicResponseDto(Supply supply, SupplyAuthorizationResponseDto authorization)
     {
         MapFromEntity(supply);
         Authorization = authorization;

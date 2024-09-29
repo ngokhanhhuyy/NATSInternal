@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services.Entities;
 
 [Table("notifications")]
-public class Notification
+internal class Notification
 {
     [Column("id")]
     [Key]

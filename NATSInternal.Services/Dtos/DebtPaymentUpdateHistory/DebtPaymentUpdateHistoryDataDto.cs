@@ -6,7 +6,7 @@ public class DebtPaymentUpdateHistoryDataDto
     public string Note { get; set; }
     public DateTime PaidDateTime { get; set; }
     
-    public DebtPaymentUpdateHistoryDataDto(DebtPayment payment)
+    internal DebtPaymentUpdateHistoryDataDto(DebtPayment payment)
     {
         Amount = payment.Amount;
         Note = payment.Note;

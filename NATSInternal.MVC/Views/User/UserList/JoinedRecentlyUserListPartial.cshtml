@@ -1,0 +1,35 @@
+@model List<UserBasicModel>
+@{
+    Layout = "Layout/MainBlockLayout";
+    ViewBag.BlockTitle = "Nhân viên mới gia nhập";
+    ViewBag.BlockBodyClass = "p-0";
+}
+
+@if (Model != null && Model.Count > 0)
+{
+    <ul class="list-group list-group-flush newest-users-list">
+        @foreach (UserBasicModel user in Model)
+        {
+            <li class="list-group-item d-flex flex-row align-items-center
+                        bg-transparent px-3 py-2">
+                <a asp-action="UserDetail" asp-controller="User" asp-route-id="@user.Id">
+                    <img src="@user.AvatarUrl" class="rounded-circle me-2">
+                </a>
+                <div class="d-flex flex-column flex-fill name">
+                    <RouterLink :to='{ name: "userProfile", params: { userId: user.id} }'>
+                        <span class="fw-bold">{{ user.fullName }}</span>
+                    </RouterLink>
+                    <a asp-action="UserDetail" asp-controller="User" asp-route-id="@user.Id">
+                        <span class="small opacity-50">@user.UserName</span>
+                    </a>
+                </div>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <div class="d-flex align-items-center justify-content-center p-3 opacity-50">
+        Không có thành viên mới
+    </div>
+}

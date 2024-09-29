@@ -8,7 +8,7 @@ public class ExpenseUpdateHistoryDataDto
     public string Note { get; set; }
     public string PayeeName { get; set; }
     
-    public ExpenseUpdateHistoryDataDto(Expense expense)
+    internal ExpenseUpdateHistoryDataDto(Expense expense)
     {
         Amount = expense.Amount;
         PaidDateTime = expense.PaidDateTime;

@@ -10,12 +10,12 @@ public class ProductBasicResponseDto
     public string ThumbnailUrl { get; set; }
     public ProductAuthorizationResponseDto Authorization { get; set; }
 
-    public ProductBasicResponseDto(Product product)
+    internal ProductBasicResponseDto(Product product)
     {
         MapFromEntity(product);
     }
 
-    public ProductBasicResponseDto(
+    internal ProductBasicResponseDto(
             Product product,
             ProductAuthorizationResponseDto authorization)
     {

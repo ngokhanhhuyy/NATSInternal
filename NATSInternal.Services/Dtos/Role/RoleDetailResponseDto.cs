@@ -8,7 +8,7 @@ public class RoleDetailResponseDto
     public int PowerLevel { get; set; }
     public List<string> Permissions { get; set; }
 
-    public RoleDetailResponseDto(Role role)
+    internal RoleDetailResponseDto(Role role)
     {
         Id = role.Id;
         Name = role.Name;

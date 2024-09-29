@@ -1,14 +1,14 @@
 ﻿namespace NATSInternal.Services;
 
 /// <inheritdoc />
-public class ProductService : IProductService
+internal class ProductService : IProductService
 {
     private readonly DatabaseContext _context;
     private readonly IPhotoService _photoService;
     private readonly ISupplyService _supplyService;
     private readonly IOrderService _orderService;
     private readonly ITreatmentService _treatmentService;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly IAuthorizationInternalService _authorizationService;
 
     public ProductService(
             DatabaseContext context,
@@ -16,7 +16,7 @@ public class ProductService : IProductService
             ISupplyService supplyService,
             IOrderService orderService,
             ITreatmentService treatmentService,
-            IAuthorizationService authorizationService)
+            IAuthorizationInternalService authorizationService)
     {
         _context = context;
         _photoService = photoService;

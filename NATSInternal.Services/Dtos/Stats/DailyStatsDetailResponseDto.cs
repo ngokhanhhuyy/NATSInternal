@@ -4,7 +4,7 @@ public class DailyStatsDetailResponseDto : StatsDetailResponseDto
 {
     public DateOnly RecordedDate { get; set; }
 
-    public DailyStatsDetailResponseDto(DailyStats dailyStats)
+    internal DailyStatsDetailResponseDto(DailyStats dailyStats)
     {
         RetailGrossRevenue = dailyStats.RetailGrossRevenue;
         TreatmentGrossRevenue = dailyStats.TreatmentGrossRevenue;

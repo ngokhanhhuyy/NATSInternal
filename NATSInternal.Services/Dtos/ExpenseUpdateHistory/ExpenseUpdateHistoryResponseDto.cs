@@ -24,10 +24,12 @@ public class ExpenseUpdateHistoryResponseDto
     public string OldPayeeName => _oldData.PayeeName;
     public string NewPayeeName => _newData.PayeeName;
 
-    public ExpenseUpdateHistoryResponseDto(ExpenseUpdateHistory updateHistory)
+    internal ExpenseUpdateHistoryResponseDto(ExpenseUpdateHistory updateHistory)
     {
-        _oldData = JsonSerializer.Deserialize<ExpenseUpdateHistoryDataDto>(updateHistory.OldData);
-        _newData = JsonSerializer.Deserialize<ExpenseUpdateHistoryDataDto>(updateHistory.NewData);
+        _oldData = JsonSerializer
+            .Deserialize<ExpenseUpdateHistoryDataDto>(updateHistory.OldData);
+        _newData = JsonSerializer
+            .Deserialize<ExpenseUpdateHistoryDataDto>(updateHistory.NewData);
         UpdatedDateTime = updateHistory.UpdatedDateTime;
         UpdatedUser = new UserBasicResponseDto(updateHistory.User);
         Reason = updateHistory.Reason;

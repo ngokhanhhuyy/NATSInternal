@@ -14,7 +14,7 @@ public class ConsultantDetailResponseDto
     public ConsultantAuthorizationResponseDto Authorization { get; set; }
     public List<ConsultantUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
-    public ConsultantDetailResponseDto(
+    internal ConsultantDetailResponseDto(
             Consultant consultant,
             ConsultantAuthorizationResponseDto authorization,
             bool mapUpdateHistory = false)

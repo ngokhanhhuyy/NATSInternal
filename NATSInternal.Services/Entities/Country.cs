@@ -3,7 +3,7 @@ namespace NATSInternal.Services.Entities;
 [Table("countries")]
 [Index(nameof(Name), IsUnique = true)]
 [Index(nameof(Code), IsUnique = true)]
-public class Country
+internal class Country
 {
     [Column("id")]
     [Key]

@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services;
 
 /// <inheritdoc />
-public class RoleService : IRoleService
+internal class RoleService : IRoleService
 {
     private readonly DatabaseContext _context;
 

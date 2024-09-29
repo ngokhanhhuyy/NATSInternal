@@ -5,7 +5,7 @@ public class ExpensePhotoResponseDto
     public int Id { get; set; }
     public string Url { get; set; }
 
-    public ExpensePhotoResponseDto(ExpensePhoto photo)
+    internal ExpensePhotoResponseDto(ExpensePhoto photo)
     {
         Id = photo.Id;
         Url = photo.Url;

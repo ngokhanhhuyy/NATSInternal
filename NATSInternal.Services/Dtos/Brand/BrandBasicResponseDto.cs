@@ -6,12 +6,12 @@ public class BrandBasicResponseDto
     public string Name { get; set; }
     public BrandAuthorizationResponseDto Authorization { get; set; }
 
-    public BrandBasicResponseDto(Brand brand)
+    internal BrandBasicResponseDto(Brand brand)
     {
         MapFromEntity(brand);
     }
 
-    public BrandBasicResponseDto(Brand brand, BrandAuthorizationResponseDto authorization)
+    internal BrandBasicResponseDto(Brand brand, BrandAuthorizationResponseDto authorization)
     {
         MapFromEntity(brand);
         Authorization = authorization;

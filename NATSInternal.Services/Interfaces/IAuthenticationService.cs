@@ -74,4 +74,10 @@ public interface IAuthenticationService
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
     Task SignOutAsync();
+
+    /// <summary>
+    /// Cleans all the refresh tokens which have expired.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    Task CleanExpiredRefreshTokens();
 }

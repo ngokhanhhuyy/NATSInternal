@@ -1,19 +1,19 @@
 ﻿namespace NATSInternal.Services;
 
 /// <inheritdoc cref="ISupplyService" />
-public class SupplyService : LockableEntityService, ISupplyService
+internal class SupplyService : LockableEntityService, ISupplyService
 {
     private readonly DatabaseContext _context;
     private readonly IPhotoService _photoService;
-    private readonly IAuthorizationService _authorizationService;
-    private readonly IStatsService _statsService;
+    private readonly IAuthorizationInternalService _authorizationService;
+    private readonly IStatsInternalService _statsService;
     private static MonthYearResponseDto _earliestRecordedMonthYear;
 
     public SupplyService(
             DatabaseContext context,
             IPhotoService photoservice,
-            IAuthorizationService authorizationService,
-            IStatsService statsService)
+            IAuthorizationInternalService authorizationService,
+            IStatsInternalService statsService)
     {
         _context = context;
         _photoService = photoservice;

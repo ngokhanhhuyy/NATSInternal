@@ -18,7 +18,7 @@ public class ProductDetailResponseDto
     public BrandBasicResponseDto Brand { get; set; }
     public ProductAuthorizationResponseDto Authorization { get; set; }
 
-    public ProductDetailResponseDto(
+    internal ProductDetailResponseDto(
             Product product,
             ProductAuthorizationResponseDto authorization)
     {

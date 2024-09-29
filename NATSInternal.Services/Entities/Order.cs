@@ -1,7 +1,7 @@
 namespace NATSInternal.Services.Entities;
 
 [Table("orders")]
-public class Order : LockableEntity
+internal class Order : LockableEntity
 {
     [Column("id")]
     [Key]

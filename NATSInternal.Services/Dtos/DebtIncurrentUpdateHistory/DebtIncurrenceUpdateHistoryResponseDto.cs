@@ -18,7 +18,7 @@ public class DebtIncurrenceUpdateHistoryResponseDto
     public string OldNote => _oldData.Note;
     public string NewNote => _newData.Note;
     
-    public DebtIncurrenceUpdateHistoryResponseDto(
+    internal DebtIncurrenceUpdateHistoryResponseDto(
             DebtIncurrenceUpdateHistory updateHistory)
     {
         _oldData = JsonSerializer

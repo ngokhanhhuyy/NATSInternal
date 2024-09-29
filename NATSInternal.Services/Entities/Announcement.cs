@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services.Entities;
 
 [Table("announcements")]
-public class Announcement
+internal class Announcement
 {
     [Column("id")]
     [Key]
@@ -9,11 +9,7 @@ public class Announcement
 
     [Column("category")]
     [Required]
-    public AnnouncementCategory Category
-    {
-        get;
-        set;
-    } = AnnouncementCategory.Announcement;
+    public AnnouncementCategory Category { get; set; } = AnnouncementCategory.Announcement;
 
     [Column("title")]
     [Required]
