@@ -1,7 +1,7 @@
 namespace NATSInternal.Services.Entities;
 
 [Table("consultant")]
-public class Consultant : LockableEntity
+internal class Consultant : LockableEntity
 {
     [Column("id")]
     [Key]

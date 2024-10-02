@@ -1,12 +1,12 @@
 ﻿namespace NATSInternal.Services;
 
 /// <inheritdoc />
-public class UserService : IUserService
+internal class UserService : IUserService
 {
     private readonly DatabaseContext _context;
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<Role> _roleManager;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly IAuthorizationInternalService _authorizationService;
     private readonly IPhotoService _photoService;
     private readonly SqlExceptionHandler _exceptionHandler;
 
@@ -14,7 +14,7 @@ public class UserService : IUserService
             DatabaseContext context,
             UserManager<User> userManager,
             RoleManager<Role> roleManager,
-            IAuthorizationService authorizationService,
+            IAuthorizationInternalService authorizationService,
             IPhotoService photoService,
             SqlExceptionHandler exceptionHandler)
     {
@@ -49,6 +49,13 @@ public class UserService : IUserService
                 break;
             case nameof(UserListRequestDto.FieldToBeOrdered.Birthday):
                 query = requestDto.OrderByAscending
+                    ? query.OrderBy(u => u.Birthday.Value.Month)
+                        .ThenBy(u => u.Birthday.Value.Day)
+                    : query.OrderByDescending(u => u.Birthday.Value.Month)
+                        .ThenByDescending(u => u.Birthday.Value.Day);
+                break;
+            case nameof(UserListRequestDto.FieldToBeOrdered.Age):
+                query = requestDto.OrderByAscending
                     ? query.OrderBy(u => u.Birthday)
                     : query.OrderByDescending(u => u.Birthday);
                 break;
@@ -77,7 +84,40 @@ public class UserService : IUserService
                 .Where(u => u.Roles.First().Id == requestDto.RoleId.Value);
         }
 
-        // Filter by search content
+        // Filter by joined recently.
+        if (requestDto.JoinedRencentlyOnly)
+        {
+            DateOnly minimumJoiningDate = DateOnly
+                .FromDateTime(DateTime.UtcNow.ToApplicationTime())
+                .AddMonths(-1);
+            query = query
+                .Where(u => u.JoiningDate.HasValue)
+                .Where(u => u.JoiningDate.Value > minimumJoiningDate);
+        }
+
+        // Filter by having incoming birthday.
+        if (requestDto.UpcomingBirthdayOnly)
+        {
+            DateOnly minRange = DateOnly.FromDateTime(DateTime.Today);
+            DateOnly maxRange = minRange.AddMonths(1);
+            int thisYear = DateTime.Today.Year;
+            query = query
+                .Where(u => u.Birthday.HasValue && !u.IsDeleted)
+                .Where(u =>
+                    (
+                        minRange <= u.Birthday.Value
+                            .AddYears(thisYear - u.Birthday.Value.Year) &&
+                        maxRange > u.Birthday.Value
+                            .AddYears(thisYear - u.Birthday.Value.Year)
+                    ) || (
+                        minRange <= u.Birthday.Value
+                            .AddYears(thisYear - u.Birthday.Value.Year + 1) &&
+                        maxRange > u.Birthday.Value
+                            .AddYears(thisYear - u.Birthday.Value.Year + 1)
+                    ));
+        }
+
+        // Filter by search content.
         if (requestDto.Content != null && requestDto.Content.Length >= 3)
         {
             query = query
@@ -175,8 +215,7 @@ public class UserService : IUserService
                     minRange <= u.Birthday.Value.AddYears(thisYear - u.Birthday.Value.Year + 1) &&
                     maxRange > u.Birthday.Value.AddYears(thisYear - u.Birthday.Value.Year + 1)
                 )
-            )
-            .ToListAsync();
+            ).ToListAsync();
 
         return new UserListResponseDto
         {

@@ -3,7 +3,7 @@
 namespace NATSInternal.Services;
 
 /// <inheritdoc />
-public class PhotoService : IPhotoService
+internal class PhotoService : IPhotoService
 {
     private readonly IWebHostEnvironment _environment;
 

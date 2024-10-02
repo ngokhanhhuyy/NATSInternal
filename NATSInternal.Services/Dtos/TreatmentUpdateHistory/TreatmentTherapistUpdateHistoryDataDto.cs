@@ -9,7 +9,7 @@ public class TreatmentTherapistUpdateHistoryDataDto
     public string LastName { get; set; }
     public string FullName { get; set; }
 
-    public TreatmentTherapistUpdateHistoryDataDto(User user)
+    internal TreatmentTherapistUpdateHistoryDataDto(User user)
     {
         Id = user.Id;
         UserName = user.UserName;

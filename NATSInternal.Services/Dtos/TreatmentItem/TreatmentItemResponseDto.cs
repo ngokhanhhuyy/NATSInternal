@@ -8,9 +8,9 @@ public class TreatmentItemResponseDto
     public int Quantity { get; set; }
     public ProductBasicResponseDto Product { get; set; }
 
-    public TreatmentItemResponseDto() { }
+    internal TreatmentItemResponseDto() { }
 
-    public TreatmentItemResponseDto(TreatmentItem treatmentItem)
+    internal TreatmentItemResponseDto(TreatmentItem treatmentItem)
     {
         Id = treatmentItem.Id;
         Amount = treatmentItem.Amount;

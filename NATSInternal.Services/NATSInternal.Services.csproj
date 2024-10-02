@@ -6,6 +6,7 @@
     <InvariantGlobalization>false</InvariantGlobalization>
     <ChecksumAlgorithm>SHA1</ChecksumAlgorithm>
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <AssemblyName>NATSInternal.Services</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

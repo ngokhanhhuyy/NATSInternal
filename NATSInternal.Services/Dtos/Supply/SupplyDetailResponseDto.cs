@@ -17,7 +17,7 @@ public class SupplyDetailResponseDto
     public SupplyAuthorizationResponseDto Authorization { get; set; }
     public List<SupplyUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
-    public SupplyDetailResponseDto(
+    internal SupplyDetailResponseDto(
             Supply supply,
             SupplyAuthorizationResponseDto authorization, 
             bool mapUpdateHistories = false)

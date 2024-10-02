@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services.Entities;
 
 [Table("treatment_update_histories")]
-public class TreatmentUpdateHistory
+internal class TreatmentUpdateHistory
 {
     [Column("id")]
     [Key]

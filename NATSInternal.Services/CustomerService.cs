@@ -1,14 +1,14 @@
 ﻿namespace NATSInternal.Services;
 
 /// <inheritdoc />
-public class CustomerService : ICustomerService
+internal class CustomerService : ICustomerService
 {
     private readonly DatabaseContext _context;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly IAuthorizationInternalService _authorizationService;
 
     public CustomerService(
         DatabaseContext context,
-        IAuthorizationService authorizationService)
+        IAuthorizationInternalService authorizationService)
     {
         _context = context;
         _authorizationService = authorizationService;
@@ -27,10 +27,10 @@ public class CustomerService : ICustomerService
         // Determine the field and the direction the sort.
         switch (requestDto.OrderByField)
         {
-            case nameof(CustomerListRequestDto.FieldToBeOrdered.FirstName):
+            case nameof(CustomerListRequestDto.FieldToBeOrdered.FullName):
                 query = requestDto.OrderByAscending
-                    ? query.OrderBy(c => c.FirstName)
-                    : query.OrderByDescending(c => c.FirstName);
+                    ? query.OrderBy(c => c.FullName)
+                    : query.OrderByDescending(c => c.FullName);
                 break;
             case nameof(CustomerListRequestDto.FieldToBeOrdered.Birthday):
                 query = requestDto.OrderByAscending

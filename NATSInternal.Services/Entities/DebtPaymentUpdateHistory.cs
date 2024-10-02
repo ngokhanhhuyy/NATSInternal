@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services.Entities;
 
 [Table("debt_payment_update_histories")]
-public class DebtPaymentUpdateHistory
+internal class DebtPaymentUpdateHistory
 {
     [Column("id")]
     [Key]

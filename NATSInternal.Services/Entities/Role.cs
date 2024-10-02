@@ -1,7 +1,7 @@
 namespace NATSInternal.Services.Entities;
 
 [Table("roles")]
-public class Role : IdentityRole<int>
+internal class Role : IdentityRole<int>
 {
     [Column("display_name")]
     [Required]

@@ -8,7 +8,7 @@ public class MonthlyStatsDetailResponseDto : StatsDetailResponseDto
     public int RecordedMonth { get; set; }
     public List<DailyStatsBasicResponseDto> DailyStats { get; set; }
 
-    public MonthlyStatsDetailResponseDto(MonthlyStats monthlyStats)
+    internal MonthlyStatsDetailResponseDto(MonthlyStats monthlyStats)
     {
         RetailGrossRevenue = monthlyStats.RetailGrossRevenue;
         TreatmentGrossRevenue = monthlyStats.TreatmentGrossRevenue;

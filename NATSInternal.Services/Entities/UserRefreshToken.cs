@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Entities;
 
-public class UserRefreshToken
+internal class UserRefreshToken
 {
     [Column("id")]
     [Key]

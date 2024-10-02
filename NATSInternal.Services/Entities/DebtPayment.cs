@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services.Entities;
 
 [Table("debt_payments")]
-public class DebtPayment : LockableEntity
+internal class DebtPayment : LockableEntity
 {
     [Column("id")]
     [Key]

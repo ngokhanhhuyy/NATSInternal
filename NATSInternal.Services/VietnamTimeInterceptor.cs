@@ -3,7 +3,7 @@ using System.Data.Common;
 
 namespace NATSInternal.Services;
 
-public class VietnamTimeInterceptor : DbCommandInterceptor
+internal class VietnamTimeInterceptor : DbCommandInterceptor
 {
     public override InterceptionResult<DbDataReader> ReaderExecuting(
         DbCommand command,

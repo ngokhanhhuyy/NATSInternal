@@ -10,7 +10,7 @@ public class OrderItemUpdateHistoryDataDto
 
     public OrderItemUpdateHistoryDataDto() { }
     
-    public OrderItemUpdateHistoryDataDto(OrderItem item)
+    internal OrderItemUpdateHistoryDataDto(OrderItem item)
     {
         Id = item.Id;
         Amount = item.Amount;

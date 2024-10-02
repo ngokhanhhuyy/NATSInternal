@@ -1,7 +1,7 @@
 namespace NATSInternal.Services.Entities;
 
 [Table("supplies")]
-public class Supply : LockableEntity
+internal class Supply : LockableEntity
 {
     [Column("id")]
     [Key]

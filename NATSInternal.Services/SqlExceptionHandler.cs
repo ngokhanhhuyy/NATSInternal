@@ -2,7 +2,7 @@
 
 namespace NATSInternal.Services;
 
-public partial class SqlExceptionHandler
+internal partial class SqlExceptionHandler
 {
     /// <summary>
     /// Extracts the errors details from the specified <c>exception</c>

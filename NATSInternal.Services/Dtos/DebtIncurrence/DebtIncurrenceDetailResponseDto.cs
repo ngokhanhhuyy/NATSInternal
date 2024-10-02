@@ -12,7 +12,7 @@ public class DebtIncurrenceDetailResponseDto
     public DebtIncurrenceAuthorizationResponseDto Authorization { get; set; }
     public List<DebtIncurrenceUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
-    public DebtIncurrenceDetailResponseDto(
+    internal DebtIncurrenceDetailResponseDto(
             DebtIncurrence debt,
             DebtIncurrenceAuthorizationResponseDto authorization,
             bool mapUpdateHistories = false)

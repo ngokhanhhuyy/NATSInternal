@@ -9,12 +9,12 @@ public class OrderBasicResponseDto
     public CustomerBasicResponseDto Customer { get; set; }
     public OrderAuthorizationResponseDto Authorization { get; set; }
 
-    public OrderBasicResponseDto(Order order)
+    internal OrderBasicResponseDto(Order order)
     {
         MapFromEntity(order);
     }
 
-    public OrderBasicResponseDto(
+    internal OrderBasicResponseDto(
             Order order,
             OrderAuthorizationResponseDto authorization)
     {

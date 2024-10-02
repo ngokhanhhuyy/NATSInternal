@@ -13,7 +13,7 @@ public class DebtPaymentDetailResponseDto
     public DebtPaymentAuthorizationResponseDto Authorization { get; set; }
     public List<DebtPaymentUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
-    public DebtPaymentDetailResponseDto(
+    internal DebtPaymentDetailResponseDto(
             DebtPayment payment,
             DebtPaymentAuthorizationResponseDto authorization,
             bool mapUpdateHistories = false)

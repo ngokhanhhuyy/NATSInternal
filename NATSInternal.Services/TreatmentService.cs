@@ -1,19 +1,19 @@
 namespace NATSInternal.Services;
 
 /// <inheritdoc cref="ITreatmentService" />
-public class TreatmentService : LockableEntityService, ITreatmentService
+internal class TreatmentService : LockableEntityService, ITreatmentService
 {
     private readonly DatabaseContext _context;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly IAuthorizationInternalService _authorizationService;
     private readonly IPhotoService _photoService;
-    private readonly IStatsService _statsService;
+    private readonly IStatsInternalService _statsService;
     private static MonthYearResponseDto _earliestRecordedMonthYear;
 
     public TreatmentService(
             DatabaseContext context,
-            IAuthorizationService authorizationService,
+            IAuthorizationInternalService authorizationService,
             IPhotoService photoService,
-            IStatsService statsService)
+            IStatsInternalService statsService)
     {
         _context = context;
         _authorizationService = authorizationService;
@@ -744,7 +744,7 @@ public class TreatmentService : LockableEntityService, ITreatmentService
     /// <exception cref="OperationException">
     /// Throws when the photo with the specified id doesn't exist or has already been deleted.
     /// </exception>
-    public async Task<(List<string>, List<string>)> UpdatePhotoAsync(
+    private async Task<(List<string>, List<string>)> UpdatePhotoAsync(
             Treatment treatment,
             List<TreatmentPhotoRequestDto> requestDtos)
     {

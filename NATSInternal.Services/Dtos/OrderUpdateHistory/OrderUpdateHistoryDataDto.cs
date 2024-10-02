@@ -9,7 +9,7 @@ public class OrderUpdateHistoryDataDto
 
     public OrderUpdateHistoryDataDto() { }
     
-    public OrderUpdateHistoryDataDto(Order order)
+    internal OrderUpdateHistoryDataDto(Order order)
     {
         PaidDateTime = order.PaidDateTime;
         Note = order.Note;

@@ -17,7 +17,7 @@ public class OrderDetailResponseDto
     public OrderAuthorizationResponseDto Authorization { get; set; }
     public List<OrderUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
-    public OrderDetailResponseDto(
+    internal OrderDetailResponseDto(
             Order order,
             OrderAuthorizationResponseDto authorization,
             bool mapUpdateHistories = false)

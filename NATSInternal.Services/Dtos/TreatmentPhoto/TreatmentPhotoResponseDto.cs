@@ -6,7 +6,7 @@ public class TreatmentPhotoResponseDto
     public string Url { get; set; }
     public TreatmentPhotoType Type { get; set; }
 
-    public TreatmentPhotoResponseDto(TreatmentPhoto treatmentPhoto)
+    internal TreatmentPhotoResponseDto(TreatmentPhoto treatmentPhoto)
     {
         Id = treatmentPhoto.Id;
         Url = treatmentPhoto.Url;

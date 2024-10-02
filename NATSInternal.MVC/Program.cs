@@ -5,7 +5,8 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews()
     .AddRazorOptions(options =>
     {
-        options.ViewLocationFormats.Add("/{0}View.cshtml");
+        options.ViewLocationFormats.Add("~/Views/{1}/{0}View.cshtml");
+        options.PageViewLocationFormats.Add("~/Views/{1}/{0}Partial.cshtml");
     }).AddRazorRuntimeCompilation();
 builder.Services.AddSignalR();
 
@@ -23,8 +24,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.Name = "NATSInternalAuthenticationCookie";
     options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.LoginPath = "/Login";
-    options.LogoutPath = "/Logout";
+    options.LoginPath = "/SignIn";
+    options.LogoutPath = "/SignOut";
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
 
     options.Events.OnValidatePrincipal = async (context) =>
@@ -53,8 +54,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
-// Authentication by JWT strategies.
+// Authentication by cookie strategies.
 builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme);
+
 // Authorization policies.
 builder.Services
     .AddAuthorizationBuilder()

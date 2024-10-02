@@ -14,7 +14,7 @@ public class ExpenseDetailResponseDto
     public ExpenseAuthorizationResponseDto Authorization { get; set; }
     public List<ExpenseUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
-    public ExpenseDetailResponseDto(
+    internal ExpenseDetailResponseDto(
             Expense expense,
             ExpenseAuthorizationResponseDto authorization,
             bool mapHistories = false)

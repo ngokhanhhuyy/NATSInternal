@@ -29,7 +29,7 @@ public class TreatmentUpdateHistoryResponseDto
     public List<TreatmentItemUpdateHistoryDataDto> OldItems => _oldData.Items;
     public List<TreatmentItemUpdateHistoryDataDto> NewItems => _oldData.Items;
 
-    public TreatmentUpdateHistoryResponseDto(TreatmentUpdateHistory updateHistory)
+    internal TreatmentUpdateHistoryResponseDto(TreatmentUpdateHistory updateHistory)
     {
         _oldData = JsonSerializer
             .Deserialize<TreatmentUpdateHistoryDataDto>(updateHistory.OldData);

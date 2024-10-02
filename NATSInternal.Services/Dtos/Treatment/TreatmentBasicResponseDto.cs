@@ -9,12 +9,12 @@ public class TreatmentBasicResponseDto
     public CustomerBasicResponseDto Customer { get; set; }
     public TreatmentAuthorizationResponseDto Authorization { get; set; }
     
-    public TreatmentBasicResponseDto(Treatment treatment)
+    internal TreatmentBasicResponseDto(Treatment treatment)
     {
         MapFromEntity(treatment);
     }
 
-    public TreatmentBasicResponseDto(
+    internal TreatmentBasicResponseDto(
             Treatment treatment,
             TreatmentAuthorizationResponseDto authorizationResponseDto)
     {

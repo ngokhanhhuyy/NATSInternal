@@ -1,0 +1,43 @@
+@model UserBasicModel
+@functions{
+    private string FooterClassName()
+    {
+        string colorName = Html.RoleBootstrapColor(Model.Role.Name);
+        return $"text-{colorName} bg-{colorName} bg-opacity-10 border-{colorName}-subtle";
+    }
+}
+
+<div class="block bg-white d-flex flex-column bg-body rounded-3 h-100 user-list-item">
+    <div class="block-body flex-fill row border border-bottom-0 border-default rounded-top
+                border-@Html.RoleBootstrapColor(Model.Role.Name)"
+            style="--bs-border-opacity: .25">
+        <div class="col col-12 d-flex justify-content-center p-3">
+            <div class="avatar-container">
+                <a asp-action="UserDetail" asp-controller="User" asp-route-id="@Model.Id">
+                    <img src="@(Model.AvatarUrl ?? Html.DefaultAvatar(Model.FullName))" />
+                </a>
+            </div>
+        </div>
+        <div class="col col-12 pb-3">
+            <div class="identity-container d-flex flex-column
+                        align-items-center text-center">
+                <a asp-action="UserDetail" asp-controller="User" asp-route-id="Model.Id">
+                    <span class="fullname fw-bold text-center">@Model.FullName</span>
+                </a>
+                </RouterLink>
+                <span class="username small opacity-75">@Model.UserName</span>
+            </div>
+        </div>
+    </div>
+    <div class="block-footer d-flex flex-row justify-content-center rounded-bottom p-0">
+        <div class="d-flex h-100 w-100 p-1 justify-content-center
+                    rounded-bottom-3 border @FooterClassName()">
+            <span class="px-2">
+                <i class="@Html.RoleBootstrapIcon(Model.Role.Name)"></i>
+            </span>
+            <span>
+                @Model.Role.DisplayName
+            </span>
+        </div>
+    </div>
+</div>

@@ -1,16 +1,16 @@
 ﻿namespace NATSInternal.Services;
 
 /// <inheritdoc />
-public class BrandService : IBrandService
+internal class BrandService : IBrandService
 {
     private readonly DatabaseContext _context;
     private readonly IPhotoService _photoService;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly IAuthorizationInternalService _authorizationService;
 
     public BrandService(
             DatabaseContext context,
             IPhotoService photoService,
-            IAuthorizationService authorizationService)
+            IAuthorizationInternalService authorizationService)
     {
         _context = context;
         _photoService = photoService;

@@ -1,9 +1,7 @@
 ﻿namespace NATSInternal.Services.Interfaces;
 
 /// <summary>
-/// Provides methods to increment various financial metrics
-/// and statistics for retail, treatment, consultant revenue,
-/// shipment costs, and supply costs.
+/// A service to handle the operations which are related to statistics.
 /// </summary>
 public interface IStatsService
 {
@@ -253,26 +251,6 @@ public interface IStatsService
     /// <param name="date">The date of daily stats which should be closed.</param>
     /// <returns>A Task representing the asynchronous operation.</returns>
     Task TemporarilyCloseAsync(DateOnly date);
-
-    /// <summary>
-    /// Validates if the specified <c>statsDateTime</c> argument is valid for an entity so that
-    /// its locking status won't change after the assignment.
-    /// </summary>
-    /// <typeparam name="TEntity">
-    /// The entity type which inherits from <see cref="LockableEntity"/> class.
-    /// </typeparam>
-    /// <param name="entity">
-    /// The entity to which the <c>statsDateTime</c> argument is assigned.
-    /// </param>
-    /// <param name="statsDateTime">
-    /// A <see cref="DateTime"/> value specified in the request representing the date and time
-    /// for the field in the entity which is used to calculate the statistics.
-    /// </param>
-    /// <exception cref="ValidationException">
-    /// Throws when the value specified by the <c>statsDateTime</c> argument is invalid.
-    /// </exception>
-    void ValidateStatsDateTime<TEntity>(TEntity entity, DateTime statsDateTime)
-            where TEntity : LockableEntity;
 
     /// <summary>
     /// Get the minimum datetime that if a resource is assigned to, it will be considered <c>opened</c>.

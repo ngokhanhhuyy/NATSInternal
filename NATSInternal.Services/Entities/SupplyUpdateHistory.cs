@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services.Entities;
 
 [Table("supply_update_histories")]
-public class SupplyUpdateHistory
+internal class SupplyUpdateHistory
 {
     [Column("id")]
     [Key]

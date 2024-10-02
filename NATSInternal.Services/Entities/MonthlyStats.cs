@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Entities;
 
-public class MonthlyStats
+internal class MonthlyStats
 {
     [Column("id")]
     [Key]

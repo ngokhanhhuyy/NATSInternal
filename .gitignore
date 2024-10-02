@@ -6,5 +6,9 @@ obj/
 .vscode/
 .vs/
 .idea/
+LICENSE
+global.json
+NATSInternal.sln.DotSettings
 NATSInternal.sln.DotSettings.user
 .github/
+NATSInternal.API/wwwroot/images/user/

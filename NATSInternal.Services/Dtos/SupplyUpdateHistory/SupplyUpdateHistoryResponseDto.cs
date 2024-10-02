@@ -21,7 +21,7 @@ public class SupplyUpdateHistoryResponseDto
     public List<SupplyItemUpdateHistoryDataDto> OldItems => _oldData.Items;
     public List<SupplyItemUpdateHistoryDataDto> NewItems => _newData.Items;
     
-    public SupplyUpdateHistoryResponseDto(SupplyUpdateHistory updateHistory)
+    internal SupplyUpdateHistoryResponseDto(SupplyUpdateHistory updateHistory)
     {
         _oldData = JsonSerializer.Deserialize<SupplyUpdateHistoryDataDto>(updateHistory.OldData);
         _newData = JsonSerializer.Deserialize<SupplyUpdateHistoryDataDto>(updateHistory.NewData);

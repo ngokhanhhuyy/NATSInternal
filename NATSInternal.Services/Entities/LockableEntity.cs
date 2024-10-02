@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Entities;
 
-public class LockableEntity : ILockableEntity
+internal class LockableEntity : ILockableEntity
 {
     
     [Column("created_datetime")]

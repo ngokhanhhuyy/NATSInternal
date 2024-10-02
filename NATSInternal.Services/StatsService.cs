@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services;
 
 /// <inheritdoc />
-public class StatsService : IStatsService
+internal class StatsService : IStatsInternalService
 {
     private readonly DatabaseContext _context;
 

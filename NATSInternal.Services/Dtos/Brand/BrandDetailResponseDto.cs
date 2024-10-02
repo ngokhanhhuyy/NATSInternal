@@ -13,7 +13,7 @@ public class BrandDetailResponseDto
     public CountryResponseDto Country { get; set; }
     public BrandAuthorizationResponseDto Authorization { get; set; }
 
-    public BrandDetailResponseDto(Brand brand, BrandAuthorizationResponseDto authorization)
+    internal BrandDetailResponseDto(Brand brand, BrandAuthorizationResponseDto authorization)
     {
         Id = brand.Id;
         Name = brand.Name;

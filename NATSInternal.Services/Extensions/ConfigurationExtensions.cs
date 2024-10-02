@@ -24,7 +24,10 @@ public static class ConfigurationExtensions
             string connectionString)
     {
         services.AddDbContext<DatabaseContext>(options => options
-            .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+            .UseMySql(
+                connectionString,
+                ServerVersion.AutoDetect(connectionString),
+                x => x.MigrationsAssembly("NATSInternal.Services"))
             .AddInterceptors(new VietnamTimeInterceptor()));
 
         services.AddIdentity<User, Role>()
@@ -44,9 +47,8 @@ public static class ConfigurationExtensions
         services.AddScoped<SignInManager<User>>();
         services.AddScoped<RoleManager<Role>>();
         services.AddScoped<DatabaseContext>();
-        services.AddScoped<SqlExceptionHandler>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
-        services.AddScoped<IAuthorizationService, AuthorizationService>();
+        services.AddScoped<SqlExceptionHandler>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IPhotoService, PhotoService>();
@@ -64,8 +66,18 @@ public static class ConfigurationExtensions
         services.AddScoped<IConsultantService, ConsultantService>();
         services.AddScoped<IAnnouncementService, AnnouncementService>();
         services.AddScoped<INotificationService, NotificationService>();
-        services.AddScoped<IStatsService, StatsService>();
-        services.AddSingleton<IStatsTaskService, StatsTaskService>();
+
+        services.AddScoped<AuthorizationService>();
+        services.AddScoped<IAuthorizationService>(provider => provider
+            .GetRequiredService<AuthorizationService>());
+        services.AddScoped<IAuthorizationInternalService>(provider => provider
+            .GetRequiredService<AuthorizationService>());
+            
+        services.AddScoped<StatsService>();
+        services.AddScoped<IStatsService>(provider => provider
+            .GetRequiredService<StatsService>());
+        services.AddScoped<IStatsInternalService>(provider => provider
+            .GetRequiredService<StatsService>());
 
         return services;
     }

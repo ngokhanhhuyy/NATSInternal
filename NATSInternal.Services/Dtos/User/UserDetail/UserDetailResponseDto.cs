@@ -8,12 +8,12 @@ public class UserDetailResponseDto
     public UserUserInformationResponseDto UserInformation { get; set; }
     public UserDetailAuthorizationResponseDto Authorization { get; set; }
     
-    public UserDetailResponseDto(User user)
+    internal UserDetailResponseDto(User user)
     {
         MapFromEntity(user);
     }
 
-    public UserDetailResponseDto(
+    internal UserDetailResponseDto(
             User user,
             UserDetailAuthorizationResponseDto authorization)
     {

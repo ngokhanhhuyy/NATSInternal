@@ -6,7 +6,7 @@ public class CountryResponseDto
     public string Name { get; set; }
     public string Code { get; set; }
 
-    public CountryResponseDto(Country country)
+    internal CountryResponseDto(Country country)
     {
         Id = country.Id;
         Name = country.Name;

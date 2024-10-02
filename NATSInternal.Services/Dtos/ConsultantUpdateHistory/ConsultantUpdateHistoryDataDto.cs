@@ -6,9 +6,9 @@ public class ConsultantUpdateHistoryDataDto
     public string Note { get; set; }
     public DateTime PaidDateTime { get; set; }
 
-    public ConsultantUpdateHistoryDataDto() { }
+    internal ConsultantUpdateHistoryDataDto() { }
     
-    public ConsultantUpdateHistoryDataDto(Consultant consultant)
+    internal ConsultantUpdateHistoryDataDto(Consultant consultant)
     {
         Amount = consultant.Amount;
         Note = consultant.Note;

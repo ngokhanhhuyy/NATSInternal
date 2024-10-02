@@ -1,14 +1,14 @@
 namespace NATSInternal.Services;
 
 /// <inheritdoc />
-public class AnnouncementService : IAnnouncementService
+internal class AnnouncementService : IAnnouncementService
 {
     private readonly DatabaseContext _context;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly IAuthorizationInternalService _authorizationService;
 
     public AnnouncementService(
             DatabaseContext context,
-            IAuthorizationService authorizationService)
+            IAuthorizationInternalService authorizationService)
     {
         _context = context;
         _authorizationService = authorizationService;

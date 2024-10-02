@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Utilities;
 
-public class IdentifierCasingUtility
+internal class IdentifierCasingUtility
 {
     public static string SnakeCaseToPascalCase(string snakeCaseString)
     {

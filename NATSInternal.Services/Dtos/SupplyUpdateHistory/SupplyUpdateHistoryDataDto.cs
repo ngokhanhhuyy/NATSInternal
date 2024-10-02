@@ -7,7 +7,7 @@ public class SupplyUpdateHistoryDataDto
     public string Note { get; set; }
     public List<SupplyItemUpdateHistoryDataDto> Items { get; set; }
     
-    public SupplyUpdateHistoryDataDto(Supply supply)
+    internal SupplyUpdateHistoryDataDto(Supply supply)
     {
         PaidDateTime = supply.PaidDateTime;
         ShipmentFee = supply.ShipmentFee;

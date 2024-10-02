@@ -4,7 +4,7 @@ public class DailyStatsBasicResponseDto : StatsBasicResponseDto
 {
     public DateOnly RecordedDate { get; set; }
 
-    public DailyStatsBasicResponseDto(DailyStats dailyStats)
+    internal DailyStatsBasicResponseDto(DailyStats dailyStats)
     {
         Cost = dailyStats.Cost;
         Expenses = dailyStats.Expenses;

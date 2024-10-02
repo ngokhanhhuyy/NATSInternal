@@ -8,9 +8,9 @@ public class CustomerDebtOperationResponseDto
     public bool IsLocked { get; set; }
     public CustomerDebtOperationAuthorizationResponseDto Authorization { get; set; }
     
-    public CustomerDebtOperationResponseDto(
+    internal CustomerDebtOperationResponseDto(
             DebtIncurrence debt,
-            IAuthorizationService authorizationService)
+            IAuthorizationInternalService authorizationService)
     {
         Operation = DebtOperationType.DebtIncurrence;
         Amount = debt.Amount;
@@ -22,9 +22,9 @@ public class CustomerDebtOperationResponseDto
         Authorization = new CustomerDebtOperationAuthorizationResponseDto(authorization);
     }
     
-    public CustomerDebtOperationResponseDto(
+    internal CustomerDebtOperationResponseDto(
             DebtPayment payment,
-            IAuthorizationService authorizationService)
+            IAuthorizationInternalService authorizationService)
     {
         Operation = DebtOperationType.DebtPayment;
         Amount = payment.Amount;

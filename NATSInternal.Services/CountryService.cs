@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services;
 
 /// <inheritdoc />
-public class CountryService : ICountryService
+internal class CountryService : ICountryService
 {
     private readonly DatabaseContext _context;
 

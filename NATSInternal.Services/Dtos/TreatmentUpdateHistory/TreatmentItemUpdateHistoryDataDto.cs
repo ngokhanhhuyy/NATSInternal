@@ -8,7 +8,7 @@ public class TreatmentItemUpdateHistoryDataDto
     public int Quantity { get; set; }
     public string ProductName { get; set; }
 
-    public TreatmentItemUpdateHistoryDataDto(TreatmentItem item)
+    internal TreatmentItemUpdateHistoryDataDto(TreatmentItem item)
     {
         Id = item.Id;
         Amount = item.Amount;

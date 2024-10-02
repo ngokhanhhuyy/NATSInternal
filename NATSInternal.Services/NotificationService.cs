@@ -1,14 +1,14 @@
 namespace NATSInternal.Services;
 
 /// <inheritdoc cref="INotificationService" />
-public class NotificationService : INotificationService
+internal class NotificationService : INotificationService
 {
     private readonly DatabaseContext _context;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly IAuthorizationInternalService _authorizationService;
 
     public NotificationService(
             DatabaseContext context,
-            IAuthorizationService authorizationService)
+            IAuthorizationInternalService authorizationService)
     {
         _context = context;
         _authorizationService = authorizationService;

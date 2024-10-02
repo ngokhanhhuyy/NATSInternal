@@ -10,12 +10,12 @@ public class DebtPaymentBasicResponseDto
     public CustomerBasicResponseDto Customer { get; set; }
     public DebtPaymentAuthorizationResponseDto Authorization { get; set; }
 
-    public DebtPaymentBasicResponseDto(DebtPayment payment)
+    internal DebtPaymentBasicResponseDto(DebtPayment payment)
     {
         MapFromEntity(payment);
     }
 
-    public DebtPaymentBasicResponseDto(
+    internal DebtPaymentBasicResponseDto(
             DebtPayment payment,
             DebtPaymentAuthorizationResponseDto authorization)
     {

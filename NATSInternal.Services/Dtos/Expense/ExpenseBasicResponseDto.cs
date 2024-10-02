@@ -9,12 +9,12 @@ public class ExpenseBasicResponseDto
     public bool IsLocked { get; set; }
     public ExpenseAuthorizationResponseDto Authorization { get; set; }
 
-    public ExpenseBasicResponseDto(Expense expense)
+    internal ExpenseBasicResponseDto(Expense expense)
     {
         MapFromEntity(expense);
     }
 
-    public ExpenseBasicResponseDto(
+    internal ExpenseBasicResponseDto(
             Expense expense,
             ExpenseAuthorizationResponseDto authorization)
     {

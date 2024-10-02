@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Entities;
 
-public class ExpensePayee
+internal class ExpensePayee
 {
     [Key]
     public int Id { get; set; }

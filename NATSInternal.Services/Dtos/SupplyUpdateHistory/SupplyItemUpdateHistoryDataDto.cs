@@ -7,7 +7,7 @@ public class SupplyItemUpdateHistoryDataDto
     public int SuppliedQuantity { get; set; }
     public string ProductName { get; set; }
     
-    public SupplyItemUpdateHistoryDataDto(SupplyItem item)
+    internal SupplyItemUpdateHistoryDataDto(SupplyItem item)
     {
         Id = item.Id;
         Amount = item.Amount;

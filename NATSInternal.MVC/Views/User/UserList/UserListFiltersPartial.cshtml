@@ -1,0 +1,94 @@
+@model UserListModel
+@{
+    Layout = "Layout/MainBlockLayout";
+    ViewBag.BlockTitle = "Danh sách nhân viên";
+    ViewBag.BlockBodyClass = "px-2 py-3";
+}
+@functions {
+    private string FormId => "user-list-filters-form";
+    private string RoleButtonClassName(string roleName)
+    { 
+        string color = Html.RoleBootstrapColor(roleName);
+        return $"bg-{color} bg-opacity-10 border-{color}-subtle text-{color}";
+    }
+}
+
+<form asp-action="UserList" asp-controller="User" id="@FormId" method="get" novalidate></form>
+
+<div class="row g-3">
+    <div class="col">
+        <div class="input-group">
+            <!-- Search content -->
+            <input asp-for="Content" form="@FormId"
+                    class="form-control flex-fill border-end-0" type="text"
+                    placeholder="Họ và tên, thông tin liên lạc ...">
+
+            <!-- Advanced filters button / Collapse button -->
+            <button class="btn btn-outline-primary" data-bs-toggle="collapse"
+                    data-bs-target="#user-list-advanced-filters" aria-expanded="false"
+                    aria-controls="user-list-advanced-filters">
+                <i class="bi bi-sliders"></i>
+            </button>
+        </div>
+        <span asp-validation-for="Content"></span>
+    </div>
+
+    <div class="col col-auto">
+        <!-- Search button -->
+        <button type="submit" class="btn btn-primary" form="@FormId">
+            <i class="bi bi-search"></i>
+            <span class="d-none d-sm-inline ms-1">Tìm</span>
+        </button>
+    </div>
+</div>
+
+<div class="row g-3 collapse" id="user-list-advanced-filters">
+    <!-- Role --> 
+    <div class="col col-md-4 col-sm-12 col-12 mt-3">
+        <label class="form-label">Vị trí</label>
+        <select asp-for="Role" form="@FormId" class="form-select">
+            <option value="@null">Tất cả</option>
+            @foreach (RoleBasicModel role in Model.RoleOptions)
+            {
+                <option value="@role.Name" class="text-@Html.RoleBootstrapColor(role.Name)">
+                    @role.DisplayName
+                </option>
+            }
+        </select>
+        <span asp-validation-for="Role"></span>
+    </div>
+
+    <!-- Sort by field -->
+    <div class="col col-md-4 col-sm-12 col-12 mt-3">
+        <label class="form-label">Trường sắp xếp</label>
+        <select asp-for="OrderByField" form="@FormId" class="form-select">
+            <option value="LastName">@DisplayNames.LastName</option>
+            <option value="FirstName">@DisplayNames.FirstName</option>
+            <option value="UserName">@DisplayNames.UserName</option>
+            <option value="Birthday">@DisplayNames.Birthday</option>
+            <option value="CreatedDateTime">@DisplayNames.CreatedDateTime</option>
+            <option value="Role">@DisplayNames.Role</option>
+        </select>
+        <span asp-validation-for="OrderByField"></span>
+    </div>
+
+    <!-- Sort by direction -->
+    <div class="col col-md-4 col-sm-12 col-12 mt-3">
+        <label class="form-label">Thứ tự sắp xếp</label>
+        <select asp-for="OrderByAscending" form="@FormId" class="form-select">
+            <option value="@true">Từ nhỏ đến lớn</option>
+            <option value="@false">Từ lớn đến nhỏ</option>
+        </select>
+        <span asp-validation-for="OrderByAscending"></span>
+    </div>
+</div>        
+
+@section Header {
+    @if (Model.Authorization.CanCreate)
+    {
+        <a href="@Url.Action("UserCreate", "User")" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>
+            <span>Tạo mới</span>
+        </a>
+    }
+}

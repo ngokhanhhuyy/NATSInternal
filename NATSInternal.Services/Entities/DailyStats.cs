@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Entities;
 
-public class DailyStats
+internal class DailyStats
 {
     [Column("id")]
     [Key]

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace NATSInternal.Services;
 
-public class DatabaseContext : IdentityDbContext<User, Role, int, IdentityUserClaim<int>,
+internal class DatabaseContext : IdentityDbContext<User, Role, int, IdentityUserClaim<int>,
     UserRole, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
 {
     public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }

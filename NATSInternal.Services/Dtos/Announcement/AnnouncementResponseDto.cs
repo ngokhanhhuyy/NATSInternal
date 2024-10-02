@@ -10,7 +10,7 @@ public class AnnouncementResponseDto
     public DateTime EndingDateTime { get; set; }
     public UserBasicResponseDto CreatedUser { get; set; }
 
-    public AnnouncementResponseDto(Announcement announcement)
+    internal AnnouncementResponseDto(Announcement announcement)
     {
         Id = announcement.Id;
         Category = announcement.Category;

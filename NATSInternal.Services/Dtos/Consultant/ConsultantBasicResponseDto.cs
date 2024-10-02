@@ -9,12 +9,12 @@ public class ConsultantBasicResponseDto
     public CustomerBasicResponseDto Customer { get; set; }
     public ConsultantAuthorizationResponseDto Authorization { get; set; }
 
-    public ConsultantBasicResponseDto(Consultant consultant)
+    internal ConsultantBasicResponseDto(Consultant consultant)
     {
         MapFromEntity(consultant);
     }
 
-    public ConsultantBasicResponseDto(
+    internal ConsultantBasicResponseDto(
             Consultant consultant,
             ConsultantAuthorizationResponseDto authorization)
     {

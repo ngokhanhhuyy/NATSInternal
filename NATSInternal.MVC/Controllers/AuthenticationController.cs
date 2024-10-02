@@ -18,7 +18,7 @@ public class AuthenticationController : Controller
     [AllowAnonymous]
     public IActionResult SignIn()
     {
-        if (User.Identity.IsAuthenticated)
+        if (User.Identity!.IsAuthenticated)
         {
             return RedirectToAction("Index", "Home");
         }
@@ -30,10 +30,10 @@ public class AuthenticationController : Controller
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SignIn(
-            SignInModel model,
+            [FromForm] SignInModel model,
             [FromQuery] string returningUrl)
     {
-        if (User.Identity.IsAuthenticated)
+        if (User.Identity!.IsAuthenticated)
         {
             return RedirectToAction("Index", "Home");
         }

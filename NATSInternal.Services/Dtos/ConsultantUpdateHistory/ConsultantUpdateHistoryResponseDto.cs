@@ -18,7 +18,7 @@ public class ConsultantUpdateHistoryResponseDto
     public string OldNote => _oldData.Note;
     public string NewNote => _newData.Note;
     
-    public ConsultantUpdateHistoryResponseDto(ConsultantUpdateHistory updateHistory)
+    internal ConsultantUpdateHistoryResponseDto(ConsultantUpdateHistory updateHistory)
     {
         _oldData = JsonSerializer
             .Deserialize<ConsultantUpdateHistoryDataDto>(updateHistory.OldData);

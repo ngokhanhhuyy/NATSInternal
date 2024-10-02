@@ -1,17 +1,17 @@
 namespace NATSInternal.Services;
 
 /// <inheritdoc cref="IConsultantService" />
-public class ConsultantService : LockableEntityService, IConsultantService
+internal class ConsultantService : LockableEntityService, IConsultantService
 {
     private readonly DatabaseContext _context;
-    private readonly IAuthorizationService _authorizationService;
-    private readonly IStatsService _statsService;
+    private readonly IAuthorizationInternalService _authorizationService;
+    private readonly IStatsInternalService _statsService;
     private static MonthYearResponseDto _earliestRecordedMonthYear;
 
     public ConsultantService(
             DatabaseContext context,
-            IAuthorizationService authorizationService,
-            IStatsService statsService)
+            IAuthorizationInternalService authorizationService,
+            IStatsInternalService statsService)
     {
         _context = context;
         _authorizationService = authorizationService;
