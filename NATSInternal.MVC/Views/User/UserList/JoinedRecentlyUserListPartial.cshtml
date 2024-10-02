@@ -7,21 +7,19 @@
 
 @if (Model != null && Model.Count > 0)
 {
-    <ul class="list-group list-group-flush newest-users-list">
+    <ul class="list-group list-group-flush joined-recently-user-list">
         @foreach (UserBasicModel user in Model)
         {
             <li class="list-group-item d-flex flex-row align-items-center
                         bg-transparent px-3 py-2">
                 <a asp-action="UserDetail" asp-controller="User" asp-route-id="@user.Id">
-                    <img src="@user.AvatarUrl" class="rounded-circle me-2">
+                    <img src="@user.AvatarUrl" class="rounded-circle me-2 user-avatar">
                 </a>
-                <div class="d-flex flex-column flex-fill name">
-                    <RouterLink :to='{ name: "userProfile", params: { userId: user.id} }'>
-                        <span class="fw-bold">{{ user.fullName }}</span>
-                    </RouterLink>
+                <div class="d-flex flex-column align-items-start flex-fill name">
                     <a asp-action="UserDetail" asp-controller="User" asp-route-id="@user.Id">
-                        <span class="small opacity-50">@user.UserName</span>
+                        <span class="small">@user.FullName</span>
                     </a>
+                    <span class="small opacity-50">@user.UserName</span>
                 </div>
             </li>
         }

@@ -19,7 +19,7 @@ public class CustomerListRequestDto : IRequestDto<CustomerListRequestDto>
     public enum FieldToBeOrdered
     {
         LastName,
-        FirstName,
+        FullName,
         Birthday,
         CreatedDateTime,
         DebtRemainingAmount

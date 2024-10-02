@@ -96,7 +96,7 @@ internal class UserService : IUserService
         }
 
         // Filter by having incoming birthday.
-        if (requestDto.IncomingBirthdayOnly)
+        if (requestDto.UpcomingBirthdayOnly)
         {
             DateOnly minRange = DateOnly.FromDateTime(DateTime.Today);
             DateOnly maxRange = minRange.AddMonths(1);

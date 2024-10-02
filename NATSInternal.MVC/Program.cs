@@ -25,7 +25,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.LoginPath = "/SignIn";
-    options.LogoutPath = "/Logout";
+    options.LogoutPath = "/SignOut";
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
 
     options.Events.OnValidatePrincipal = async (context) =>
@@ -54,8 +54,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
-// Authentication by JWT strategies.
+// Authentication by cookie strategies.
 builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme);
+
 // Authorization policies.
 builder.Services
     .AddAuthorizationBuilder()

@@ -20,7 +20,7 @@
     {
         get
         {
-            string className = "p-3";
+            string className = "";
             Console.WriteLine(ViewBag.BlockBodyClass);
             if (ViewBag.BlockBodyClass != null)
             {
@@ -32,7 +32,7 @@
     }
 }
 
-<div class="block bg-white rounded-3 p-0 d-flex flex-column border">
+<div class="block bg-white rounded-3 p-0 d-flex flex-column">
     <!-- Header -->
     <div class="block-header bg-opacity-25 border ps-3 p-2 rounded-top-3
                 d-flex align-items-center @HeaderClass">
@@ -43,7 +43,7 @@
     </div>
     
     <!-- Body -->
-    <div class="rounded-bottom-3 flex-fill @BodyClass">
+    <div class="rounded-bottom-3 flex-fill border border-top-0 @BodyClass">
         @RenderBody()
     </div>
 </div>

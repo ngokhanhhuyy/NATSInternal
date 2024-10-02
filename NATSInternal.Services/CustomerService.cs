@@ -27,10 +27,10 @@ internal class CustomerService : ICustomerService
         // Determine the field and the direction the sort.
         switch (requestDto.OrderByField)
         {
-            case nameof(CustomerListRequestDto.FieldToBeOrdered.FirstName):
+            case nameof(CustomerListRequestDto.FieldToBeOrdered.FullName):
                 query = requestDto.OrderByAscending
-                    ? query.OrderBy(c => c.FirstName)
-                    : query.OrderByDescending(c => c.FirstName);
+                    ? query.OrderBy(c => c.FullName)
+                    : query.OrderByDescending(c => c.FullName);
                 break;
             case nameof(CustomerListRequestDto.FieldToBeOrdered.Birthday):
                 query = requestDto.OrderByAscending

@@ -9,12 +9,12 @@ public class UserListModel : IListModel<UserBasicModel>
     public int ResultsPerPage { get; set; } = 15;
     public RoleBasicModel Role { get; set; }
     public bool JoinedRencentlyOnly { get; set; } = false;
-    public bool IncomingBirthdayOnly { get; set; } = false;
+    public bool UpcomingBirthdayOnly { get; set; } = false;
     public string Content { get; set; }
     public int PageCount { get; set; }
     public List<UserBasicModel> Items { get; set; }
     public List<UserBasicModel> JoinedRecentlyUsers { get; set; }
-    public List<UserBasicModel> IncomingBirthdayUsers { get; set; }
+    public List<UserBasicModel> UpcomingBirthdayUsers { get; set; }
     public List<RoleBasicModel> RoleOptions { get; set; }
     public PaginationRangeModel PaginationRanges => new PaginationRangeModel(Page, PageCount);
     public UserListAuthorizationModel Authorization { get; set; }
@@ -32,7 +32,7 @@ public class UserListModel : IListModel<UserBasicModel>
         JoinedRecentlyUsers = joinedRecentlyUsersResponseDto.Results?
             .Select(u => new UserBasicModel(u))
             .ToList();
-        IncomingBirthdayUsers = incomingBirthdayUsersResponseDto.Results?
+        UpcomingBirthdayUsers = incomingBirthdayUsersResponseDto.Results?
             .Select(u => new UserBasicModel(u))
             .ToList();
         RoleOptions = roleOptionsResponseDto.Items
@@ -50,7 +50,7 @@ public class UserListModel : IListModel<UserBasicModel>
             OrderByAscending = OrderByAscending,
             RoleId = Role?.Id,
             JoinedRencentlyOnly = JoinedRencentlyOnly,
-            IncomingBirthdayOnly = IncomingBirthdayOnly,
+            UpcomingBirthdayOnly = UpcomingBirthdayOnly,
             Content = Content,
             Page = Page,
         };

@@ -6,7 +6,7 @@ public class UserListRequestDto : IRequestDto<UserListRequestDto>
     public bool OrderByAscending { get; set; } = true;
     public int? RoleId { get; set; }
     public bool JoinedRencentlyOnly { get; set; } = false;
-    public bool IncomingBirthdayOnly { get; set; } = false;
+    public bool UpcomingBirthdayOnly { get; set; } = false;
     public string Content { get; set; }
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;

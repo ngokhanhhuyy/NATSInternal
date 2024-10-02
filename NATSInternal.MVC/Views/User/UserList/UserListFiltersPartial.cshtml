@@ -2,7 +2,7 @@
 @{
     Layout = "Layout/MainBlockLayout";
     ViewBag.BlockTitle = "Danh sách nhân viên";
-    ViewBag.BlockBodyClass = "px-2";
+    ViewBag.BlockBodyClass = "px-2 py-3";
 }
 @functions {
     private string FormId => "user-list-filters-form";
@@ -13,8 +13,7 @@
     }
 }
 
-<form asp-action="UserList" asp-controller="User" id="@FormId"
-            method="get" novalidate></form>
+<form asp-action="UserList" asp-controller="User" id="@FormId" method="get" novalidate></form>
 
 <div class="row g-3">
     <div class="col">
@@ -29,7 +28,6 @@
                     data-bs-target="#user-list-advanced-filters" aria-expanded="false"
                     aria-controls="user-list-advanced-filters">
                 <i class="bi bi-sliders"></i>
-                <span class="ms-1 d-sm-inline d-none">Nâng cao</span>
             </button>
         </div>
         <span asp-validation-for="Content"></span>

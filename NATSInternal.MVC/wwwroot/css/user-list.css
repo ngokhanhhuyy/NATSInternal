@@ -58,3 +58,17 @@
 #user-list .user-list-item a:has(.fullname):hover {
     text-decoration: underline;
 }
+
+#user-list .joined-recently-user-list img.user-avatar {
+    width: 50px;
+    height: 50px;
+}
+
+#user-list .joined-recently-user-list a {
+    color: unset !important;
+    text-decoration: none !important;
+}
+
+#user-list .joined-recently-user-list a:hover {
+    text-decoration: underline !important;
+}
