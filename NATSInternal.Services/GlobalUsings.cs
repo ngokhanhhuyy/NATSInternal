@@ -19,6 +19,7 @@ global using NATSInternal.Services.Entities;
 global using NATSInternal.Services.Exceptions;
 global using NATSInternal.Services.Extensions;
 global using NATSInternal.Services.Interfaces;
+global using NATSInternal.Services.Interfaces.Dtos;
 global using NATSInternal.Services.Identity;
 global using NATSInternal.Services.Localization;
 global using NATSInternal.Services.Utilities;

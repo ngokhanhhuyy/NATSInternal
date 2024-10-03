@@ -1,4 +1,4 @@
-namespace NATSInternal.Services.Dtos;
+namespace NATSInternal.Services.Interfaces.Dtos;
 
 /// <summary>
 /// A DTO class containing the data mapped from the requests for data-related operations.
@@ -13,8 +13,7 @@ public interface IRequestDto<out TRequestDto>
     /// value into the default value.
     /// </summary>
     /// <returns>
-    /// The instance of the class which inherits from the <see cref="IRequestDto"/> interface
-    /// and on which the method is called.
+    /// The instance of this class on which the method is called.
     /// </returns>
     TRequestDto TransformValues();
 }
