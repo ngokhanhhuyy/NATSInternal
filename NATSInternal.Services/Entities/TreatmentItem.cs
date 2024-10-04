@@ -7,13 +7,13 @@ internal class TreatmentItem
     [Key]
     public int Id { get; set; }
 
-    [Column("amount")]
+    [Column("amount_before_vat_per_unit")]
     [Required]
-    public long Amount { get; set; }
+    public long AmountBeforeVatPerUnit { get; set; }
 
-    [Column("vat_factor")]
+    [Column("vat_amount_per_unit")]
     [Required]
-    public decimal VatFactor { get; set; } = 0.1M;
+    public long VatAmountPerUnit { get; set; }
 
     [Column("quantity")]
     [Required]
@@ -35,4 +35,11 @@ internal class TreatmentItem
     // Relationship
     public virtual Treatment Treatment { get; set; }
     public virtual Product Product { get; set; }
+
+    // Properties for convinience.
+    [NotMapped]
+    public long AmountBeforeVat => AmountBeforeVatPerUnit * Quantity;
+
+    [NotMapped]
+    public long VatAmount => VatAmountPerUnit * Quantity;
 }

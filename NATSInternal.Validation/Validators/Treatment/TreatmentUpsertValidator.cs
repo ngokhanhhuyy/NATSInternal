@@ -10,7 +10,7 @@ public class TreatmentUpsertValidator : Validator<TreatmentUpsertRequestDto>
         RuleFor(dto => dto.ServiceAmount)
             .GreaterThanOrEqualTo(0)
             .WithName(DisplayNames.ServiceAmount);
-        RuleFor(dto => dto.ServiceVatFactor)
+        RuleFor(dto => dto.ServiceVatPercentage)
             .GreaterThanOrEqualTo(0)
             .WithName(DisplayNames.VatFactor);
         RuleFor(dto => dto.Note)

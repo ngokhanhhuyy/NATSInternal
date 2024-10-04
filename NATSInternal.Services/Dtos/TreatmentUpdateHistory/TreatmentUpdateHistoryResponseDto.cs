@@ -5,9 +5,9 @@ public class TreatmentUpdateHistoryResponseDto
     private readonly TreatmentUpdateHistoryDataDto _oldData;
     private readonly TreatmentUpdateHistoryDataDto _newData;
 
-    public DateTime UpdatedDateTime { get; private set; }
-    public UserBasicResponseDto UpdatedUser { get; private set; }
-    public string Reason { get; private set; }
+    public DateTime UpdatedDateTime { get; internal set; }
+    public UserBasicResponseDto UpdatedUser { get; internal set; }
+    public string Reason { get; internal set; }
 
     public DateTime OldPaidDateTime => _oldData.PaidDateTime;
     public DateTime NewPaidDateTime => _newData.PaidDateTime;

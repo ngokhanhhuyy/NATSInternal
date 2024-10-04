@@ -282,7 +282,7 @@ internal class DatabaseContext : IdentityDbContext<User, Role, int, IdentityUser
                 .HasDatabaseName("IX__treatments__ordered_datetime");
             e.HasIndex(t => t.IsDeleted)
                 .HasDatabaseName("IX__treatments__is_deleted");
-            e.Property(t => t.ServiceVatFactor)
+            e.Property(t => t.ServiceVatPercentage)
                 .HasPrecision(18, 2);
             e.Property(t => t.RowVersion)
                 .IsRowVersion();
@@ -301,8 +301,6 @@ internal class DatabaseContext : IdentityDbContext<User, Role, int, IdentityUser
                 .HasForeignKey(ti => ti.ProductId)
                 .HasConstraintName("FK__treatment_items__products__product_id")
                 .OnDelete(DeleteBehavior.Restrict);
-            e.Property(ex => ex.VatFactor)
-                .HasPrecision(18, 2);
             e.Property(c => c.RowVersion)
                 .IsRowVersion();
         });

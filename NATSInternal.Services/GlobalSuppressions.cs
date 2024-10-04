@@ -10,3 +10,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE0090", Justification = "<Pending>", Scope = "module")]
 [assembly: SuppressMessage("Style", "IDE0028", Justification = "<Pending>", Scope = "module")]
 [assembly: SuppressMessage("Style", "IDE0066", Justification = "<Pending>", Scope = "module")]
+[assembly: SuppressMessage("Style", "RCS1077", Justification = "<Pending>", Scope = "module")]

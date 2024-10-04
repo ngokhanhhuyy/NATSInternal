@@ -8,7 +8,7 @@ public class TreatmentBasicResponseDto
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
     public TreatmentAuthorizationResponseDto Authorization { get; set; }
-    
+
     internal TreatmentBasicResponseDto(Treatment treatment)
     {
         MapFromEntity(treatment);

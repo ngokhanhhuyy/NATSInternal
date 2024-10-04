@@ -13,7 +13,7 @@ public class TreatmentUpdateHistoryDataDto
     {
         PaidDateTime = treatment.PaidDateTime;
         ServiceAmount = treatment.ServiceAmount;
-        ServiceVatFactor = treatment.ServiceVatFactor;
+        ServiceVatFactor = treatment.ServiceVatPercentage;
         Note = treatment.Note;
         Therapist = new TreatmentTherapistUpdateHistoryDataDto(treatment.Therapist);
         Items = treatment.Items

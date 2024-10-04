@@ -1,10 +1,10 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class TreatmentItemResponseDto
+public class TreatmentItemResponseDto : IProductEngageableItemResponseDto
 {
     public int Id { get; set; }
-    public long Amount { get; set; }
-    public decimal VatFactor { get; set; }
+    public long AmountBeforeVatPerUnit { get; set; }
+    public decimal VatAmount { get; set; }
     public int Quantity { get; set; }
     public ProductBasicResponseDto Product { get; set; }
 
@@ -13,8 +13,8 @@ public class TreatmentItemResponseDto
     internal TreatmentItemResponseDto(TreatmentItem treatmentItem)
     {
         Id = treatmentItem.Id;
-        Amount = treatmentItem.Amount;
-        VatFactor = treatmentItem.VatFactor;
+        AmountBeforeVatPerUnit = treatmentItem.AmountBeforeVatPerUnit;
+        VatAmount = treatmentItem.VatAmount;
         Quantity = treatmentItem.Quantity;
         Product = new ProductBasicResponseDto(treatmentItem.Product);
     }

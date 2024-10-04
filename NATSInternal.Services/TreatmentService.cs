@@ -51,24 +51,48 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
             case nameof(TreatmentListRequestDto.FieldOptions.Amount):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(t => t.Items.Sum(ti =>
-                            (ti.Amount + ti.Amount * ti.VatFactor) * ti.Quantity) +
-                            (t.ServiceAmount + t.ServiceAmount * t.ServiceVatFactor))
+                            (
+                                (
+                                    ti.AmountBeforeVatPerUnit +
+                                    (ti.AmountBeforeVatPerUnit * (ti.VatAmountPerUnit / 100))
+                                ) * ti.Quantity
+                            ) +
+                            t.ServiceAmount +
+                            (t.ServiceAmount * (t.ServiceVatPercentage / 100))))
                         .ThenBy(t => t.PaidDateTime)
                     : query.OrderByDescending(t => t.Items.Sum(ti =>
-                            (ti.Amount + ti.Amount * ti.VatFactor) * ti.Quantity) +
-                            (t.ServiceAmount + t.ServiceAmount * t.ServiceVatFactor))
+                            (
+                                (
+                                    ti.AmountBeforeVatPerUnit +
+                                    (ti.AmountBeforeVatPerUnit * (ti.VatAmountPerUnit / 100))
+                                ) * ti.Quantity
+                            ) +
+                            t.ServiceAmount +
+                            (t.ServiceAmount * (t.ServiceVatPercentage / 100))))
                         .ThenByDescending(t => t.PaidDateTime);
                 break;
             default:
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(t => t.PaidDateTime)
                         .ThenBy(t => t.Items.Sum(ti =>
-                            (ti.Amount + ti.Amount * ti.VatFactor) * ti.Quantity) +
-                            (t.ServiceAmount + t.ServiceAmount * t.ServiceVatFactor))
+                            (
+                                (
+                                    ti.AmountBeforeVatPerUnit +
+                                    (ti.AmountBeforeVatPerUnit * (ti.VatAmountPerUnit / 100))
+                                ) * ti.Quantity
+                            ) +
+                            t.ServiceAmount +
+                            (t.ServiceAmount * (t.ServiceVatPercentage / 100))))
                     : query.OrderByDescending(t => t.PaidDateTime)
                         .ThenBy(t => t.Items.Sum(ti =>
-                            (ti.Amount + ti.Amount * ti.VatFactor) * ti.Quantity) +
-                            (t.ServiceAmount + t.ServiceAmount * t.ServiceVatFactor));
+                            (
+                                (
+                                    ti.AmountBeforeVatPerUnit +
+                                    (ti.AmountBeforeVatPerUnit * (ti.VatAmountPerUnit / 100))
+                                ) * ti.Quantity
+                            ) +
+                            t.ServiceAmount +
+                            (t.ServiceAmount * (t.ServiceVatPercentage / 100))));
                 break;
         }
 
@@ -448,7 +472,7 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
             .BeginTransactionAsync();
 
         // Delete all the items associated to this treatment.
-        DeleteItemsAsync(treatment);
+        DeleteItems(treatment);
 
         // Delete the treatment entity.
         _context.Treatments.Remove(treatment);
@@ -537,7 +561,7 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
         List<Product> products = await _context.Products
             .Where(p => requestedProductIds.Contains(p.Id))
             .ToListAsync();
-        
+
         for (int i = 0; i < requestDtos.Count; i++)
         {
             TreatmentItemRequestDto itemRequestDto = requestDtos[i];
@@ -557,15 +581,15 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
             // Validate that with the specified quantity value.
             if (product.StockingQuantity < itemRequestDto.Quantity)
             {
-                string errorMessage = ErrorMessages.NegativeProductStockingQuantity;
+                const string errorMessage = ErrorMessages.NegativeProductStockingQuantity;
                 throw new OperationException($"items[{i}].quantity", errorMessage);
             }
 
             // Initialize entity.
             TreatmentItem item = new TreatmentItem
             {
-                Amount = itemRequestDto.Amount,
-                VatFactor = itemRequestDto.VatFactor,
+                AmountBeforeVatPerUnit = itemRequestDto.Amount,
+                VatAmountPerUnit = itemRequestDto.VatPercentage,
                 Quantity = itemRequestDto.Quantity,
                 Product = product
             };
@@ -684,7 +708,7 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
                 // Get the product entity from the pre-fetched products list.
                 Product product = productsForNewItems
                     .Single(p => p.Id == itemRequestDto.ProductId);
-                
+
                 // Ensure the product exists.
                 if (product == null)
                 {
@@ -805,7 +829,7 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
 
         return (urlsToBeDeletedWhenSucceeds, urlsToBeDeletedWhenFails);
     }
-    
+
     /// <summary>
     /// Deletes all the items associated to the specified treatment, revert the stocking
     /// quantity of the products associated to each item.
@@ -814,7 +838,7 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
     /// An instance of the <c>Treatment</c> entity class with which the deleting items are
     /// associated.
     /// </param>
-    private void DeleteItemsAsync(Treatment treatment)
+    private void DeleteItems(Treatment treatment)
     {
         foreach (TreatmentItem item in treatment.Items)
         {

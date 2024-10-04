@@ -1,13 +1,18 @@
 namespace NATSInternal.Services.Dtos;
 
 public class TreatmentDetailResponseDto
+    : IExportableDetailResponseDto<
+        CustomerBasicResponseDto,
+        TreatmentItemResponseDto,
+        TreatmentUpdateHistoryResponseDto,
+        TreatmentAuthorizationResponseDto,
+        CustomerAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public DateTime PaidDateTime { get; set; }
     public DateTime CreatedDateTime { get; set; }
-    public DateTime? LastUpdatedDateTime { get; set; }
     public long ServiceAmount { get; set; }
-    public long ServiceVatAmount { get; set; }
+    public int ServiceVat { get; set; }
     public decimal ServiceVatFactor { get; set; }
     public long ProductAmount { get; set; }
     public long TotalAmountAfterVAT { get; set; }
@@ -21,6 +26,8 @@ public class TreatmentDetailResponseDto
     public TreatmentAuthorizationResponseDto Authorization { get; set; }
     public List<TreatmentUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
+    public long Amount => ServiceAmount + ProductAmount;
+
     internal TreatmentDetailResponseDto(
             Treatment treatment,
             TreatmentAuthorizationResponseDto authorization,
@@ -28,11 +35,10 @@ public class TreatmentDetailResponseDto
     {
         Id = treatment.Id;
         PaidDateTime = treatment.PaidDateTime;
-        LastUpdatedDateTime = treatment.LastUpdatedDateTime;
         ServiceAmount = treatment.ServiceAmount;
         ServiceVatAmount = treatment.ServiceVatAmount;
-        ServiceVatFactor = treatment.ServiceVatFactor;
-        ProductAmount = treatment.ProductAmount;
+        ServiceVatFactor = treatment.ServiceVatPercentage;
+        ProductAmount = treatment.ItemProductAmount;
         TotalAmountAfterVAT = treatment.TotalAmountAfterVAT;
         Note = treatment.Note;
         IsLocked = treatment.IsLocked;

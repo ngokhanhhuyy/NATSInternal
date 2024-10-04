@@ -4,6 +4,7 @@ public interface IUpsertableListResponseDto<TBasic, TAuthorization, TListAuthori
     : IListResponseDto<TBasic>
     where TBasic : IUpsertableBasicResponseDto<TAuthorization>
     where TAuthorization : IUpsertableAuthorizationResponseDto
+    where TListAuthorization : IUpsertableListAuthorizationResponseDto
 {
-    TAuthorization Authorization { get; internal set; }
+    TListAuthorization Authorization { get; internal set; }
 }

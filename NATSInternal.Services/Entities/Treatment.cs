@@ -15,9 +15,9 @@ internal class Treatment : LockableEntity
     [Required]
     public long ServiceAmount { get; set; } = 0;
 
-    [Column("service_vat_factor")]
+    [Column("service_vat_percentage")]
     [Required]
-    public decimal ServiceVatFactor { get; set; } = 0.1M;
+    public int ServiceVatPercentage { get; set; } = 10;
 
     [Column("note")]
     [StringLength(255)]
@@ -35,7 +35,7 @@ internal class Treatment : LockableEntity
     [Column("therapist_id")]
     [Required]
     public int TherapistId { get; set; }
-    
+
     [Column("customer_id")]
     public int CustomerId { get; set; }
 
@@ -65,22 +65,23 @@ internal class Treatment : LockableEntity
         .ToList();
 
     [NotMapped]
-    public long ProductAmount => Items.Sum(ts => ts.Amount + ts.Amount * ts.Quantity);
+    public long ItemProductAmount => Items.Sum(ts => ts.AmountBeforeVat);
 
     [NotMapped]
-    public long ProductVatAmount => Items.Sum(ts => (long)Math.Round(ts.Amount * ts.VatFactor * ts.Quantity));
+    public long ItemVatAmount => Items.Sum(ts => ts.VatAmount);
 
     [NotMapped]
-    public long ServiceVatAmount => (long)Math.Round(ServiceAmount * ServiceVatFactor);
+    public long ServiceVatAmount => ServiceAmount / 100 * ServiceVatPercentage;
 
     [NotMapped]
-    public long Amount => ProductAmount + ServiceAmount;
+    public long Amount => ItemProductAmount + ServiceAmount;
 
     [NotMapped]
-    public long VatAmount => (long)Math.Round(ProductVatAmount + (ServiceAmount * ServiceVatFactor));
+    public long VatAmount => ItemVatAmount + ServiceVatAmount;
 
     [NotMapped]
-    public long TotalAmountAfterVAT => ProductAmount + ProductVatAmount + ServiceAmount + ServiceVatAmount;
+    public long TotalAmountAfterVAT => ItemProductAmount + ItemVatAmount + ServiceAmount
+        + ServiceVatAmount;
 
     [NotMapped]
     public DateTime? LastUpdatedDateTime => UpdateHistories

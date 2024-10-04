@@ -1,10 +1,9 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface ILockableBasicResponseDto<TAuthorization>
+public interface IFinancialEngageableBasicResponseDto<TAuthorization>
     : IUpsertableBasicResponseDto<TAuthorization>
-    where TAuthorization : IUpsertableAuthorizationResponseDto
+    where TAuthorization : IFinancialEngageableAuthorizationResponseDto
 {
-    DateTime StatsDateTime { get; internal set; }
     long Amount { get; internal set; }
     bool IsLocked { get; internal set; }
 }

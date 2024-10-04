@@ -1,7 +1,7 @@
 namespace NATSInternal.Services.Entities;
 
 [Table("users")]
-internal class User : IdentityUser<int>
+internal class User : IdentityUser<int>, IUserEntity
 {
     [Column("first_name")]
     [Required]
@@ -30,7 +30,6 @@ internal class User : IdentityUser<int>
     [Required]
     [StringLength(10)]
     public required string NormalizedLastName { get; set; }
-
 
     [Column("full_name")]
     [Required]

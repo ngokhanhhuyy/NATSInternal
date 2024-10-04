@@ -1548,7 +1548,7 @@ public sealed class DataInitializer
                 PaidDateTime = statsDateTime,
                 CreatedDateTime = statsDateTime,
                 ServiceAmount = random.Next(1_000, 2_000) * 1000,
-                ServiceVatFactor = (decimal)random.Next(0, 2) / 10,
+                ServiceVatPercentage = random.Next(0, 20),
                 Note = random.Next(0, 2) == 0 ? null : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
                 CustomerId = customerIds.MinBy(_ => Guid.NewGuid()),
                 CreatedUserId = userIds.MinBy(_ => Guid.NewGuid()),
@@ -1571,8 +1571,8 @@ public sealed class DataInitializer
 
                 TreatmentItem item = new TreatmentItem
                 {
-                    Amount = product.Price,
-                    VatFactor = 0,
+                    AmountBeforeVatPerUnit = product.Price,
+                    VatAmountPerUnit = 0,
                     Quantity = Math.Min(random.Next(1, 5), product.StockingQuantity),
                     ProductId = product.Id
                 };
