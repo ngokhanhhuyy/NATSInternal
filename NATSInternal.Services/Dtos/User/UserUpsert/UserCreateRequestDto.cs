@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class UserCreateRequestDto : IRequestDto<UserCreateRequestDto>
+public class UserCreateRequestDto : IRequestDto
 {
     public string UserName { get; set; }
     public string Password { get; set; }
@@ -8,13 +8,12 @@ public class UserCreateRequestDto : IRequestDto<UserCreateRequestDto>
     public UserPersonalInformationRequestDto PersonalInformation { get; set; }
     public UserUserInformationRequestDto UserInformation { get; set; }
 
-    public UserCreateRequestDto TransformValues()
+    public void TransformValues()
     {
         UserName = UserName?.ToNullIfEmpty();
         Password = Password?.ToNullIfEmpty();
         ConfirmationPassword = ConfirmationPassword?.ToNullIfEmpty();
         PersonalInformation = PersonalInformation.TransformValues();
         UserInformation = UserInformation.TransformValues();
-        return this;
     }
 }

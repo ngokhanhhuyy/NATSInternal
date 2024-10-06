@@ -15,7 +15,7 @@ public class TreatmentListRequestDto :
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
     
-    public TreatmentListRequestDto TransformValues()
+    public void TransformValues()
     {
         OrderByField = OrderByField?.ToNullIfEmpty();
         DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
@@ -32,8 +32,6 @@ public class TreatmentListRequestDto :
                 Year = currentDateTime.Year;
             }
         }
-        
-        return this;
     }
     
     public enum FieldOptions

@@ -1,19 +1,15 @@
 namespace NATSInternal.Services.Entities;
 
-[Table("order_photos")]
-internal class OrderPhoto
+internal class OrderPhoto : IPhotoEntity<OrderPhoto>
 {
-    [Column("id")]
     [Key]
     public int Id { get; set; }
 
-    [Column("url")]
     [Required]
     [StringLength(255)]
     public string Url { get; set; }
 
     // Foreign keys
-    [Column("order_id")]
     [Required]
     public int OrderId { get; set; }
 
@@ -23,4 +19,18 @@ internal class OrderPhoto
 
     // Relationship
     public virtual Order Order { get; set; }
+
+    // Model configurations.
+    public static void ConfigureModel(EntityTypeBuilder<OrderPhoto> entityBuilder)
+    {
+        entityBuilder.HasKey(op => op.Id);
+        entityBuilder.HasOne(p => p.Order)
+            .WithMany(o => o.Photos)
+            .HasForeignKey(p => p.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+        entityBuilder.HasIndex(p => p.Url)
+            .IsUnique();
+        entityBuilder.Property(c => c.RowVersion)
+            .IsRowVersion();
+    }
 }

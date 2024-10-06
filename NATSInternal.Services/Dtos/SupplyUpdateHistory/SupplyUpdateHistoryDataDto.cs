@@ -9,7 +9,7 @@ public class SupplyUpdateHistoryDataDto
     
     internal SupplyUpdateHistoryDataDto(Supply supply)
     {
-        PaidDateTime = supply.PaidDateTime;
+        PaidDateTime = supply.SupplyDateTime;
         ShipmentFee = supply.ShipmentFee;
         Note = supply.Note;
         Items = supply.Items?

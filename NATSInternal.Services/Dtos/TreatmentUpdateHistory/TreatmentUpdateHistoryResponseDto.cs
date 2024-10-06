@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class TreatmentUpdateHistoryResponseDto
+public class TreatmentUpdateHistoryResponseDto : IUpdateHistoryResponseDto
 {
     private readonly TreatmentUpdateHistoryDataDto _oldData;
     private readonly TreatmentUpdateHistoryDataDto _newData;
@@ -36,7 +36,7 @@ public class TreatmentUpdateHistoryResponseDto
         _newData = JsonSerializer
             .Deserialize<TreatmentUpdateHistoryDataDto>(updateHistory.NewData);
         UpdatedDateTime = updateHistory.UpdatedDateTime;
-        UpdatedUser = new UserBasicResponseDto(updateHistory.User);
+        UpdatedUser = new UserBasicResponseDto(updateHistory.UpdatedUser);
         Reason = updateHistory.Reason;
     }
 }

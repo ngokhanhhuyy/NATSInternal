@@ -25,7 +25,7 @@ public class OrderDetailResponseDto
         Id = order.Id;
         PaidDateTime = order.PaidDateTime;
         CreatedDateTime = order.CreatedDateTime;
-        BeforeVatAmount = order.BeforeVatAmount;
+        BeforeVatAmount = order.ProductAmountBeforeVat;
         AfterVatAmount = order.AfterVatAmount;
         Note = order.Note;
         IsLocked = order.IsLocked;

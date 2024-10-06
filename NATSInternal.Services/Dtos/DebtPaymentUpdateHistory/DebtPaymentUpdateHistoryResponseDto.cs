@@ -25,7 +25,7 @@ public class DebtPaymentUpdateHistoryResponseDto
         _newData = JsonSerializer
             .Deserialize<DebtPaymentUpdateHistoryDataDto>(updateHistory.NewData);
         UpdatedDateTime = updateHistory.UpdatedDateTime;
-        UpdatedUser = new UserBasicResponseDto(updateHistory.User);
+        UpdatedUser = new UserBasicResponseDto(updateHistory.UpdatedUser);
         Reason = updateHistory.Reason;
     }
 }

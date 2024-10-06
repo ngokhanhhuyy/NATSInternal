@@ -1,30 +1,23 @@
 namespace NATSInternal.Services.Entities;
 
-[Table("order_items")]
-internal class OrderItem
+internal class OrderItem : IProductEngageableItemEntity<OrderItem, Product>
 {
-    [Column("id")]
     [Key]
     public int Id { get; set; }
 
-    [Column("amount")]
     [Required]
-    public long Amount { get; set; }
+    public long AmountPerUnit { get; set; }
 
-    [Column("vat_factor")]
     [Required]
-    public decimal VatFactor { get; set; } = 0.1M;
+    public long VatAmountPerUnit { get; set; }
 
-    [Column("quantity")]
     [Required]
     public int Quantity { get; set; } = 1;
 
     // Foreign keys
-    [Column("order_id")]
     [Required]
     public int OrderId { get; set; }
 
-    [Column("product_id")]
     [Required]
     public int ProductId { get; set; }
 
@@ -35,4 +28,20 @@ internal class OrderItem
     // Relationships
     public virtual Order Order { get; set; }
     public virtual Product Product { get; set; }
+
+    // Model configurations.
+    public static void ConfigureModel(EntityTypeBuilder<OrderItem> entityBuilder)
+    {
+        entityBuilder.HasKey(oi => oi.Id);
+        entityBuilder.HasOne(oi => oi.Order)
+            .WithMany(o => o.Items)
+            .HasForeignKey(oi => oi.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+        entityBuilder.HasOne(oi => oi.Product)
+            .WithMany(p => p.OrderItems)
+            .HasForeignKey(oi => oi.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
+        entityBuilder.Property(c => c.RowVersion)
+            .IsRowVersion();
+    }
 }

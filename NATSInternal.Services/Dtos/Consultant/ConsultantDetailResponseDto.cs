@@ -20,7 +20,7 @@ public class ConsultantDetailResponseDto
             bool mapUpdateHistory = false)
     {
         Id = consultant.Id;
-        Amount = consultant.Amount;
+        Amount = consultant.AmountBeforeVat;
         Note = consultant.Note;
         PaidDateTime = consultant.PaidDateTime;
         CreatedDateTime = consultant.CreatedDateTime;

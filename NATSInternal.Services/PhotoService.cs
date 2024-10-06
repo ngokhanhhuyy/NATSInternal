@@ -3,9 +3,12 @@
 namespace NATSInternal.Services;
 
 /// <inheritdoc />
-internal class PhotoService : IPhotoService
+internal class PhotoService<T, TPhoto> : IPhotoService<T, TPhoto>
+    where T : class, IHasPhotoEntity<T, TPhoto>
+    where TPhoto : class, IPhotoEntity<TPhoto>, new()
 {
     private readonly IWebHostEnvironment _environment;
+    private readonly string _folderName = typeof(T).Name.PascalCaseToSnakeCase();
 
     public PhotoService(IWebHostEnvironment environment)
     {
@@ -13,7 +16,7 @@ internal class PhotoService : IPhotoService
     }
 
     /// <inheritdoc />
-    public async Task<string> CreateAsync(byte[] content, string folderName, bool cropToSquare)
+    public async Task<string> CreateAsync(byte[] content, bool cropToSquare)
     {
         MagickImage image = new MagickImage(content);
 
@@ -28,7 +31,7 @@ internal class PhotoService : IPhotoService
         string path = Path.Combine(
             _environment.WebRootPath,
             "images",
-            folderName);
+            _folderName);
 
         if (!Directory.Exists(path))
         {
@@ -39,21 +42,18 @@ internal class PhotoService : IPhotoService
             .ToString("HH_mm_ss_fff__dd_MM_yyyy") + Guid.NewGuid() + ".jpg";
         string filePath = Path.Combine(path, fileName);
         await image.WriteAsync(filePath);
-        return $"/images/{folderName}/{fileName}";
+        return $"/images/{_folderName}/{fileName}";
     }
 
     /// <inheritdoc />
-    public async Task<string> CreateAsync(byte[] content, string folderName, double aspectRatio)
+    public async Task<string> CreateAsync(byte[] content, double aspectRatio)
     {
         MagickImage image = new MagickImage(content);
 
         CropToAspectRatio(image, aspectRatio);
 
         // Determine the path where the image would be savedv
-        string path = Path.Combine(
-            _environment.WebRootPath,
-            "images",
-            folderName);
+        string path = Path.Combine(_environment.WebRootPath, "images");
 
         if (!Directory.Exists(path))
         {
@@ -64,13 +64,16 @@ internal class PhotoService : IPhotoService
             .ToString("HH_mm_ss_fff__dd_MM_yyyy") + Guid.NewGuid() + ".jpg";
         string filePath = Path.Combine(path, fileName);
         await image.WriteAsync(filePath);
-        return $"/images/{folderName}/{fileName}";
+        return $"/images/{_folderName}/{fileName}";
     }
 
     /// <inheritdoc />
     public void Delete(string relativePath)
     {
-        List<string> pathElements = [_environment.WebRootPath, .. relativePath.Split("/").Skip(1)];
+        List<string> pathElements = [
+            _environment.WebRootPath,
+            .. relativePath.Split("/").Skip(1)
+        ];
         string path = Path.Combine(pathElements.ToArray());
 
         if (!File.Exists(path))
@@ -81,15 +84,134 @@ internal class PhotoService : IPhotoService
         File.Delete(path);
     }
 
+    /// <inheritdoc />
+    public virtual async Task CreateMultipleAsync<TRequestDto>(
+            T entity,
+            List<TRequestDto> requestDtos,
+            Action<TPhoto, TRequestDto> initializer = null)
+        where TRequestDto : IPhotoRequestDto
+    {
+        foreach (TRequestDto requestDto in requestDtos)
+        {
+            string url = await CreateAsync(requestDto.File, false);
+            TPhoto photo = new TPhoto
+            {
+                Url = url
+            };
+
+            if (initializer != null)
+            {
+                initializer(photo, requestDto);
+            }
+            entity.Photos.Add(photo);
+        }
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<(List<string>, List<string>)> UpdateMultipleAsync<TRequestDto>(
+            T entity,
+            List<TRequestDto> requestDtos,
+            Action<TPhoto, TRequestDto> initializer = null,
+            Action<TPhoto, TRequestDto> updateAssigner = null)
+        where TRequestDto : IPhotoRequestDto
+    {
+        List<string> urlsToBeDeletedWhenSucceeds = new List<string>();
+        List<string> urlsToBeDeletedWhenFails = new List<string>();
+        for (int i = 0; i < requestDtos.Count; i++)
+        {
+            TRequestDto requestDto = requestDtos[i];
+            TPhoto photo;
+            if (requestDto.Id.HasValue)
+            {
+                // Fetch the photo entity with the given id from the request.
+                photo = entity.Photos.SingleOrDefault(op => op.Id == requestDto.Id);
+
+                // Ensure the photo entity exists.
+                if (photo == null)
+                {
+                    string errorMessage = ErrorMessages.NotFound
+                        .ReplacePropertyName(DisplayNames.Photo)
+                        .ReplacePropertyName(DisplayNames.Id)
+                        .ReplaceAttemptedValue(requestDto.Id.ToString());
+                    throw new OperationException($"photos[{i}]", errorMessage);
+                }
+
+                // Perform the modification when the photo is marked to have been changed.
+                if (requestDto.HasBeenChanged)
+                { 
+                    // Delete the photo if indicated.
+                    if (requestDto.HasBeenDeleted)
+                    {
+                        // Mark the current url to be deleted later when the transaction
+                        // succeeds.
+                        urlsToBeDeletedWhenSucceeds.Add(photo.Url);
+                        entity.Photos.Remove(photo);
+                        continue;
+                    }
+                    
+                    // Create new photo if the request contains new data for a new one.
+                    if (requestDto.File != null)
+                    {
+                        // Mark the current url to be deleted later when the transaction
+                        // succeeds.
+                        urlsToBeDeletedWhenSucceeds.Add(photo.Url);
+                        
+                        string url = await CreateAsync(requestDto.File, true);
+                        photo.Url = url;
+
+                        // Mark the created photo to be deleted later if the transaction fails.
+                        urlsToBeDeletedWhenFails.Add(url);
+                    }
+                    
+                    // Execute assigner if specified.
+                    if (updateAssigner != null)
+                    {
+                        updateAssigner(photo, requestDto);
+                    }
+                }
+            }
+            else
+            {
+                // Create new photo if the request doesn't have id.
+                string url = await CreateAsync(requestDto.File, true);
+                photo = new TPhoto
+                {
+                    Url = url,
+                };
+
+                if (initializer != null)
+                {
+                    initializer(photo, requestDto);
+                }
+                
+                entity.Photos.Add(photo);
+
+                // Mark the created photo to be deleted later if the transaction fails.
+                urlsToBeDeletedWhenFails.Add(url);
+            }
+        }
+
+        return (urlsToBeDeletedWhenSucceeds, urlsToBeDeletedWhenFails);
+    }
+
     /// <summary>
-    /// Resize an image if either of width or height, or both of them, exceeds the maximum pixel value (1024px)
-    /// while keeping the aspect ratio.
+    /// Resize an image if either of width or height, or both of them, exceeds the maximum
+    /// pixel value (1024px) while keeping the aspect ratio.
     /// The resized image will also be converted into JPEG format.
     /// </summary>
     /// <param name="image">
     /// An IMagickImage instance loaded from byte array to be checked and resized.
     /// </param>
-    private static void ResizeImageIfTooLarge(IMagickImage image, int maxWidth = 1024, int maxHeight = 1024)
+    /// <param name="maxWidth">
+    /// The maximum width the of the photo that will trigger the resizing of exceeded.
+    /// </param>
+    /// <param name="maxHeight">
+    /// The maximum height the of the photo that will trigger the resizing of exceeded.
+    /// </param>
+    private static void ResizeImageIfTooLarge(
+            IMagickImage image,
+            int maxWidth = 1024,
+            int maxHeight = 1024)
     {
         image.Quality = 100;
         image.Format = MagickFormat.Jpeg;
@@ -178,10 +300,5 @@ internal class PhotoService : IPhotoService
             }
             image.Crop(new MagickGeometry(x, y, size, size));
         }
-    }
-
-    private static string ReplaceDirectorySeparator(string filePath)
-    {
-        return filePath.Replace(Path.DirectorySeparatorChar, '/');
     }
 }

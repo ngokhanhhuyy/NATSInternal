@@ -1,10 +1,9 @@
 namespace NATSInternal.Services.Dtos;
 
-public class SignInRequestDto : IRequestDto<SignInRequestDto> {
+public class SignInRequestDto : IRequestDto {
     public string UserName { get; init; }
     public string Password { get; init; }
     
-    public SignInRequestDto TransformValues() {
-        return this;
+    public void TransformValues() {
     }
 }

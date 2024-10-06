@@ -1,19 +1,15 @@
 namespace NATSInternal.Services.Entities;
 
-[Table("expense_photo")]
-internal class ExpensePhoto
+internal class ExpensePhoto : IPhotoEntity<ExpensePhoto>
 {
-    [Column("id")]
     [Key]
     public int Id { get; set; }
 
-    [Column("url")]
     [Required]
     [StringLength(255)]
     public string Url { get; set; }
 
     // Foreign key
-    [Column("expense_id")]
     [Required]
     public int ExpenseId { get; set; }
 
@@ -23,4 +19,18 @@ internal class ExpensePhoto
 
     // Navigation properties
     public virtual Expense Expense { get; set; }
+
+    // Model configuration.
+    public static void ConfigureModel(EntityTypeBuilder<ExpensePhoto> entityBuilder)
+    {
+        entityBuilder.HasKey(ep => ep.Id);
+        entityBuilder.HasOne(p => p.Expense)
+            .WithMany(ex => ex.Photos)
+            .HasForeignKey(ex => ex.ExpenseId)
+            .OnDelete(DeleteBehavior.Cascade);
+        entityBuilder.HasIndex(p => p.Url)
+            .IsUnique();
+        entityBuilder.Property(c => c.RowVersion)
+            .IsRowVersion();
+    }
 }

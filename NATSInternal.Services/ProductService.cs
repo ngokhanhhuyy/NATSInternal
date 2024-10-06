@@ -4,25 +4,16 @@
 internal class ProductService : IProductService
 {
     private readonly DatabaseContext _context;
-    private readonly IPhotoService _photoService;
-    private readonly ISupplyService _supplyService;
-    private readonly IOrderService _orderService;
-    private readonly ITreatmentService _treatmentService;
+    private readonly IPhotoService<Product, ProductPhoto> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
 
     public ProductService(
             DatabaseContext context,
-            IPhotoService photoService,
-            ISupplyService supplyService,
-            IOrderService orderService,
-            ITreatmentService treatmentService,
+            IPhotoService<Product, ProductPhoto> photoService,
             IAuthorizationInternalService authorizationService)
     {
         _context = context;
         _photoService = photoService;
-        _supplyService = supplyService;
-        _orderService = orderService;
-        _treatmentService = treatmentService;
         _authorizationService = authorizationService;
     }
 
@@ -106,8 +97,8 @@ internal class ProductService : IProductService
             Name = requestDto.Name,
             Description = requestDto.Description,
             Unit = requestDto.Unit,
-            Price = requestDto.Price,
-            VatFactor = requestDto.VatFactor,
+            DefaultPrice = requestDto.DefaultPrice,
+            DefaultVatPercentage = requestDto.DefaultVatPercentage,
             IsForRetail = requestDto.IsForRetail,
             IsDiscontinued = requestDto.IsDiscontinued,
             CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),
@@ -123,14 +114,14 @@ internal class ProductService : IProductService
         if (requestDto.ThumbnailFile != null)
         {
             string thumbnailUrl = await _photoService
-                .CreateAsync(requestDto.ThumbnailFile, "products", true);
+                .CreateAsync(requestDto.ThumbnailFile, true);
             product.ThumbnailUrl = thumbnailUrl;
         }
 
         // Create photos if specified.
         if (requestDto.Photos != null)
         {
-            await CreatePhotosAsync(product, requestDto.Photos);
+            await _photoService.CreateMultipleAsync(product, requestDto.Photos);
         }
 
         try
@@ -186,8 +177,8 @@ internal class ProductService : IProductService
         product.Name = requestDto.Name;
         product.Description = requestDto.Description;
         product.Unit = requestDto.Unit;
-        product.Price = requestDto.Price;
-        product.VatFactor = requestDto.VatFactor;
+        product.DefaultPrice = requestDto.DefaultPrice;
+        product.DefaultVatPercentage = requestDto.DefaultVatPercentage;
         product.IsForRetail = requestDto.IsForRetail;
         product.IsDiscontinued = requestDto.IsDiscontinued;
         product.CategoryId = requestDto.CategoryId;
@@ -212,7 +203,7 @@ internal class ProductService : IProductService
             if (requestDto.ThumbnailFile != null)
             {
                 string thumbnailUrl = await _photoService
-                    .CreateAsync(requestDto.ThumbnailFile, "products", true);
+                    .CreateAsync(requestDto.ThumbnailFile, true);
                 product.ThumbnailUrl = thumbnailUrl;
                 urlsToBeDeletedWhenFailed.Add(product.ThumbnailUrl);
             }
@@ -222,7 +213,8 @@ internal class ProductService : IProductService
         if (requestDto.Photos != null && requestDto.Photos.Any())
         {
             (List<string>, List<string>) photoUpdateResult;
-            photoUpdateResult = await UpdatePhotosAsync(product, requestDto.Photos);
+            photoUpdateResult = await _photoService
+                .UpdateMultipleAsync(product, requestDto.Photos);
             urlsToBeDeletedWhenSucceeded.AddRange(photoUpdateResult.Item1);
             urlsToBeDeletedWhenFailed.AddRange(photoUpdateResult.Item2);
         }
@@ -362,95 +354,5 @@ internal class ProductService : IProductService
                 .ReplacePropertyName(DisplayNames.Get(nameof(Product.Name)));
             throw new OperationException(nameof(Product.Name), errorMessage);
         }
-    }
-
-    /// <summary>
-    /// Create photos which are associated to the specified product with the data
-    /// provided in the request.
-    /// </summary>
-    /// <param name="product">
-    /// The <c>Product</c> entity to which the photos are associated.
-    /// </param>
-    /// <param name="requestDtos">
-    /// A list of objects containing the data for the new photos.
-    /// </param>
-    /// <returns>
-    /// A <c>Task</c> object reprensenting the asynchronous operation.
-    /// </returns>
-    private async Task CreatePhotosAsync(
-            Product product,
-            List<ProductPhotoRequestDto> requestDtos)
-    {
-        foreach (ProductPhotoRequestDto requestDto in requestDtos)
-        {
-            string url = await _photoService.CreateAsync(
-                requestDto.File, "products", false);
-            ProductPhoto photo = new ProductPhoto
-            {
-                Url = url
-            };
-            product.Photos.Add(photo);
-        }
-    }
-
-    /// <summary>
-    /// Update the specified product's photos with the data provided in the request.
-    /// </summary>
-    /// <param name="product">
-    /// The product to which the updating photos are associated.
-    /// </param>
-    /// <param name="requestDtos">
-    /// An object containing the data for the photos to be updated.
-    /// </param>
-    /// <returns>
-    /// A <see cref="Tuple"/> containing 2 lists of strings. The first one contains the urls
-    /// of the photos which must be deleted when the update operation succeeded. The
-    /// other one contains the urls of the photos which must be deleted when the
-    /// updating operation failed.
-    /// </returns>
-    /// <exception cref="OperationException">
-    /// Thrown when the photo with the given id which is associated to the specified
-    /// product in the request cannot be found.
-    /// </exception>
-    private async Task<(List<string>, List<string>)> UpdatePhotosAsync(
-            Product product,
-            List<ProductPhotoRequestDto> requestDtos)
-    {
-        product.Photos ??= new List<ProductPhoto>();
-        List<string> urlsToBeDeletedWhenSucceeded = new List<string>();
-        List<string> urlsToBeDeletedWhenFailed = new List<string>();
-        for (int i = 0; i < requestDtos.Count; i++)
-        {
-            ProductPhotoRequestDto photoRequestDto = requestDtos[i];
-            if (photoRequestDto.HasBeenChanged)
-            {
-                // Fetch the photo entity and ensure it exists.
-                ProductPhoto productPhoto = product.Photos
-                    .SingleOrDefault(p => p.Id == photoRequestDto.Id);
-                if (productPhoto == null)
-                {
-                    string errorMessage = ErrorMessages.NotFoundByProperty
-                        .ReplaceResourceName(DisplayNames.ProductPhoto)
-                        .ReplacePropertyName(DisplayNames.Id)
-                        .ReplaceAttemptedValue(photoRequestDto.Id.ToString());
-                    throw new OperationException($"photos[{i}].id", errorMessage);
-                }
-
-                // Add to list to be deleted later if the transaction succeeds.
-                urlsToBeDeletedWhenSucceeded.Add(productPhoto.Url);
-                product.Photos.Remove(productPhoto);
-
-                if (photoRequestDto.HasBeenChanged)
-                {
-                    string url = await _photoService
-                        .CreateAsync(photoRequestDto.File, "supplies", false);
-                    // Add to list to be deleted later if the transaction fails.
-                    urlsToBeDeletedWhenFailed.Add(url);
-                    productPhoto.Url = url;
-                }
-            }
-        }
-
-        return (urlsToBeDeletedWhenSucceeded, urlsToBeDeletedWhenFailed);
     }
 }

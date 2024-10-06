@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class TreatmentItemRequestDto : IRequestDto<TreatmentItemRequestDto>
+public class TreatmentItemRequestDto : IRequestDto
 {
     public int? Id { get; set; }
     public long Amount { get; set; }
@@ -10,9 +10,8 @@ public class TreatmentItemRequestDto : IRequestDto<TreatmentItemRequestDto>
     public bool HasBeenChanged { get; set; }
     public bool HasBeenDeleted { get; set; }
 
-    public TreatmentItemRequestDto TransformValues()
+    public void TransformValues()
     {
         Id = Id == 0 ? null : Id;
-        return this;
     }
 }

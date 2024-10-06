@@ -4,14 +4,14 @@ namespace NATSInternal.Services;
 internal class OrderService : LockableEntityService, IOrderService
 {
     private readonly DatabaseContext _context;
-    private readonly IPhotoService _photoService;
+    private readonly IPhotoService<Order, OrderPhoto> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IStatsInternalService _statsService;
     private static MonthYearResponseDto _earliestRecordedMonthYear;
 
     public OrderService(
         DatabaseContext context,
-        IPhotoService photoService,
+        IPhotoService<Order, OrderPhoto> photoService,
         IAuthorizationInternalService authorizationService,
         IStatsInternalService statsService)
     {
@@ -50,17 +50,17 @@ internal class OrderService : LockableEntityService, IOrderService
         {
             case nameof(OrderListRequestDto.FieldOptions.Amount):
                 query = requestDto.OrderByAscending
-                    ? query.OrderBy(o => o.Items.Sum(i => i.Amount))
+                    ? query.OrderBy(o => o.Items.Sum(i => i.AmountPerUnit))
                         .ThenBy(o => o.PaidDateTime)
-                    : query.OrderByDescending(o => o.Items.Sum(i => i.Amount))
+                    : query.OrderByDescending(o => o.Items.Sum(i => i.AmountPerUnit))
                         .ThenByDescending(o => o.PaidDateTime);
                 break;
             default:
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(o => o.PaidDateTime)
-                        .ThenBy(o => o.Items.Sum(i => i.Amount))
+                        .ThenBy(o => o.Items.Sum(i => i.AmountPerUnit))
                     : query.OrderByDescending(o => o.PaidDateTime)
-                        .ThenByDescending(o => o.Items.Sum(i => i.Amount));
+                        .ThenByDescending(o => o.Items.Sum(i => i.AmountPerUnit));
                 break;
         }
 
@@ -195,7 +195,7 @@ internal class OrderService : LockableEntityService, IOrderService
         // Initialize photos.
         if (requestDto.Photos != null)
         {
-            await CreatePhotosAsync(order, requestDto.Photos);
+            await _photoService.CreateMultipleAsync(order, requestDto.Photos);
         }
 
         // Perform the creating operation.
@@ -206,10 +206,10 @@ internal class OrderService : LockableEntityService, IOrderService
             // The order can be created successfully without any error. Add the order
             // to the stats.
             DateOnly orderedDate = DateOnly.FromDateTime(order.PaidDateTime);
-            await _statsService.IncrementRetailGrossRevenueAsync(order.BeforeVatAmount, orderedDate);
-            if (order.VatAmount > 0)
+            await _statsService.IncrementRetailGrossRevenueAsync(order.ProductAmountBeforeVat, orderedDate);
+            if (order.ProductVatAmount > 0)
             {
-                await _statsService.IncrementVatCollectedAmountAsync(order.VatAmount, orderedDate);
+                await _statsService.IncrementVatCollectedAmountAsync(order.ProductVatAmount, orderedDate);
             }
 
             // Commit the transaction, finish the operation.
@@ -285,8 +285,8 @@ internal class OrderService : LockableEntityService, IOrderService
             .BeginTransactionAsync();
 
         // Storing the old data for update history logging and stats adjustments.
-        long oldItemAmount = order.BeforeVatAmount;
-        long oldVatAmount = order.VatAmount;
+        long oldItemAmount = order.ProductAmountBeforeVat;
+        long oldVatAmount = order.ProductVatAmount;
         DateOnly oldPaidDate = DateOnly.FromDateTime(order.PaidDateTime);
         OrderUpdateHistoryDataDto oldData = new OrderUpdateHistoryDataDto(order);
 
@@ -299,7 +299,7 @@ internal class OrderService : LockableEntityService, IOrderService
                 throw new AuthorizationException();
             }
 
-            // Prevent the order's PaidDateTime to be modified when the order is locked.
+            // Prevent the order's SupplyDateTime to be modified when the order is locked.
             if (order.IsLocked)
             {
                 string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
@@ -310,10 +310,10 @@ internal class OrderService : LockableEntityService, IOrderService
                     errorMessage);
             }
 
-            // Assign the new PaidDateTime value only if it's different from the old one.
+            // Assign the new SupplyDateTime value only if it's different from the old one.
             if (requestDto.PaidDateTime.Value != order.PaidDateTime)
             {
-                // Validate the specified PaidDateTime value from the request.
+                // Validate the specified SupplyDateTime value from the request.
                 try
                 {
                     _statsService.ValidateStatsDateTime(order, requestDto.PaidDateTime.Value);
@@ -368,8 +368,8 @@ internal class OrderService : LockableEntityService, IOrderService
             // Delete all old photos which have been replaced by new ones.
             DateOnly newPaidDate = DateOnly.FromDateTime(order.PaidDateTime);
             await _statsService
-                .IncrementRetailGrossRevenueAsync(order.BeforeVatAmount, newPaidDate);
-            await _statsService.IncrementVatCollectedAmountAsync(order.VatAmount, newPaidDate);
+                .IncrementRetailGrossRevenueAsync(order.ProductAmountBeforeVat, newPaidDate);
+            await _statsService.IncrementVatCollectedAmountAsync(order.ProductVatAmount, newPaidDate);
 
             // Delete photo files which have been specified.
             foreach (string url in urlsToBeDeletedWhenSucceeds)
@@ -462,10 +462,10 @@ internal class OrderService : LockableEntityService, IOrderService
                     // Order has been deleted successfully, adjust the stats.
                     DateOnly orderedDate = DateOnly.FromDateTime(order.PaidDateTime);
                     await _statsService.IncrementRetailGrossRevenueAsync(
-                        order.BeforeVatAmount,
+                        order.ProductAmountBeforeVat,
                         orderedDate);
                     await _statsService.IncrementVatCollectedAmountAsync(
-                        order.VatAmount,
+                        order.ProductVatAmount,
                         orderedDate);
 
                     // Commit the transaction and finishing the operations.
@@ -523,8 +523,8 @@ internal class OrderService : LockableEntityService, IOrderService
             // Initialize entity.
             OrderItem item = new OrderItem
             {
-                Amount = itemRequestDto.Amount,
-                VatFactor = itemRequestDto.VatFactor,
+                AmountPerUnit = itemRequestDto.Amount,
+                VatAmountPerUnit = itemRequestDto.VatFactor,
                 Quantity = itemRequestDto.Quantity,
                 Product = product
             };
@@ -586,8 +586,8 @@ internal class OrderService : LockableEntityService, IOrderService
                 // Update item properties if changed.
                 else if (itemRequestDto.HasBeenChanged)
                 {
-                    item.Amount = itemRequestDto.Amount;
-                    item.VatFactor = itemRequestDto.VatFactor;
+                    item.AmountPerUnit = itemRequestDto.Amount;
+                    item.VatAmountPerUnit = itemRequestDto.VatFactor;
                     item.Quantity = itemRequestDto.Quantity;
                 }
             }
@@ -612,8 +612,8 @@ internal class OrderService : LockableEntityService, IOrderService
                 // Initialize the entity.
                 item = new OrderItem
                 {
-                    Amount = itemRequestDto.Amount,
-                    VatFactor = itemRequestDto.VatFactor,
+                    AmountPerUnit = itemRequestDto.Amount,
+                    VatAmountPerUnit = itemRequestDto.VatFactor,
                     Quantity = itemRequestDto.Quantity,
                     Product = product,
                     Order = order
@@ -630,37 +630,6 @@ internal class OrderService : LockableEntityService, IOrderService
 
             // Add the quantity of the item to the product's stocking quantity.
             item.Product.StockingQuantity -= item.Quantity;
-        }
-    }
-
-    /// <summary>
-    /// Creates photos which are associated with the specified order.
-    /// </summary>
-    /// <remarks>
-    /// This method must only be called during the order creating operation.
-    /// </remarks>
-    /// <param name="order">
-    /// An instance of the <see cref="Order"/> entity class, representing the order with which
-    /// the creating photos are associated.
-    /// </param>
-    /// <param name="requestDtos">
-    /// A <see cref="List{T}"/> where <c>T</c> is the instances of the
-    /// <see cref="OrderPhotoRequestDto"/> class, containing the data for the creating
-    /// operation.
-    /// </param>
-    /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation.
-    /// </returns>
-    private async Task CreatePhotosAsync(Order order, List<OrderPhotoRequestDto> requestDtos)
-    {
-        foreach (OrderPhotoRequestDto photoRequestDto in requestDtos)
-        {
-            string url = await _photoService.CreateAsync(photoRequestDto.File, "orders", false);
-            OrderPhoto photo = new OrderPhoto
-            {
-                Url = url
-            };
-            order.Photos.Add(photo);
         }
     }
 
@@ -782,7 +751,7 @@ internal class OrderService : LockableEntityService, IOrderService
             Reason = reason,
             OldData = JsonSerializer.Serialize(oldData),
             NewData = JsonSerializer.Serialize(newData),
-            UserId = _authorizationService.GetUserId()
+            UpdatedUserId = _authorizationService.GetUserId()
         };
 
         order.UpdateHistories ??= new List<OrderUpdateHistory>();

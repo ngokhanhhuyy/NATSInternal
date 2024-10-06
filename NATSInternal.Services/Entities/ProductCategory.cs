@@ -1,21 +1,25 @@
 namespace NATSInternal.Services.Entities;
 
-[Table("product_category")]
-internal class ProductCategory
+internal class ProductCategory : IUpsertableEntity<ProductCategory>
 {
-    [Column("id")]
     [Key]
     public int Id { get; set; }
 
-    [Column("name")]
     [Required]
     [StringLength(30)]
     public string Name { get; set; }
 
-    [Column("created_datetime")]
     [Required]
     public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
 
     // Relationships
     public virtual List<Product> Products { get; set; }
+
+    // Model configurations.
+    public static void ConfigureModel(EntityTypeBuilder<ProductCategory> entityBuilder)
+    {
+        entityBuilder.HasKey(pc => pc.Id);
+        entityBuilder.HasIndex(pc => pc.Name)
+            .IsUnique();
+    }
 }

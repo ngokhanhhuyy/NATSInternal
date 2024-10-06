@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos
 {
-    public class OrderUpsertRequestDto : IRequestDto<OrderUpsertRequestDto>
+    public class OrderUpsertRequestDto : IRequestDto
     {
         public DateTime? PaidDateTime { get; set; }
         public string Note { get; set; }
@@ -9,9 +9,8 @@ namespace NATSInternal.Services.Dtos
         public List<OrderPhotoRequestDto> Photos { get; set; }
         public string UpdateReason { get; set; }
         
-        public OrderUpsertRequestDto TransformValues()
+        public void TransformValues()
         {
-            return this;
         }
     }
 }

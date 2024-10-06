@@ -1,13 +1,12 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class ProductCategoryRequestDto : IRequestDto<ProductCategoryRequestDto>
+public class ProductCategoryRequestDto : IRequestDto
 {
     public int Id { get; set; }
     public string Name { get; set; }
 
-    public ProductCategoryRequestDto TransformValues()
+    public void TransformValues()
     {
         Name = Name?.ToNullIfEmpty();
-        return this;
     }
 }

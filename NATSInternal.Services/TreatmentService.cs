@@ -5,14 +5,14 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IPhotoService _photoService;
+    private readonly ITreatmentPhotoService _photoService;
     private readonly IStatsInternalService _statsService;
     private static MonthYearResponseDto _earliestRecordedMonthYear;
 
     public TreatmentService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IPhotoService photoService,
+            ITreatmentPhotoService photoService,
             IStatsInternalService statsService)
     {
         _context = context;
@@ -57,8 +57,8 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
                                     (ti.AmountBeforeVatPerUnit * (ti.VatAmountPerUnit / 100))
                                 ) * ti.Quantity
                             ) +
-                            t.ServiceAmount +
-                            (t.ServiceAmount * (t.ServiceVatPercentage / 100))))
+                            t.ServiceAmountBeforeVat +
+                            (t.ServiceAmountBeforeVat * (t.ServiceVatAmount / 100))))
                         .ThenBy(t => t.PaidDateTime)
                     : query.OrderByDescending(t => t.Items.Sum(ti =>
                             (
@@ -67,8 +67,8 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
                                     (ti.AmountBeforeVatPerUnit * (ti.VatAmountPerUnit / 100))
                                 ) * ti.Quantity
                             ) +
-                            t.ServiceAmount +
-                            (t.ServiceAmount * (t.ServiceVatPercentage / 100))))
+                            t.ServiceAmountBeforeVat +
+                            (t.ServiceAmountBeforeVat * (t.ServiceVatAmount / 100))))
                         .ThenByDescending(t => t.PaidDateTime);
                 break;
             default:
@@ -81,8 +81,8 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
                                     (ti.AmountBeforeVatPerUnit * (ti.VatAmountPerUnit / 100))
                                 ) * ti.Quantity
                             ) +
-                            t.ServiceAmount +
-                            (t.ServiceAmount * (t.ServiceVatPercentage / 100))))
+                            t.ServiceAmountBeforeVat +
+                            (t.ServiceAmountBeforeVat * (t.ServiceVatAmount / 100))))
                     : query.OrderByDescending(t => t.PaidDateTime)
                         .ThenBy(t => t.Items.Sum(ti =>
                             (
@@ -91,8 +91,8 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
                                     (ti.AmountBeforeVatPerUnit * (ti.VatAmountPerUnit / 100))
                                 ) * ti.Quantity
                             ) +
-                            t.ServiceAmount +
-                            (t.ServiceAmount * (t.ServiceVatPercentage / 100))));
+                            t.ServiceAmountBeforeVat +
+                            (t.ServiceAmountBeforeVat * (t.ServiceVatAmount / 100))));
                 break;
         }
 
@@ -192,7 +192,7 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
         await using IDbContextTransaction transaction = await _context.Database
             .BeginTransactionAsync();
 
-        // Determine PaidDateTime.
+        // Determine SupplyDateTime.
         DateTime paidDateTime = DateTime.UtcNow.ToApplicationTime();
         if (requestDto.PaidDateTime.HasValue)
         {
@@ -221,7 +221,7 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
         // Initialize photos.
         if (requestDto.Photos != null)
         {
-            await CreatePhotosAsync(treatment, requestDto.Photos);
+            await _photoService.CreateMultipleAsync(treatment, requestDto.Photos);
         }
 
         // Perform the creating operation.
@@ -232,10 +232,10 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
             // The treatment can be created successfully without any error. Add the treatment
             // to the stats.
             DateOnly treatmentedDate = DateOnly.FromDateTime(treatment.PaidDateTime);
-            await _statsService.IncrementTreatmentGrossRevenueAsync(treatment.Amount, treatmentedDate);
-            if (treatment.VatAmount > 0)
+            await _statsService.IncrementTreatmentGrossRevenueAsync(treatment.AmountBeforeVat, treatmentedDate);
+            if (treatment.ProductVatAmount > 0)
             {
-                await _statsService.IncrementVatCollectedAmountAsync(treatment.VatAmount, treatmentedDate);
+                await _statsService.IncrementVatCollectedAmountAsync(treatment.ProductVatAmount, treatmentedDate);
             }
 
             // Commit the transaction, finish the operation.
@@ -311,8 +311,8 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
             .BeginTransactionAsync();
         
         // Storing the old data for update history logging and stats adjustment.
-        long oldAmount = treatment.Amount;
-        long oldVatAmount = treatment.VatAmount;
+        long oldAmount = treatment.AmountBeforeVat;
+        long oldVatAmount = treatment.ProductVatAmount;
         DateOnly oldPaidDate = DateOnly.FromDateTime(treatment.PaidDateTime);
         TreatmentUpdateHistoryDataDto oldData = new TreatmentUpdateHistoryDataDto(treatment);
 
@@ -325,7 +325,8 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
                 throw new AuthorizationException();
             }
 
-            // Prevent the treatment's PaidDateTime to be modified when the treatment is locked.
+            // Prevent the treatment's SupplyDateTime to be modified when the treatment is
+            // locked.
             if (treatment.IsLocked)
             {
                 string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
@@ -336,13 +337,15 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
                     errorMessage);
             }
 
-            // Assign the new PaidDateTime value only if it's different from the old one.
+            // Assign the new SupplyDateTime value only if it's different from the old one.
             if (requestDto.PaidDateTime.Value != treatment.PaidDateTime)
             {
-                // Validate and assign the specified PaidDateTime value from the request.
+                // Validate and assign the specified SupplyDateTime value from the request.
                 try
                 {
-                    _statsService.ValidateStatsDateTime(treatment, requestDto.PaidDateTime.Value);
+                    _statsService.ValidateStatsDateTime(
+                        treatment,
+                        requestDto.PaidDateTime.Value);
                     treatment.PaidDateTime = requestDto.PaidDateTime.Value;
                 }
                 catch (ArgumentException exception)
@@ -369,7 +372,9 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
         if (requestDto.Photos != null)
         {
             (List<string>, List<string>) photoUpdateResults;
-            photoUpdateResults = await UpdatePhotoAsync(treatment, requestDto.Photos);
+            photoUpdateResults = await _photoService.UpdateMultipleAsync(
+                treatment,
+                requestDto.Photos);
             urlsToBeDeletedWhenSucceeds.AddRange(photoUpdateResults.Item1);
             urlsToBeDeletedWhenFails.AddRange(photoUpdateResults.Item2);
         }
@@ -394,8 +399,8 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
             
             // Create new stats.
             DateOnly newPaidDate = DateOnly.FromDateTime(treatment.PaidDateTime);
-            await _statsService.IncrementRetailGrossRevenueAsync(treatment.Amount, newPaidDate);
-            await _statsService.IncrementVatCollectedAmountAsync(treatment.VatAmount, newPaidDate);
+            await _statsService.IncrementRetailGrossRevenueAsync(treatment.AmountBeforeVat, newPaidDate);
+            await _statsService.IncrementVatCollectedAmountAsync(treatment.ProductVatAmount, newPaidDate);
 
             // Delete all old photos which have been replaced by new ones.
             foreach (string url in urlsToBeDeletedWhenSucceeds)
@@ -485,8 +490,8 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
             // The treatment can be deleted successfully without any error.
             // Revert the stats associated to the treatment.
             DateOnly paidDate = DateOnly.FromDateTime(treatment.PaidDateTime);
-            await _statsService.IncrementTreatmentGrossRevenueAsync(-treatment.Amount, paidDate);
-            await _statsService.IncrementVatCollectedAmountAsync(-treatment.VatAmount, paidDate);
+            await _statsService.IncrementTreatmentGrossRevenueAsync(-treatment.AmountBeforeVat, paidDate);
+            await _statsService.IncrementVatCollectedAmountAsync(-treatment.ProductVatAmount, paidDate);
 
             // Commit the transaction and finish the operation.
             await transaction.CommitAsync();
@@ -522,10 +527,10 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
                     // Order has been deleted successfully, adjust the stats.
                     DateOnly orderedDate = DateOnly.FromDateTime(treatment.PaidDateTime);
                     await _statsService.IncrementRetailGrossRevenueAsync(
-                        treatment.Amount,
+                        treatment.AmountBeforeVat,
                         orderedDate);
                     await _statsService.IncrementVatCollectedAmountAsync(
-                        treatment.VatAmount,
+                        treatment.ProductVatAmount,
                         orderedDate);
 
                     // Commit the transaction and finishing the operations.
@@ -599,39 +604,6 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
 
             // Add item.
             treatment.Items.Add(item);
-        }
-    }
-
-    /// <summary>
-    /// Creates treatment photos associated to the given treatment with the data provided in
-    /// the request.
-    /// </summary>
-    /// <remarks>
-    /// This method must only be called during the treatment creating operation.
-    /// </remarks>
-    /// <param name="treatment">
-    /// An instance of the <see cref="Treatment"/> entity class, representing the treatment
-    /// with which the creating photos are associated.
-    /// </param>
-    /// <param name="requestDtos">
-    /// A <see cref="List{T}"/> where <c>T</c> is the instances of the
-    /// <see cref="TreatmentPhotoRequestDto"/> class, containing the data for the operation.
-    /// </param>
-    /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation.
-    /// </returns>
-    private async Task CreatePhotosAsync(
-            Treatment treatment,
-            List<TreatmentPhotoRequestDto> requestDtos)
-    {
-        foreach (TreatmentPhotoRequestDto photoRequestDto in requestDtos)
-        {
-            string url = await _photoService.CreateAsync(photoRequestDto.File, "treatments", false);
-            TreatmentPhoto photo = new TreatmentPhoto
-            {
-                Url = url
-            };
-            treatment.Photos.Add(photo);
         }
     }
 
@@ -742,95 +714,6 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
     }
 
     /// <summary>
-    /// Updates or creates treatment photos associated to the given treatment with the data
-    /// provided in the request.
-    /// </summary>
-    /// <remarks>
-    /// This method must only be called during the treatment updating operation.
-    /// </remarks>
-    /// <param name="treatment">
-    /// An instance of the <see cref="Treatment"/> entity class, representing the treatment
-    /// with which the updating and creating photos are associated.
-    /// </param>
-    /// <param name="requestDtos">
-    /// A <see cref="List{T}"/> where <c>T</c> is the instances of the
-    /// <see cref="TreatmentPhotoRequestDto"/> class, containing the new data for updating
-    /// operation.
-    /// </param>
-    /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is a
-    /// <see cref="Tuple"/> of two <see cref="List{T}"/> where <c>T</c> is
-    /// <see cref="string"/>, the first one represents the deleted photos' urls which must be
-    /// deleted after the whole treatment updating operation succeeds, the second one
-    /// represents the  created photos' urls which must be deleted after the whole treatment
-    /// updating operation fails.
-    /// </returns>
-    /// <exception cref="OperationException">
-    /// Throws when the photo with the specified id doesn't exist or has already been deleted.
-    /// </exception>
-    private async Task<(List<string>, List<string>)> UpdatePhotoAsync(
-            Treatment treatment,
-            List<TreatmentPhotoRequestDto> requestDtos)
-    {
-        List<string> urlsToBeDeletedWhenSucceeds = new List<string>();
-        List<string> urlsToBeDeletedWhenFails = new List<string>();
-        for (int i = 0; i < requestDtos.Count; i++)
-        {
-            TreatmentPhotoRequestDto requestDto = requestDtos[i];
-            TreatmentPhoto photo;
-            if (requestDto.Id.HasValue)
-            {
-                // Fetch the photo entity with the given id from the request.
-                photo = treatment.Photos.SingleOrDefault(op => op.Id == requestDto.Id);
-
-                // Ensure the photo entity exists.
-                if (photo == null)
-                {
-                    string errorMessage = ErrorMessages.NotFound
-                        .ReplacePropertyName(DisplayNames.Photo)
-                        .ReplacePropertyName(DisplayNames.Id)
-                        .ReplaceAttemptedValue(requestDto.Id.ToString());
-                    throw new OperationException($"photos[{i}]", errorMessage);
-                }
-
-                // Perform the modification when the photo is marked to have been changed.
-                if (requestDto.HasBeenChanged)
-                {
-                    // Mark the current url to be deleted later when the transaction succeeds.
-                    urlsToBeDeletedWhenSucceeds.Add(photo.Url);
-
-                    // Create new photo if the request contains new data for a new one.
-                    if (requestDto.File != null)
-                    {
-                        string url = await _photoService
-                            .CreateAsync(requestDto.File, "treatments", true);
-                        photo.Url = url;
-
-                        // Mark the created photo to be deleted later if the transaction fails.
-                        urlsToBeDeletedWhenFails.Add(url);
-                    }
-                }
-            }
-            else
-            {
-                // Create new photo if the request doesn't have id.
-                string url = await _photoService
-                    .CreateAsync(requestDto.File, "treatments", true);
-                photo = new TreatmentPhoto
-                {
-                    Url = url
-                };
-                treatment.Photos.Add(photo);
-
-                // Mark the created photo to be deleted later if the transaction fails.
-                urlsToBeDeletedWhenFails.Add(url);
-            }
-        }
-
-        return (urlsToBeDeletedWhenSucceeds, urlsToBeDeletedWhenFails);
-    }
-
-    /// <summary>
     /// Deletes all the items associated to the specified treatment, revert the stocking
     /// quantity of the products associated to each item.
     /// </summary>
@@ -876,7 +759,7 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
             Reason = reason,
             OldData = JsonSerializer.Serialize(oldData),
             NewData = JsonSerializer.Serialize(newData),
-            UserId = _authorizationService.GetUserId()
+            UpdatedUserId = _authorizationService.GetUserId()
         };
         
         treatment.UpdateHistories ??= new List<TreatmentUpdateHistory>();

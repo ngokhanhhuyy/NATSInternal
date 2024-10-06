@@ -1,22 +1,28 @@
 namespace NATSInternal.Services.Entities;
 
-[Table("product_photos")]
-internal class ProductPhoto
+internal class ProductPhoto : IPhotoEntity<ProductPhoto>
 {
-    [Column("id")]
     [Key]
     public int Id { get; set; }
 
-    [Column("url")]
     [Required]
     [StringLength(255)]
     public string Url { get; set; }
 
     // Foreign keys
-    [Column("product_id")]
     [Required]
     public int ProductId { get; set; }
 
     // Relationship
     public virtual Product Product { get; set; }
+
+    // Model configurations.
+    public static void ConfigureModel(EntityTypeBuilder<ProductPhoto> entityBuilder)
+    {
+        entityBuilder.HasKey(pp => pp.Id);
+        entityBuilder.HasOne(photo => photo.Product)
+            .WithMany(product => product.Photos)
+            .HasForeignKey(photo => photo.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
 }

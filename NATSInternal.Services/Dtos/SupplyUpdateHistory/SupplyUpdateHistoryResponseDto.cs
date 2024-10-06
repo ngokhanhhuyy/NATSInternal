@@ -26,7 +26,7 @@ public class SupplyUpdateHistoryResponseDto
         _oldData = JsonSerializer.Deserialize<SupplyUpdateHistoryDataDto>(updateHistory.OldData);
         _newData = JsonSerializer.Deserialize<SupplyUpdateHistoryDataDto>(updateHistory.NewData);
         UpdatedDateTime = updateHistory.UpdatedDateTime;
-        UpdatedUser = new UserBasicResponseDto(updateHistory.User);
+        UpdatedUser = new UserBasicResponseDto(updateHistory.UpdatedUser);
         Reason = updateHistory.Reason;
     }
 }

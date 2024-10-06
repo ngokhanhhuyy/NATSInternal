@@ -26,8 +26,8 @@ public class ProductDetailResponseDto
         Name = product.Name;
         Description = product.Description;
         Unit = product.Unit;
-        Price = product.Price;
-        VatFactor = product.VatFactor;
+        Price = product.DefaultPrice;
+        VatFactor = product.DefaultVatPercentage;
         StockingQuantity = product.StockingQuantity;
         IsForRetail = product.IsForRetail;
         IsDiscontinued = product.IsDiscontinued;

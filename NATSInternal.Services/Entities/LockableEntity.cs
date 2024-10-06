@@ -2,8 +2,6 @@ namespace NATSInternal.Services.Entities;
 
 internal class LockableEntity : ILockableEntity
 {
-    
-    [Column("created_datetime")]
     [Required]
     public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
     

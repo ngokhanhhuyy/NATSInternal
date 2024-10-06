@@ -1,11 +1,10 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class IntroducerRequestDto : IRequestDto<IntroducerRequestDto>
+public class IntroducerRequestDto : IRequestDto
 {
     public int Id { get; set; }
 
-    public IntroducerRequestDto TransformValues()
+    public void TransformValues()
     {
-        return this;
     }
 }

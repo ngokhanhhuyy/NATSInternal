@@ -15,7 +15,7 @@ public class OrderListRequestDto :
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
 
-    public OrderListRequestDto TransformValues()
+    public void TransformValues()
     {
         OrderByField = OrderByField?.ToNullIfEmpty();
 
@@ -32,8 +32,6 @@ public class OrderListRequestDto :
                 Year = currentDateTime.Year;
             }
         }
-        
-        return this;
     }
 
     public enum FieldOptions

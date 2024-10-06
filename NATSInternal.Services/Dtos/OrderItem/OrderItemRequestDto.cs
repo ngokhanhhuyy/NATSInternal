@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class OrderItemRequestDto : IRequestDto<OrderItemRequestDto>
+public class OrderItemRequestDto : IRequestDto
 {
     public int? Id { get; set; }
     public long Amount { get; set; }
@@ -10,13 +10,11 @@ public class OrderItemRequestDto : IRequestDto<OrderItemRequestDto>
     public bool HasBeenChanged { get; set; }
     public bool HasBeenDeleted { get; set; }
         
-    public OrderItemRequestDto TransformValues()
+    public void TransformValues()
     {
             if (Id.HasValue && Id.Value == 0)
             {
                 Id = null;
             }
-            
-            return this;
         }
 }

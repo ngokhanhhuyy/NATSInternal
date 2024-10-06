@@ -10,8 +10,8 @@ public class SupplyItemResponseDto
     internal SupplyItemResponseDto(SupplyItem item)
     {
         Id = item.Id;
-        Amount = item.Amount;
-        SuppliedQuantity = item.SuppliedQuantity;
+        Amount = item.AmountPerUnit;
+        SuppliedQuantity = item.Quantity;
         Product = new ProductBasicResponseDto(item.Product);
     }
 }

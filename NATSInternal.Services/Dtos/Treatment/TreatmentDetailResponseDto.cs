@@ -1,9 +1,10 @@
 namespace NATSInternal.Services.Dtos;
 
 public class TreatmentDetailResponseDto
-    : IExportableDetailResponseDto<
+    : IProductExportableDetailResponseDto<
         CustomerBasicResponseDto,
         TreatmentItemResponseDto,
+        TreatmentPhotoResponseDto,
         TreatmentUpdateHistoryResponseDto,
         TreatmentAuthorizationResponseDto,
         CustomerAuthorizationResponseDto>
@@ -35,11 +36,11 @@ public class TreatmentDetailResponseDto
     {
         Id = treatment.Id;
         PaidDateTime = treatment.PaidDateTime;
-        ServiceAmount = treatment.ServiceAmount;
+        ServiceAmount = treatment.ServiceAmountBeforeVat;
         ServiceVatAmount = treatment.ServiceVatAmount;
-        ServiceVatFactor = treatment.ServiceVatPercentage;
-        ProductAmount = treatment.ItemProductAmount;
-        TotalAmountAfterVAT = treatment.TotalAmountAfterVAT;
+        ServiceVatFactor = treatment.ServiceVatAmount;
+        ProductAmount = treatment.ProductAmountBeforeVat;
+        TotalAmountAfterVAT = treatment.AmountAfterVat;
         Note = treatment.Note;
         IsLocked = treatment.IsLocked;
         Customer = new CustomerBasicResponseDto(treatment.Customer);

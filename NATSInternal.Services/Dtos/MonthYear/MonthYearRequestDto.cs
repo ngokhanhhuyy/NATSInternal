@@ -1,13 +1,12 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class MonthYearRequestDto : IRequestDto<MonthYearRequestDto>
+public class MonthYearRequestDto : IRequestDto
 {
     public int Month { get; set; }
     public int Year { get; set; }
 
-    public MonthYearRequestDto TransformValues()
+    public void TransformValues()
     {
-        return this;
     }
 
     public static MonthYearRequestDto CurrentMonthAndYear

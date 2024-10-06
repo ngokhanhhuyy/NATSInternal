@@ -11,8 +11,8 @@ public class OrderItemResponseDto
     internal OrderItemResponseDto(OrderItem item)
     {
         Id = item.Id;
-        Amount = item.Amount;
-        VatFactor = item.VatFactor;
+        Amount = item.AmountPerUnit;
+        VatFactor = item.VatAmountPerUnit;
         Quantity = item.Quantity;
         Product = new ProductBasicResponseDto(item.Product);
     }

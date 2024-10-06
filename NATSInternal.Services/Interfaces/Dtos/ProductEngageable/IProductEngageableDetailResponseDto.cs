@@ -7,6 +7,9 @@ namespace NATSInternal.Services.Interfaces.Dtos;
 /// The type of the item DTOs, containing the product-related engagements' information and the
 /// products' identities.
 /// </typeparam>
+/// <typeparam name="TPhoto">
+/// The type of the photo DTOs, containing the details of the associated photos.
+/// </typeparam>
 /// <typeparam name="TUpdateHistory">
 /// The type of the <c>UpdateHistory</c> DTOs, containing the update histories' information
 /// and the data of the entity before and after each modification.
@@ -15,12 +18,16 @@ namespace NATSInternal.Services.Interfaces.Dtos;
 /// The type of the authorization DTO, containing the information of the permissions to
 /// interact with the entity.
 /// </typeparam>
-public interface IProductEngageableDetailResponseDto<
+internal interface IProductEngageableDetailResponseDto<
         TProductItem,
+        TPhoto,
         TUpdateHistory,
         TAuthorization>
-    : IFinancialEngageableDetailResponseDto<TUpdateHistory, TAuthorization>
+    :
+        IFinancialEngageableDetailResponseDto<TUpdateHistory, TAuthorization>,
+        IHasPhotoDetailResponseDto<TPhoto>
     where TProductItem : IProductEngageableItemResponseDto
+    where TPhoto : IPhotoResponseDto
     where TUpdateHistory : IUpdateHistoryResponseDto
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
 {

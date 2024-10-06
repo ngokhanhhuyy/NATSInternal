@@ -1,34 +1,30 @@
 namespace NATSInternal.Services.Entities;
 
-[Table("expenses")]
-internal class Expense : LockableEntity
+internal class Expense
+    :
+        LockableEntity,
+        ICostEntity<Expense, User, ExpenseUpdateHistory>,
+        IHasPhotoEntity<Expense, ExpensePhoto>
 {
-    [Column("id")]
     [Key]
     public int Id { get; set; }
 
-    [Column("amount")]
     [Required]
     public long Amount { get; set; }
 
-    [Column("paid_datetime")]
     [Required]
     public DateTime PaidDateTime { get; set; }
     
-    [Column("category")]
     [Required]
     public ExpenseCategory Category { get; set; }
 
-    [Column("note")]
     [StringLength(255)]
     public string Note { get; set; }
 
     // Foreign keys
-    [Column("created_user_id")]
     [Required]
     public int CreatedUserId { get; set; }
 
-    [Column("payee_id")]
     [Required]
     public int PayeeId { get; set; }
 
@@ -52,6 +48,29 @@ internal class Expense : LockableEntity
     [NotMapped]
     public User LastUpdatedUser => UpdateHistories
         .OrderBy(uh => uh.UpdatedDateTime)
-        .Select(uh => uh.User)
+        .Select(uh => uh.UpdatedUser)
         .LastOrDefault();
+
+    [NotMapped]
+    public DateTime StatsDateTime
+    {
+        get => PaidDateTime;
+        set => PaidDateTime = value;
+    }
+    
+    // Model configurations.
+    public static void ConfigureModel(EntityTypeBuilder<Expense> entityBuilder)
+    {
+        entityBuilder.HasKey(ex => ex.Id);
+        entityBuilder.HasOne(ex => ex.CreatedUser)
+            .WithMany(u => u.Expenses)
+            .HasForeignKey(ex => ex.CreatedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        entityBuilder.HasOne(ex => ex.Payee)
+            .WithMany(exp => exp.Expenses)
+            .HasForeignKey(exp => exp.PayeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+        entityBuilder.Property(c => c.RowVersion)
+            .IsRowVersion();
+    }
 }

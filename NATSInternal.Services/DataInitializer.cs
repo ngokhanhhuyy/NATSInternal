@@ -836,8 +836,8 @@ public sealed class DataInitializer
                     Name = name,
                     Description = ValueOrNull(description),
                     Unit = units.Skip(random.Next(units.Length)).Take(1).Single(),
-                    Price = random.Next(25, 95) * 1000,
-                    VatFactor = 0.1M,
+                    DefaultPrice = random.Next(25, 95) * 1000,
+                    DefaultVatPercentage = 0.1M,
                     IsForRetail = random.Next(10) < 7,
                     IsDiscontinued = false,
                     CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),
@@ -899,18 +899,18 @@ public sealed class DataInitializer
 
                     SupplyItem supplyItem = new()
                     {
-                        Amount = product.Price,
-                        SuppliedQuantity = random.Next(50),
+                        AmountPerUnit = product.DefaultPrice,
+                        Quantity = random.Next(50),
                         ProductId = product.Id
                     };
 
-                    product.StockingQuantity += supplyItem.SuppliedQuantity;
+                    product.StockingQuantity += supplyItem.Quantity;
                     supplyItems.Add(supplyItem);
                 }
 
                 Supply supply = new()
                 {
-                    PaidDateTime = currentDateTime,
+                    SupplyDateTime = currentDateTime,
                     ShipmentFee = 0,
                     Note = faker.Lorem.Sentences(5),
                     CreatedDateTime = currentDateTime,
@@ -1039,8 +1039,8 @@ public sealed class DataInitializer
 
                     OrderItem item = new OrderItem
                     {
-                        Amount = product.Price,
-                        VatFactor = 0,
+                        AmountPerUnit = product.DefaultPrice,
+                        VatAmountPerUnit = 0,
                         Quantity = Math.Min(5, product.StockingQuantity),
                         ProductId = product.Id
                     };
@@ -1318,12 +1318,12 @@ public sealed class DataInitializer
             {
                 SupplyItem item = new SupplyItem
                 {
-                    Amount = (int)Math.Round(product.Price - product.Price * 0.35),
-                    SuppliedQuantity = 100 - product.StockingQuantity,
+                    AmountPerUnit = (int)Math.Round(product.DefaultPrice - product.DefaultPrice * 0.35),
+                    Quantity = 100 - product.StockingQuantity,
                     ProductId = product.Id,
                 };
                 items.Add(item);
-                product.StockingQuantity += item.SuppliedQuantity;
+                product.StockingQuantity += item.Quantity;
             }
         }
 
@@ -1332,7 +1332,7 @@ public sealed class DataInitializer
         {
             Supply supply = new()
             {
-                PaidDateTime = statsDateTime,
+                SupplyDateTime = statsDateTime,
                 CreatedDateTime = statsDateTime,
                 ShipmentFee = random.Next(200_000, 500_000),
                 Note = random.Next(0, 2) == 0 ? null : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
@@ -1487,8 +1487,8 @@ public sealed class DataInitializer
 
                 OrderItem item = new OrderItem
                 {
-                    Amount = product.Price,
-                    VatFactor = 0,
+                    AmountPerUnit = product.DefaultPrice,
+                    VatAmountPerUnit = 0,
                     Quantity = Math.Min(random.Next(1, 5), product.StockingQuantity),
                     ProductId = product.Id
                 };
@@ -1502,10 +1502,10 @@ public sealed class DataInitializer
                 .Include(ds => ds.Monthly)
                 .Where(ds => ds.RecordedDate == statsDate)
                 .Single();
-            dailyStats.RetailGrossRevenue += order.BeforeVatAmount;
-            dailyStats.VatCollectedAmount += order.VatAmount;
-            dailyStats.Monthly.RetailGrossRevenue += order.BeforeVatAmount;
-            dailyStats.Monthly.VatCollectedAmount += order.VatAmount;
+            dailyStats.RetailGrossRevenue += order.ProductAmountBeforeVat;
+            dailyStats.VatCollectedAmount += order.ProductVatAmount;
+            dailyStats.Monthly.RetailGrossRevenue += order.ProductAmountBeforeVat;
+            dailyStats.Monthly.VatCollectedAmount += order.ProductVatAmount;
 
             _context.SaveChanges();
 
@@ -1547,8 +1547,8 @@ public sealed class DataInitializer
             {
                 PaidDateTime = statsDateTime,
                 CreatedDateTime = statsDateTime,
-                ServiceAmount = random.Next(1_000, 2_000) * 1000,
-                ServiceVatPercentage = random.Next(0, 20),
+                ServiceAmountBeforeVat = random.Next(1_000, 2_000) * 1000,
+                ServiceVatAmount = random.Next(0, 20),
                 Note = random.Next(0, 2) == 0 ? null : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
                 CustomerId = customerIds.MinBy(_ => Guid.NewGuid()),
                 CreatedUserId = userIds.MinBy(_ => Guid.NewGuid()),
@@ -1571,7 +1571,7 @@ public sealed class DataInitializer
 
                 TreatmentItem item = new TreatmentItem
                 {
-                    AmountBeforeVatPerUnit = product.Price,
+                    AmountBeforeVatPerUnit = product.DefaultPrice,
                     VatAmountPerUnit = 0,
                     Quantity = Math.Min(random.Next(1, 5), product.StockingQuantity),
                     ProductId = product.Id
@@ -1585,10 +1585,10 @@ public sealed class DataInitializer
             DailyStats dailyStats = _context.DailyStats
                 .Include(ds => ds.Monthly)
                 .Single(ds => ds.RecordedDate == statsDate);
-            dailyStats.TreatmentGrossRevenue += treatment.Amount;
-            dailyStats.VatCollectedAmount += treatment.VatAmount;
-            dailyStats.Monthly.TreatmentGrossRevenue += treatment.Amount;
-            dailyStats.Monthly.VatCollectedAmount += treatment.VatAmount;
+            dailyStats.TreatmentGrossRevenue += treatment.AmountBeforeVat;
+            dailyStats.VatCollectedAmount += treatment.ProductVatAmount;
+            dailyStats.Monthly.TreatmentGrossRevenue += treatment.AmountBeforeVat;
+            dailyStats.Monthly.VatCollectedAmount += treatment.ProductVatAmount;
 
             _context.SaveChanges();
 
@@ -1621,7 +1621,7 @@ public sealed class DataInitializer
         {
             PaidDateTime = statsDateTime,
             CreatedDateTime = statsDateTime,
-            Amount = random.Next(500, 2_500) * 1000,
+            AmountBeforeVat = random.Next(500, 2_500) * 1000,
             Note = random.Next(0, 2) == 0 ? null : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
             CustomerId = customerIds.MinBy(_ => Guid.NewGuid()),
             CreatedUserId = userIds.MinBy(_ => Guid.NewGuid())
@@ -1634,8 +1634,8 @@ public sealed class DataInitializer
             .Include(ds => ds.Monthly)
             .Where(ds => ds.RecordedDate == statsDate)
             .Single();
-        dailyStats.ConsultantGrossRevenue += consultant.Amount;
-        dailyStats.Monthly.ConsultantGrossRevenue += consultant.Amount;
+        dailyStats.ConsultantGrossRevenue += consultant.AmountBeforeVat;
+        dailyStats.Monthly.ConsultantGrossRevenue += consultant.AmountBeforeVat;
 
         _context.SaveChanges();
 

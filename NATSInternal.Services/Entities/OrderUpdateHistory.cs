@@ -1,39 +1,48 @@
 ﻿namespace NATSInternal.Services.Entities;
 
-[Table("order_update_histories")]
-internal class OrderUpdateHistory
+internal class OrderUpdateHistory : IUpdateHistoryEntity<OrderUpdateHistory, User>
 {
-    [Column("id")]
     [Key]
     public int Id { get; set; }
 
-    [Column("updated_datetime")]
     [Required]
     public DateTime UpdatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
 
-    [Column("reason")]
     [StringLength(255)]
     public string Reason { get; set; }
 
-    [Column("old_data", TypeName = "JSON")]
     [StringLength(1000)]
     public string OldData { get; set; }
 
-    [Column("new_data", TypeName = "JSON")]
     [Required]
     [StringLength(1000)]
     public string NewData { get; set; }
 
     // Foreign keys
-    [Column("order_id")]
     [Required]
     public int OrderId { get; set; }
 
-    [Column("user_id")]
     [Required]
-    public int UserId { get; set; }
+    public int UpdatedUserId { get; set; }
 
     // Navigation properties.
     public virtual Order Order { get; set; }
-    public virtual User User { get; set; }
+    public virtual User UpdatedUser { get; set; }
+
+    // Model configurations.
+    public static void ConfigureModel(EntityTypeBuilder<OrderUpdateHistory> entityBuilder)
+    {
+        entityBuilder.HasKey(ouh => ouh.Id);
+        entityBuilder.HasOne(ouh => ouh.Order)
+            .WithMany(o => o.UpdateHistories)
+            .HasForeignKey(ouh => ouh.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+        entityBuilder.HasOne(ouh => ouh.UpdatedUser)
+            .WithMany(u => u.OrderUpdateHistories)
+            .HasForeignKey(ouh => ouh.UpdatedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        entityBuilder.HasIndex(ouh => ouh.UpdatedDateTime);
+        entityBuilder.Property(ouh => ouh.OldData).HasColumnType("JSON");
+        entityBuilder.Property(ouh => ouh.NewData).HasColumnType("JSON");
+    }
 }

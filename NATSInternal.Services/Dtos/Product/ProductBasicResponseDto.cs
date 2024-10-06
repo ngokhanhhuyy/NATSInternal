@@ -28,7 +28,7 @@ public class ProductBasicResponseDto
         Id = product.Id;
         Name = product.Name;
         Unit = product.Unit;
-        Price = product.Price;
+        Price = product.DefaultPrice;
         StockingQuantity = product.StockingQuantity;
         ThumbnailUrl = product.ThumbnailUrl;
     }

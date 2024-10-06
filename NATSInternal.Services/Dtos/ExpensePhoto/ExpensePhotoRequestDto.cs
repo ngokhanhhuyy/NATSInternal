@@ -1,13 +1,12 @@
 namespace NATSInternal.Services.Dtos;
 
-public class ExpensePhotoRequestDto : IRequestDto<ExpensePhotoRequestDto>
+public class ExpensePhotoRequestDto : IPhotoRequestDto
 {
     public int? Id { get; set; }
     public byte[] File { get; set; }
     public bool HasBeenChanged { get; set; }
     
-    public ExpensePhotoRequestDto TransformValues()
+    public void TransformValues()
     {
-        return this;
     }
 }

@@ -13,7 +13,7 @@ public class ExpenseListRequestDto :
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
     
-    public ExpenseListRequestDto TransformValues()
+    public void TransformValues()
     {
         OrderByField = OrderByField?.ToNullIfEmpty();
 
@@ -30,8 +30,6 @@ public class ExpenseListRequestDto :
                 Year = currentDateTime.Year;
             }
         }
-
-        return this;
     }
     
     public enum FieldOptions

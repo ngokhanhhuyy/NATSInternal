@@ -136,7 +136,7 @@ public static class DisplayNames
             throw new ArgumentNullException(nameof(objectName));
         }
         return names
-            .Where(pair => pair.Key == objectName.ToWordsFirstLetterCapitalized())
+            .Where(pair => pair.Key == objectName.CapitalizeFirstLetter())
             .Select(pair => pair.Value)
             .Single();
     }
@@ -150,7 +150,7 @@ public static class DisplayNames
         return Get(objectName
             .Reverse()
             .Where(name => name != null)
-            .Select(name => name.ToString().ToWordsFirstLetterCapitalized())
+            .Select(name => name.ToString().CapitalizeFirstLetter())
             .First());
     }
 }

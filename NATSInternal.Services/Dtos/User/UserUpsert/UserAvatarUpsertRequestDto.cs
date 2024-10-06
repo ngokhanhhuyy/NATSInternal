@@ -1,12 +1,11 @@
 namespace NATSInternal.Services.Dtos;
 
-public class UserAvatarUpsertRequestDto : IRequestDto<UserAvatarUpsertRequestDto>
+public class UserAvatarUpsertRequestDto : IRequestDto
 {
     public bool HasChanged { get; set; }
     public byte[] Content { get; init; }
 
-    public UserAvatarUpsertRequestDto TransformValues()
+    public void TransformValues()
     {
-        return this;
     }
 }

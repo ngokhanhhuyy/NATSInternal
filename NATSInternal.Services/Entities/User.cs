@@ -1,72 +1,55 @@
 namespace NATSInternal.Services.Entities;
 
-[Table("users")]
-internal class User : IdentityUser<int>, IUserEntity
+internal class User : IdentityUser<int>, IUserEntity<User>
 {
-    [Column("first_name")]
     [Required]
     [StringLength(10)]
-    public required string FirstName { get; set; }
+    public string FirstName { get; set; }
 
-    [Column("normalized_first_name")]
     [Required]
     [StringLength(10)]
-    public required string NormalizedFirstName { get; set; }
+    public string NormalizedFirstName { get; set; }
 
-    [Column("middle_name")]
     [StringLength(20)]
     public string MiddleName { get; set; }
 
-    [Column("normalized_middle_name")]
     [StringLength(20)]
     public string NormalizedMiddleName { get; set; }
 
-    [Column("last_name")]
     [Required]
     [StringLength(10)]
-    public required string LastName { get; set; }
+    public string LastName { get; set; }
 
-    [Column("normalized_last_name")]
     [Required]
     [StringLength(10)]
-    public required string NormalizedLastName { get; set; }
+    public string NormalizedLastName { get; set; }
 
-    [Column("full_name")]
     [Required]
     [StringLength(45)]
-    public required string FullName { get; set; }
+    public string FullName { get; set; }
 
-    [Column("normalized_full_name")]
     [Required]
     [StringLength(45)]
-    public required string NormalizedFullName { get; set; }
+    public string NormalizedFullName { get; set; }
 
-    [Column("gender")]
     [Required]
     public Gender Gender { get; set; }
 
-    [Column("birthday")]
     public DateOnly? Birthday { get; set; }
 
-    [Column("joining_date")]
     public DateOnly? JoiningDate { get; set; }
 
-    [Column("created_datetime")]
     [Required]
     public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
 
-    [Column("updated_datetime")]
     public DateTime? UpdatedDateTime { get; set; }
 
-    [Column("note")]
     [StringLength(255)]
     public string Note { get; set; }
 
-    [Column("avatar_url")]
     [StringLength(255)]
     public string AvatarUrl { get; set; }
 
-    [Column("is_deleted")]
     [Required]
     public bool IsDeleted { get; set; }
 
@@ -75,7 +58,6 @@ internal class User : IdentityUser<int>, IUserEntity
 
     // Navigation properties.
     public virtual List<Role> Roles { get; set; }
-    public virtual List<UserRefreshToken> RefreshTokens { get; set; }
     public virtual List<Customer> CreatedCustomers { get; set; }
     public virtual List<Supply> Supplies { get; set; }
     public virtual List<SupplyUpdateHistory> SupplyUpdateHistories { get; set; }
@@ -99,25 +81,37 @@ internal class User : IdentityUser<int>, IUserEntity
 
     // Properties for convinience.
     [NotMapped]
-    public Role Role => Roles.OrderByDescending(r => r.PowerLevel).SingleOrDefault();
+    public Role Role => Roles
+        .OrderByDescending(r => r.PowerLevel)
+        .SingleOrDefault();
 
     [NotMapped]
     public int PowerLevel => Role.PowerLevel;
 
     [NotMapped]
-    public List<Supply> UpdatedSupplies => SupplyUpdateHistories.Select(suh => suh.Supply).ToList();
+    public List<Supply> UpdatedSupplies => SupplyUpdateHistories
+        .Select(suh => suh.Supply)
+        .ToList();
 
     [NotMapped]
-    public List<Expense> UpdatedExpenses => ExpenseUpdateHistories.Select(euh => euh.Expense).ToList();
+    public List<Expense> UpdatedExpenses => ExpenseUpdateHistories
+        .Select(euh => euh.Expense)
+        .ToList();
 
     [NotMapped]
-    public List<Order> UpdatedOrders => OrderUpdateHistories.Select(ouh => ouh.Order).ToList();
+    public List<Order> UpdatedOrders => OrderUpdateHistories
+        .Select(ouh => ouh.Order)
+        .ToList();
 
     [NotMapped]
-    public List<Treatment> UpdatedTreatments => TreatmentUpdateHistories.Select(tuh => tuh.Treatment).ToList();
+    public List<Treatment> UpdatedTreatments => TreatmentUpdateHistories
+        .Select(tuh => tuh.Treatment)
+        .ToList();
 
     [NotMapped]
-    public List<DebtIncurrence> UpdatedDebts => DebtUpdateHistories.Select(duh => duh.DebtIncurrence).ToList();
+    public List<DebtIncurrence> UpdatedDebts => DebtUpdateHistories
+        .Select(duh => duh.DebtIncurrence)
+        .ToList();
 
     [NotMapped]
     public List<DebtPayment> UpdatedDebtPayments => DebtPaymentUpdateHistories
@@ -126,6 +120,29 @@ internal class User : IdentityUser<int>, IUserEntity
 
     public bool HasPermission(string permissionName)
     {
-        return Role.Claims.Any(r => r.ClaimType == "Permission" && r.ClaimValue == permissionName);
+        return Role.Claims
+            .Any(r => r.ClaimType == "Permission" && r.ClaimValue == permissionName);
+    }
+    
+    // Model configurations.
+    public static void ConfigureModel(EntityTypeBuilder<User> entityBuilder)
+    {
+        entityBuilder.HasKey(u => u.Id);
+        entityBuilder.HasMany(u => u.Roles)
+            .WithMany(r => r.Users)
+            .UsingEntity<UserRole>(
+                userRole => userRole
+                    .HasOne(ur => ur.Role)
+                    .WithMany()
+                    .HasForeignKey(ur => ur.RoleId),
+                userRole => userRole
+                    .HasOne(ur => ur.User)
+                    .WithMany()
+                    .HasForeignKey(ur => ur.UserId));
+        entityBuilder.HasIndex(u => u.UserName)
+            .IsUnique();
+        entityBuilder.HasKey(u => u.Id);
+        entityBuilder.Property(c => c.RowVersion)
+            .IsRowVersion();
     }
 }

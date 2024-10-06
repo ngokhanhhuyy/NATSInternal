@@ -1,11 +1,10 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class CountryRequestDto : IRequestDto<CountryRequestDto>
+public class CountryRequestDto : IRequestDto
 {
     public int Id { get; set; }
 
-    public CountryRequestDto TransformValues()
+    public void TransformValues()
     {
-        return this;
     }
 }

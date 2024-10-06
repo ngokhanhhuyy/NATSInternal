@@ -25,7 +25,7 @@ public class ConsultantUpdateHistoryResponseDto
         _newData = JsonSerializer
             .Deserialize<ConsultantUpdateHistoryDataDto>(updateHistory.NewData);
         UpdatedDateTime = updateHistory.UpdatedDateTime;
-        UpdatedUser = new UserBasicResponseDto(updateHistory.User);
+        UpdatedUser = new UserBasicResponseDto(updateHistory.UpdatedUser);
         Reason = updateHistory.Reason;
     }
 }

@@ -13,8 +13,8 @@ public class OrderItemUpdateHistoryDataDto
     internal OrderItemUpdateHistoryDataDto(OrderItem item)
     {
         Id = item.Id;
-        Amount = item.Amount;
-        VatFactor = item.VatFactor;
+        Amount = item.AmountPerUnit;
+        VatFactor = item.VatAmountPerUnit;
         Quantity = item.Quantity;
         ProductName = item.Product.Name;
     }

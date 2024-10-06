@@ -45,17 +45,17 @@ internal class ConsultantService : LockableEntityService, IConsultantService
         {
             case nameof(ConsultantListRequestDto.FieldOptions.Amount):
                 query = requestDto.OrderByAscending
-                    ? query.OrderBy(e => e.Amount)
+                    ? query.OrderBy(e => e.AmountBeforeVat)
                         .ThenBy(e => e.PaidDateTime)
-                    : query.OrderByDescending(e => e.Amount)
+                    : query.OrderByDescending(e => e.AmountBeforeVat)
                         .ThenByDescending(e => e.PaidDateTime);
                 break;
             default:
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(e => e.PaidDateTime)
-                        .ThenBy(e => e.Amount)
+                        .ThenBy(e => e.AmountBeforeVat)
                     : query.OrderByDescending(e => e.PaidDateTime)
-                        .ThenByDescending(e => e.Amount);
+                        .ThenByDescending(e => e.AmountBeforeVat);
                 break;
         }
 
@@ -136,7 +136,7 @@ internal class ConsultantService : LockableEntityService, IConsultantService
         DateTime paidDateTime = DateTime.UtcNow.ToApplicationTime();
         if (requestDto.PaidDateTime.HasValue)
         {
-            // Check if the current user has permission to specify the PaidDateTime.
+            // Check if the current user has permission to specify the SupplyDateTime.
             if (!_authorizationService.CanSetExpensePaidDateTime())
             {
                 throw new AuthorizationException();
@@ -148,7 +148,7 @@ internal class ConsultantService : LockableEntityService, IConsultantService
         // Initialize entity.
         Consultant consultant = new Consultant
         {
-            Amount = requestDto.Amount,
+            AmountBeforeVat = requestDto.Amount,
             PaidDateTime = paidDateTime,
             Note = requestDto.Note,
             CustomerId = requestDto.CustomerId,
@@ -164,7 +164,7 @@ internal class ConsultantService : LockableEntityService, IConsultantService
             // Consultant can be created successfully, adjust the stats.
             DateOnly paidDate = DateOnly.FromDateTime(paidDateTime);
             await _statsService
-                .IncrementConsultantGrossRevenueAsync(consultant.Amount, paidDate);
+                .IncrementConsultantGrossRevenueAsync(consultant.AmountBeforeVat, paidDate);
 
             // Commit the transaction and finish the operation.
             await transaction.CommitAsync();
@@ -229,10 +229,10 @@ internal class ConsultantService : LockableEntityService, IConsultantService
         // Store the old data for history logging and stats adjustment.
         ConsultantUpdateHistoryDataDto oldData;
         oldData = new ConsultantUpdateHistoryDataDto(consultant);
-        long oldAmount = consultant.Amount;
+        long oldAmount = consultant.AmountBeforeVat;
         DateOnly oldPaidDate = DateOnly.FromDateTime(consultant.PaidDateTime);
 
-        // Determining the PaidDateTime value based on the specified data from the request.
+        // Determining the SupplyDateTime value based on the specified data from the request.
         if (requestDto.PaidDateTime.HasValue)
         {
             // Check if the current user has permission to specify the paid datetime.
@@ -241,7 +241,7 @@ internal class ConsultantService : LockableEntityService, IConsultantService
                 throw new AuthorizationException();
             }
 
-            // Prevent the consultant's PaidDateTime to be modified when the consultant is
+            // Prevent the consultant's SupplyDateTime to be modified when the consultant is
             // locked.
             if (consultant.IsLocked)
             {
@@ -253,10 +253,10 @@ internal class ConsultantService : LockableEntityService, IConsultantService
                     errorMessage);
             }
 
-            // Assign the new PaidDateTime value only if it's different from the old one.
+            // Assign the new SupplyDateTime value only if it's different from the old one.
             if (requestDto.PaidDateTime.Value != consultant.PaidDateTime)
             {
-                // Validate the specfied PaidDateTime from the request.
+                // Validate the specfied SupplyDateTime from the request.
                 try
                 {
                     _statsService.ValidateStatsDateTime(
@@ -277,7 +277,7 @@ internal class ConsultantService : LockableEntityService, IConsultantService
         }
 
         // Update fields.
-        consultant.Amount = requestDto.Amount;
+        consultant.AmountBeforeVat = requestDto.Amount;
         consultant.Note = requestDto.Note;
 
         // Storing new data for update history logging.
@@ -300,7 +300,7 @@ internal class ConsultantService : LockableEntityService, IConsultantService
 
             // Adjust new stats.
             await _statsService.IncrementConsultantGrossRevenueAsync(
-                consultant.Amount,
+                consultant.AmountBeforeVat,
                 DateOnly.FromDateTime(consultant.PaidDateTime));
 
             // Commit the transaction and finishing the operation.
@@ -364,7 +364,7 @@ internal class ConsultantService : LockableEntityService, IConsultantService
 
             // The expense can be deleted sucessfully without any error, revert the stats.
             await _statsService.IncrementConsultantGrossRevenueAsync(
-                -consultant.Amount,
+                -consultant.AmountBeforeVat,
                 DateOnly.FromDateTime(consultant.PaidDateTime));
         }
         catch (DbUpdateException exception)
@@ -406,7 +406,7 @@ internal class ConsultantService : LockableEntityService, IConsultantService
             Reason = reason,
             OldData = JsonSerializer.Serialize(oldData),
             NewData = JsonSerializer.Serialize(newData),
-            UserId = _authorizationService.GetUserId()
+            UpdatedUserId = _authorizationService.GetUserId()
         };
 
         if (consultant.UpdateHistories == null)

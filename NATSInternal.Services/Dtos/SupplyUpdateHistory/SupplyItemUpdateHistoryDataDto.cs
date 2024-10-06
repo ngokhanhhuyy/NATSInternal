@@ -10,8 +10,8 @@ public class SupplyItemUpdateHistoryDataDto
     internal SupplyItemUpdateHistoryDataDto(SupplyItem item)
     {
         Id = item.Id;
-        Amount = item.Amount;
-        SuppliedQuantity = item.SuppliedQuantity;
+        Amount = item.AmountPerUnit;
+        SuppliedQuantity = item.Quantity;
         ProductName = item.Product.Name;
     }
 }

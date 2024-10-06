@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class CustomerListRequestDto : IRequestDto<CustomerListRequestDto>
+public class CustomerListRequestDto : IRequestDto
 {
     public bool OrderByAscending { get; set; } = true;
     public string OrderByField { get; set; } = nameof(FieldToBeOrdered.LastName);
@@ -9,11 +9,10 @@ public class CustomerListRequestDto : IRequestDto<CustomerListRequestDto>
     public int ResultsPerPage { get; set; } = 15;
     public bool HasRemainingDebtAmountOnly { get; set; }
 
-    public CustomerListRequestDto TransformValues()
+    public void TransformValues()
     {
         OrderByField = OrderByField?.ToNullIfEmpty();
         SearchByContent = SearchByContent?.ToNullIfEmpty();
-        return this;
     }
 
     public enum FieldToBeOrdered

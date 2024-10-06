@@ -50,7 +50,7 @@ public interface IDebtPaymentService
     /// </returns>
     /// <exception cref="AuthorizationException">
     /// Throws when the requesting user doesn't have enough permissions to specify a value
-    /// for the <c>PaidDateTime</c> property in the <c>requestDto</c> argument.
+    /// for the <c>SupplyDateTime</c> property in the <c>requestDto</c> argument.
     /// </exception>
     /// <exception cref="ConcurrencyException">
     /// Throws when the information of the requesting user has already been deleted before the
@@ -86,16 +86,16 @@ public interface IDebtPaymentService
     /// Throws under the following circumstances:<br/>
     /// - When the requesting user doesn't have enough permissions to update the debt payment.
     /// - When the requesting user can update the debt payment, but doesn't have enough
-    /// permissions to specify a value for the <c>PaidDateTime</c> property in the
+    /// permissions to specify a value for the <c>SupplyDateTime</c> property in the
     /// <c>requestDto</c> argument.
     /// </exception>
     /// <exception cref="ValidationException">
-    /// Throws when the value of the <c>PaidDateTime</c> property in the <c>requestDto</c>
+    /// Throws when the value of the <c>SupplyDateTime</c> property in the <c>requestDto</c>
     /// argument is invalid.
     /// </exception>
     /// <exception cref="OperationException">
     /// Throws under the following circumstances:<br/>
-    /// - When the <c>PaidDateTime</c> property in the <c>requestDto</c> argument is specified
+    /// - When the <c>SupplyDateTime</c> property in the <c>requestDto</c> argument is specified
     /// a value while the debt payment has already been locked.
     /// - When the remaining debt amount of the associated customer becomes negative after the
     /// operation.

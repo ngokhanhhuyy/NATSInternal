@@ -10,7 +10,7 @@ public static class StringExtensions
         return string.IsNullOrWhiteSpace(value?.Trim()) ? null : value.Trim();
     }
 
-    public static string ToWordsFirstLetterCapitalized(this string value)
+    public static string CapitalizeFirstLetter(this string value)
     {
         string result = string.Empty;
         for (int i = 0; i < value.Length; i++) {
@@ -23,7 +23,7 @@ public static class StringExtensions
         return result;
     }
 
-    public static string CamelCaseToPascalCase(this string camelCaseString)
+    public static string SnakeCaseToPascalCase(this string camelCaseString)
     {
         string[] camelCaseWords = camelCaseString.Split("_");
         List<string> pascalCaseWords = new List<string>();
@@ -38,7 +38,53 @@ public static class StringExtensions
         }
         return string.Join("", pascalCaseWords);
     }
-    
+
+    public static string PascalCaseToSnakeCase(this string pascalCaseString)
+    {
+        List<string> snakeCaseWords = new List<string>();
+
+        if (pascalCaseString.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        if (pascalCaseString.Length == 1)
+        {
+            return pascalCaseString.ToUpper();
+        }
+
+        int startingIndex = 0;
+        for (int i = 1; i < pascalCaseString.Length; i++)
+        {
+            char character = pascalCaseString[i];
+            bool isUpper = char.IsUpper(character);
+            bool isTheEnd = i == pascalCaseString.Length - 1;
+
+            if (
+                    isTheEnd ||
+                    (
+                        isUpper &&
+                        (
+                            char.IsLower(pascalCaseString[i - 1]) ||
+                            char.IsLower(pascalCaseString[i + 1])
+                        )
+                    )
+                )
+            {
+                string snakeCaseWord = pascalCaseString[startingIndex..i].ToLower();
+                if (isTheEnd)
+                {
+                    snakeCaseWord += char.ToLower(character).ToString();
+                }
+
+                snakeCaseWords.Add(snakeCaseWord);
+                startingIndex = i;
+            }
+        }
+
+        return string.Join("_", snakeCaseWords);
+    }
+
     public static string ToNonDiacritics(this string value)
     {
         string normalizedString = value.Normalize(NormalizationForm.FormD);

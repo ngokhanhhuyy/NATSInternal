@@ -12,7 +12,7 @@ public class ConsultantListRequestDto :
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
 
-    public ConsultantListRequestDto TransformValues()
+    public void TransformValues()
     {
         OrderByField = OrderByField?.ToNullIfEmpty();
 
@@ -29,8 +29,6 @@ public class ConsultantListRequestDto :
                 Year = currentDateTime.Year;
             }
         }
-
-        return this;
     }
 
     public enum FieldOptions

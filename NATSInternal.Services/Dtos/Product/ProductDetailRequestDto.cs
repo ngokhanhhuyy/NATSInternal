@@ -1,13 +1,12 @@
 namespace NATSInternal.Services.Dtos;
 
-public class ProductDetailRequestDto : IRequestDto<ProductDetailRequestDto>
+public class ProductDetailRequestDto : IRequestDto
 {
     public int RecentSuppliesResultCount { get; set; } = 5;
     public int RecentOrdersResultCount { get; set; } = 5;
     public int RecentTreatmentsResultCount { get; set; } = 5;
 
-    public ProductDetailRequestDto TransformValues()
+    public void TransformValues()
     {
-        return this;
     }
 }

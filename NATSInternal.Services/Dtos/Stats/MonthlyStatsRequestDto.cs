@@ -1,12 +1,11 @@
 namespace NATSInternal.Services.Dtos;
 
-public class MonthlyStatsRequestDto : IRequestDto<MonthlyStatsRequestDto>
+public class MonthlyStatsRequestDto : IRequestDto
 {
     public int RecordedMonth { get; set; }
     public int RecordedYear { get; set; }
 
-    public MonthlyStatsRequestDto TransformValues()
+    public void TransformValues()
     {
-        return this;
     }
 }

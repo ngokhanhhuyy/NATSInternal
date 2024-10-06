@@ -1,23 +1,18 @@
 namespace NATSInternal.Services.Entities;
 
-[Table("treatment_photos")]
-internal class TreatmentPhoto
+internal class TreatmentPhoto : IPhotoEntity<TreatmentPhoto>
 {
-    [Column("id")]
     [Key]
     public int Id { get; set; }
 
-    [Column("url")]
     [Required]
     [StringLength(255)]
     public string Url { get; set; }
 
-    [Column("treatment_photo_type")]
     [Required]
     public TreatmentPhotoType Type { get; set; }
 
     // Foreign key
-    [Column("treatment_id")]
     [Required]
     public int TreatmentId { get; set; }
 
@@ -27,4 +22,18 @@ internal class TreatmentPhoto
 
     // Relationships
     public virtual Treatment Treatment { get; set; }
+
+    // Model configurations.
+    public static void ConfigureModel(EntityTypeBuilder<TreatmentPhoto> entityBuilder)
+    {
+        entityBuilder.HasKey(tp => tp.Id);
+        entityBuilder.HasOne(p => p.Treatment)
+            .WithMany(t => t.Photos)
+            .HasForeignKey(p => p.TreatmentId)
+            .OnDelete(DeleteBehavior.Cascade);
+        entityBuilder.HasIndex(p => p.Url)
+            .IsUnique();
+        entityBuilder.Property(c => c.RowVersion)
+            .IsRowVersion();
+    }
 }

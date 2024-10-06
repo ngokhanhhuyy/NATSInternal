@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class AnnouncementUpsertRequestDto : IRequestDto<AnnouncementUpsertRequestDto>
+public class AnnouncementUpsertRequestDto : IRequestDto
 {
     public AnnouncementCategory Category { get; set; }
     public string Title { get; set; }
@@ -8,10 +8,9 @@ public class AnnouncementUpsertRequestDto : IRequestDto<AnnouncementUpsertReques
     public DateTime? StartingDateTime { get; set; }
     public int IntervalInMinutes { get; set; }
 
-    public AnnouncementUpsertRequestDto TransformValues()
+    public void TransformValues()
     {
         Title = Title?.ToNullIfEmpty();
         Content = Content?.ToNullIfEmpty();
-        return this;
     }
 }

@@ -1,14 +1,13 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class AccessTokenExchangeRequestDto : IRequestDto<AccessTokenExchangeRequestDto>
+public class AccessTokenExchangeRequestDto : IRequestDto
 {
     public string ExpiredAccessToken { get; set; }
     public string RefreshToken { get; set; }
 
-    public AccessTokenExchangeRequestDto TransformValues()
+    public void TransformValues()
     {
         ExpiredAccessToken = ExpiredAccessToken?.ToNullIfEmpty();
         RefreshToken = ExpiredAccessToken?.ToNullIfEmpty();
-        return this;
     }
 }

@@ -203,11 +203,11 @@ internal class AuthenticationService : IAuthenticationService
     }
 
     /// <summary>
-    /// Generate an access token assiocated to the specified <c>User</c> with the
+    /// Generate an access token assiocated to the specified <c>UpdatedUser</c> with the
     /// specified <c>DateTime</c> object representing the expiring datetime.
     /// </summary>
     /// <param name="user">
-    /// The <c>User</c> entity which the generating access token is assiociated with.
+    /// The <c>UpdatedUser</c> entity which the generating access token is assiociated with.
     /// </param>
     /// <param name="expiringDateTime">
     /// An <c>DateTime</c> object representing the expiring datetime of the token.

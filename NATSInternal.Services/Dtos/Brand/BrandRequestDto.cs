@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class BrandRequestDto : IRequestDto<BrandRequestDto>
+public class BrandRequestDto : IRequestDto
 {
     public int Id { get; set; }
     public string Name { get; set; }
@@ -13,7 +13,7 @@ public class BrandRequestDto : IRequestDto<BrandRequestDto>
     public bool ThumbnailChanged { get; set; }
     public CountryRequestDto Country { get; set; }
 
-    public BrandRequestDto TransformValues()
+    public void TransformValues()
     {
         Name = Name?.ToNullIfEmpty();
         Website = Website?.ToNullIfEmpty();
@@ -22,6 +22,5 @@ public class BrandRequestDto : IRequestDto<BrandRequestDto>
         Email = Email?.ToNullIfEmpty();
         Address = Address?.ToNullIfEmpty();
         Country = Country?.TransformValues();
-        return this;
     }
 }

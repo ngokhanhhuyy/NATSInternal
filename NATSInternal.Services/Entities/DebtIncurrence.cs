@@ -1,33 +1,28 @@
 ﻿namespace NATSInternal.Services.Entities;
 
-[Table("debt_incurrences")]
-internal class DebtIncurrence : LockableEntity
+internal class DebtIncurrence
+    :
+        LockableEntity,
+        IDebtEntity<DebtIncurrence, Customer, User, DebtIncurrenceUpdateHistory>
 {
-    [Column("id")]
     [Key]
     public int Id { get; set; }
 
-    [Column("amount")]
     [Required]
     public long Amount { get; set; }
 
-    [Column("note")]
     [StringLength(255)]
     public string Note { get; set; }
     
-    [Column("incurred_datetime")]
     public DateTime IncurredDateTime { get; set; }
 
-    [Column("is_deleted")]
     [Required]
     public bool IsDeleted { get; set; }
 
     // Foreign keys.
-    [Column("customer_id")]
     [Required]
     public int CustomerId { get; set; }
 
-    [Column("created_user_id")]
     [Required]
     public int CreatedUserId { get; set; }
 
@@ -45,6 +40,29 @@ internal class DebtIncurrence : LockableEntity
     [NotMapped]
     public User LastUpdatedUser => UpdateHistories
         .OrderBy(uh => uh.UpdatedDateTime)
-        .Select(uh => uh.User)
+        .Select(uh => uh.UpdatedUser)
         .LastOrDefault();
+
+    [NotMapped]
+    public DateTime StatsDateTime
+    {
+        get => IncurredDateTime;
+        set => IncurredDateTime = value;
+    }
+    
+    // Model configurations.
+    public static void ConfigureModel(EntityTypeBuilder<DebtIncurrence> entityBuilder)
+    {
+        entityBuilder.HasKey(d => d.Id);
+        entityBuilder.HasOne(d => d.Customer)
+            .WithMany(c => c.DebtIncurrences)
+            .HasForeignKey(d => d.CustomerId)
+            .OnDelete(DeleteBehavior.Restrict);
+        entityBuilder.HasOne(d => d.CreatedUser)
+            .WithMany(u => u.Debts)
+            .HasForeignKey(d => d.CreatedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        entityBuilder.HasIndex(d => d.CreatedDateTime);
+        entityBuilder.HasIndex(d => d.IsDeleted);
+    }
 }

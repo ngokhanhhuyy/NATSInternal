@@ -1,9 +1,12 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface IFinancialEngageableDetailResponseDto<TUpdateHistory, TAuthorization>
+internal interface IFinancialEngageableDetailResponseDto<TUpdateHistory, TAuthorization>
     :
         IFinancialEngageableBasicResponseDto<TAuthorization>,
         ICreatorTrackableDetailResponseDto<TAuthorization>,
         IUpdaterTrackableDetailResponseDto<TUpdateHistory, TAuthorization>
     where TUpdateHistory : IUpdateHistoryResponseDto
-    where TAuthorization : IFinancialEngageableAuthorizationResponseDto;
+    where TAuthorization : IFinancialEngageableAuthorizationResponseDto
+{
+    string Note { get; }
+}

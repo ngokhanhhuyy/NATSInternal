@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Entities;
 
-internal class ExpensePayee
+internal class ExpensePayee : IIdentifiableEntity<ExpensePayee>
 {
     [Key]
     public int Id { get; set; }
@@ -15,4 +15,13 @@ internal class ExpensePayee
 
     // Navigation properties
     public virtual List<Expense> Expenses { get; set; }
+
+    // Model configurations.
+    public static void ConfigureModel(EntityTypeBuilder<ExpensePayee> entityBuilder)
+    {
+        entityBuilder.HasIndex(ep => ep.Name)
+            .IsUnique();
+        entityBuilder.Property(c => c.RowVersion)
+            .IsRowVersion();
+    }
 }

@@ -1,12 +1,11 @@
 namespace NATSInternal.Services.Dtos;
 
-public class RoleRequestDto : IRequestDto<RoleRequestDto>
+public class RoleRequestDto : IRequestDto
 {
     public string Name { get; set; }
 
-    public RoleRequestDto TransformValues()
+    public void TransformValues()
     {
         Name = Name?.ToNullIfEmpty();
-        return this;
     }
 }

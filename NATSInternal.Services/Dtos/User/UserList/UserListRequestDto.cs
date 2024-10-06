@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class UserListRequestDto : IRequestDto<UserListRequestDto>
+public class UserListRequestDto : IRequestDto
 {
     public string OrderByField { get; set; } = nameof(FieldToBeOrdered.LastName);
     public bool OrderByAscending { get; set; } = true;
@@ -11,11 +11,10 @@ public class UserListRequestDto : IRequestDto<UserListRequestDto>
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
 
-    public UserListRequestDto TransformValues()
+    public void TransformValues()
     {
-        OrderByField = OrderByField?.ToNullIfEmpty()?.CamelCaseToPascalCase();
+        OrderByField = OrderByField?.ToNullIfEmpty()?.SnakeCaseToPascalCase();
         Content = Content?.ToNullIfEmpty();
-        return this;
     }
 
     public enum FieldToBeOrdered

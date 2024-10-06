@@ -265,7 +265,7 @@ internal class ExpenseService : LockableEntityService, IExpenseService
         DateOnly oldPaidDate = DateOnly.FromDateTime(expense.PaidDateTime);
         ExpenseUpdateHistoryDataDto oldData = new ExpenseUpdateHistoryDataDto(expense);
 
-        // Determine the PaidDateTime if the request has specified a value.
+        // Determine the SupplyDateTime if the request has specified a value.
         if (requestDto.PaidDateTime.HasValue)
         {
             // Check if the current user has permission to specify the paid datetime.
@@ -274,7 +274,7 @@ internal class ExpenseService : LockableEntityService, IExpenseService
                 throw new AuthorizationException();
             }
 
-            // Prevent the consultant's PaidDateTime to be modified when the consultant is locked.
+            // Prevent the consultant's SupplyDateTime to be modified when the consultant is locked.
             if (expense.IsLocked)
             {
                 string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
@@ -285,10 +285,10 @@ internal class ExpenseService : LockableEntityService, IExpenseService
                     errorMessage);
             }
 
-            // Assign the new PaidDateTime value only if it's different from the old one.
+            // Assign the new SupplyDateTime value only if it's different from the old one.
             if (requestDto.PaidDateTime.Value != expense.PaidDateTime)
             {
-                // Validate and assign the specified PaidDateTime value from the request.
+                // Validate and assign the specified SupplyDateTime value from the request.
                 try
                 {
                     _statsService.ValidateStatsDateTime(expense, requestDto.PaidDateTime.Value);
@@ -613,7 +613,7 @@ internal class ExpenseService : LockableEntityService, IExpenseService
             Reason = reason,
             OldData = JsonSerializer.Serialize(oldData),
             NewData = JsonSerializer.Serialize(newData),
-            UserId = _authorizationService.GetUserId()
+            UpdatedUserId = _authorizationService.GetUserId()
         };
 
         expense.UpdateHistories ??= new List<ExpenseUpdateHistory>();

@@ -1,19 +1,15 @@
 namespace NATSInternal.Services.Entities;
 
-[Table("supply_photos")]
-internal class SupplyPhoto
+internal class SupplyPhoto : IPhotoEntity<SupplyPhoto>
 {
-    [Column("id")]
     [Key]
     public int Id { get; set; }
 
-    [Column("url")]
     [Required]
     [StringLength(255)]
     public string Url { get; set; }
 
     // Foreign keys
-    [Column("supply_id")]
     [Required]
     public int SupplyId { get; set; }
 
@@ -23,4 +19,16 @@ internal class SupplyPhoto
 
     // Navigation properties
     public virtual Supply Supply { get; set; }
+
+    // Model configurations.
+    public static void ConfigureModel(EntityTypeBuilder<SupplyPhoto> entityBuilder)
+    {
+        entityBuilder.HasKey(p => p.Id);
+        entityBuilder.HasOne(p => p.Supply)
+            .WithMany(s => s.Photos)
+            .HasForeignKey(p => p.SupplyId)
+            .OnDelete(DeleteBehavior.Cascade);
+        entityBuilder.Property(c => c.RowVersion)
+            .IsRowVersion();
+    }
 }

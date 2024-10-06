@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class PatchRequestDto<TRequestDto> : IRequestDto<PatchRequestDto<TRequestDto>>
-        where TRequestDto : IRequestDto<TRequestDto> {
+public class PatchRequestDto<TRequestDto> : IRequestDto
+        where TRequestDto : IRequestDto {
 
     public PatchOperation Operation { get; set; }
     public int ResourceId { get; set; }
@@ -14,7 +14,6 @@ public class PatchRequestDto<TRequestDto> : IRequestDto<PatchRequestDto<TRequest
         .Select(p => p.Name)
         .ToArray();
     
-    public PatchRequestDto<TRequestDto> TransformValues() {
-        return this;
+    public void TransformValues() {
     }
 }

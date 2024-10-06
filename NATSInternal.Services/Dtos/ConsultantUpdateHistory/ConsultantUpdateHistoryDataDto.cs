@@ -10,7 +10,7 @@ public class ConsultantUpdateHistoryDataDto
     
     internal ConsultantUpdateHistoryDataDto(Consultant consultant)
     {
-        Amount = consultant.Amount;
+        Amount = consultant.AmountBeforeVat;
         Note = consultant.Note;
         PaidDateTime = consultant.PaidDateTime;
     }

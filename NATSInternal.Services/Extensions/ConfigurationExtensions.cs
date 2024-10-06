@@ -51,7 +51,16 @@ public static class ConfigurationExtensions
         services.AddScoped<SqlExceptionHandler>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRoleService, RoleService>();
-        services.AddScoped<IPhotoService, PhotoService>();
+        services.AddScoped<
+            IPhotoService<Supply, SupplyPhoto>,
+            PhotoService<Supply, SupplyPhoto>>();
+        services.AddScoped<
+            IPhotoService<Expense, ExpensePhoto>,
+            PhotoService<Expense, ExpensePhoto>>();
+        services.AddScoped<
+            IPhotoService<Order, OrderPhoto>,
+            PhotoService<Order, OrderPhoto>>();
+        services.AddScoped<ITreatmentPhotoService, TreatmentPhotoService>();
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<ICountryService, CountryService>();
         services.AddScoped<IBrandService, BrandService>();

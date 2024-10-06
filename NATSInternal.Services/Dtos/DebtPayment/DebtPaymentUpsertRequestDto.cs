@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos
 {
-    public class DebtPaymentUpsertRequestDto : IRequestDto<DebtPaymentUpsertRequestDto>
+    public class DebtPaymentUpsertRequestDto : IRequestDto
     {
         public long Amount { get; set; }
         public string Note { get; set; }
@@ -8,11 +8,10 @@ namespace NATSInternal.Services.Dtos
         public int CustomerId { get; set; }
         public string UpdatingReason { get; set; }
         
-        public DebtPaymentUpsertRequestDto TransformValues()
+        public void TransformValues()
         {
             Note = Note?.ToNullIfEmpty();
             UpdatingReason?.ToNullIfEmpty();
-            return this;
         }
     }
 }

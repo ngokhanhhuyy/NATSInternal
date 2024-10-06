@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class ExpenseUpsertRequestDto : IRequestDto<ExpenseUpsertRequestDto>
+public class ExpenseUpsertRequestDto : IRequestDto
 {
     public long Amount { get; set; }
     public DateTime? PaidDateTime { get; set; }
@@ -10,7 +10,7 @@ public class ExpenseUpsertRequestDto : IRequestDto<ExpenseUpsertRequestDto>
     public List<ExpensePhotoRequestDto> Photos { get; set; }
     public string UpdateReason { get; set; }
     
-    public ExpenseUpsertRequestDto TransformValues()
+    public void TransformValues()
     {
         PayeeName = PayeeName?.ToNullIfEmpty();
         UpdateReason = UpdateReason?.ToNullIfEmpty();
@@ -22,7 +22,5 @@ public class ExpenseUpsertRequestDto : IRequestDto<ExpenseUpsertRequestDto>
                 photo?.TransformValues();
             }
         }
-        
-        return this;
     }
 }

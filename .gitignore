@@ -12,3 +12,4 @@ NATSInternal.sln.DotSettings
 NATSInternal.sln.DotSettings.user
 .github/
 NATSInternal.API/wwwroot/images/user/
+/NATSInternal.API/NATSInternal.API.csproj.user

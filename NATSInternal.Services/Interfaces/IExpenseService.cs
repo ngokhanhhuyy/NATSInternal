@@ -53,7 +53,7 @@ public interface IExpenseService
     /// Throws when a concurrency-related conflict occurs during the operation.
     /// </exception>
     /// <exception cref="AuthorizationException">
-    /// Throws when the value for the <c>PaidDateTime</c> property has been provided in the
+    /// Throws when the value for the <c>SupplyDateTime</c> property has been provided in the
     /// <c>requestDto</c>, but the requesting user doesn't have enough permissions to do so.
     /// </exception>
     /// <exception cref="OperationException">

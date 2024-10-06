@@ -1,14 +1,13 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class UserPasswordResetRequestDto : IRequestDto<UserPasswordResetRequestDto>
+public class UserPasswordResetRequestDto : IRequestDto
 {
     public string NewPassword { get; set; }
     public string ConfirmationPassword { get; set; }
 
-    public UserPasswordResetRequestDto TransformValues()
+    public void TransformValues()
     {
         NewPassword = NewPassword?.ToNullIfEmpty();
         ConfirmationPassword = ConfirmationPassword?.ToNullIfEmpty();
-        return this;
     }
 }

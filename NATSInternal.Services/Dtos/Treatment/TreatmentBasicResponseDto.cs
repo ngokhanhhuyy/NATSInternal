@@ -26,7 +26,7 @@ public class TreatmentBasicResponseDto
     {
         Id = treatment.Id;
         PaidDateTime = treatment.PaidDateTime;
-        Amount = treatment.Amount;
+        Amount = treatment.AmountBeforeVat;
         IsLocked = treatment.IsLocked;
         Customer = new CustomerBasicResponseDto(treatment.Customer);
     }

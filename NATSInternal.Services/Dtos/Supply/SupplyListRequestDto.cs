@@ -14,7 +14,7 @@ public class SupplyListRequestDto :
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
 
-    public SupplyListRequestDto TransformValues()
+    public void TransformValues()
     {
         OrderByField = OrderByField?.ToNullIfEmpty();
 
@@ -31,8 +31,6 @@ public class SupplyListRequestDto :
                 Year = currentDateTime.Year;
             }
         }
-
-        return this;
     }
 
     public enum FieldOptions

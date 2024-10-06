@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class SupplyUpsertRequestDto : IRequestDto<SupplyUpsertRequestDto>
+public class SupplyUpsertRequestDto : IRequestDto
 {
     public DateTime? PaidDateTime { get; set; }
     public long ShipmentFee { get; set; }
@@ -9,12 +9,11 @@ public class SupplyUpsertRequestDto : IRequestDto<SupplyUpsertRequestDto>
     public List<SupplyItemRequestDto> Items { get; set; }
     public List<SupplyPhotoRequestDto> Photos { get; set; }
 
-    public SupplyUpsertRequestDto TransformValues()
+    public void TransformValues()
     {
         Note = Note?.ToNullIfEmpty();
         UpdateReason = UpdateReason?.ToNullIfEmpty();
         Items = Items?.Select(i => i.TransformValues()).ToList();
         Photos = Photos?.Select(p => p.TransformValues()).ToList();
-        return this;
     }
 }

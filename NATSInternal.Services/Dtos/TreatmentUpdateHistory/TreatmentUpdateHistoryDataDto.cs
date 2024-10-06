@@ -12,8 +12,8 @@ public class TreatmentUpdateHistoryDataDto
     internal TreatmentUpdateHistoryDataDto(Treatment treatment)
     {
         PaidDateTime = treatment.PaidDateTime;
-        ServiceAmount = treatment.ServiceAmount;
-        ServiceVatFactor = treatment.ServiceVatPercentage;
+        ServiceAmount = treatment.ServiceAmountBeforeVat;
+        ServiceVatFactor = treatment.ServiceVatAmount;
         Note = treatment.Note;
         Therapist = new TreatmentTherapistUpdateHistoryDataDto(treatment.Therapist);
         Items = treatment.Items

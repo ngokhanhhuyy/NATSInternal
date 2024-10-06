@@ -181,7 +181,7 @@ public sealed partial class ServiceError
             return keys.ToArray()
                 .Reverse()
                 .Where(name => name is string && name != null)
-                .Select(name => name.ToString().ToWordsFirstLetterCapitalized())
+                .Select(name => name.ToString().CapitalizeFirstLetter())
                 .First();
         }
         return propertyName;

@@ -251,7 +251,7 @@ internal class DebtPaymentService : LockableEntityService, IDebtPaymentService
                 throw new AuthorizationException();
             }
 
-            // Prevent PaidDateTime to be modified when the debt payment is already locked.
+            // Prevent SupplyDateTime to be modified when the debt payment is already locked.
             if (debtPayment.IsLocked)
             {
                 string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
@@ -262,7 +262,7 @@ internal class DebtPaymentService : LockableEntityService, IDebtPaymentService
                     errorMessage);
             }
             
-            // Assign the new PaidDateTime value only if it's different from the old one.
+            // Assign the new SupplyDateTime value only if it's different from the old one.
             if (requestDto.PaidDateTime.Value != debtPayment.PaidDateTime)
             {
                 // Verify if the amount has been changed, and with the new amount, the remaning
@@ -278,7 +278,7 @@ internal class DebtPaymentService : LockableEntityService, IDebtPaymentService
                     }
                 }
                 
-                // Validate the specified PaidDateTime from the request.
+                // Validate the specified SupplyDateTime from the request.
                 try
                 {
                     _statsService.ValidateStatsDateTime(
@@ -294,7 +294,7 @@ internal class DebtPaymentService : LockableEntityService, IDebtPaymentService
                         errorMessage);
                 }
 
-                // The specified PaidDateTime is valid, assign it to the debt payment.
+                // The specified SupplyDateTime is valid, assign it to the debt payment.
                 debtPayment.PaidDateTime = requestDto.PaidDateTime.Value;
             }
         }

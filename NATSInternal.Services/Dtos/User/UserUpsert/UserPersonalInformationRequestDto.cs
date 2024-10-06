@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
 public class UserPersonalInformationRequestDto
-    : IRequestDto<UserPersonalInformationRequestDto>
+    : IRequestDto
 {
     public string FirstName { get; set; }
     public string MiddleName { get; set; }
@@ -13,13 +13,12 @@ public class UserPersonalInformationRequestDto
     public byte[] AvatarFile { get; set; }
     public bool AvatarChanged { get; set; }
 
-    public UserPersonalInformationRequestDto TransformValues()
+    public void TransformValues()
     {
         FirstName = FirstName?.ToNullIfEmpty();
         MiddleName = MiddleName?.ToNullIfEmpty();
         LastName = LastName?.ToNullIfEmpty();
         PhoneNumber = PhoneNumber?.ToNullIfEmpty();
         Email = Email?.ToNullIfEmpty();
-        return this;
     }
 }

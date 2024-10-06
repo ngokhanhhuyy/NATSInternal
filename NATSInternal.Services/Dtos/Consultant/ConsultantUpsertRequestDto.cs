@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class ConsultantUpsertRequestDto : IRequestDto<ConsultantUpsertRequestDto>
+public class ConsultantUpsertRequestDto : IRequestDto
 {
     public long Amount { get; set; }
     public string Note { get; set; }
@@ -9,9 +9,8 @@ public class ConsultantUpsertRequestDto : IRequestDto<ConsultantUpsertRequestDto
     public CustomerUpsertRequestDto Customer { get; set; }
     public string UpdateReason { get; set; }
 
-    public ConsultantUpsertRequestDto TransformValues()
+    public void TransformValues()
     {
         Note = Note?.ToNullIfEmpty();
-        return this;
     }
 }

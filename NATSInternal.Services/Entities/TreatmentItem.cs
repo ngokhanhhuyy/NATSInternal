@@ -1,30 +1,23 @@
 namespace NATSInternal.Services.Entities;
 
-[Table("treatment_items")]
-internal class TreatmentItem
+internal class TreatmentItem : IProductEngageableItemEntity<TreatmentItem, Product>
 {
-    [Column("id")]
     [Key]
     public int Id { get; set; }
 
-    [Column("amount_before_vat_per_unit")]
     [Required]
     public long AmountBeforeVatPerUnit { get; set; }
 
-    [Column("vat_amount_per_unit")]
     [Required]
     public long VatAmountPerUnit { get; set; }
 
-    [Column("quantity")]
     [Required]
     public int Quantity { get; set; }
 
     // Foreign keys
-    [Column("treatment_id")]
     [Required]
     public int TreatmentId { get; set; }
 
-    [Column("product_id")]
     [Required]
     public int ProductId { get; set; }
 
@@ -38,8 +31,31 @@ internal class TreatmentItem
 
     // Properties for convinience.
     [NotMapped]
+    public long AmountPerUnit
+    {
+        get => AmountBeforeVatPerUnit;
+        set => AmountBeforeVatPerUnit = value;
+    }
+
+    [NotMapped]
     public long AmountBeforeVat => AmountBeforeVatPerUnit * Quantity;
 
     [NotMapped]
     public long VatAmount => VatAmountPerUnit * Quantity;
+
+    // Model configurations.
+    public static void ConfigureModel(EntityTypeBuilder<TreatmentItem> entityBuilder)
+    {
+        entityBuilder.HasKey(ti => ti.Id);
+        entityBuilder.HasOne(ti => ti.Treatment)
+            .WithMany(t => t.Items)
+            .HasForeignKey(ti => ti.TreatmentId)
+            .OnDelete(DeleteBehavior.Cascade);
+        entityBuilder.HasOne(ti => ti.Product)
+            .WithMany(p => p.TreatmentItems)
+            .HasForeignKey(ti => ti.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
+        entityBuilder.Property(c => c.RowVersion)
+            .IsRowVersion();
+    }
 }

@@ -1,30 +1,32 @@
 namespace NATSInternal.Services.Entities;
 
-[Table("orders")]
-internal class Order : LockableEntity
+internal class Order
+        :
+            LockableEntity,
+            IProductExportableEntity<
+                Order,
+                OrderItem,
+                Product,
+                OrderPhoto,
+                User,
+                OrderUpdateHistory>
 {
-    [Column("id")]
     [Key]
     public int Id { get; set; }
 
-    [Column("paid_datetime")]
     [Required]
     public DateTime PaidDateTime { get; set; }
 
-    [Column("note")]
     [StringLength(255)]
     public string Note { get; set; }
 
-    [Column("is_deleted")]
     [Required]
     public bool IsDeleted { get; set; }
 
     // Foreign keys
-    [Column("customer_id")]
     [Required]
     public int CustomerId { get; set; }
 
-    [Column("created_user_id")]
     [Required]
     public int CreatedUserId { get; set; }
 
@@ -41,13 +43,16 @@ internal class Order : LockableEntity
     
     // Property for convinience.
     [NotMapped]
-    public long BeforeVatAmount => Items.Sum(i => i.Amount * i.Quantity);
+    public long ProductAmountBeforeVat => Items.Sum(i => i.AmountPerUnit * i.Quantity);
 
     [NotMapped]
-    public long VatAmount => Items.Sum(i => (long)Math.Round(i.Amount * i.VatFactor * i.Quantity));
+    public long ProductVatAmount => Items.Sum(i => i.VatAmountPerUnit * i.Quantity);
 
     [NotMapped]
-    public long AfterVatAmount => BeforeVatAmount + VatAmount;
+    public long AmountBeforeVat => ProductAmountBeforeVat;
+
+    [NotMapped]
+    public long AfterVatAmount => ProductAmountBeforeVat + ProductVatAmount;
 
     [NotMapped]
     public DateTime? LastUpdatedDateTime => UpdateHistories
@@ -58,6 +63,33 @@ internal class Order : LockableEntity
     [NotMapped]
     public User LastUpdatedUser => UpdateHistories
         .OrderBy(uh => uh.UpdatedDateTime)
-        .Select(uh => uh.User)
+        .Select(uh => uh.UpdatedUser)
         .LastOrDefault();
+
+    [NotMapped]
+    public DateTime StatsDateTime
+    {
+        get => PaidDateTime;
+        set => PaidDateTime = value;
+    }
+
+    // Model configurations.
+    public static void ConfigureModel(EntityTypeBuilder<Order> entityBuilder)
+    {
+        entityBuilder.HasKey(o => o.Id);
+        entityBuilder.HasOne(o => o.Customer)
+            .WithMany(c => c.Orders)
+            .HasForeignKey(o => o.CustomerId)
+            .OnDelete(DeleteBehavior.Restrict);
+        entityBuilder.HasOne(o => o.CreatedUser)
+            .WithMany(u => u.Orders)
+            .HasForeignKey(o => o.CreatedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        entityBuilder.HasIndex(o => o.PaidDateTime);
+        entityBuilder.HasIndex(o => o.IsDeleted);
+        entityBuilder.Property(c => c.RowVersion)
+            .IsRowVersion();
+        entityBuilder.Property(c => c.RowVersion)
+            .IsRowVersion();
+    }
 }

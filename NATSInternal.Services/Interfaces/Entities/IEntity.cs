@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Interfaces.Entities;
 
-internal interface IEntity
+internal interface IEntity<T> where T : class, new()
 {
-    int Id { get; set; }
+    static abstract void ConfigureModel(EntityTypeBuilder<T> entityBuilder);
 }

@@ -1,12 +1,11 @@
 namespace NATSInternal.Services.Dtos;
 
-public class IntroducerSearchRequestDto : IRequestDto<IntroducerSearchRequestDto> {
+public class IntroducerSearchRequestDto : IRequestDto {
     public string SearchByContent { get; set; }
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
 
-    public IntroducerSearchRequestDto TransformValues() {
+    public void TransformValues() {
         SearchByContent = SearchByContent?.ToNullIfEmpty();
-        return this;
     }
 }

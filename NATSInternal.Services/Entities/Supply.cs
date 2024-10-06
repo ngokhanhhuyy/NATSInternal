@@ -1,35 +1,36 @@
 namespace NATSInternal.Services.Entities;
 
-[Table("supplies")]
-internal class Supply : LockableEntity
+internal class Supply
+    :
+        LockableEntity,
+        IProductEngageableEntity<
+            Supply,
+            SupplyItem,
+            Product,
+            SupplyPhoto,
+            User,
+            SupplyUpdateHistory>
 {
-    [Column("id")]
     [Key]
     public int Id { get; set; }
 
-    [Column("paid_datetime")]
     [Required]
-    public DateTime PaidDateTime { get; set; }
+    public DateTime SupplyDateTime { get; set; }
 
-    [Column("shipment_fee")]
     [Required]
     public long ShipmentFee { get; set; } = 0;
 
-    [Column("note")]
     [StringLength(255)]
     public string Note { get; set; }
 
-    [Column("is_deleted")]
     [Required]
     public bool IsDeleted { get; set; }
 
     // Foreign keys
-    [Column("created_user_id")]
     [Required]
     public int CreatedUserId { get; set; }
 
     // Concurrency operation tracking field
-    [Column("row_version")]
     [Timestamp]
     public byte[] RowVersion { get; set; }
 
@@ -41,7 +42,7 @@ internal class Supply : LockableEntity
 
     // Properties for convinience.
     [NotMapped]
-    public long ItemAmount => Items.Sum(i => i.Amount * i.SuppliedQuantity);
+    public long ItemAmount => Items.Sum(i => i.AmountPerUnit * i.Quantity);
 
     [NotMapped]
     public long TotalAmount => ItemAmount + ShipmentFee;
@@ -68,6 +69,28 @@ internal class Supply : LockableEntity
     [NotMapped]
     public User LastUpdatedUser => UpdateHistories
         .OrderBy(uh => uh.UpdatedDateTime)
-        .Select(uh => uh.User)
+        .Select(uh => uh.UpdatedUser)
         .LastOrDefault();
+
+    [NotMapped]
+    public DateTime StatsDateTime
+    {
+        get => SupplyDateTime;
+        set => SupplyDateTime = value;
+    }
+
+    // Model configurations.
+    public static void ConfigureModel(EntityTypeBuilder<Supply> entityBuilder)
+    {
+        entityBuilder.HasKey(s => s.Id);
+        entityBuilder.HasOne(s => s.CreatedUser)
+            .WithMany(u => u.Supplies)
+            .HasForeignKey(s => s.CreatedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        entityBuilder.HasIndex(s => s.SupplyDateTime)
+            .IsUnique();
+        entityBuilder.HasIndex(s => s.IsDeleted);
+        entityBuilder.Property(c => c.RowVersion)
+            .IsRowVersion();
+    }
 }

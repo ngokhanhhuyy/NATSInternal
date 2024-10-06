@@ -1,34 +1,32 @@
 namespace NATSInternal.Services.Entities;
 
-[Table("consultant")]
-internal class Consultant : LockableEntity
+internal class Consultant
+    :
+        LockableEntity,
+        IRevenueEntity<Consultant, User, ConsultantUpdateHistory>
 {
-    [Column("id")]
     [Key]
     public int Id { get; set; }
     
-    [Column("paid_datetime")]
     [Required]
     public DateTime PaidDateTime { get; set; }
 
-    [Column("amount")]
     [Required]
-    public long Amount { get; set; }
+    public long AmountBeforeVat { get; set; }
 
-    [Column("note")]
+    [Required]
+    public long VatAmount { get; set; }
+
     [StringLength(255)]
     public string Note { get; set; }
 
-    [Column("is_deleted")]
     [Required]
     public bool IsDeleted { get; set; }
 
     // Foreign keys.
-    [Column("customer_id")]
     [Required]
     public int CustomerId { get; set; }
 
-    [Column("created_user_id")]
     [Required]
     public int CreatedUserId { get; set; }
 
@@ -47,6 +45,28 @@ internal class Consultant : LockableEntity
     [NotMapped]
     public User LastUpdatedUser => UpdateHistories
         .OrderBy(uh => uh.UpdatedDateTime)
-        .Select(uh => uh.User)
+        .Select(uh => uh.UpdatedUser)
         .LastOrDefault();
+
+    [NotMapped]
+    public DateTime StatsDateTime
+    {
+        get => PaidDateTime;
+        set => PaidDateTime = value;
+    }
+
+    // Model configurations.
+    public static void ConfigureModel(EntityTypeBuilder<Consultant> entityBuilder)
+    {
+        entityBuilder.HasKey(c => c.Id);
+        entityBuilder.HasOne(cst => cst.Customer)
+            .WithMany(ctm => ctm.Consultants)
+            .HasForeignKey(cst => cst.CustomerId)
+            .OnDelete(DeleteBehavior.Restrict);
+        entityBuilder.HasOne(cst => cst.CreatedUser)
+            .WithMany(u => u.Consultants)
+            .HasForeignKey(cst => cst.CreatedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        entityBuilder.HasIndex(cst => cst.IsDeleted);
+    }
 }

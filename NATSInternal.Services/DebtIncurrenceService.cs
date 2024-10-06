@@ -243,7 +243,7 @@ internal class DebtIncurrenceService : LockableEntityService, IDebtIncurrenceSer
                     errorMessage);
             }
             
-            // Assign the new PaidDateTime value only if it's different from the old one.
+            // Assign the new SupplyDateTime value only if it's different from the old one.
             if (requestDto.IncurredDateTime.Value != debt.IncurredDateTime)
             {
                 // Verify if the amount has been changed, and with the new amount,
@@ -456,7 +456,7 @@ internal class DebtIncurrenceService : LockableEntityService, IDebtIncurrenceSer
             Reason = reason,
             OldData = JsonSerializer.Serialize(oldData),
             NewData = JsonSerializer.Serialize(newData),
-            UserId = _authorizationService.GetUserId(),
+            UpdatedUserId = _authorizationService.GetUserId(),
             UpdatedDateTime = DateTime.UtcNow.ToApplicationTime()
         };
         

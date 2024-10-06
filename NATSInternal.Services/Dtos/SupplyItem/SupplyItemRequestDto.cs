@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class SupplyItemRequestDto : IRequestDto<SupplyItemRequestDto>
+public class SupplyItemRequestDto : IRequestDto
 {
     public int? Id { get; set; }
     public long Amount { get; set; }
@@ -9,9 +9,8 @@ public class SupplyItemRequestDto : IRequestDto<SupplyItemRequestDto>
     public bool HasBeenChanged { get; set; }
     public bool HasBeenDeleted { get; set; }
 
-    public SupplyItemRequestDto TransformValues()
+    public void TransformValues()
     {
         Id = Id.HasValue && Id.Value == 0 ? null : Id;
-        return this;
     }
 }

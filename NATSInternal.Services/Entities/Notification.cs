@@ -1,25 +1,21 @@
-﻿namespace NATSInternal.Services.Entities;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-[Table("notifications")]
-internal class Notification
+namespace NATSInternal.Services.Entities;
+
+internal class Notification : IIdentifiableEntity<Notification>
 {
-    [Column("id")]
     [Key]
     public int Id { get; set; }
 
-    [Column("notification_type")]
     [Required]
     public NotificationType Type { get; set; }
 
-    [Column("datetime")]
     [Required]
     public DateTime DateTime { get; set; }
     
-    [Column("resource_ids")]
     public List<int> ResourceIds { get; set; }
     
     // Foreign key.
-    [Column("created_user_id")]
     public int? CreatedUserId { get; set; }
 
     // Navigation properties.
@@ -33,4 +29,44 @@ internal class Notification
     
     [NotMapped]
     public int ResourceSecondaryId => ResourceIds[1];
+    
+    // Model configurations.
+    public static void ConfigureModel(EntityTypeBuilder<Notification> entityBuilder)
+    {
+        entityBuilder.HasKey(n => n.Id);
+        entityBuilder.Property(n => n.ResourceIds)
+            .HasConversion(new ValueConverter<List<int>, string>(
+                v => JsonSerializer.Serialize(v, JsonSerializerOptions.Default),
+                v => JsonSerializer.Deserialize<List<int>>(
+                    v,
+                    JsonSerializerOptions.Default)))
+            .HasColumnType("JSON");
+        entityBuilder.HasOne(n => n.CreatedUser)
+            .WithMany(u => u.CreatedNotifications)
+            .HasForeignKey(n => n.CreatedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        entityBuilder.HasMany(n => n.ReceivedUsers)
+            .WithMany(u => u.ReceivedNotifications)
+            .UsingEntity<NotificationReceivedUser>(
+                notificationReceivedUser => notificationReceivedUser
+                    .HasOne(nru => nru.ReceivedUser)
+                    .WithMany()
+                    .HasForeignKey(nru => nru.ReceivedUserId),
+                notificationReceivedUser => notificationReceivedUser
+                    .HasOne(nru => nru.ReceivedNotification)
+                    .WithMany()
+                    .HasForeignKey(nru => nru.ReceivedNotificationId));
+        entityBuilder.HasMany(n => n.ReadUsers)
+            .WithMany(u => u.ReadNotifications)
+            .UsingEntity<NotificationReadUser>(
+                notificationReadUser => notificationReadUser
+                    .HasOne(nru => nru.ReadUser)
+                    .WithMany()
+                    .HasForeignKey(nru => nru.ReadUserId)
+                ,
+                notificationReceivedUser => notificationReceivedUser
+                    .HasOne(nru => nru.ReadNotification)
+                    .WithMany()
+                    .HasForeignKey(nru => nru.ReadNotificationId));
+    }
 }

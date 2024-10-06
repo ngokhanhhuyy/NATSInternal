@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class CustomerUpsertRequestDto : IRequestDto<CustomerUpsertRequestDto> {
+public class CustomerUpsertRequestDto : IRequestDto {
     public string FirstName { get; set; }
     public string MiddleName { get; set; }
     public string LastName { get; set; }
@@ -15,7 +15,7 @@ public class CustomerUpsertRequestDto : IRequestDto<CustomerUpsertRequestDto> {
     public string Note { get; set; }
     public int? IntroducerId { get; set; }
 
-    public CustomerUpsertRequestDto TransformValues() {
+    public void TransformValues() {
         FirstName = FirstName?.ToNullIfEmpty();
         MiddleName = MiddleName?.ToNullIfEmpty();
         LastName = LastName?.ToNullIfEmpty();
@@ -28,6 +28,5 @@ public class CustomerUpsertRequestDto : IRequestDto<CustomerUpsertRequestDto> {
         Note = Note?.ToNullIfEmpty();
         IntroducerId = !IntroducerId.HasValue || IntroducerId.Value == 0
             ? null : IntroducerId.Value;
-        return this;
     }
 }

@@ -1,40 +1,31 @@
 ﻿namespace NATSInternal.Services.Entities;
 
-[Table("announcements")]
-internal class Announcement
+internal class Announcement : IIdentifiableEntity<Announcement>
 {
-    [Column("id")]
     [Key]
     public int Id { get; set; }
 
-    [Column("category")]
     [Required]
     public AnnouncementCategory Category { get; set; } = AnnouncementCategory.Announcement;
 
-    [Column("title")]
     [Required]
     [StringLength(80)]
     public string Title { get; set; }
 
-    [Column("content")]
     [Required]
     [StringLength(5000)]
     public string Content { get; set; }
 
-    [Column("starting_datetime")]
     [Required]
     public DateTime StartingDateTime { get; set; }
 
-    [Column("ending_datetime")]
     [Required]
     public DateTime EndingDateTime { get; set; }
 
-    [Column("created_datetime")]
     [Required]
     public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
 
     // Foreign keys
-    [Column("created_user_id")]
     public int CreatedUserId { get; set; }
 
     // Concurrency operation tracking field
@@ -43,4 +34,17 @@ internal class Announcement
 
     // Navigation properties
     public virtual User CreatedUser { get; set; }
+
+    // Configurations.
+    public static void ConfigureModel(EntityTypeBuilder<Announcement> entity)
+    {
+        entity.HasKey(a => a.Id);
+        entity.HasOne(a => a.CreatedUser)
+            .WithMany(u => u.CreatedAnnouncements)
+            .HasForeignKey(a => a.CreatedUserId)
+            .HasConstraintName($"FK_Announcements_CreatedUser_CreatedUserId")
+            .OnDelete(DeleteBehavior.Cascade);
+        entity.Property(c => c.RowVersion)
+            .IsRowVersion();
+    }
 }

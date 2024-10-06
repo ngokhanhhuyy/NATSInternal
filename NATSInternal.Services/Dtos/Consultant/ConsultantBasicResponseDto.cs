@@ -25,7 +25,7 @@ public class ConsultantBasicResponseDto
     private void MapFromEntity(Consultant consultant)
     {
         Id = consultant.Id;
-        Amount = consultant.Amount;
+        Amount = consultant.AmountBeforeVat;
         PaidDateTime = consultant.PaidDateTime;
         IsLocked = consultant.IsLocked;
         Customer = new CustomerBasicResponseDto(consultant.Customer);

@@ -14,7 +14,7 @@ public class DebtIncurrenceListRequestDto :
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
 
-    public DebtIncurrenceListRequestDto TransformValues()
+    public void TransformValues()
     {
         OrderByField = OrderByField?.ToNullIfEmpty();
 
@@ -34,7 +34,6 @@ public class DebtIncurrenceListRequestDto :
         {
             CreatedUserId = null;
         }
-        return this;
     }
 
     public enum FieldOptions
