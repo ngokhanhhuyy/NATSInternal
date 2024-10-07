@@ -1,10 +1,10 @@
 namespace NATSInternal.Services.Dtos;
 
-public class OrderItemRequestDto : IRequestDto
+public class OrderItemRequestDto : IProductEngageableItemRequestDto
 {
     public int? Id { get; set; }
-    public long Amount { get; set; }
-    public decimal VatFactor { get; set; }
+    public long AmountPerUnit { get; set; }
+    public long VatAmountPerUnit { get; set; }
     public int Quantity { get; set; }
     public int ProductId { get; set; }
     public bool HasBeenChanged { get; set; }
@@ -12,9 +12,9 @@ public class OrderItemRequestDto : IRequestDto
         
     public void TransformValues()
     {
-            if (Id.HasValue && Id.Value == 0)
-            {
-                Id = null;
-            }
+        if (Id == 0)
+        {
+            Id = null;
         }
+    }
 }

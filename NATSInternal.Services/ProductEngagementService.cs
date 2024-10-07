@@ -1,12 +1,12 @@
 namespace NATSInternal.Services;
 
-internal class ProductEngagementService<T, TCustomer, TItem, TProduct, TPhoto, TUser, TUpdateHistory>
-    : IProductEngagementService<T, TItem, TProduct, TPhoto, TUser, TUpdateHistory>
-    where T : class, IProductEngageableEntity<T, TItem, TProduct, TPhoto, TUser, TUpdateHistory>, new()
-    where TCustomer : class, ICustomerEntity<TCustomer, TUser>, new()
+/// <inheritdoc />
+internal class ProductEngagementService<TItem, TProduct, TPhoto, TCustomer, TUser, TUpdateHistory>
+    : IProductEngagementService<TItem, TProduct, TPhoto, TUser, TUpdateHistory>
     where TItem : class, IProductEngageableItemEntity<TItem, TProduct>, new()
     where TProduct : class, IProductEntity<TProduct>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
+    where TCustomer : class, ICustomerEntity<TCustomer, TUser>, new()
     where TUser : class, IUserEntity<TUser>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, TUser>, new()
 {
@@ -17,8 +17,9 @@ internal class ProductEngagementService<T, TCustomer, TItem, TProduct, TPhoto, T
         _context = context;
     }
     
+    /// <inheritdoc />
     public async Task CreateItemsAsync<TItemRequestDto>(
-            T entity,
+            ICollection<TItem> itemEntities,
             List<TItemRequestDto> requestDtos,
             ProductEngagementType engagementType)
         where TItemRequestDto : IProductEngageableItemRequestDto
@@ -73,12 +74,13 @@ internal class ProductEngagementService<T, TCustomer, TItem, TProduct, TPhoto, T
             }
 
             // Add item.
-            entity.Items.Add(item);
+            itemEntities.Add(item);
         }
     }
     
+    /// <inheritdoc />
     public async Task UpdateItemsAsync<TItemRequestDto>(
-            T entity,
+            ICollection<TItem> itemEntities,
             List<TItemRequestDto> requestDtos,
             ProductEngagementType engagementType,
             string itemDisplayName)
@@ -93,7 +95,7 @@ internal class ProductEngagementService<T, TCustomer, TItem, TProduct, TPhoto, T
             .Where(p => productIdsForNewItems.Contains(p.Id))
             .ToListAsync();
 
-        entity.Items ??= new List<TItem>();
+        itemEntities ??= new List<TItem>();
         for (int i = 0; i < requestDtos.Count; i++)
         {
             TItemRequestDto itemRequestDto = requestDtos[i];
@@ -105,7 +107,7 @@ internal class ProductEngagementService<T, TCustomer, TItem, TProduct, TPhoto, T
                 if (itemRequestDto.Id.HasValue)
                 {
                     // Get the entity by the given id and ensure it exists.
-                    item = entity.Items.SingleOrDefault(si => si.Id == itemRequestDto.Id);
+                    item = itemEntities.SingleOrDefault(si => si.Id == itemRequestDto.Id);
                     if (item == null)
                     {
                         string errorMessage = ErrorMessages.NotFoundByProperty
@@ -128,7 +130,7 @@ internal class ProductEngagementService<T, TCustomer, TItem, TProduct, TPhoto, T
                     // Delete the entity if specified.
                     if (itemRequestDto.HasBeenDeleted)
                     {
-                        entity.Items.Remove(item);
+                        itemEntities.Remove(item);
                         continue;
                     }
 
@@ -159,7 +161,7 @@ internal class ProductEngagementService<T, TCustomer, TItem, TProduct, TPhoto, T
                         Quantity = itemRequestDto.Quantity,
                         ProductId = itemRequestDto.ProductId
                     };
-                    entity.Items.Add(item);
+                    itemEntities.Add(item);
                 }
 
                 // Adjust product stocking quantity.
@@ -176,16 +178,29 @@ internal class ProductEngagementService<T, TCustomer, TItem, TProduct, TPhoto, T
     }
     
     public void DeleteItems(
-            T entity,
+            ICollection<TItem> itemEntities,
             DbSet<TItem> itemRepository,
             ProductEngagementType engagementType)
     {
-        foreach (TItem item in entity.Items)
+        foreach (TItem item in itemEntities)
         {
             // Revert the stocking quantity of the product associated to the item.
-            item.Product.StockingQuantity -= item.Quantity;
+            if (engagementType == ProductEngagementType.Import)
+            {
+                item.Product.StockingQuantity -= item.Quantity;
+                if (item.Product.StockingQuantity < 0)
+                {
+                    const string errorMessage = ErrorMessages.NegativeProductStockingQuantity;
+                    throw new OperationException(errorMessage);
+                }
+            }
+            else
+            {
+                item.Product.StockingQuantity += item.Quantity;
+            }
 
             // Remove the item.
+            itemEntities.Remove(item);
             itemRepository.Remove(item);
         }
     }

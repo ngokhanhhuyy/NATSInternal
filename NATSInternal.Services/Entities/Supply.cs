@@ -42,6 +42,12 @@ internal class Supply
 
     // Properties for convinience.
     [NotMapped]
+    public string ThumbnailUrl => Photos
+        .OrderBy(p => p.Id)
+        .Select(p => p.Url)
+        .FirstOrDefault();
+    
+    [NotMapped]
     public long ItemAmount => Items.Sum(i => i.AmountPerUnit * i.Quantity);
 
     [NotMapped]

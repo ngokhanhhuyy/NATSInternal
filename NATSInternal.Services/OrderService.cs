@@ -7,36 +7,34 @@ internal class OrderService : LockableEntityService, IOrderService
     private readonly IPhotoService<Order, OrderPhoto> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IStatsInternalService _statsService;
-    private static MonthYearResponseDto _earliestRecordedMonthYear;
+    private readonly IUpdateHistoryService<Order, User, OrderUpdateHistory, OrderUpdateHistoryDataDto> _updateHistoryService;
+    private readonly IProductEngagementService<OrderItem, Product, OrderPhoto, User, OrderUpdateHistory> _productEngagementService;
+    private readonly IMonthYearService<Order, User, OrderUpdateHistory> _monthYearService;
 
     public OrderService(
         DatabaseContext context,
         IPhotoService<Order, OrderPhoto> photoService,
         IAuthorizationInternalService authorizationService,
-        IStatsInternalService statsService)
+        IStatsInternalService statsService,
+        IUpdateHistoryService<Order, User, OrderUpdateHistory, OrderUpdateHistoryDataDto> updateHistoryService,
+        IProductEngagementService<OrderItem, Product, OrderPhoto, User, OrderUpdateHistory> productEngagementService,
+        IMonthYearService<Order, User, OrderUpdateHistory> monthYearService)
     {
         _context = context;
         _photoService = photoService;
         _authorizationService = authorizationService;
         _statsService = statsService;
+        _updateHistoryService = updateHistoryService;
+        _productEngagementService = productEngagementService;
+        _monthYearService = monthYearService;
     }
 
     /// <inheritdoc />
     public async Task<OrderListResponseDto> GetListAsync(OrderListRequestDto requestDto)
     {
         // Initialize list of month and year options.
-        List<MonthYearResponseDto> monthYearOptions = null;
-        if (!requestDto.IgnoreMonthYear)
-        {
-            _earliestRecordedMonthYear ??= await _context.Orders
-                .OrderBy(s => s.PaidDateTime)
-                .Select(s => new MonthYearResponseDto
-                {
-                    Year = s.PaidDateTime.Year,
-                    Month = s.PaidDateTime.Month
-                }).FirstOrDefaultAsync();
-            monthYearOptions = GenerateMonthYearOptions(_earliestRecordedMonthYear);
-        }
+        List<MonthYearResponseDto> monthYearOptions = await _monthYearService
+            .GenerateMonthYearOptions(dbContext => dbContext.Orders);
 
         // Initialize query.
         IQueryable<Order> query = _context.Orders
@@ -190,7 +188,10 @@ internal class OrderService : LockableEntityService, IOrderService
         _context.Orders.Add(order);
 
         // Initialize order items entities.
-        await CreateItems(order, requestDto.Items);
+        await _productEngagementService.CreateItemsAsync(
+            order.Items,
+            requestDto.Items,
+            ProductEngagementType.Export);
 
         // Initialize photos.
         if (requestDto.Photos != null)
@@ -206,10 +207,14 @@ internal class OrderService : LockableEntityService, IOrderService
             // The order can be created successfully without any error. Add the order
             // to the stats.
             DateOnly orderedDate = DateOnly.FromDateTime(order.PaidDateTime);
-            await _statsService.IncrementRetailGrossRevenueAsync(order.ProductAmountBeforeVat, orderedDate);
+            await _statsService.IncrementRetailGrossRevenueAsync(
+                order.ProductAmountBeforeVat,
+                orderedDate);
             if (order.ProductVatAmount > 0)
             {
-                await _statsService.IncrementVatCollectedAmountAsync(order.ProductVatAmount, orderedDate);
+                await _statsService.IncrementVatCollectedAmountAsync(
+                    order.ProductVatAmount,
+                    orderedDate);
             }
 
             // Commit the transaction, finish the operation.
@@ -316,7 +321,9 @@ internal class OrderService : LockableEntityService, IOrderService
                 // Validate the specified SupplyDateTime value from the request.
                 try
                 {
-                    _statsService.ValidateStatsDateTime(order, requestDto.PaidDateTime.Value);
+                    _statsService.ValidateStatsDateTime<Order, User, OrderUpdateHistory>(
+                        order,
+                        requestDto.PaidDateTime.Value);
                     order.PaidDateTime = requestDto.PaidDateTime.Value;
                 }
                 catch (ArgumentException exception)
@@ -334,15 +341,19 @@ internal class OrderService : LockableEntityService, IOrderService
         order.Note = requestDto.Note;
 
         // Update order items.
-        await UpdateItems(order, requestDto.Items);
+        await _productEngagementService.UpdateItemsAsync(
+            order.Items,
+            requestDto.Items,
+            ProductEngagementType.Export,
+            DisplayNames.OrderItem);
 
         // Update photos.
         List<string> urlsToBeDeletedWhenSucceeds = new List<string>();
         List<string> urlsToBeDeletedWhenFails = new List<string>();
         if (requestDto.Photos != null)
         {
-            (List<string>, List<string>) photoUpdateResults;
-            photoUpdateResults = await UpdatePhotosAsync(order, requestDto.Photos);
+            (List<string>, List<string>) photoUpdateResults = await _photoService
+                .UpdateMultipleAsync(order, requestDto.Photos);
             urlsToBeDeletedWhenSucceeds.AddRange(photoUpdateResults.Item1);
             urlsToBeDeletedWhenFails.AddRange(photoUpdateResults.Item2);
         }
@@ -351,7 +362,8 @@ internal class OrderService : LockableEntityService, IOrderService
         OrderUpdateHistoryDataDto newData = new OrderUpdateHistoryDataDto(order);
 
         // Log update history.
-        LogUpdateHistory(order, oldData, newData, requestDto.UpdateReason);
+        _updateHistoryService
+            .LogUpdateHistory(order, oldData, newData, requestDto.UpdateReason);
 
         // Save changes and handle errors.
         try
@@ -432,6 +444,11 @@ internal class OrderService : LockableEntityService, IOrderService
         await using IDbContextTransaction transaction = await _context.Database
             .BeginTransactionAsync();
 
+        _productEngagementService.DeleteItems(
+            order.Items,
+            _context.OrderItems,
+            ProductEngagementType.Export);
+
         // Perform the deleting operation.
         try
         {
@@ -453,7 +470,8 @@ internal class OrderService : LockableEntityService, IOrderService
                 exceptionHandler.Handle(sqlException);
                 if (exceptionHandler.IsDeleteOrUpdateRestricted)
                 {
-                    // Soft delete when there are any other related entities which are restricted to be deleted.
+                    // Soft delete when there are any other related entities which are
+                    // restricted to be deleted.
                     order.IsDeleted = true;
 
                     // Save changes.
@@ -472,289 +490,8 @@ internal class OrderService : LockableEntityService, IOrderService
                     await transaction.CommitAsync();
                 }
             }
+
             throw;
         }
-    }
-
-    /// <summary>
-    /// Create order items associated to the given order with the data provided
-    /// in the request. This method must only be called during the order creating operation.
-    /// </summary>
-    /// <param name="order">
-    /// The order which items are to be created.
-    /// </param>
-    /// <param name="requestDtos">
-    /// A list of objects containing the new data for the creating operation.
-    /// </param>
-    private async Task CreateItems(Order order, List<OrderItemRequestDto> requestDtos)
-    {
-        // Fetch a list of products which ids are specified in the request.
-        List<int> requestedProductIds = requestDtos
-            .Select(dto => dto.ProductId)
-            .ToList();
-        List<Product> products = await _context.Products
-            .Where(p => requestedProductIds.Contains(p.Id))
-            .ToListAsync();
-
-        for (int i = 0; i < requestDtos.Count; i++)
-        {
-            OrderItemRequestDto itemRequestDto = requestDtos[i];
-
-            // Get the product from the pre-fetched list.
-            Product product = products.SingleOrDefault(p => p.Id == itemRequestDto.ProductId);
-
-            // Ensure the product exists.
-            if (product == null)
-            {
-                string errorMessage = ErrorMessages.NotFoundByProperty
-                    .ReplaceResourceName(DisplayNames.Product)
-                    .ReplacePropertyName(DisplayNames.Id)
-                    .ReplaceAttemptedValue(itemRequestDto.ProductId.ToString());
-                throw new OperationException($"items[{i}].productId", errorMessage);
-            }
-
-            // Validate that with the specified quantity value.
-            if (product.StockingQuantity < itemRequestDto.Quantity)
-            {
-                string errorMessage = ErrorMessages.NegativeProductStockingQuantity;
-                throw new OperationException($"items[{i}].quantity", errorMessage);
-            }
-
-            // Initialize entity.
-            OrderItem item = new OrderItem
-            {
-                AmountPerUnit = itemRequestDto.Amount,
-                VatAmountPerUnit = itemRequestDto.VatFactor,
-                Quantity = itemRequestDto.Quantity,
-                Product = product
-            };
-
-            // Adjust the stocking quantity of the associated product.
-            product.StockingQuantity -= item.Quantity;
-
-            // Add item.
-            order.Items.Add(item);
-        }
-    }
-
-    /// <summary>
-    /// Update or create order items associated to the given order with the data provided
-    /// in the request. This method must only be called during the order updating operation.
-    /// </summary>
-    /// <param name="order">The order which items are to be created or updated.</param>
-    /// <param name="requestDtos">A list of objects containing the new data for updating operation.</param>
-    /// <returns>A <c>Task</c> object representing the asynchronous operation.</returns>
-    /// <exception cref="OperationException">
-    /// Thrown when there is some business logic violation during the operation.
-    /// </exception>
-    private async Task UpdateItems(Order order, List<OrderItemRequestDto> requestDtos)
-    {
-        // Fetch a list of products which ids are specified in the request for the new items.
-        List<int> productIdsForNewItems = requestDtos
-            .Where(dto => !dto.Id.HasValue)
-            .Select(dto => dto.ProductId)
-            .ToList();
-        List<Product> productsForNewItems = await _context.Products
-            .Where(p => productIdsForNewItems.Contains(p.Id))
-            .ToListAsync();
-
-        for (int i = 0; i < requestDtos.Count; i++)
-        {
-            OrderItemRequestDto itemRequestDto = requestDtos[i];
-            OrderItem item;
-            if (itemRequestDto.Id.HasValue)
-            {
-                item = order.Items.SingleOrDefault(oi => oi.Id == itemRequestDto.Id.Value);
-
-                // Ensure the item exists.
-                if (item == null)
-                {
-                    string errorMessage = ErrorMessages.NotFound
-                        .ReplaceResourceName(DisplayNames.OrderItem);
-                    throw new OperationException($"items[{i}].id", errorMessage);
-                }
-
-                // Revert the stocking quantity of the product associated to the item.
-                item.Product.StockingQuantity += item.Quantity;
-
-                // Remove item if deleted.
-                if (itemRequestDto.HasBeenDeleted)
-                {
-                    _context.OrderItems.Remove(item);
-                }
-
-                // Update item properties if changed.
-                else if (itemRequestDto.HasBeenChanged)
-                {
-                    item.AmountPerUnit = itemRequestDto.Amount;
-                    item.VatAmountPerUnit = itemRequestDto.VatFactor;
-                    item.Quantity = itemRequestDto.Quantity;
-                }
-            }
-            else
-            {
-                // Get the product entity in the pre-fetched list.
-                Product product = productsForNewItems
-                    .SingleOrDefault(p => p.Id == itemRequestDto.ProductId);
-
-                // Ensure the product exists.
-                if (product == null)
-                {
-                    string errorMessage = ErrorMessages.NotFoundByProperty
-                        .ReplaceResourceName(DisplayNames.Product)
-                        .ReplacePropertyName(DisplayNames.Id)
-                        .ReplaceAttemptedValue(itemRequestDto.ProductId.ToString());
-                    throw new OperationException(
-                        $"items[{i}].productId",
-                        errorMessage);
-                }
-
-                // Initialize the entity.
-                item = new OrderItem
-                {
-                    AmountPerUnit = itemRequestDto.Amount,
-                    VatAmountPerUnit = itemRequestDto.VatFactor,
-                    Quantity = itemRequestDto.Quantity,
-                    Product = product,
-                    Order = order
-                };
-                _context.OrderItems.Add(item);
-            }
-
-            // Validate the new quantity value.
-            if (item.Product.StockingQuantity - item.Quantity < 0)
-            {
-                string errorMessage = ErrorMessages.NegativeProductStockingQuantity;
-                throw new OperationException($"items[{i}].stockingQuantity", errorMessage);
-            }
-
-            // Add the quantity of the item to the product's stocking quantity.
-            item.Product.StockingQuantity -= item.Quantity;
-        }
-    }
-
-    /// <summary>
-    /// Updates or creates new photos which are associated with the specified order.
-    /// </summary>
-    /// <remarks>
-    /// This method must be called during the order updating operation.
-    /// </remarks>
-    /// <param name="order">
-    /// An instance of the <see cref="Order"/> entity class, which represents the order with
-    /// which the updating or creating photos are associated.
-    /// </param>
-    /// <param name="requestDtos">
-    /// A <see cref="List{T}"/> where <c>T</c> is <see cref="OrderPhotoRequestDto"/>,
-    /// containing the data for the updating operation.
-    /// </param>
-    /// <returns>
-    /// A <see cref="Tuple"/> containing two <see cref="List{T}"/> where <c>T</c> is
-    /// <see cref="string"/>. The first one represents the deleted photos' urls which must be
-    /// deleted after the whole order updating operation succeeds, the second one represents
-    /// the created photos' urls which must be deleted after the whole order updating operation
-    /// fails.
-    /// </returns>
-    /// <exception cref="OperationException">
-    /// Throws when a photo with its specified id is indicated to be updated but doesn't exist
-    /// or has already been deleted.
-    /// </exception>
-    private async Task<(List<string>, List<string>)> UpdatePhotosAsync(
-            Order order,
-            List<OrderPhotoRequestDto> requestDtos)
-    {
-        List<string> urlsToBeDeletedWhenSucceeds = new List<string>();
-        List<string> urlsToBeDeletedWhenFails = new List<string>();
-        for (int i = 0; i < requestDtos.Count; i++)
-        {
-            OrderPhotoRequestDto requestDto = requestDtos[i];
-            OrderPhoto photo;
-            if (requestDto.Id.HasValue)
-            {
-                // Fetch the photo entity with the given id from the request.
-                photo = order.Photos.SingleOrDefault(op => op.Id == requestDto.Id);
-
-                // Ensure the photo entity exists.
-                if (photo == null)
-                {
-                    string errorMessage = ErrorMessages.NotFound
-                        .ReplaceResourceName(DisplayNames.Photo)
-                        .ReplacePropertyName(DisplayNames.Id)
-                        .ReplaceAttemptedValue(requestDto.Id.ToString());
-                    throw new OperationException($"photos[{i}]", errorMessage);
-                }
-
-                // Perform the modification when the photo is marked to have been changed
-                if (requestDto.HasBeenChanged)
-                {
-                    // Mark the current url to be deleted later when the transaction succeeds.
-                    urlsToBeDeletedWhenSucceeds.Add(photo.Url);
-
-                    // Create new photo if the request contains new data for a new one.
-                    if (requestDto.File != null)
-                    {
-                        string url = await _photoService
-                            .CreateAsync(requestDto.File, "orders", true);
-                        photo.Url = url;
-
-                        // Mark the created photo to be deleted later if the transaction fails.
-                        urlsToBeDeletedWhenFails.Add(url);
-                    }
-                }
-            }
-            else
-            {
-                // Create new photo if the request doesn't have id.
-                string url = await _photoService.CreateAsync(requestDto.File, "orders", true);
-                photo = new OrderPhoto
-                {
-                    Url = url
-                };
-                order.Photos.Add(photo);
-
-                // Mark the created photo to be deleted later if the transaction fails.
-                urlsToBeDeletedWhenFails.Add(url);
-            }
-        }
-
-        return (urlsToBeDeletedWhenSucceeds, urlsToBeDeletedWhenFails);
-    }
-
-    /// <summary>
-    /// Logs the old and new data to update history for the specified order.
-    /// </summary>
-    /// <remarks>
-    /// This method must only be called during the updating operation of an order.
-    /// </remarks>
-    /// <param name="order">
-    /// An instance of the <see cref="Order"/> entity class, representing the order to be
-    /// logged.
-    /// </param>
-    /// <param name="oldData">
-    /// An instance of the <see cref="OrderUpdateHistoryDataDto"/> class, containing the data
-    /// of the order before the modification.
-    /// </param>
-    /// <param name="newData">
-    /// An instance of the <see cref="OrderUpdateHistoryDataDto"/> class, containing the data
-    /// of the order after the modification.
-    /// </param>
-    /// <param name="reason">
-    /// A <see cref="string"/> value representing the reason of the modification.
-    /// </param>
-    private void LogUpdateHistory(
-            Order order,
-            OrderUpdateHistoryDataDto oldData,
-            OrderUpdateHistoryDataDto newData,
-            string reason)
-    {
-        OrderUpdateHistory updateHistory = new OrderUpdateHistory
-        {
-            Reason = reason,
-            OldData = JsonSerializer.Serialize(oldData),
-            NewData = JsonSerializer.Serialize(newData),
-            UpdatedUserId = _authorizationService.GetUserId()
-        };
-
-        order.UpdateHistories ??= new List<OrderUpdateHistory>();
-        order.UpdateHistories.Add(updateHistory);
     }
 }

@@ -2,9 +2,9 @@
 
 internal static class EntityFrameworkExtensions
 {
-    internal static ModelBuilder ConfigureEntity<TEntity>(this ModelBuilder modelBuilder)
-        where TEntity : class, IEntity<TEntity>
+    internal static ModelBuilder ConfigureEntity<T>(this ModelBuilder modelBuilder)
+        where T : class, IEntity<T>, new()
     {
-        return modelBuilder.Entity<TEntity>(TEntity.ConfigureModel);
+        return modelBuilder.Entity<T>(T.ConfigureModel);
     }
 }

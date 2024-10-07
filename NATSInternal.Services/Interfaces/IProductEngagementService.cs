@@ -1,28 +1,116 @@
 namespace NATSInternal.Services.Interfaces;
 
-internal interface IProductEngagementService<in T, TItem, TProduct, TPhoto, TUser, TUpdateHistory>
-    where T : class, IProductEngageableEntity<T, TItem, TProduct, TPhoto, TUser, TUpdateHistory>, new()
+/// <summary>
+/// A service to handle product-engagement-related operations.
+/// </summary>
+/// <typeparam name="TItem">
+/// The type of the item entity, which is the connection between the
+/// <see cref="IProductEngageableEntity{T, TItem, TProduct, TPhoto, TUser, TUpdateHistory}"/>
+/// and the <see cref="TProduct" /> entity.
+/// </typeparam>
+/// <typeparam name="TProduct">
+/// The type of the product entity.
+/// </typeparam>
+/// <typeparam name="TPhoto">
+/// The type of the photo entity, which is contained by the
+/// <see cref="IProductEngageableEntity{T, TItem, TProduct, TPhoto, TUser, TUpdateHistory}"/>
+/// entity that contains the <see cref="TItem"/> entities.
+/// </typeparam>
+/// <typeparam name="TUser">
+/// The type of the user entity which is associated with the
+/// <see cref="IProductEngageableEntity{T, TItem, TProduct, TPhoto, TUser, TUpdateHistory}"/>
+/// entity that contains the <see cref="TItem"/> entities.
+/// </typeparam>
+/// <typeparam name="TUpdateHistory">
+/// The type of the update history entity which is associated with the
+/// <see cref="IProductEngageableEntity{T, TItem, TProduct, TPhoto, TUser, TUpdateHistory}"/>
+/// entity that contains the <see cref="TItem"/> entities.
+/// </typeparam>
+internal interface IProductEngagementService<TItem, TProduct, TPhoto, TUser, TUpdateHistory>
     where TItem : class, IProductEngageableItemEntity<TItem, TProduct>, new()
     where TProduct : class, IProductEntity<TProduct>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
     where TUser : class, IUserEntity<TUser>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, TUser>, new()
 {
+    /// <summary>
+    /// Creates new product engagement items, based on the specified items' collection, items
+    /// data and engagement type.
+    /// </summary>
+    /// <typeparam name="TItemRequestDto">
+    /// The type of the item request DTOs that contains the data for the engagement operation.
+    /// </typeparam>
+    /// <param name="itemEntities">
+    /// A collection of item entities that act as the connection with the products.
+    /// </param>
+    /// <param name="requestDtos">
+    /// A <see cref="List{T}"/> where <c>T</c> is <c>TItemRequestDto</c>, containing the data
+    /// for the engagement operation.
+    /// </param>
+    /// <param name="engagementType">
+    /// The type of the engagement operation.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation.
+    /// </returns>
     Task CreateItemsAsync<TItemRequestDto>(
-            T entity,
+            ICollection<TItem> itemEntities,
             List<TItemRequestDto> requestDtos,
             ProductEngagementType engagementType)
         where TItemRequestDto : IProductEngageableItemRequestDto;
 
+    /// <summary>
+    /// Updates the existing product engagement items and creates new product engagement items
+    /// (if specified), based on the specified items' collection, items data and engagement
+    /// type.
+    /// </summary>
+    /// <typeparam name="TItemRequestDto">
+    /// The type of the item request DTOs that contains the data for the engagement operation.
+    /// </typeparam>
+    /// <param name="itemEntities">
+    /// A collection of item entities that act as the connection with the products.
+    /// </param>
+    /// <param name="requestDtos">
+    /// A <see cref="List{T}"/> where <c>T</c> is <c>TItemRequestDto</c>, containing the data
+    /// for the engagement operation.
+    /// </param>
+    /// <param name="engagementType">
+    /// The type of the engagement operation.
+    /// </param>
+    /// <param name="itemDisplayName">
+    /// A <see cref="string"/> value represent the display name of the item entity, used in
+    /// the error message when the operation fails.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation.
+    /// </returns>
     Task UpdateItemsAsync<TItemRequestDto>(
-            T entity,
+            ICollection<TItem> itemEntities,
             List<TItemRequestDto> requestDtos,
             ProductEngagementType engagementType,
             string itemDisplayName)
         where TItemRequestDto : IProductEngageableItemRequestDto;
 
+    
+    /// <summary>
+    /// Deletes the existing product engagement items from the specified collection and
+    /// repository, based on the specified engagement operation type.
+    /// </summary>
+    /// <param name="itemEntities">
+    /// A collection of item entities that act as the connection with the products.
+    /// </param>
+    /// <param name="itemRepository">
+    /// An instance of the <see cref="DbSet{TItem}"/> repository that contains the item
+    /// entities in the database.
+    /// </param>
+    /// <param name="engagementType">
+    /// The type of the engagement operation.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation.
+    /// </returns>
     void DeleteItems(
-        T entity,
+        ICollection<TItem> itemEntities,
         DbSet<TItem> itemRepository,
         ProductEngagementType engagementType);
 }

@@ -45,7 +45,6 @@ internal class AuthenticationService : IAuthenticationService
         // Check if user exists.
         User user = _userManager.Users
             .Include(u => u.Roles).ThenInclude(r => r.Claims)
-            .Include(u => u.RefreshTokens)
             .SingleOrDefault(u => u.UserName == requestDto.UserName && !u.IsDeleted)
             ?? throw new OperationException(
                 nameof(requestDto.UserName),

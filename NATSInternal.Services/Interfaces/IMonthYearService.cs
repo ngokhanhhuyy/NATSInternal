@@ -1,0 +1,36 @@
+namespace NATSInternal.Services.Interfaces;
+
+/// <summary>
+/// A service to handle month-year and month-year options related operations.
+/// </summary>
+/// <typeparam name="T">
+/// The type of the entity which <c>StatsDateTime</c> is based on.
+/// </typeparam>
+/// <typeparam name="TUser">
+/// The type of the user entity which is associated with the <see cref="T"/> entity.
+/// </typeparam>
+/// <typeparam name="TUpdateHistory">
+/// The type of the update history entity which is associated with the <see cref="T"/> entity.
+/// </typeparam>
+internal interface IMonthYearService<T, TUser, TUpdateHistory>
+    where T : class, IFinancialEngageableEntity<T, TUser, TUpdateHistory>, new()
+    where TUser : class, IUserEntity<TUser>, new()
+    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, TUser>, new()
+{
+    /// <summary>
+    /// Generates a list of the <see cref="MonthYearResponseDto"/> instances, representing the
+    /// options that users can select as filtering condition when fetching a list of
+    /// <see cref="T"/> DTOs.
+    /// </summary>
+    /// <param name="repositorySelector">
+    /// A <see cref="Func{T, TResult}"/> that selects the <see cref="T"/> repository in the
+    /// <see cref="DatabaseContext"/> instance.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is a
+    /// <see cref="List{T}"/> of <see cref="MonthYearResponseDto"/> instances, representing
+    /// the options.
+    /// </returns>
+    Task<List<MonthYearResponseDto>> GenerateMonthYearOptions(
+        Func<DatabaseContext, DbSet<T>> repositorySelector);
+}

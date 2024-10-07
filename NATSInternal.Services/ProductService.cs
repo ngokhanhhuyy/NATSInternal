@@ -41,7 +41,9 @@ internal class ProductService : IProductService
         {
             string productNonDiacriticsName = requestDto.ProductName.ToNonDiacritics();
             query = query
-                .Where(p => p.Name.ToLower().Contains(productNonDiacriticsName.ToLower()));
+                .Where(p => p.Name.Contains(
+                    productNonDiacriticsName,
+                    StringComparison.OrdinalIgnoreCase));
         }
 
         ProductListResponseDto responseDto = new ProductListResponseDto
@@ -138,7 +140,7 @@ internal class ProductService : IProductService
             }
 
             // Delete the recently created photos if exists.
-            if (product.Photos != null && product.Photos.Any())
+            if (product.Photos?.Count > 0)
             {
                 foreach (ProductPhoto photo in product.Photos)
                 {
@@ -210,10 +212,9 @@ internal class ProductService : IProductService
         }
 
         // Update the photos if changed.
-        if (requestDto.Photos != null && requestDto.Photos.Any())
+        if (requestDto.Photos?.Count > 0)
         {
-            (List<string>, List<string>) photoUpdateResult;
-            photoUpdateResult = await _photoService
+            (List<string>, List<string>) photoUpdateResult = await _photoService
                 .UpdateMultipleAsync(product, requestDto.Photos);
             urlsToBeDeletedWhenSucceeded.AddRange(photoUpdateResult.Item1);
             urlsToBeDeletedWhenFailed.AddRange(photoUpdateResult.Item2);

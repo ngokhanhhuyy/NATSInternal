@@ -1,14 +1,12 @@
-﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting;
 
 namespace NATSInternal.Services;
 
-/// <inheritdoc />
-internal class PhotoService<T, TPhoto> : IPhotoService<T, TPhoto>
-    where T : class, IHasPhotoEntity<T, TPhoto>
-    where TPhoto : class, IPhotoEntity<TPhoto>, new()
+internal class PhotoService<T> : IPhotoService<T>
+    where T : class, IHasPhotoEntity<T>, new()
 {
     private readonly IWebHostEnvironment _environment;
-    private readonly string _folderName = typeof(T).Name.PascalCaseToSnakeCase();
+    protected readonly string _folderName = typeof(T).Name.PascalCaseToSnakeCase();
 
     public PhotoService(IWebHostEnvironment environment)
     {
@@ -84,116 +82,6 @@ internal class PhotoService<T, TPhoto> : IPhotoService<T, TPhoto>
         File.Delete(path);
     }
 
-    /// <inheritdoc />
-    public virtual async Task CreateMultipleAsync<TRequestDto>(
-            T entity,
-            List<TRequestDto> requestDtos,
-            Action<TPhoto, TRequestDto> initializer = null)
-        where TRequestDto : IPhotoRequestDto
-    {
-        foreach (TRequestDto requestDto in requestDtos)
-        {
-            string url = await CreateAsync(requestDto.File, false);
-            TPhoto photo = new TPhoto
-            {
-                Url = url
-            };
-
-            if (initializer != null)
-            {
-                initializer(photo, requestDto);
-            }
-            entity.Photos.Add(photo);
-        }
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<(List<string>, List<string>)> UpdateMultipleAsync<TRequestDto>(
-            T entity,
-            List<TRequestDto> requestDtos,
-            Action<TPhoto, TRequestDto> initializer = null,
-            Action<TPhoto, TRequestDto> updateAssigner = null)
-        where TRequestDto : IPhotoRequestDto
-    {
-        List<string> urlsToBeDeletedWhenSucceeds = new List<string>();
-        List<string> urlsToBeDeletedWhenFails = new List<string>();
-        for (int i = 0; i < requestDtos.Count; i++)
-        {
-            TRequestDto requestDto = requestDtos[i];
-            TPhoto photo;
-            if (requestDto.Id.HasValue)
-            {
-                // Fetch the photo entity with the given id from the request.
-                photo = entity.Photos.SingleOrDefault(op => op.Id == requestDto.Id);
-
-                // Ensure the photo entity exists.
-                if (photo == null)
-                {
-                    string errorMessage = ErrorMessages.NotFound
-                        .ReplacePropertyName(DisplayNames.Photo)
-                        .ReplacePropertyName(DisplayNames.Id)
-                        .ReplaceAttemptedValue(requestDto.Id.ToString());
-                    throw new OperationException($"photos[{i}]", errorMessage);
-                }
-
-                // Perform the modification when the photo is marked to have been changed.
-                if (requestDto.HasBeenChanged)
-                { 
-                    // Delete the photo if indicated.
-                    if (requestDto.HasBeenDeleted)
-                    {
-                        // Mark the current url to be deleted later when the transaction
-                        // succeeds.
-                        urlsToBeDeletedWhenSucceeds.Add(photo.Url);
-                        entity.Photos.Remove(photo);
-                        continue;
-                    }
-                    
-                    // Create new photo if the request contains new data for a new one.
-                    if (requestDto.File != null)
-                    {
-                        // Mark the current url to be deleted later when the transaction
-                        // succeeds.
-                        urlsToBeDeletedWhenSucceeds.Add(photo.Url);
-                        
-                        string url = await CreateAsync(requestDto.File, true);
-                        photo.Url = url;
-
-                        // Mark the created photo to be deleted later if the transaction fails.
-                        urlsToBeDeletedWhenFails.Add(url);
-                    }
-                    
-                    // Execute assigner if specified.
-                    if (updateAssigner != null)
-                    {
-                        updateAssigner(photo, requestDto);
-                    }
-                }
-            }
-            else
-            {
-                // Create new photo if the request doesn't have id.
-                string url = await CreateAsync(requestDto.File, true);
-                photo = new TPhoto
-                {
-                    Url = url,
-                };
-
-                if (initializer != null)
-                {
-                    initializer(photo, requestDto);
-                }
-                
-                entity.Photos.Add(photo);
-
-                // Mark the created photo to be deleted later if the transaction fails.
-                urlsToBeDeletedWhenFails.Add(url);
-            }
-        }
-
-        return (urlsToBeDeletedWhenSucceeds, urlsToBeDeletedWhenFails);
-    }
-
     /// <summary>
     /// Resize an image if either of width or height, or both of them, exceeds the maximum
     /// pixel value (1024px) while keeping the aspect ratio.
@@ -209,7 +97,7 @@ internal class PhotoService<T, TPhoto> : IPhotoService<T, TPhoto>
     /// The maximum height the of the photo that will trigger the resizing of exceeded.
     /// </param>
     private static void ResizeImageIfTooLarge(
-            IMagickImage image,
+            MagickImage image,
             int maxWidth = 1024,
             int maxHeight = 1024)
     {
@@ -247,7 +135,7 @@ internal class PhotoService<T, TPhoto> : IPhotoService<T, TPhoto>
     /// <param name="desiredAspectRatio">
     /// The desired aspect ratio of the image after being cropped.
     /// </param>
-    private static void CropToAspectRatio(IMagickImage image, double desiredAspectRatio)
+    private static void CropToAspectRatio(MagickImage image, double desiredAspectRatio)
     {
         double originalAspectRatio = (double)image.Width / image.Height;
         // Determine which one of width and height is larger.
@@ -281,7 +169,7 @@ internal class PhotoService<T, TPhoto> : IPhotoService<T, TPhoto>
     /// <param name="image">
     /// An IMagickImage instance loaded from byte array to be checked and cropped.
     /// </param>
-    private static void CropIntoSquareImage(IMagickImage image)
+    private static void CropIntoSquareImage(MagickImage image)
     {
         // Crop image if needed to make sure it's square
         if (image.Width != image.Height)

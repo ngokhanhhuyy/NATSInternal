@@ -5,17 +5,20 @@ internal class DebtPaymentService : LockableEntityService, IDebtPaymentService
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService _statsService;
+    private readonly IStatsInternalService<DebtPayment, User, DebtPaymentUpdateHistory> _statsService;
+    private readonly IUpdateHistoryService<DebtPayment, User, DebtPaymentUpdateHistory, DebtPaymentUpdateHistoryDataDto> _updateHistoryService;
     private static MonthYearResponseDto _earliestRecordedMonthYear;
 
     public DebtPaymentService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService statsService)
+            IStatsInternalService<DebtPayment, User, DebtPaymentUpdateHistory> statsService,
+            IUpdateHistoryService<DebtPayment, User, DebtPaymentUpdateHistory, DebtPaymentUpdateHistoryDataDto> updateHistoryService)
     {
         _context = context;
         _authorizationService = authorizationService;
         _statsService = statsService;
+        _updateHistoryService = updateHistoryService;
     }
 
     public async Task<DebtPaymentListResponseDto> GetListAsync(
@@ -171,7 +174,7 @@ internal class DebtPaymentService : LockableEntityService, IDebtPaymentService
         }
 
         // Ensure the remaining debt amount will not be negative after the operation.
-        if (customer.DebtAmount - requestDto.Amount < 0)
+        if (customer.DebtAmount < requestDto.Amount)
         {
             const string amountErrorMessage = ErrorMessages.NegativeRemainingDebtAmount;
             throw new OperationException(nameof(requestDto.Amount), amountErrorMessage);
@@ -301,7 +304,7 @@ internal class DebtPaymentService : LockableEntityService, IDebtPaymentService
 
         // Verify that with the new paid amount, the customer's remaining debt amount will
         // not be negative.
-        if (debtPayment.Customer.DebtAmount - requestDto.Amount < 0)
+        if (debtPayment.Customer.DebtAmount < requestDto.Amount)
         {
             const string amountErrorMessage = ErrorMessages.NegativeRemainingDebtAmount;
             throw new OperationException(nameof(requestDto.Amount), amountErrorMessage);
@@ -316,7 +319,8 @@ internal class DebtPaymentService : LockableEntityService, IDebtPaymentService
         newData = new DebtPaymentUpdateHistoryDataDto(debtPayment);
         
         // Log update history.
-        LogUpdateHistory(debtPayment, oldData, newData, requestDto.UpdatingReason);
+        _updateHistoryService
+            .LogUpdateHistory(debtPayment, oldData, newData, requestDto.UpdatingReason);
         
         // Perform the update operations.
         try
@@ -379,7 +383,7 @@ internal class DebtPaymentService : LockableEntityService, IDebtPaymentService
         
         // Verify that if this debt payment is deleted, will the remaining debt amount be
         // negative.
-        if (debtPayment.Customer.DebtAmount - debtPayment.Amount < 0)
+        if (debtPayment.Customer.DebtAmount < debtPayment.Amount)
         {
             throw new OperationException(ErrorMessages.NegativeRemainingDebtAmount);
         }
@@ -441,14 +445,14 @@ internal class DebtPaymentService : LockableEntityService, IDebtPaymentService
     /// error.
     /// </param>
     /// <exception cref="OperationException">
-    /// Throws when the <c>exception</c> indicates that the the <c>CustomerId</c> foreign key
+    /// Throws when the <c>exception</c> indicates that the <c>CustomerId</c> foreign key
     /// references to a non-existent customer.
     /// </exception>
     /// <exception cref="ConcurrencyException">
     /// Throws when the <c>exception</c> indicates that the information of the requesting user
     /// has been deleted before the operation.
     /// </exception>
-    private void HandleCreateOrUpdateException(MySqlException exception)
+    private static void HandleCreateOrUpdateException(MySqlException exception)
     {
         SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
         exceptionHandler.Handle(exception);
@@ -468,41 +472,5 @@ internal class DebtPaymentService : LockableEntityService, IDebtPaymentService
                     throw new ConcurrencyException();
             }
         }
-    }
-    
-    /// <summary>
-    /// Logs the old and new data to update history for the specified debt payment.
-    /// </summary>
-    /// <param name="debtPayment">
-    /// An instance of the <see cref="DebtPayment"/> entity class, representing the debt
-    /// payment to be logged.
-    /// </param>
-    /// <param name="oldData">
-    /// An instance of the <see cref="DebtPaymentUpdateHistoryDataDto"/> class, containing the
-    /// data of the debt payment before the modification.
-    /// </param>
-    /// <param name="newData">
-    /// An instance of the <see cref="DebtPaymentUpdateHistoryDataDto"/> class, containing the
-    /// data of the debt payment after the modification.
-    /// </param>
-    /// <param name="reason">
-    /// The reason of the modification.
-    /// </param>
-    private void LogUpdateHistory(
-            DebtPayment debtPayment,
-            DebtPaymentUpdateHistoryDataDto oldData,
-            DebtPaymentUpdateHistoryDataDto newData,
-            string reason)
-    {
-        DebtPaymentUpdateHistory updateHistory = new DebtPaymentUpdateHistory
-        {
-            Reason = reason,
-            OldData = JsonSerializer.Serialize(oldData),
-            NewData = JsonSerializer.Serialize(newData),
-            UpdatedDateTime = DateTime.UtcNow.ToApplicationTime(),
-            UserId = _authorizationService.GetUserId()
-        };
-        debtPayment.UpdateHistories ??= new List<DebtPaymentUpdateHistory>();
-        debtPayment.UpdateHistories.Add(updateHistory);
     }
 }

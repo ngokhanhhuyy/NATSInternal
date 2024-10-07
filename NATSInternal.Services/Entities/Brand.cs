@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Entities;
 
-internal class Brand : IUpsertableEntity<Brand>
+internal class Brand : IHasPhotoEntity<Brand>
 {
     [Key]
     public int Id { get; set; }

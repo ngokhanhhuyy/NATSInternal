@@ -171,8 +171,11 @@ internal class StatsService : IStatsInternalService
     }
 
     /// <inheritdoc />
-    public void ValidateStatsDateTime<TEntity>(TEntity entity, DateTime statsDateTime)
-            where TEntity : LockableEntity
+    public void ValidateStatsDateTime<T, TUser, TUpdateHistory>(
+            T entity, DateTime statsDateTime)
+        where T : class, IFinancialEngageableEntity<T, TUser, TUpdateHistory>, new()
+        where TUser : class, IUserEntity<TUser>, new()
+        where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, TUser>, new()
     {
         string errorMessage;
         if (statsDateTime > entity.CreatedDateTime)

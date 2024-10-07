@@ -1,5 +1,12 @@
 ﻿namespace NATSInternal.Services.Exceptions;
 
-public class AuthenticationException(string message) : Exception(message)
+public class AuthenticationException : Exception
 {
+    public AuthenticationException()
+    {
+    }
+
+    public AuthenticationException(string message) : base(message)
+    {
+    }
 }

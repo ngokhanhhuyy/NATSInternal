@@ -4,12 +4,12 @@
 internal class BrandService : IBrandService
 {
     private readonly DatabaseContext _context;
-    private readonly IPhotoService _photoService;
+    private readonly IPhotoService<Brand> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
 
     public BrandService(
             DatabaseContext context,
-            IPhotoService photoService,
+            IPhotoService<Brand> photoService,
             IAuthorizationInternalService authorizationService)
     {
         _context = context;
@@ -54,10 +54,7 @@ internal class BrandService : IBrandService
         string thumbnailUrl = null;
         if (requestDto.ThumbnailFile != null)
         {
-            thumbnailUrl = await _photoService.CreateAsync(
-                requestDto.ThumbnailFile,
-                "brands",
-                true);
+            thumbnailUrl = await _photoService.CreateAsync(requestDto.ThumbnailFile, true);
         }
 
         Brand brand = new Brand
@@ -114,7 +111,6 @@ internal class BrandService : IBrandService
             {
                 brand.ThumbnailUrl = await _photoService.CreateAsync(
                     requestDto.ThumbnailFile,
-                    "brands",
                     true);
                 urlToBeDeletedWhenFailed = brand.ThumbnailUrl;
             }
@@ -163,7 +159,6 @@ internal class BrandService : IBrandService
         {
             _photoService.Delete(brand.ThumbnailUrl);
         }
-
     }
 
     /// <summary>
@@ -177,7 +172,7 @@ internal class BrandService : IBrandService
     /// Thrown when the <c>Country</c> with the specified ID doesn't exist or when
     /// the specified name is duplicated.
     /// </exception>
-    private void HandleDbUpdateException(MySqlException exception)
+    private static void HandleDbUpdateException(MySqlException exception)
     {
         SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
         exceptionHandler.Handle(exception);

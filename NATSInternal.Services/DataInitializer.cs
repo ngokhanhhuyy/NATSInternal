@@ -837,7 +837,7 @@ public sealed class DataInitializer
                     Description = ValueOrNull(description),
                     Unit = units.Skip(random.Next(units.Length)).Take(1).Single(),
                     DefaultPrice = random.Next(25, 95) * 1000,
-                    DefaultVatPercentage = 0.1M,
+                    DefaultVatPercentage = 10,
                     IsForRetail = random.Next(10) < 7,
                     IsDiscontinued = false,
                     CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),

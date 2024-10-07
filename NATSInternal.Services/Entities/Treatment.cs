@@ -65,6 +65,12 @@ internal class Treatment
         .ToList();
 
     [NotMapped]
+    public string ThumbnailUrl => Photos
+        .OrderBy(p => p.Id)
+        .Select(p => p.Url)
+        .FirstOrDefault();
+
+    [NotMapped]
     public long ProductAmountBeforeVat => Items.Sum(ts => ts.AmountBeforeVat);
 
     [NotMapped]
@@ -75,6 +81,9 @@ internal class Treatment
 
     [NotMapped]
     public long AmountAfterVat => AmountBeforeVat + ServiceVatAmount;
+
+    [NotMapped]
+    public long VatAmount => ProductVatAmount + ServiceVatAmount;
 
     [NotMapped]
     public DateTime? LastUpdatedDateTime => UpdateHistories

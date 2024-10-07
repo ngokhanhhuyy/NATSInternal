@@ -4,16 +4,16 @@ namespace NATSInternal.Services;
 internal class ExpenseService : LockableEntityService, IExpenseService
 {
     private readonly DatabaseContext _context;
-    private readonly IPhotoService _photoService;
+    private readonly IPhotoService<Expense, ExpensePhoto> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService _statsService;
+    private readonly IStatsInternalService<Expense, User, ExpenseUpdateHistory> _statsService;
     private static MonthYearResponseDto _earliestRecordedMonthYear;
 
     public ExpenseService(
             DatabaseContext context,
-            IPhotoService photoService,
+            IPhotoService<Expense, ExpensePhoto> photoService,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService statsService)
+            IStatsInternalService<Expense, User, ExpenseUpdateHistory> statsService)
     {
         _context = context;
         _photoService = photoService;
@@ -182,7 +182,7 @@ internal class ExpenseService : LockableEntityService, IExpenseService
         // Create expense photos.
         if (requestDto.Photos != null)
         {
-            await CreatePhotosAsync(expense, requestDto.Photos);
+            await _photoService.CreateMultipleAsync(expense, requestDto.Photos);
         }
 
         // Perform the creating operation.
@@ -192,7 +192,8 @@ internal class ExpenseService : LockableEntityService, IExpenseService
 
             // Expense can be created successfully, adjust the stats.
             DateOnly paidDate = DateOnly.FromDateTime(paidDateTime);
-            await _statsService.IncrementExpenseAsync(expense.Amount, expense.Category, paidDate);
+            await _statsService
+                .IncrementExpenseAsync(expense.Amount, expense.Category, paidDate);
 
             // Commit the transaction, finishing the operation.
             await transaction.CommitAsync();
@@ -274,7 +275,8 @@ internal class ExpenseService : LockableEntityService, IExpenseService
                 throw new AuthorizationException();
             }
 
-            // Prevent the consultant's SupplyDateTime to be modified when the consultant is locked.
+            // Prevent the consultant's SupplyDateTime to be modified when the consultant is
+            // locked.
             if (expense.IsLocked)
             {
                 string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
@@ -291,7 +293,8 @@ internal class ExpenseService : LockableEntityService, IExpenseService
                 // Validate and assign the specified SupplyDateTime value from the request.
                 try
                 {
-                    _statsService.ValidateStatsDateTime(expense, requestDto.PaidDateTime.Value);
+                    _statsService
+                        .ValidateStatsDateTime(expense, requestDto.PaidDateTime.Value);
                     expense.PaidDateTime = requestDto.PaidDateTime.Value;
                 }
                 catch (ArgumentException exception)
@@ -334,8 +337,8 @@ internal class ExpenseService : LockableEntityService, IExpenseService
         List<string> urlsToBeDeletedWhenFailed = new List<string>();
         if (requestDto.Photos != null)
         {
-            (List<string>, List<string>) photosUpdateResult;
-            photosUpdateResult = await UpdatePhotosAsync(expense, requestDto.Photos);
+            (List<string>, List<string>) photosUpdateResult = await _photoService
+                .UpdateMultipleAsync(expense, requestDto.Photos);
             urlsToBeDeletedWhenSucceeded.AddRange(photosUpdateResult.Item1);
             urlsToBeDeletedWhenFailed.AddRange(photosUpdateResult.Item2);
         }
@@ -485,103 +488,6 @@ internal class ExpenseService : LockableEntityService, IExpenseService
         {
             throw new ConcurrencyException();
         }
-    }
-
-    /// <summary>
-    /// Creates new photos for the specified expense.
-    /// </summary>
-    /// <param name="expense">
-    /// An instance of the <see cref="Expense"/> entity class, representing the expense with
-    /// which the creating photos are associated.
-    /// </param>
-    /// <param name="requestDtos">
-    /// A <see cref="List{T}"/> where <c>T</c> is <see cref="ExpensePhotoRequestDto"/>,
-    /// containing the data for the creating operation.
-    /// </param>
-    private async Task CreatePhotosAsync(
-            Expense expense,
-            List<ExpensePhotoRequestDto> requestDtos)
-    {
-        expense.Photos ??= new List<ExpensePhoto>();
-        foreach (ExpensePhotoRequestDto photoRequestDto in requestDtos)
-        {
-            string url = await _photoService
-                .CreateAsync(photoRequestDto.File, "expenses", false);
-            ExpensePhoto photo = new ExpensePhoto
-            {
-                Url = url
-            };
-            expense.Photos.Add(photo);
-        }
-    }
-
-    /// <summary>
-    /// Update the specified <c>Expense</c>'s photos with the data provided in the request.
-    /// </summary>
-    /// <param name="expense">
-    /// The <c>Expense</c> of which the photos are to be updated.
-    /// </param>
-    /// <param name="requestDtos">
-    /// A <see cref="List{T}"/> where <c>T</c> is <see cref="ExpensePhotoRequestDto"/>,
-    /// containing the data for the photo updating operation.
-    /// </param>
-    /// <returns>
-    /// A <see cref="Tuple"/> which contains two <see cref="List{T}"/> where <c>T</c> is
-    /// <see cref="string"/>. The first list contains the urls which must be deleted after the
-    /// expense updating operation succeeded. The other contains the urls which must be deleted
-    /// after the expense updating operation failed and is aborted.
-    /// </returns>
-    /// <exception cref="OperationException">
-    /// Thows when the photo which is associated to one of the ids specified in the request
-    /// doesn't exist or has already been deleted.
-    /// </exception>
-    private async Task<(List<string>, List<string>)> UpdatePhotosAsync(
-            Expense expense,
-            List<ExpensePhotoRequestDto> requestDtos)
-    {
-        List<string> urlsToBeDeletedWhenSucceeded = new List<string>();
-        List<string> urlsToBeDeletedWhenFailed = new List<string>();
-        for (int i = 0; i < requestDtos.Count; i++)
-        {
-            ExpensePhotoRequestDto photoRequestDto = requestDtos[i];
-            ExpensePhoto photo;
-            if (!photoRequestDto.Id.HasValue)
-            {
-                string url = await _photoService
-                    .CreateAsync(photoRequestDto.File, "expenses", false);
-                urlsToBeDeletedWhenFailed.Add(url);
-                photo = new ExpensePhoto { Url = url };
-                expense.Photos.Add(photo);
-            }
-            else if (photoRequestDto.HasBeenChanged)
-            {
-                photo = expense.Photos.SingleOrDefault(e => e.Id == photoRequestDto.Id);
-                if (photo == null)
-                {
-                    string errorMessage = ErrorMessages.NotFoundByProperty
-                        .ReplaceResourceName(DisplayNames.ExpensePhoto);
-                    throw new OperationException($"photos[{i}].id", errorMessage);
-                }
-
-                // Delete old photo.
-                urlsToBeDeletedWhenSucceeded.Add(photo.Url);
-
-                // Create new photo.
-                if (photoRequestDto.File != null)
-                {
-                    string url = await _photoService
-                        .CreateAsync(photoRequestDto.File, "expenses", false);
-                    urlsToBeDeletedWhenFailed.Add(url);
-                    photo.Url = url;
-                }
-                else
-                {
-                    _context.ExpensePhotos.Remove(photo);
-                }
-            }
-        }
-
-        return (urlsToBeDeletedWhenSucceeded, urlsToBeDeletedWhenFailed);
     }
 
     /// <summary>

@@ -40,8 +40,14 @@ internal class Order
     public virtual List<OrderItem> Items { get; set; }
     public virtual List<OrderPhoto> Photos { get; set; }
     public virtual List<OrderUpdateHistory> UpdateHistories { get; set; }
-    
+
     // Property for convinience.
+    [NotMapped]
+    public string ThumbnailUrl => Photos
+        .OrderBy(p => p.Id)
+        .Select(p => p.Url)
+        .FirstOrDefault();
+
     [NotMapped]
     public long ProductAmountBeforeVat => Items.Sum(i => i.AmountPerUnit * i.Quantity);
 
@@ -53,6 +59,9 @@ internal class Order
 
     [NotMapped]
     public long AfterVatAmount => ProductAmountBeforeVat + ProductVatAmount;
+
+    [NotMapped]
+    public long VatAmount => ProductVatAmount;
 
     [NotMapped]
     public DateTime? LastUpdatedDateTime => UpdateHistories
