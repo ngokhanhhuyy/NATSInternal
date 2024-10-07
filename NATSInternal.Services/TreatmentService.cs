@@ -46,6 +46,9 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
             .Include(t => t.Photos);
 
         // Sorting by direction and sorting by field filter.
+        Expression<Func<Treatment, long>> amountExpression = (t) => t.Items.Sum(ti =>
+            (ti.AmountBeforeVatPerUnit + ti.VatAmountPerUnit) * ti.Quantity) +
+            t.ServiceAmountBeforeVat + t.ServiceAmountBeforeVat;
         switch (requestDto.OrderByField)
         {
             case nameof(TreatmentListRequestDto.FieldOptions.Amount):
