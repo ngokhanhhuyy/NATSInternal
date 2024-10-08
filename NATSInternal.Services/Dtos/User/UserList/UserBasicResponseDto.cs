@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class UserBasicResponseDto
+public class UserBasicResponseDto : IUserBasicResponseDto<UserBasicAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public string UserName { get; set; }
@@ -14,6 +14,9 @@ public class UserBasicResponseDto
     public string AvatarUrl { get; set; }
     public RoleBasicResponseDto Role { get; set; }
     public UserBasicAuthorizationResponseDto Authorization { get; set; }
+
+    [JsonIgnore]
+    public string ThumbnailUrl => AvatarUrl;
 
     internal UserBasicResponseDto(User user)
     {

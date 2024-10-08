@@ -118,6 +118,13 @@ internal class User : IdentityUser<int>, IUserEntity<User>
         .Select(dpuh => dpuh.DebtPayment)
         .ToList();
 
+    [NotMapped]
+    public string ThumbnailUrl
+    {
+        get => AvatarUrl;
+        set => AvatarUrl = value;
+    }
+    
     public bool HasPermission(string permissionName)
     {
         return Role.Claims

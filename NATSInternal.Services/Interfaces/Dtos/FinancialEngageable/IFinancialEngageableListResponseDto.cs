@@ -9,5 +9,5 @@ public interface IFinancialEngageableListResponseDto<
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
     where TListAuthorization : IUpsertableListAuthorizationResponseDto
 {
-    List<MonthYearResponseDto> MonthYearOptions { get; internal set; }
+    List<MonthYearResponseDto> MonthYearOptions { get; set; }
 }

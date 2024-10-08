@@ -1,9 +1,15 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface IUpdaterTrackableDetailResponseDto<TUpdateHistory, TAuthorization>
+public interface IUpdaterTrackableDetailResponseDto<
+        TUserBasic,
+        TUpdateHistory,
+        TAuthorization,
+        TUserAuthorization>
     : IUpsertableDetailResponseDto<TAuthorization>
-    where TUpdateHistory : IUpdateHistoryResponseDto
+    where TUserBasic : IUserBasicResponseDto<TUserAuthorization>
+    where TUpdateHistory : IUpdateHistoryResponseDto<TUserBasic, TUserAuthorization>
     where TAuthorization : IUpsertableAuthorizationResponseDto
+    where TUserAuthorization : IUpsertableAuthorizationResponseDto
 {
-    List<TUpdateHistory> UpdateHistories { get; internal set; }
+    List<TUpdateHistory> UpdateHistories { get; set; }
 }

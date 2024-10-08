@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-internal interface IPhotoResponseDto
+public interface IPhotoResponseDto
 {
     int Id { get; set; }
     string Url { get; set; }

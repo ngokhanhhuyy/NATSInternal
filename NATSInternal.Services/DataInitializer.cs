@@ -910,7 +910,7 @@ public sealed class DataInitializer
 
                 Supply supply = new()
                 {
-                    SupplyDateTime = currentDateTime,
+                    SuppliedDateTime = currentDateTime,
                     ShipmentFee = 0,
                     Note = faker.Lorem.Sentences(5),
                     CreatedDateTime = currentDateTime,
@@ -1332,7 +1332,7 @@ public sealed class DataInitializer
         {
             Supply supply = new()
             {
-                SupplyDateTime = statsDateTime,
+                SuppliedDateTime = statsDateTime,
                 CreatedDateTime = statsDateTime,
                 ShipmentFee = random.Next(200_000, 500_000),
                 Note = random.Next(0, 2) == 0 ? null : SliceIfTooLong(faker.Lorem.Sentences(4), 255),

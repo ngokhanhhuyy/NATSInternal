@@ -2,7 +2,7 @@
 
 internal class DebtIncurrence
     :
-        LockableEntity,
+        FinancialEngagableEntity,
         IDebtEntity<DebtIncurrence, Customer, User, DebtIncurrenceUpdateHistory>
 {
     [Key]
@@ -48,6 +48,12 @@ internal class DebtIncurrence
     {
         get => IncurredDateTime;
         set => IncurredDateTime = value;
+    }
+
+    [NotMapped]
+    public static Expression<Func<DebtIncurrence, DateTime>> StatsDateTimeExpression
+    {
+        get => (debtIncurrence) => debtIncurrence.IncurredDateTime;
     }
     
     // Model configurations.

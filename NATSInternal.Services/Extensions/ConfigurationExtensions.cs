@@ -51,6 +51,9 @@ public static class ConfigurationExtensions
         services.AddScoped<SqlExceptionHandler>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRoleService, RoleService>();
+
+        // Photo services.
+        services.AddScoped<IPhotoService<Brand>, PhotoService<Brand>>();
         services.AddScoped<
             IPhotoService<Supply, SupplyPhoto>,
             PhotoService<Supply, SupplyPhoto>>();
@@ -60,6 +63,7 @@ public static class ConfigurationExtensions
         services.AddScoped<
             IPhotoService<Order, OrderPhoto>,
             PhotoService<Order, OrderPhoto>>();
+
         services.AddScoped<ITreatmentPhotoService, TreatmentPhotoService>();
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<ICountryService, CountryService>();
@@ -76,17 +80,72 @@ public static class ConfigurationExtensions
         services.AddScoped<IAnnouncementService, AnnouncementService>();
         services.AddScoped<INotificationService, NotificationService>();
 
+        // Authorization.
         services.AddScoped<AuthorizationService>();
         services.AddScoped<IAuthorizationService>(provider => provider
             .GetRequiredService<AuthorizationService>());
         services.AddScoped<IAuthorizationInternalService>(provider => provider
             .GetRequiredService<AuthorizationService>());
             
+        // Stats services.
         services.AddScoped<StatsService>();
         services.AddScoped<IStatsService>(provider => provider
             .GetRequiredService<StatsService>());
-        services.AddScoped<IStatsInternalService>(provider => provider
-            .GetRequiredService<StatsService>());
+        services.AddScoped<
+            IStatsInternalService<Expense, User, ExpenseUpdateHistory>,
+            StatsInternalService<Expense, User, ExpenseUpdateHistory>>();
+        services.AddScoped<
+            IStatsInternalService<Supply, User, SupplyUpdateHistory>,
+            StatsInternalService<Supply, User, SupplyUpdateHistory>>();
+        services.AddScoped<
+            IStatsInternalService<Order, User, OrderUpdateHistory>,
+            StatsInternalService<Order, User, OrderUpdateHistory>>();
+        services.AddScoped<
+            IStatsInternalService<Treatment, User, TreatmentUpdateHistory>,
+            StatsInternalService<Treatment, User, TreatmentUpdateHistory>>();
+        services.AddScoped<
+            IStatsInternalService<Consultant, User, ConsultantUpdateHistory>,
+            StatsInternalService<Consultant, User, ConsultantUpdateHistory>>();
+        services.AddScoped<
+            IStatsInternalService<DebtIncurrence, User, DebtIncurrenceUpdateHistory>,
+            StatsInternalService<DebtIncurrence, User, DebtIncurrenceUpdateHistory>>();
+        services.AddScoped<
+            IStatsInternalService<DebtPayment, User, DebtPaymentUpdateHistory>,
+            StatsInternalService<DebtPayment, User, DebtPaymentUpdateHistory>>();
+
+        // Product-engagement services.
+        services.AddScoped<
+            IProductEngagementService<SupplyItem, Product, SupplyPhoto, User, SupplyUpdateHistory>,
+            ProductEngagementService<SupplyItem, SupplyPhoto, SupplyUpdateHistory>>();
+        services.AddScoped<
+            IProductEngagementService<OrderItem, Product, OrderPhoto, User, OrderUpdateHistory>,
+            ProductEngagementService<OrderItem, OrderPhoto, OrderUpdateHistory>>();
+        services.AddScoped<
+            IProductEngagementService<TreatmentItem, Product, TreatmentPhoto, User, TreatmentUpdateHistory>,
+            ProductEngagementService<TreatmentItem, TreatmentPhoto, TreatmentUpdateHistory>>();
+
+        // Month-year services.
+        services.AddScoped<
+            IMonthYearService<Expense, User, ExpenseUpdateHistory>,
+            MonthYearService<Expense, User, ExpenseUpdateHistory>>();
+        services.AddScoped<
+            IMonthYearService<Supply, User, SupplyUpdateHistory>,
+            MonthYearService<Supply, User, SupplyUpdateHistory>>();
+        services.AddScoped<
+            IMonthYearService<Order, User, OrderUpdateHistory>,
+            MonthYearService<Order, User, OrderUpdateHistory>>();
+        services.AddScoped<
+            IMonthYearService<Treatment, User, TreatmentUpdateHistory>,
+            MonthYearService<Treatment, User, TreatmentUpdateHistory>>();
+        services.AddScoped<
+            IMonthYearService<Consultant, User, ConsultantUpdateHistory>,
+            MonthYearService<Consultant, User, ConsultantUpdateHistory>>();
+        services.AddScoped<
+            IMonthYearService<DebtIncurrence, User, DebtIncurrenceUpdateHistory>,
+            MonthYearService<DebtIncurrence, User, DebtIncurrenceUpdateHistory>>();
+        services.AddScoped<
+            IMonthYearService<DebtPayment, User, DebtPaymentUpdateHistory>,
+            MonthYearService<DebtPayment, User, DebtPaymentUpdateHistory>>();
 
         return services;
     }

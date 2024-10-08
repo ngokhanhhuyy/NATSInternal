@@ -5,7 +5,7 @@ namespace NATSInternal.Services.Interfaces.Dtos;
 /// can generate revenue.
 /// </summary>
 /// <inheritdoc />
-internal interface IRevenueDetailResponseDto<TCustomer, TAuthorization, TCustomerAuthorization>
+public interface IRevenueDetailResponseDto<TCustomer, TAuthorization, TCustomerAuthorization>
     : IRevuenueBasicResponseDto<TCustomer, TAuthorization, TCustomerAuthorization>
     where TCustomer : ICustomerBasicResponseDto<TCustomerAuthorization>
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto

@@ -1,8 +1,9 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class DebtPaymentListRequestDto :
-        IRequestDto<DebtPaymentListRequestDto>,
-        ILockableEntityListRequestDto
+public class DebtPaymentListRequestDto
+    :
+        IFinancialEngageableListRequestDto,
+        ICustomerEngageableListRequestDto
 {
     public bool OrderByAscending { get; set; }
     public string OrderByField { get; set; } = nameof(FieldOptions.PaidDateTime);

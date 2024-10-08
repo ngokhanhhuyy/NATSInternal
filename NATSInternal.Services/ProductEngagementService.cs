@@ -1,18 +1,15 @@
 namespace NATSInternal.Services;
 
 /// <inheritdoc />
-internal class ProductEngagementService<TItem, TProduct, TPhoto, TCustomer, TUser, TUpdateHistory>
-    : IProductEngagementService<TItem, TProduct, TPhoto, TUser, TUpdateHistory>
-    where TItem : class, IProductEngageableItemEntity<TItem, TProduct>, new()
-    where TProduct : class, IProductEntity<TProduct>, new()
+internal class ProductEngagementService<TItem, TPhoto, TUpdateHistory>
+    : IProductEngagementService<TItem, Product, TPhoto, User, TUpdateHistory>
+    where TItem : class, IProductEngageableItemEntity<TItem, Product>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
-    where TCustomer : class, ICustomerEntity<TCustomer, TUser>, new()
-    where TUser : class, IUserEntity<TUser>, new()
-    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, TUser>, new()
+    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, User>, new()
 {
-    protected readonly IDatabaseContext<TUser, TCustomer, TProduct> _context;
+    protected readonly DatabaseContext _context;
 
-    public ProductEngagementService(IDatabaseContext<TUser, TCustomer, TProduct> context)
+    public ProductEngagementService(DatabaseContext context)
     {
         _context = context;
     }
@@ -26,7 +23,7 @@ internal class ProductEngagementService<TItem, TProduct, TPhoto, TCustomer, TUse
     {
         // Fetch a list of products which ids are specified in the request.
         List<int> requestedProductIds = requestDtos.Select(i => i.ProductId).ToList();
-        List<TProduct> products = await _context.Products
+        List<Product> products = await _context.Products
             .Where(p => requestedProductIds.Contains(p.Id))
             .ToListAsync();
 
@@ -34,7 +31,7 @@ internal class ProductEngagementService<TItem, TProduct, TPhoto, TCustomer, TUse
         {
             TItemRequestDto itemRequestDto = requestDtos[i];
             // Get the product with the specified id from pre-fetched list.
-            TProduct product = products.SingleOrDefault(p => p.Id == itemRequestDto.Id);
+            Product product = products.SingleOrDefault(p => p.Id == itemRequestDto.Id);
 
             // Ensure the product exists.
             if (product == null)
@@ -91,7 +88,7 @@ internal class ProductEngagementService<TItem, TProduct, TPhoto, TCustomer, TUse
             .Where(i => !i.Id.HasValue)
             .Select(i => i.ProductId)
             .ToList();
-        List<TProduct> productsForNewItems = await _context.Products
+        List<Product> productsForNewItems = await _context.Products
             .Where(p => productIdsForNewItems.Contains(p.Id))
             .ToListAsync();
 
@@ -141,7 +138,7 @@ internal class ProductEngagementService<TItem, TProduct, TPhoto, TCustomer, TUse
                 else
                 {
                     // Get the product entity from the pre-fetched list.
-                    TProduct product = productsForNewItems
+                    Product product = productsForNewItems
                         .SingleOrDefault(p => p.Id == itemRequestDto.ProductId);
 
                     // Ensure the product exists in the database.
@@ -179,7 +176,7 @@ internal class ProductEngagementService<TItem, TProduct, TPhoto, TCustomer, TUse
     
     public void DeleteItems(
             ICollection<TItem> itemEntities,
-            DbSet<TItem> itemRepository,
+            Func<DatabaseContext, DbSet<TItem>> repositorySelector,
             ProductEngagementType engagementType)
     {
         foreach (TItem item in itemEntities)
@@ -201,7 +198,7 @@ internal class ProductEngagementService<TItem, TProduct, TPhoto, TCustomer, TUse
 
             // Remove the item.
             itemEntities.Remove(item);
-            itemRepository.Remove(item);
+            repositorySelector(_context).Remove(item);
         }
     }
 }

@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-internal interface ICustomerEngageableListRequestDto : IOrderableListRequestDto
+public interface ICustomerEngageableListRequestDto : IOrderableListRequestDto
 {
-    int? CustomerId { get; internal set; }
+    int? CustomerId { get; set; }
 }

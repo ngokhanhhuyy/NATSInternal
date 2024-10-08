@@ -6,5 +6,5 @@ public interface IProductEngageableListResponseDto<TBasic, TAuthorization, TList
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
     where TListAuthorization : IUpsertableListAuthorizationResponseDto
 {
-    int? ProductId { get; internal set; }
+    int? ProductId { get; set; }
 }

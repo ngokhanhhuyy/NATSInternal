@@ -99,9 +99,9 @@ internal interface IProductEngagementService<TItem, TProduct, TPhoto, TUser, TUp
     /// <param name="itemEntities">
     /// A collection of item entities that act as the connection with the products.
     /// </param>
-    /// <param name="itemRepository">
-    /// An instance of the <see cref="DbSet{TItem}"/> repository that contains the item
-    /// entities in the database.
+    /// <param name="repositorySelector">
+    /// A function that is used to select the <see cref="TItem"/> repository from the given
+    /// <see cref="DatabaseContext"/> instance.
     /// </param>
     /// <param name="engagementType">
     /// The type of the engagement operation.
@@ -111,6 +111,6 @@ internal interface IProductEngagementService<TItem, TProduct, TPhoto, TUser, TUp
     /// </returns>
     void DeleteItems(
         ICollection<TItem> itemEntities,
-        DbSet<TItem> itemRepository,
+        Func<DatabaseContext, DbSet<TItem>> repositorySelector,
         ProductEngagementType engagementType);
 }

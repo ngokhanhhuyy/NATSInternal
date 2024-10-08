@@ -7,36 +7,29 @@ internal class ExpenseService : LockableEntityService, IExpenseService
     private readonly IPhotoService<Expense, ExpensePhoto> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IStatsInternalService<Expense, User, ExpenseUpdateHistory> _statsService;
-    private static MonthYearResponseDto _earliestRecordedMonthYear;
+    private readonly IMonthYearService<Expense, User, ExpenseUpdateHistory> _monthYearService;
 
     public ExpenseService(
             DatabaseContext context,
             IPhotoService<Expense, ExpensePhoto> photoService,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService<Expense, User, ExpenseUpdateHistory> statsService)
+            IStatsInternalService<Expense, User, ExpenseUpdateHistory> statsService,
+            IMonthYearService<Expense, User, ExpenseUpdateHistory> monthYearService)
     {
         _context = context;
         _photoService = photoService;
         _authorizationService = authorizationService;
         _statsService = statsService;
+        _monthYearService = monthYearService;
     }
 
     /// <inheritdoc/>
     public async Task<ExpenseListResponseDto> GetListAsync(
             ExpenseListRequestDto requestDto)
     {
-        List<MonthYearResponseDto> monthYearOptions = null;
-        if (!requestDto.IgnoreMonthYear)
-        {
-            _earliestRecordedMonthYear ??= await _context.Orders
-                .OrderBy(s => s.PaidDateTime)
-                .Select(s => new MonthYearResponseDto
-                {
-                    Year = s.PaidDateTime.Year,
-                    Month = s.PaidDateTime.Month
-                }).FirstOrDefaultAsync();
-            monthYearOptions = GenerateMonthYearOptions(_earliestRecordedMonthYear);
-        }
+        // Generate month year options.
+        List<MonthYearResponseDto> monthYearOptions = await _monthYearService
+            .GenerateMonthYearOptions(dbContext => dbContext.Expenses);
 
         // Initialize query.
         IQueryable<Expense> query = _context.Expenses
@@ -297,7 +290,7 @@ internal class ExpenseService : LockableEntityService, IExpenseService
                         .ValidateStatsDateTime(expense, requestDto.PaidDateTime.Value);
                     expense.PaidDateTime = requestDto.PaidDateTime.Value;
                 }
-                catch (ArgumentException exception)
+                catch (ValidationException exception)
                 {
                     string errorMessage = exception.Message
                         .ReplacePropertyName(DisplayNames.PaidDateTime);

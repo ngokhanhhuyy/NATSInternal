@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-internal interface IOrderableListRequestDto : IListRequestDto
+public interface IOrderableListRequestDto : IListRequestDto
 {
     bool OrderByAscending { get; set; }
     string OrderByField { get; set; }

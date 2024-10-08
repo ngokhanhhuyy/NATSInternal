@@ -1,16 +1,16 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class SupplyItemRequestDto : IRequestDto
+public class SupplyItemRequestDto : IProductEngageableItemRequestDto
 {
     public int? Id { get; set; }
-    public long Amount { get; set; }
-    public int SuppliedQuantity { get; set; }
+    public long AmountPerUnit { get; set; }
+    public int Quantity { get; set; }
     public int ProductId { get; set; }
     public bool HasBeenChanged { get; set; }
     public bool HasBeenDeleted { get; set; }
 
     public void TransformValues()
     {
-        Id = Id.HasValue && Id.Value == 0 ? null : Id;
+        Id = Id == 0 ? null : Id;
     }
 }

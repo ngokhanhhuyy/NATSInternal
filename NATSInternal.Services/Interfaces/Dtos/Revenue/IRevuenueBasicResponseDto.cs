@@ -4,7 +4,7 @@ namespace NATSInternal.Services.Interfaces.Dtos;
 /// A DTO containing the basic information of an entity which represents an transaction that
 /// can generate revenue.
 /// </summary>
-/// <typeparam name="TCustomer">
+/// <typeparam name="TCustomerBasic">
 /// The type of the customer DTO, containing the details of the customer which this DTO is
 /// associated with.
 /// </typeparam>
@@ -16,9 +16,15 @@ namespace NATSInternal.Services.Interfaces.Dtos;
 /// The type of the authorization DTO, containing the information of the permissions to
 /// interact with the customer associated with the revenue.
 /// </typeparam>
-internal interface IRevuenueBasicResponseDto<TCustomer, TAuthorization, TCustomerAuthorization>
-    : ICustomerEngageableBasicResponseDto<TCustomer, TAuthorization, TCustomerAuthorization>
-    where TCustomer : ICustomerBasicResponseDto<TCustomerAuthorization>
+public interface IRevuenueBasicResponseDto<
+        TCustomerBasic,
+        TAuthorization,
+        TCustomerAuthorization>
+    : ICustomerEngageableBasicResponseDto<
+        TCustomerBasic,
+        TAuthorization,
+        TCustomerAuthorization>
+    where TCustomerBasic : ICustomerBasicResponseDto<TCustomerAuthorization>
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
     where TCustomerAuthorization : IUpsertableAuthorizationResponseDto
 {

@@ -4,5 +4,5 @@ public interface ICreatorTrackableDetailResponseDto<TAuthorization>
     : IUpsertableDetailResponseDto<TAuthorization>
     where TAuthorization : IUpsertableAuthorizationResponseDto
 {
-    UserBasicResponseDto CreatedUser { get; internal set; }
+    UserBasicResponseDto CreatedUser { get; set; }
 }

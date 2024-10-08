@@ -2,7 +2,7 @@ namespace NATSInternal.Services.Entities;
 
 internal class Supply
     :
-        LockableEntity,
+        FinancialEngagableEntity,
         IProductEngageableEntity<
             Supply,
             SupplyItem,
@@ -15,7 +15,7 @@ internal class Supply
     public int Id { get; set; }
 
     [Required]
-    public DateTime SupplyDateTime { get; set; }
+    public DateTime SuppliedDateTime { get; set; }
 
     [Required]
     public long ShipmentFee { get; set; } = 0;
@@ -81,8 +81,14 @@ internal class Supply
     [NotMapped]
     public DateTime StatsDateTime
     {
-        get => SupplyDateTime;
-        set => SupplyDateTime = value;
+        get => SuppliedDateTime;
+        set => SuppliedDateTime = value;
+    }
+
+    [NotMapped]
+    public static Expression<Func<Supply, DateTime>> StatsDateTimeExpression
+    {
+        get => (supply) => supply.SuppliedDateTime;
     }
 
     // Model configurations.
@@ -93,7 +99,7 @@ internal class Supply
             .WithMany(u => u.Supplies)
             .HasForeignKey(s => s.CreatedUserId)
             .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder.HasIndex(s => s.SupplyDateTime)
+        entityBuilder.HasIndex(s => s.SuppliedDateTime)
             .IsUnique();
         entityBuilder.HasIndex(s => s.IsDeleted);
         entityBuilder.Property(c => c.RowVersion)

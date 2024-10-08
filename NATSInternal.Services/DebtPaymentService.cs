@@ -7,36 +7,28 @@ internal class DebtPaymentService : LockableEntityService, IDebtPaymentService
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IStatsInternalService<DebtPayment, User, DebtPaymentUpdateHistory> _statsService;
     private readonly IUpdateHistoryService<DebtPayment, User, DebtPaymentUpdateHistory, DebtPaymentUpdateHistoryDataDto> _updateHistoryService;
-    private static MonthYearResponseDto _earliestRecordedMonthYear;
+    private readonly IMonthYearService<DebtPayment, User, DebtPaymentUpdateHistory> _monthYearService;
 
     public DebtPaymentService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
             IStatsInternalService<DebtPayment, User, DebtPaymentUpdateHistory> statsService,
-            IUpdateHistoryService<DebtPayment, User, DebtPaymentUpdateHistory, DebtPaymentUpdateHistoryDataDto> updateHistoryService)
+            IUpdateHistoryService<DebtPayment, User, DebtPaymentUpdateHistory, DebtPaymentUpdateHistoryDataDto> updateHistoryService,
+            IMonthYearService<DebtPayment, User, DebtPaymentUpdateHistory> monthYearService)
     {
         _context = context;
         _authorizationService = authorizationService;
         _statsService = statsService;
         _updateHistoryService = updateHistoryService;
+        _monthYearService = monthYearService;
     }
 
     public async Task<DebtPaymentListResponseDto> GetListAsync(
             DebtPaymentListRequestDto requestDto)
     {
         // Initialize list of month and year options.
-        List<MonthYearResponseDto> monthYearOptions = null;
-        if (!requestDto.IgnoreMonthYear)
-        {
-            _earliestRecordedMonthYear ??= await _context.Orders
-                .OrderBy(s => s.PaidDateTime)
-                .Select(s => new MonthYearResponseDto
-                {
-                    Year = s.PaidDateTime.Year,
-                    Month = s.PaidDateTime.Month
-                }).FirstOrDefaultAsync();
-            monthYearOptions = GenerateMonthYearOptions(_earliestRecordedMonthYear);
-        }
+        List<MonthYearResponseDto> monthYearOptions = await _monthYearService
+            .GenerateMonthYearOptions(dbContext => dbContext.DebtPayments);
 
         // Initialize query.
         IQueryable<DebtPayment> query = _context.DebtPayments

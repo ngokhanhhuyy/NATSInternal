@@ -4,7 +4,7 @@ public class TreatmentItemResponseDto : IProductEngageableItemResponseDto
 {
     public int Id { get; set; }
     public long AmountBeforeVatPerUnit { get; set; }
-    public decimal VatAmount { get; set; }
+    public decimal VatAmountPerUnit { get; set; }
     public int Quantity { get; set; }
     public ProductBasicResponseDto Product { get; set; }
 
@@ -14,7 +14,7 @@ public class TreatmentItemResponseDto : IProductEngageableItemResponseDto
     {
         Id = treatmentItem.Id;
         AmountBeforeVatPerUnit = treatmentItem.AmountBeforeVatPerUnit;
-        VatAmount = treatmentItem.VatAmount;
+        VatAmountPerUnit = treatmentItem.VatAmount;
         Quantity = treatmentItem.Quantity;
         Product = new ProductBasicResponseDto(treatmentItem.Product);
     }

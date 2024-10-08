@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Entities;
 
-internal class LockableEntity : ILockableEntity
+internal class FinancialEngagableEntity
 {
     [Required]
     public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();

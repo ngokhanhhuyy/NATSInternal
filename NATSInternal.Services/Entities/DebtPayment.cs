@@ -2,7 +2,7 @@
 
 internal class DebtPayment
     :
-        LockableEntity,
+        FinancialEngagableEntity,
         IDebtEntity<DebtPayment, Customer, User, DebtPaymentUpdateHistory>
 {
     [Key]
@@ -50,6 +50,12 @@ internal class DebtPayment
     {
         get => PaidDateTime;
         set => PaidDateTime = value;
+    }
+
+    [NotMapped]
+    public static Expression<Func<DebtPayment, DateTime>> StatsDateTimeExpression
+    {
+        get => (debtPayment) => debtPayment.PaidDateTime;
     }
     
     // Model configurations.

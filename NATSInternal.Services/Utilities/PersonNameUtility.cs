@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Utilities;
 
-internal class PersonNameUtility
+internal static class PersonNameUtility
 {
     public static string GetFullNameFromNameElements(string firstName, string middleName, string lastName)
     {
@@ -28,7 +28,7 @@ internal class PersonNameUtility
         return new PersonNameElementsDto
         {
             FirstName = nameElements[0],
-            LastName = nameElements.Last(),
+            LastName = nameElements[^1],
             MiddleName = isMiddleNameEmpty ? null : middleName
         };
     }

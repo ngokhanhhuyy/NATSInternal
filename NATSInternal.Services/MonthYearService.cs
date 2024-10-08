@@ -20,12 +20,11 @@ internal sealed class MonthYearService<T, TUser, TUpdateHistory>
             Func<DatabaseContext, DbSet<T>> repositorySelector)
     {
         _earliestRecordedMonthYear ??= await repositorySelector(_context)
-            .Select(entity => entity.StatsDateTime)
-            .OrderBy(dateTime => dateTime)
-            .Select(dateTime => new MonthYearResponseDto
+            .OrderBy(T.StatsDateTimeExpression)
+            .Select(entity => new MonthYearResponseDto
             {
-                Year = dateTime.Year,
-                Month = dateTime.Month
+                Year = entity.StatsDateTime.Year,
+                Month = entity.StatsDateTime.Month
             }).FirstOrDefaultAsync();
 
         DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();

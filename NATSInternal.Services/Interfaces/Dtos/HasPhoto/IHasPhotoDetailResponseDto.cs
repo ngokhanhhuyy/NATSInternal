@@ -1,6 +1,9 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-internal interface IHasPhotoDetailResponseDto<TPhoto> where TPhoto : IPhotoResponseDto
+public interface IHasPhotoDetailResponseDto : IHasPhotoBasicResponseDto;
+
+public interface IHasPhotoDetailResponseDto<TPhoto> : IHasPhotoDetailResponseDto
+    where TPhoto : IPhotoResponseDto
 {
-    List<TPhoto> Photos { get; internal set; }
+    List<TPhoto> Photos { get; set; }
 }

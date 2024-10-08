@@ -2,7 +2,7 @@ namespace NATSInternal.Services.Entities;
 
 internal class Expense
     :
-        LockableEntity,
+        FinancialEngagableEntity,
         ICostEntity<Expense, User, ExpenseUpdateHistory>,
         IHasPhotoEntity<Expense, ExpensePhoto>
 {
@@ -63,7 +63,13 @@ internal class Expense
         get => PaidDateTime;
         set => PaidDateTime = value;
     }
-    
+
+    [NotMapped]
+    public static Expression<Func<Expense, DateTime>> StatsDateTimeExpression
+    {
+        get => (expense) => expense.PaidDateTime;
+    }
+
     // Model configurations.
     public static void ConfigureModel(EntityTypeBuilder<Expense> entityBuilder)
     {

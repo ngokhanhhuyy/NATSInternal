@@ -9,5 +9,5 @@ public interface ICustomerEngageableBasicResponseDto<
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
     where TCustomerAuthorization : IUpsertableAuthorizationResponseDto
 {
-    TCustomer Customer { get; internal set; }
+    TCustomer Customer { get; set; }
 }

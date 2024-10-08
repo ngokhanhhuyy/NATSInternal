@@ -2,7 +2,7 @@ namespace NATSInternal.Services.Entities;
 
 internal class Treatment
     :
-        LockableEntity,
+        FinancialEngagableEntity,
         IProductExportableEntity<
             Treatment,
             TreatmentItem,
@@ -102,6 +102,20 @@ internal class Treatment
     {
         get => PaidDateTime;
         set => PaidDateTime = value;
+    }
+
+    [NotMapped]
+    public static Expression<Func<Treatment, DateTime>> StatsDateTimeExpression
+    {
+        get => (treatment) => treatment.PaidDateTime;
+    }
+
+    [NotMapped]
+    public static Expression<Func<Treatment, long>> AmountAfterVatExpression
+    {
+        get => (Treatment t) =>
+            t.Items.Sum(ti => (ti.AmountBeforeVatPerUnit + ti.VatAmountPerUnit) * ti.Quantity)
+            + t.ServiceAmountBeforeVat + t.ServiceVatAmount;
     }
 
     // Model configurations.

@@ -5,36 +5,28 @@ internal class ConsultantService : LockableEntityService, IConsultantService
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService _statsService;
-    private static MonthYearResponseDto _earliestRecordedMonthYear;
+    private readonly IStatsInternalService<Consultant, User, ConsultantUpdateHistory> _statsService;
+    private readonly IMonthYearService<Consultant, User, ConsultantUpdateHistory> _monthYearService;
 
     public ConsultantService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService statsService)
+            IStatsInternalService<Consultant, User, ConsultantUpdateHistory> statsService,
+            IMonthYearService<Consultant, User, ConsultantUpdateHistory> monthYearService)
     {
         _context = context;
         _authorizationService = authorizationService;
         _statsService = statsService;
+        _monthYearService = monthYearService;
     }
 
     /// <inheritdoc />
     public async Task<ConsultantListResponseDto> GetListAsync(
             ConsultantListRequestDto requestDto)
     {
-        // Initialize list of month and year options.
-        List<MonthYearResponseDto> monthYearOptions = null;
-        if (!requestDto.IgnoreMonthYear)
-        {
-            _earliestRecordedMonthYear ??= await _context.Orders
-                .OrderBy(s => s.PaidDateTime)
-                .Select(s => new MonthYearResponseDto
-                {
-                    Year = s.PaidDateTime.Year,
-                    Month = s.PaidDateTime.Month
-                }).FirstOrDefaultAsync();
-            monthYearOptions = GenerateMonthYearOptions(_earliestRecordedMonthYear);
-        }
+        // Generate month year options.
+        List<MonthYearResponseDto> monthYearOptions = await _monthYearService
+            .GenerateMonthYearOptions(dbContext => dbContext.Consultants);
 
         // Initialize query.
         IQueryable<Consultant> query = _context.Consultants

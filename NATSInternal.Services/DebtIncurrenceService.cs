@@ -4,37 +4,29 @@
 internal class DebtIncurrenceService : LockableEntityService, IDebtIncurrenceService
 {
     private readonly DatabaseContext _context;
-    private readonly IStatsInternalService _statsService;
+    private readonly IStatsInternalService<DebtIncurrence, User, DebtIncurrenceUpdateHistory> _statsService;
     private readonly IAuthorizationInternalService _authorizationService;
-    private static MonthYearResponseDto _earliestRecordedMonthYear;
+    private readonly IMonthYearService<DebtIncurrence, User, DebtIncurrenceUpdateHistory> _monthYearService;
 
     public DebtIncurrenceService(
             DatabaseContext context,
-            IStatsInternalService statsService,
-            IAuthorizationInternalService authorizationService)
+            IStatsInternalService<DebtIncurrence, User, DebtIncurrenceUpdateHistory> statsService,
+            IAuthorizationInternalService authorizationService,
+            IMonthYearService<DebtIncurrence, User, DebtIncurrenceUpdateHistory> monthYearService)
     {
         _context = context;
         _statsService = statsService;
         _authorizationService = authorizationService;
+        _monthYearService = monthYearService;
     }
 
     /// <inheritdoc />
     public async Task<DebtIncurrenceListResponseDto> GetListAsync(
             DebtIncurrenceListRequestDto requestDto)
     {
-        // Initialize list of month and year options.
-        List<MonthYearResponseDto> monthYearOptions = null;
-        if (!requestDto.IgnoreMonthYear)
-        {
-            _earliestRecordedMonthYear ??= await _context.Orders
-                .OrderBy(s => s.PaidDateTime)
-                .Select(s => new MonthYearResponseDto
-                {
-                    Year = s.PaidDateTime.Year,
-                    Month = s.PaidDateTime.Month
-                }).FirstOrDefaultAsync();
-            monthYearOptions = GenerateMonthYearOptions(_earliestRecordedMonthYear);
-        }
+        // Generate month year options.
+        List<MonthYearResponseDto> monthYearOptions = await _monthYearService
+            .GenerateMonthYearOptions(dbContext => dbContext.DebtIncurrences);
 
         // Initialize query.
         IQueryable<DebtIncurrence> query = _context.DebtIncurrences
@@ -409,7 +401,7 @@ internal class DebtIncurrenceService : LockableEntityService, IDebtIncurrenceSer
     /// Throws when the information of the requesting user has been deleted before the
     /// operation.
     /// </exception>
-    private void HandleCreateOrUpdateException(MySqlException exception)
+    private static void HandleCreateOrUpdateException(MySqlException exception)
     {
         SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
         exceptionHandler.Handle(exception);

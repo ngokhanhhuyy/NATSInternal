@@ -23,7 +23,7 @@ public class SupplyDetailResponseDto
             bool mapUpdateHistories = false)
     {
         Id = supply.Id;
-        PaidDateTime = supply.SupplyDateTime;
+        PaidDateTime = supply.SuppliedDateTime;
         ShipmentFee = supply.ShipmentFee;
         ItemAmount = supply.ItemAmount;
         TotalAmount = supply.TotalAmount;

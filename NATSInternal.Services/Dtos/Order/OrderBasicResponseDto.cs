@@ -1,6 +1,10 @@
 namespace NATSInternal.Services.Dtos;
 
 public class OrderBasicResponseDto
+    : IRevuenueBasicResponseDto<
+        CustomerBasicResponseDto,
+        OrderAuthorizationResponseDto,
+        CustomerAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public DateTime PaidDateTime { get; set; }
@@ -8,6 +12,8 @@ public class OrderBasicResponseDto
     public bool IsLocked { get; set; }  
     public CustomerBasicResponseDto Customer { get; set; }
     public OrderAuthorizationResponseDto Authorization { get; set; }
+
+    public long AmountAfterVat => Amount;
 
     internal OrderBasicResponseDto(Order order)
     {

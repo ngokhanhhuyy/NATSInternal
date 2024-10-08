@@ -6,19 +6,27 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly ITreatmentPhotoService _photoService;
-    private readonly IStatsInternalService _statsService;
-    private static MonthYearResponseDto _earliestRecordedMonthYear;
+    private readonly IStatsInternalService<Treatment, User, TreatmentUpdateHistory> _statsService;
+    private readonly IProductEngagementService<TreatmentItem, Product, TreatmentPhoto, User, TreatmentUpdateHistory> _productEngagementService;
+    private readonly IUpdateHistoryService<Treatment, User, TreatmentUpdateHistory, TreatmentUpdateHistoryDataDto> _updateHistoryService;
+    private readonly IMonthYearService<Treatment, User, TreatmentUpdateHistory> _monthYearService;
 
     public TreatmentService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
             ITreatmentPhotoService photoService,
-            IStatsInternalService statsService)
+            IStatsInternalService<Treatment, User, TreatmentUpdateHistory> statsService,
+            IProductEngagementService<TreatmentItem, Product, TreatmentPhoto, User, TreatmentUpdateHistory> productEngagementService,
+            IUpdateHistoryService<Treatment, User, TreatmentUpdateHistory, TreatmentUpdateHistoryDataDto> updateHistoryService,
+            IMonthYearService<Treatment, User, TreatmentUpdateHistory> monthYearService)
     {
         _context = context;
         _authorizationService = authorizationService;
         _photoService = photoService;
         _statsService = statsService;
+        _productEngagementService = productEngagementService;
+        _updateHistoryService = updateHistoryService;
+        _monthYearService = monthYearService;
     }
 
     /// <inheritdoc />
@@ -26,18 +34,8 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
             TreatmentListRequestDto requestDto)
     {
         // Initialize list of month and year options.
-        List<MonthYearResponseDto> monthYearOptions = null;
-        if (!requestDto.IgnoreMonthYear)
-        {
-            _earliestRecordedMonthYear ??= await _context.Treatments
-                .OrderBy(s => s.PaidDateTime)
-                .Select(s => new MonthYearResponseDto
-                {
-                    Year = s.PaidDateTime.Year,
-                    Month = s.PaidDateTime.Month
-                }).FirstOrDefaultAsync();
-            monthYearOptions = GenerateMonthYearOptions(_earliestRecordedMonthYear);
-        }
+        List<MonthYearResponseDto> monthYearOptions = await _monthYearService
+            .GenerateMonthYearOptions(dbContext => dbContext.Treatments);
 
         // Initialize query.
         IQueryable<Treatment> query = _context.Treatments
@@ -50,49 +48,17 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
         {
             case nameof(TreatmentListRequestDto.FieldOptions.Amount):
                 query = requestDto.OrderByAscending
-                    ? query.OrderBy(t => t.Items.Sum(ti =>
-                            (
-                                (
-                                    ti.AmountBeforeVatPerUnit +
-                                    (ti.AmountBeforeVatPerUnit * (ti.VatAmountPerUnit / 100))
-                                ) * ti.Quantity
-                            ) +
-                            t.ServiceAmountBeforeVat +
-                            (t.ServiceAmountBeforeVat * (t.ServiceVatAmount / 100))))
+                    ? query.OrderBy(Treatment.AmountAfterVatExpression)
                         .ThenBy(t => t.PaidDateTime)
-                    : query.OrderByDescending(t => t.Items.Sum(ti =>
-                            (
-                                (
-                                    ti.AmountBeforeVatPerUnit +
-                                    (ti.AmountBeforeVatPerUnit * (ti.VatAmountPerUnit / 100))
-                                ) * ti.Quantity
-                            ) +
-                            t.ServiceAmountBeforeVat +
-                            (t.ServiceAmountBeforeVat * (t.ServiceVatAmount / 100))))
+                    : query.OrderByDescending(Treatment.AmountAfterVatExpression)
                         .ThenByDescending(t => t.PaidDateTime);
                 break;
-            default:
+            case nameof(TreatmentListRequestDto.FieldOptions.PaidDateTime):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(t => t.PaidDateTime)
-                        .ThenBy(t => t.Items.Sum(ti =>
-                            (
-                                (
-                                    ti.AmountBeforeVatPerUnit +
-                                    (ti.AmountBeforeVatPerUnit * (ti.VatAmountPerUnit / 100))
-                                ) * ti.Quantity
-                            ) +
-                            t.ServiceAmountBeforeVat +
-                            (t.ServiceAmountBeforeVat * (t.ServiceVatAmount / 100))))
+                        .ThenBy(Treatment.AmountAfterVatExpression)
                     : query.OrderByDescending(t => t.PaidDateTime)
-                        .ThenBy(t => t.Items.Sum(ti =>
-                            (
-                                (
-                                    ti.AmountBeforeVatPerUnit +
-                                    (ti.AmountBeforeVatPerUnit * (ti.VatAmountPerUnit / 100))
-                                ) * ti.Quantity
-                            ) +
-                            t.ServiceAmountBeforeVat +
-                            (t.ServiceAmountBeforeVat * (t.ServiceVatAmount / 100))));
+                        .ThenBy(Treatment.AmountAfterVatExpression);
                 break;
         }
 
@@ -216,7 +182,8 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
         };
 
         // Initialize treatment item entites.
-        await CreateItems(treatment, requestDto.Items);
+        await _productEngagementService
+            .CreateItemsAsync(treatment.Items, requestDto.Items, ProductEngagementType.Export);
 
         // Initialize photos.
         if (requestDto.Photos != null)
@@ -364,7 +331,11 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
         treatment.TherapistId = requestDto.TherapistId;
 
         // Update treatment items.
-        await UpdateItems(treatment, requestDto.Items);
+        await _productEngagementService.UpdateItemsAsync(
+            treatment.Items,
+            requestDto.Items,
+            ProductEngagementType.Export,
+            DisplayNames.TreatmentItem);
 
         // Update photos.
         List<string> urlsToBeDeletedWhenSucceeds = new List<string>();
@@ -383,7 +354,7 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
         TreatmentUpdateHistoryDataDto newData = new TreatmentUpdateHistoryDataDto(treatment);
         
         // Log update history.
-        LogUpdateHistory(treatment, oldData, newData, requestDto.UpdateReason);
+        _updateHistoryService.LogUpdateHistory(treatment, oldData, newData, requestDto.UpdateReason);
 
         // Save changes and handle the errors.
         try
@@ -477,7 +448,10 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
             .BeginTransactionAsync();
 
         // Delete all the items associated to this treatment.
-        DeleteItems(treatment);
+        _productEngagementService.DeleteItems(
+            treatment.Items,
+            dbContext => dbContext.TreatmentItems,
+            ProductEngagementType.Export);
 
         // Delete the treatment entity.
         _context.Treatments.Remove(treatment);
@@ -539,230 +513,5 @@ internal class TreatmentService : LockableEntityService, ITreatmentService
             }
             throw;
         }
-    }
-
-    /// <summary>
-    /// Creates treatment items associated to the given treatment with the data provided in the
-    /// request.
-    /// </summary>
-    /// <remarks>
-    /// This method must only be called during the treatment creating operation.
-    /// </remarks>
-    /// <param name="treatment">
-    /// An instance of the <see cref="Treatment"/> entity class, representing the treatment to
-    /// which the creating items are associated.
-    /// </param>
-    /// <param name="requestDtos">
-    /// A <see cref="List{T}"/> where <c>T</c> is the instances of the
-    /// <see cref="TreatmentItemRequestDto"/> class, containing the new data for the creating
-    /// operation.
-    /// </param>
-    private async Task CreateItems(
-            Treatment treatment,
-            List<TreatmentItemRequestDto> requestDtos)
-    {
-        // Fetch a list of products which ids are specified in the request.
-        List<int> requestedProductIds = requestDtos.Select(i => i.ProductId).ToList();
-        List<Product> products = await _context.Products
-            .Where(p => requestedProductIds.Contains(p.Id))
-            .ToListAsync();
-
-        for (int i = 0; i < requestDtos.Count; i++)
-        {
-            TreatmentItemRequestDto itemRequestDto = requestDtos[i];
-            // Get the product with the specified id from pre-fetched list.
-            Product product = products.SingleOrDefault(p => p.Id == itemRequestDto.Id);
-
-            // Ensure the product exists.
-            if (product == null)
-            {
-                string errorMessage = ErrorMessages.NotFoundByProperty
-                    .ReplaceResourceName(DisplayNames.Product)
-                    .ReplacePropertyName(DisplayNames.Id)
-                    .ReplaceAttemptedValue(itemRequestDto.ProductId.ToString());
-                throw new OperationException($"items[{i}].productId", errorMessage);
-            }
-
-            // Validate that with the specified quantity value.
-            if (product.StockingQuantity < itemRequestDto.Quantity)
-            {
-                const string errorMessage = ErrorMessages.NegativeProductStockingQuantity;
-                throw new OperationException($"items[{i}].quantity", errorMessage);
-            }
-
-            // Initialize entity.
-            TreatmentItem item = new TreatmentItem
-            {
-                AmountBeforeVatPerUnit = itemRequestDto.Amount,
-                VatAmountPerUnit = itemRequestDto.VatPercentage,
-                Quantity = itemRequestDto.Quantity,
-                Product = product
-            };
-
-            // Adjust the stocking quantity of the associated product.
-            product.StockingQuantity -= item.Quantity;
-
-            // Add item.
-            treatment.Items.Add(item);
-        }
-    }
-
-    /// <summary>
-    /// Updates or creates treatment items associated to the given treatment with the data
-    /// provided in the request.
-    /// </summary>
-    /// <remarks>
-    /// This method must only be called during the treatment updating operation.
-    /// </remarks>
-    /// <param name="treatment">
-    /// An instance of the <see cref="Treatment"/> entity class, representing the treatment
-    /// with which the updating and creating items are associated.
-    /// </param>
-    /// <param name="requestDtos">
-    /// A <see cref="List{T}"/> where <c>T</c> is the instances of the
-    /// <see cref="TreatmentItemRequestDto"/> class, containing the new data for the updating
-    /// operation.
-    /// </param>
-    /// <exception cref="OperationException">
-    /// Throws under the following circumstances:
-    /// - When the item with the specified id doesn't exist or has already been deleted.
-    /// - When the specified product with which the item is associated doesn't exist or has
-    /// already been deleted.
-    /// </exception>
-    private async Task UpdateItems(
-            Treatment treatment,
-            List<TreatmentItemRequestDto> requestDtos)
-    {
-        // Pre-fetch a list of products for new items which ids are specfied in the request.
-        List<int> productIdsForNewItems = requestDtos
-            .Where(i => !i.Id.HasValue)
-            .Select(i => i.ProductId)
-            .ToList();
-        List<Product> productsForNewItems = await _context.Products
-            .Where(p => productIdsForNewItems.Contains(p.Id))
-            .ToListAsync();
-
-        for (int i = 0; i < requestDtos.Count; i++)
-        {
-            TreatmentItemRequestDto itemRequestDto = requestDtos[i];
-            TreatmentItem item;
-            if (itemRequestDto.Id.HasValue)
-            {
-                item = treatment.Items.SingleOrDefault(ti => ti.Id == itemRequestDto.Id.Value);
-
-                // Ensure the item exists.
-                if (item == null)
-                {
-                    string errorMessage = ErrorMessages.NotFound
-                        .ReplaceResourceName(DisplayNames.TreatmentItem);
-                    throw new OperationException($"items[{i}].id", errorMessage);
-                }
-
-                // Revert the added stocking quantity of the product associated to the item.
-                item.Product.StockingQuantity -= item.Quantity;
-
-                // Remove item if deleted.
-                if (itemRequestDto.HasBeenDeleted)
-                {
-                    _context.TreatmentItems.Remove(item);
-                }
-
-                // Update item properties if changed.
-                else if (itemRequestDto.HasBeenChanged)
-                {
-                    item.Amount = itemRequestDto.Amount;
-                    item.VatFactor = itemRequestDto.VatFactor;
-                    item.Quantity = itemRequestDto.Quantity;
-                }
-            }
-            else
-            {
-                // Get the product entity from the pre-fetched products list.
-                Product product = productsForNewItems
-                    .Single(p => p.Id == itemRequestDto.ProductId);
-
-                // Ensure the product exists.
-                if (product == null)
-                {
-                    string errorMessage = ErrorMessages.NotFoundByProperty
-                        .ReplaceResourceName(DisplayNames.Product)
-                        .ReplacePropertyName(DisplayNames.Id)
-                        .ReplaceAttemptedValue(itemRequestDto.ProductId.ToString());
-                    throw new OperationException($"items[{i}].productId", errorMessage);
-                }
-
-                item = new TreatmentItem
-                {
-                    Amount = itemRequestDto.Amount,
-                    VatFactor = itemRequestDto.VatFactor,
-                    Quantity = itemRequestDto.Quantity,
-                    Product = product
-                };
-                _context.TreatmentItems.Add(item);
-            }
-
-            // Validate the new quantity value.
-            if (item.Product.StockingQuantity - item.Quantity < 0)
-            {
-                string errorMessage = ErrorMessages.NegativeProductStockingQuantity;
-                throw new OperationException($"items[{i}].stockingQuantity", errorMessage);
-            }
-
-            // Add the quantity to the product's stocking quantity.
-            item.Product.StockingQuantity += item.Quantity;
-        }
-    }
-
-    /// <summary>
-    /// Deletes all the items associated to the specified treatment, revert the stocking
-    /// quantity of the products associated to each item.
-    /// </summary>
-    /// <param name="treatment">
-    /// An instance of the <c>Treatment</c> entity class with which the deleting items are
-    /// associated.
-    /// </param>
-    private void DeleteItems(Treatment treatment)
-    {
-        foreach (TreatmentItem item in treatment.Items)
-        {
-            item.Product.StockingQuantity += item.Quantity;
-            _context.TreatmentItems.Remove(item);
-        }
-    }
-
-    /// <summary>
-    /// Logs the old and new data to update history for the specified treatment.
-    /// </summary>
-    /// <param name="treatment">
-    /// An instance of the <see cref="Treatment"/> entity class, representing the treatment to
-    /// be logged.
-    /// </param>
-    /// <param name="oldData">
-    /// An instance of the <see cref="TreatmentUpdateHistoryDataDto"/> class, containing the
-    /// old data of the treatment before the modification.
-    /// </param>
-    /// <param name="newData">
-    /// An instance of the <see cref="TreatmentUpdateHistoryDataDto"/> class, containing the
-    /// new data of the treatment before the modification.
-    /// </param>
-    /// <param name="reason">
-    /// A <see cref="string"/> value representing the reason of the modification.
-    /// </param>
-    private void LogUpdateHistory(
-            Treatment treatment,
-            TreatmentUpdateHistoryDataDto oldData,
-            TreatmentUpdateHistoryDataDto newData,
-            string reason)
-    {
-        TreatmentUpdateHistory updateHistory = new TreatmentUpdateHistory
-        {
-            Reason = reason,
-            OldData = JsonSerializer.Serialize(oldData),
-            NewData = JsonSerializer.Serialize(newData),
-            UpdatedUserId = _authorizationService.GetUserId()
-        };
-        
-        treatment.UpdateHistories ??= new List<TreatmentUpdateHistory>();
-        treatment.UpdateHistories.Add(updateHistory);
     }
 }

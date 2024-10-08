@@ -27,10 +27,14 @@ public static class DateTimeExtensions
         }
         // Less than a year, show "months"
         else if (secondNumber < TimeSpan.FromDays(365).TotalSeconds)
+        {
             text = (int)Math.Round(secondNumber / (60 * 60 * 24 * 30)) + " tháng";
+        }
         // More than a year, show "years"
         else
+        {
             text = (int)Math.Round(secondNumber / (60 * 60 * 24 * 365)) + " năm";
+        }
 
         // Adding sign
         if (withSign && secondNumber < 0)
@@ -44,10 +48,13 @@ public static class DateTimeExtensions
     public static string DeltaTextFromDateTime(this DateTime dateTime, DateTime pastDateTime)
     {
         if (pastDateTime > dateTime)
+        {
             throw new ArgumentException(
                 "Value for pastDateTime parameter cannot be later " +
                 "than current DateTime value."
             );
+        }
+
         int secondsDifference = (int)(dateTime - pastDateTime).TotalSeconds;
         string deltaText = ConvertSecondNumberToText(secondsDifference);
         
@@ -78,10 +85,12 @@ public static class DateTimeExtensions
     public static double YearDifferenceFromDateTime(this DateTime dateTime, DateTime pastDateTime)
     {
         if (pastDateTime > dateTime)
+        {
             throw new ArgumentException(
                 "Value for pastDateTime parameter cannot be later " +
                 "than current DateTime value."
             );
+        }
 
         double daysDifference = (dateTime - pastDateTime).TotalDays;
         return Math.Round(daysDifference / 365.25, 1);

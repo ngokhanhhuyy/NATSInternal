@@ -1,14 +1,12 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class SupplyListRequestDto :
-        IRequestDto<SupplyListRequestDto>,
-        ILockableEntityListRequestDto
+public class SupplyListRequestDto : IProductEngageableListRequestDto
 {
     public bool OrderByAscending { get; set; }
     public string OrderByField { get; set; } = nameof(FieldOptions.PaidDateTime);
     public int Year { get; set; }
     public int Month { get; set; }
-    public bool IgnoreMonthYear { get; set; } = false;
+    public bool IgnoreMonthYear { get; set; }
     public int? CreatedUserId { get; set; }
     public int? ProductId { get; set; }
     public int Page { get; set; } = 1;

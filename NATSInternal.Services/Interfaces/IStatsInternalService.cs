@@ -3,7 +3,19 @@ namespace NATSInternal.Services.Interfaces;
 /// <summary>
 /// A service to handle the <b>internal</b> operations which are related to statistics.
 /// </summary>
-internal interface IStatsInternalService : IStatsService
+/// <typeparam name="T">
+/// The type of the entity class to which the stats belongs.
+/// </typeparam>
+/// <typeparam name="TUser">
+/// The type of the user entity class with which the stats is associated.
+/// </typeparam>
+/// <typeparam name="TUpdateHistory">
+/// The type of the update history with which the stats is associated.
+/// </typeparam>
+internal interface IStatsInternalService<T, TUser, TUpdateHistory> : IStatsService
+        where T : class, IFinancialEngageableEntity<T, TUser, TUpdateHistory>, new()
+        where TUser : class, IUserEntity<TUser>, new()
+        where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, TUser>, new()
 {
     /// <summary>
     /// Increases the retail revenue statistics for a specific date
@@ -236,15 +248,6 @@ internal interface IStatsInternalService : IStatsService
     /// Validates if the specified <c>statsDateTime</c> argument is valid for an entity so that
     /// its locking status won't change after the assignment.
     /// </summary>
-    /// <typeparam name="T">
-    /// The type of the entity class to which the stats belongs.
-    /// </typeparam>
-    /// <typeparam name="TUser">
-    /// The type of the user entity class with which the stats is associated.
-    /// </typeparam>
-    /// <typeparam name="TUpdateHistory">
-    /// The type of the update history with which the stats is associated.
-    /// </typeparam>
     /// <param name="entity">
     /// An instance of the entity class to which the <c>statsDateTime</c> argument is assigned.
     /// </param>
@@ -255,8 +258,5 @@ internal interface IStatsInternalService : IStatsService
     /// <exception cref="ValidationException">
     /// Throws when the value specified by the <c>statsDateTime</c> argument is invalid.
     /// </exception>
-    void ValidateStatsDateTime<T, TUser, TUpdateHistory>(T entity, DateTime statsDateTime)
-        where T : class, IFinancialEngageableEntity<T, TUser, TUpdateHistory>, new()
-        where TUser : class, IUserEntity<TUser>, new()
-        where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, TUser>, new();
+    void ValidateStatsDateTime(T entity, DateTime statsDateTime);
 }

@@ -4,5 +4,5 @@ public interface IUpsertableDetailResponseDto<TAuthorization>
     : IUpsertableBasicResponseDto<TAuthorization>
     where TAuthorization : IUpsertableAuthorizationResponseDto
 {
-    DateTime CreatedDateTime { get; internal set; }
+    DateTime CreatedDateTime { get; set; }
 }

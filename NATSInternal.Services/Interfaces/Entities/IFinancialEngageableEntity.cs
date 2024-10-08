@@ -10,5 +10,22 @@ internal interface IFinancialEngageableEntity<T, TUser, TUpdateHistory>
 {
     DateTime StatsDateTime { get; set; }
     string Note { get; set; }
-    bool IsLocked { get; }
+
+    public bool IsLocked
+    {
+        get
+        {
+            DateTime lockedMonthAndYear = CreatedDateTime
+                .AddMonths(2)
+                .AddDays(-CreatedDateTime.Day)
+                .AddHours(-CreatedDateTime.Hour);
+            DateTime lockedDateTime = new DateTime(
+                lockedMonthAndYear.Year, lockedMonthAndYear.Month, 1,
+                0, 0, 0);
+            DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
+            return currentDateTime >= lockedDateTime;
+        }
+    }
+
+    abstract static Expression<Func<T, DateTime>> StatsDateTimeExpression { get; }
 }

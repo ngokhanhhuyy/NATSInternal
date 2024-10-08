@@ -2,7 +2,7 @@ namespace NATSInternal.Services.Entities;
 
 internal class Order
         :
-            LockableEntity,
+            FinancialEngagableEntity,
             IProductExportableEntity<
                 Order,
                 OrderItem,
@@ -80,6 +80,12 @@ internal class Order
     {
         get => PaidDateTime;
         set => PaidDateTime = value;
+    }
+
+    [NotMapped]
+    public static Expression<Func<Order, DateTime>> StatsDateTimeExpression
+    {
+        get => (order) => order.PaidDateTime;
     }
 
     // Model configurations.

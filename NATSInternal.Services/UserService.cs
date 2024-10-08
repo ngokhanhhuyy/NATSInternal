@@ -7,7 +7,7 @@ internal class UserService : IUserService
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<Role> _roleManager;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IPhotoService _photoService;
+    private readonly IPhotoService<User> _photoService;
     private readonly SqlExceptionHandler _exceptionHandler;
 
     public UserService(
@@ -15,7 +15,7 @@ internal class UserService : IUserService
             UserManager<User> userManager,
             RoleManager<Role> roleManager,
             IAuthorizationInternalService authorizationService,
-            IPhotoService photoService,
+            IPhotoService<User> photoService,
             SqlExceptionHandler exceptionHandler)
     {
         _context = context;
@@ -250,11 +250,8 @@ internal class UserService : IUserService
     {
         User user = await _context.Users
             .Include(u => u.Roles).ThenInclude(r => r.Claims)
-            .SingleOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
-        if (user == null)
-        {
-            throw new ResourceNotFoundException(nameof(User), nameof(id), id.ToString());
-        }
+            .SingleOrDefaultAsync(u => u.Id == id && !u.IsDeleted)
+            ?? throw new ResourceNotFoundException(nameof(User), nameof(id), id.ToString());
 
         return new UserDetailResponseDto(
             user,
@@ -312,7 +309,7 @@ internal class UserService : IUserService
                 _exceptionHandler.Handle(sqlException);
                 if (_exceptionHandler.IsUniqueConstraintViolated)
                 {
-                    throw new DuplicatedException(IdentifierCasingUtility
+                    throw new DuplicatedException(IdentifierCasingExtensions
                         .SnakeCaseToPascalCase(_exceptionHandler.ViolatedFieldName));
                 }
             }
@@ -353,7 +350,7 @@ internal class UserService : IUserService
             if (requestDto.PersonalInformation.AvatarFile != null)
             {
                 user.AvatarUrl = await _photoService
-                    .CreateAsync(requestDto.PersonalInformation.AvatarFile, "user", true);
+                    .CreateAsync(requestDto.PersonalInformation.AvatarFile, true);
             }
 
             return user.Id;
@@ -402,9 +399,8 @@ internal class UserService : IUserService
                 // Create new avatar if the request data contains it.
                 if (requestDto.PersonalInformation.AvatarFile != null)
                 {
-                    string avatarUrl = await _photoService
-                        .CreateAsync(requestDto.PersonalInformation.AvatarFile, "user", true);
-                    user.AvatarUrl = avatarUrl;
+                    user.AvatarUrl = await _photoService
+                        .CreateAsync(requestDto.PersonalInformation.AvatarFile, true);
                 }
             }
             string fullName = PersonNameUtility.GetFullNameFromNameElements(

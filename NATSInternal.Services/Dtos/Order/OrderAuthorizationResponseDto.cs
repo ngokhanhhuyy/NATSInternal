@@ -1,8 +1,14 @@
 namespace NATSInternal.Services.Dtos;
 
-public class OrderAuthorizationResponseDto
+public class OrderAuthorizationResponseDto : IFinancialEngageableAuthorizationResponseDto
 {
     public bool CanEdit { get; set; }
     public bool CanDelete { get; set; }
     public bool CanSetPaidDateTime { get; set; }
+
+    public bool CanSetStatsDateTime
+    {
+        get => CanSetPaidDateTime;
+        internal set => CanSetPaidDateTime = value;
+    }
 }

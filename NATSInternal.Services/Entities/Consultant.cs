@@ -2,7 +2,7 @@ namespace NATSInternal.Services.Entities;
 
 internal class Consultant
     :
-        LockableEntity,
+        FinancialEngagableEntity,
         IRevenueEntity<Consultant, User, ConsultantUpdateHistory>
 {
     [Key]
@@ -53,6 +53,12 @@ internal class Consultant
     {
         get => PaidDateTime;
         set => PaidDateTime = value;
+    }
+
+    [NotMapped]
+    public static Expression<Func<Consultant, DateTime>> StatsDateTimeExpression
+    {
+        get => (consultant) => consultant.PaidDateTime;
     }
 
     // Model configurations.

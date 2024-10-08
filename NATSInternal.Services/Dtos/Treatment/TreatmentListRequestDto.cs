@@ -1,14 +1,12 @@
 namespace NATSInternal.Services.Dtos;
 
-public class TreatmentListRequestDto :
-        IRequestDto<TreatmentListRequestDto>,
-        ILockableEntityListRequestDto
+public class TreatmentListRequestDto : IOrderableListRequestDto, ILockableEntityListRequestDto
 {
     public bool OrderByAscending { get; set; }
     public string OrderByField { get; set; } = nameof(FieldOptions.PaidDateTime);
     public int Month { get; set; }
     public int Year { get; set; }
-    public bool IgnoreMonthYear { get; set; } = false;
+    public bool IgnoreMonthYear { get; set; }
     public int? UserId { get; set; }
     public int? CustomerId { get; set; }
     public int? ProductId { get; set; }

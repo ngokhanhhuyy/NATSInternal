@@ -6,7 +6,7 @@ internal class OrderService : LockableEntityService, IOrderService
     private readonly DatabaseContext _context;
     private readonly IPhotoService<Order, OrderPhoto> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService _statsService;
+    private readonly IStatsInternalService<Order, User, OrderUpdateHistory> _statsService;
     private readonly IUpdateHistoryService<Order, User, OrderUpdateHistory, OrderUpdateHistoryDataDto> _updateHistoryService;
     private readonly IProductEngagementService<OrderItem, Product, OrderPhoto, User, OrderUpdateHistory> _productEngagementService;
     private readonly IMonthYearService<Order, User, OrderUpdateHistory> _monthYearService;
@@ -15,7 +15,7 @@ internal class OrderService : LockableEntityService, IOrderService
         DatabaseContext context,
         IPhotoService<Order, OrderPhoto> photoService,
         IAuthorizationInternalService authorizationService,
-        IStatsInternalService statsService,
+        IStatsInternalService<Order, User, OrderUpdateHistory> statsService,
         IUpdateHistoryService<Order, User, OrderUpdateHistory, OrderUpdateHistoryDataDto> updateHistoryService,
         IProductEngagementService<OrderItem, Product, OrderPhoto, User, OrderUpdateHistory> productEngagementService,
         IMonthYearService<Order, User, OrderUpdateHistory> monthYearService)
@@ -73,9 +73,9 @@ internal class OrderService : LockableEntityService, IOrderService
         }
 
         // Filter by user id if specified.
-        if (requestDto.UserId.HasValue)
+        if (requestDto.CreatedUserId.HasValue)
         {
-            query = query.Where(o => o.CreatedUserId == requestDto.UserId);
+            query = query.Where(o => o.CreatedUserId == requestDto.CreatedUserId);
         }
 
         // Filter by customer id if specified.
@@ -321,12 +321,10 @@ internal class OrderService : LockableEntityService, IOrderService
                 // Validate the specified SupplyDateTime value from the request.
                 try
                 {
-                    _statsService.ValidateStatsDateTime<Order, User, OrderUpdateHistory>(
-                        order,
-                        requestDto.PaidDateTime.Value);
+                    _statsService.ValidateStatsDateTime(order, requestDto.PaidDateTime.Value);
                     order.PaidDateTime = requestDto.PaidDateTime.Value;
                 }
-                catch (ArgumentException exception)
+                catch (ValidationException exception)
                 {
                     string errorMessage = exception.Message
                         .ReplacePropertyName(DisplayNames.PaidDateTime);

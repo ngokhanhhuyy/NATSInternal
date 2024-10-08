@@ -23,20 +23,46 @@ public static class StringExtensions
         return result;
     }
 
-    public static string SnakeCaseToPascalCase(this string camelCaseString)
+    public static string SnakeCaseToPascalCase(this string snakeCaseString)
     {
-        string[] camelCaseWords = camelCaseString.Split("_");
-        List<string> pascalCaseWords = new List<string>();
-        foreach (string camelCaseWord in camelCaseWords)
+        string[] snakeCaseSegments = snakeCaseString.Split("_");
+        List<string> pascalCaseSegments = new List<string>();
+        foreach (string snakeCaseSegment in snakeCaseSegments)
         {
-            string pascalCaseWord = camelCaseWord[0].ToString().ToUpper();
-            if (camelCaseWord.Length > 1)
+            if (snakeCaseSegment.Length == 0)
             {
-                pascalCaseWord += camelCaseWord[1..];
+                pascalCaseSegments.Add(string.Empty);
+                continue;
             }
-            pascalCaseWords.Add(pascalCaseWord);
+            string pascalCaseSegment = snakeCaseSegment[0].ToString().ToUpper();
+            if (snakeCaseSegment.Length > 1)
+            {
+                pascalCaseSegment += snakeCaseSegment[1..];
+            }
+            pascalCaseSegments.Add(pascalCaseSegment);
         }
-        return string.Join("", pascalCaseWords);
+        return string.Concat(pascalCaseSegments);
+    }
+
+    public static string SnakeCaseToCamelCase(this string snakeCaseString)
+    {
+        string[] snakeCaseSegments = snakeCaseString.Split("_");
+        List<string> pascalCaseSegments = new List<string>();
+        foreach (string snakeCaseSegment in snakeCaseSegments)
+        {
+            if (snakeCaseSegment.Length == 0)
+            {
+                pascalCaseSegments.Add(string.Empty);
+                continue;
+            }
+            string pascalCaseSegment = snakeCaseSegment[0].ToString().ToUpper();
+            if (snakeCaseSegment.Length > 1)
+            {
+                pascalCaseSegment += snakeCaseSegment[1..];
+            }
+            pascalCaseSegments.Add(pascalCaseSegment);
+        }
+        return string.Concat(pascalCaseSegments);
     }
 
     public static string PascalCaseToSnakeCase(this string pascalCaseString)

@@ -9,5 +9,7 @@ public interface IRequestDto
     /// Transform the values of all properties which represent the absence of data or meanless
     /// value into the default value.
     /// </summary>
-    public void TransformValues();
+    public void TransformValues()
+    {
+    }
 }

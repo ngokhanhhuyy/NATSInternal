@@ -13,7 +13,7 @@ public class SupplyUpsertRequestDto : IRequestDto
     {
         Note = Note?.ToNullIfEmpty();
         UpdateReason = UpdateReason?.ToNullIfEmpty();
-        Items = Items?.Select(i => i.TransformValues()).ToList();
-        Photos = Photos?.Select(p => p.TransformValues()).ToList();
+        Items.ForEach(i => i.TransformValues());
+        Photos.ForEach(p => p.TransformValues());
     }
 }
