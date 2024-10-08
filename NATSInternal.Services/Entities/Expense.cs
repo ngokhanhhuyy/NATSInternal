@@ -2,8 +2,7 @@ namespace NATSInternal.Services.Entities;
 
 internal class Expense
     :
-        FinancialEngagableEntity,
-        ICostEntity<Expense, User, ExpenseUpdateHistory>,
+        ICostEntity<Expense, ExpenseUpdateHistory>,
         IHasPhotoEntity<Expense, ExpensePhoto>
 {
     [Key]
@@ -11,6 +10,9 @@ internal class Expense
 
     [Required]
     public long Amount { get; set; }
+    
+    [Required]
+    public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
 
     [Required]
     public DateTime PaidDateTime { get; set; }

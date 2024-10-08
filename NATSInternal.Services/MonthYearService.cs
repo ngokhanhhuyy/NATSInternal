@@ -1,11 +1,10 @@
 namespace NATSInternal.Services;
 
 /// <inheritdoc />
-internal sealed class MonthYearService<T, TUser, TUpdateHistory>
-    : IMonthYearService<T, TUser, TUpdateHistory>
-    where T : class, IFinancialEngageableEntity<T, TUser, TUpdateHistory>, new()
-    where TUser : class, IUserEntity<TUser>, new()
-    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, TUser>, new()
+internal sealed class MonthYearService<T, TUpdateHistory>
+    : IMonthYearService<T, TUpdateHistory>
+    where T : class, IFinancialEngageableEntity<T, User, TUpdateHistory>, new()
+    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, User>, new()
 {
     private readonly DatabaseContext _context;
     private static MonthYearResponseDto _earliestRecordedMonthYear;

@@ -4,15 +4,15 @@
 internal class DebtIncurrenceService : LockableEntityService, IDebtIncurrenceService
 {
     private readonly DatabaseContext _context;
-    private readonly IStatsInternalService<DebtIncurrence, User, DebtIncurrenceUpdateHistory> _statsService;
+    private readonly IStatsInternalService<DebtIncurrence, DebtIncurrenceUpdateHistory> _statsService;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IMonthYearService<DebtIncurrence, User, DebtIncurrenceUpdateHistory> _monthYearService;
+    private readonly IMonthYearService<DebtIncurrence, DebtIncurrenceUpdateHistory> _monthYearService;
 
     public DebtIncurrenceService(
             DatabaseContext context,
-            IStatsInternalService<DebtIncurrence, User, DebtIncurrenceUpdateHistory> statsService,
+            IStatsInternalService<DebtIncurrence, DebtIncurrenceUpdateHistory> statsService,
             IAuthorizationInternalService authorizationService,
-            IMonthYearService<DebtIncurrence, User, DebtIncurrenceUpdateHistory> monthYearService)
+            IMonthYearService<DebtIncurrence, DebtIncurrenceUpdateHistory> monthYearService)
     {
         _context = context;
         _statsService = statsService;
@@ -225,7 +225,7 @@ internal class DebtIncurrenceService : LockableEntityService, IDebtIncurrenceSer
 
             // Prevent IncurredDateTime to be modified when the debt incurrence has already
             // been locked.
-            if (debt.IsLocked)
+            if (debt.Is)
             {
                 string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
                     .ReplaceResourceName(DisplayNames.Debt)

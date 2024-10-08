@@ -1,9 +1,6 @@
 ﻿namespace NATSInternal.Services.Entities;
 
-internal class DebtIncurrence
-    :
-        FinancialEngagableEntity,
-        IDebtEntity<DebtIncurrence, Customer, User, DebtIncurrenceUpdateHistory>
+internal class DebtIncurrence : IDebtEntity<DebtIncurrence, DebtIncurrenceUpdateHistory>
 {
     [Key]
     public int Id { get; set; }
@@ -13,6 +10,9 @@ internal class DebtIncurrence
 
     [StringLength(255)]
     public string Note { get; set; }
+    
+    [Required]
+    public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
     
     public DateTime IncurredDateTime { get; set; }
 

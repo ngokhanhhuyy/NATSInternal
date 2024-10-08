@@ -1,18 +1,13 @@
 namespace NATSInternal.Services.Entities;
 
 internal class Order
-        :
-            FinancialEngagableEntity,
-            IProductExportableEntity<
-                Order,
-                OrderItem,
-                Product,
-                OrderPhoto,
-                User,
-                OrderUpdateHistory>
+    : IProductExportableEntity<Order, OrderItem, OrderPhoto, OrderUpdateHistory>
 {
     [Key]
     public int Id { get; set; }
+    
+    [Required]
+    public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
 
     [Required]
     public DateTime PaidDateTime { get; set; }

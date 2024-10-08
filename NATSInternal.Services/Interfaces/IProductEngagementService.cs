@@ -5,19 +5,11 @@ namespace NATSInternal.Services.Interfaces;
 /// </summary>
 /// <typeparam name="TItem">
 /// The type of the item entity, which is the connection between the
-/// <see cref="IProductEngageableEntity{T, TItem, TProduct, TPhoto, TUser, TUpdateHistory}"/>
+/// <see cref="IProductEngageableEntity{T, TItem, TPhoto, TUpdateHistory}"/>
 /// and the <see cref="TProduct" /> entity.
-/// </typeparam>
-/// <typeparam name="TProduct">
-/// The type of the product entity.
 /// </typeparam>
 /// <typeparam name="TPhoto">
 /// The type of the photo entity, which is contained by the
-/// <see cref="IProductEngageableEntity{T, TItem, TProduct, TPhoto, TUser, TUpdateHistory}"/>
-/// entity that contains the <see cref="TItem"/> entities.
-/// </typeparam>
-/// <typeparam name="TUser">
-/// The type of the user entity which is associated with the
 /// <see cref="IProductEngageableEntity{T, TItem, TProduct, TPhoto, TUser, TUpdateHistory}"/>
 /// entity that contains the <see cref="TItem"/> entities.
 /// </typeparam>
@@ -26,12 +18,10 @@ namespace NATSInternal.Services.Interfaces;
 /// <see cref="IProductEngageableEntity{T, TItem, TProduct, TPhoto, TUser, TUpdateHistory}"/>
 /// entity that contains the <see cref="TItem"/> entities.
 /// </typeparam>
-internal interface IProductEngagementService<TItem, TProduct, TPhoto, TUser, TUpdateHistory>
-    where TItem : class, IProductEngageableItemEntity<TItem, TProduct>, new()
-    where TProduct : class, IProductEntity<TProduct>, new()
+internal interface IProductEngagementService<TItem, TPhoto, TUpdateHistory>
+    where TItem : class, IProductEngageableItemEntity<TItem>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
-    where TUser : class, IUserEntity<TUser>, new()
-    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, TUser>, new()
+    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
 {
     /// <summary>
     /// Creates new product engagement items, based on the specified items' collection, items

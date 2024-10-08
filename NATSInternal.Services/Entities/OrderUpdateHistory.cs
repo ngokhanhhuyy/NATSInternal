@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Entities;
 
-internal class OrderUpdateHistory : IUpdateHistoryEntity<OrderUpdateHistory, User>
+internal class OrderUpdateHistory : IUpdateHistoryEntity<OrderUpdateHistory>
 {
     [Key]
     public int Id { get; set; }

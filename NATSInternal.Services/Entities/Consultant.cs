@@ -1,9 +1,6 @@
 namespace NATSInternal.Services.Entities;
 
-internal class Consultant
-    :
-        FinancialEngagableEntity,
-        IRevenueEntity<Consultant, User, ConsultantUpdateHistory>
+internal class Consultant : IRevenueEntity<Consultant, ConsultantUpdateHistory>
 {
     [Key]
     public int Id { get; set; }

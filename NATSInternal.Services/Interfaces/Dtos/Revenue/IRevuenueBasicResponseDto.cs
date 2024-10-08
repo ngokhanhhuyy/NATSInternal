@@ -16,17 +16,9 @@ namespace NATSInternal.Services.Interfaces.Dtos;
 /// The type of the authorization DTO, containing the information of the permissions to
 /// interact with the customer associated with the revenue.
 /// </typeparam>
-public interface IRevuenueBasicResponseDto<
-        TCustomerBasic,
-        TAuthorization,
-        TCustomerAuthorization>
-    : ICustomerEngageableBasicResponseDto<
-        TCustomerBasic,
-        TAuthorization,
-        TCustomerAuthorization>
-    where TCustomerBasic : ICustomerBasicResponseDto<TCustomerAuthorization>
+internal interface IRevuenueBasicResponseDto<TAuthorization>
+    : ICustomerEngageableBasicResponseDto<TAuthorization>
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
-    where TCustomerAuthorization : IUpsertableAuthorizationResponseDto
 {
     /// <summary>
     /// Represents the date and time when the transaction is paid.

@@ -6,16 +6,12 @@ namespace NATSInternal.Services.Interfaces;
 /// <typeparam name="T">
 /// The type of the entity class to which the stats belongs.
 /// </typeparam>
-/// <typeparam name="TUser">
-/// The type of the user entity class with which the stats is associated.
-/// </typeparam>
 /// <typeparam name="TUpdateHistory">
 /// The type of the update history with which the stats is associated.
 /// </typeparam>
-internal interface IStatsInternalService<T, TUser, TUpdateHistory> : IStatsService
-        where T : class, IFinancialEngageableEntity<T, TUser, TUpdateHistory>, new()
-        where TUser : class, IUserEntity<TUser>, new()
-        where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, TUser>, new()
+internal interface IStatsInternalService<T, TUpdateHistory> : IStatsService
+        where T : class, IFinancialEngageableEntity<T, TUpdateHistory>, new()
+        where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
 {
     /// <summary>
     /// Increases the retail revenue statistics for a specific date

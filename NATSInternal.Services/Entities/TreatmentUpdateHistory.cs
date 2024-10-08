@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Entities;
 
-internal class TreatmentUpdateHistory : IUpdateHistoryEntity<TreatmentUpdateHistory, User>
+internal class TreatmentUpdateHistory : IUpdateHistoryEntity<TreatmentUpdateHistory>
 {
     [Key]
     public int Id { get; set; }

@@ -1,9 +1,6 @@
 ﻿namespace NATSInternal.Services.Entities;
 
-internal class DebtPayment
-    :
-        FinancialEngagableEntity,
-        IDebtEntity<DebtPayment, Customer, User, DebtPaymentUpdateHistory>
+internal class DebtPayment : IDebtEntity<DebtPayment, DebtPaymentUpdateHistory>
 {
     [Key]
     public int Id { get; set; }
@@ -13,6 +10,9 @@ internal class DebtPayment
 
     [StringLength(255)]
     public string Note { get; set; }
+    
+    [Required]
+    public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
 
     [Required]
     public DateTime PaidDateTime { get; set; }

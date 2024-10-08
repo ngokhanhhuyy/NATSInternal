@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Entities;
 
-internal class Product : IProductEntity<Product>, IHasPhotoEntity<Product, ProductPhoto>
+internal class Product : IHasPhotoEntity<Product, ProductPhoto>
 {
     [Key]
     public int Id { get; set; }

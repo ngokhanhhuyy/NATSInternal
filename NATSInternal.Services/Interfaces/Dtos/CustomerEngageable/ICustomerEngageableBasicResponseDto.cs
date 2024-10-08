@@ -1,13 +1,8 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface ICustomerEngageableBasicResponseDto<
-        TCustomer,
-        TAuthorization,
-        TCustomerAuthorization>
+internal interface ICustomerEngageableBasicResponseDto<TAuthorization>
     : IFinancialEngageableBasicResponseDto<TAuthorization>
-    where TCustomer : ICustomerBasicResponseDto<TCustomerAuthorization>
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
-    where TCustomerAuthorization : IUpsertableAuthorizationResponseDto
 {
-    TCustomer Customer { get; set; }
+    CustomerBasicResponseDto Customer { get; set; }
 }

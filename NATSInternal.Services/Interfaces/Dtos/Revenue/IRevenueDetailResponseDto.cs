@@ -5,11 +5,14 @@ namespace NATSInternal.Services.Interfaces.Dtos;
 /// can generate revenue.
 /// </summary>
 /// <inheritdoc />
-public interface IRevenueDetailResponseDto<TCustomer, TAuthorization, TCustomerAuthorization>
-    : IRevuenueBasicResponseDto<TCustomer, TAuthorization, TCustomerAuthorization>
-    where TCustomer : ICustomerBasicResponseDto<TCustomerAuthorization>
+internal interface IRevenueDetailResponseDto<
+        TUpdateHistory,
+        TAuthorization>
+    :
+        IRevuenueBasicResponseDto<TAuthorization>,
+        IFinancialEngageableDetailResponseDto<TUpdateHistory, TAuthorization> 
+    where TUpdateHistory : IUpdateHistoryResponseDto
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
-    where TCustomerAuthorization : IUpsertableAuthorizationResponseDto
 {
     /// <summary>
     /// Represents the amount before VAT of the revenue.

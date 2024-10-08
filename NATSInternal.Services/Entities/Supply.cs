@@ -1,18 +1,16 @@
 namespace NATSInternal.Services.Entities;
 
-internal class Supply
-    :
-        FinancialEngagableEntity,
-        IProductEngageableEntity<
-            Supply,
-            SupplyItem,
-            Product,
-            SupplyPhoto,
-            User,
-            SupplyUpdateHistory>
+internal class Supply : IProductEngageableEntity<
+        Supply,
+        SupplyItem,
+        SupplyPhoto,
+        SupplyUpdateHistory>
 {
     [Key]
     public int Id { get; set; }
+    
+    [Required]
+    public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
 
     [Required]
     public DateTime SuppliedDateTime { get; set; }

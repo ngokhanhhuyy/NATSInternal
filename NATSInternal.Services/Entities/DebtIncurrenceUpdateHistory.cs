@@ -1,7 +1,6 @@
 ﻿namespace NATSInternal.Services.Entities;
 
-internal class DebtIncurrenceUpdateHistory
-    : IUpdateHistoryEntity<DebtIncurrenceUpdateHistory, User>
+internal class DebtIncurrenceUpdateHistory : IUpdateHistoryEntity<DebtIncurrenceUpdateHistory>
 {
     [Key]
     public int Id { get; set; }

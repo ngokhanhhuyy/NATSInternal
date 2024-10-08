@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Entities;
 
-internal class Customer : ICustomerEntity<Customer, User>
+internal class Customer
 {
     [Key]
     public int Id { get; set; }

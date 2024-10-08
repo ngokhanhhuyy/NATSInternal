@@ -1,18 +1,16 @@
 namespace NATSInternal.Services.Entities;
 
-internal class Treatment
-    :
-        FinancialEngagableEntity,
-        IProductExportableEntity<
-            Treatment,
-            TreatmentItem,
-            Product,
-            TreatmentPhoto,
-            User,
-            TreatmentUpdateHistory>
+internal class Treatment : IProductExportableEntity<
+        Treatment,
+        TreatmentItem,
+        TreatmentPhoto,
+        TreatmentUpdateHistory>
 {
     [Key]
     public int Id { get; set; }
+    
+    [Required]
+    public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
 
     [Required]
     public DateTime PaidDateTime { get; set; }

@@ -12,10 +12,9 @@ namespace NATSInternal.Services.Interfaces;
 /// <typeparam name="TUpdateHistory">
 /// The type of the update history entity which is associated with the <see cref="T"/> entity.
 /// </typeparam>
-internal interface IMonthYearService<T, TUser, TUpdateHistory>
-    where T : class, IFinancialEngageableEntity<T, TUser, TUpdateHistory>, new()
-    where TUser : class, IUserEntity<TUser>, new()
-    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, TUser>, new()
+internal interface IMonthYearService<T, TUpdateHistory>
+    where T : class, IFinancialEngageableEntity<T, TUpdateHistory>, new()
+    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
 {
     /// <summary>
     /// Generates a list of the <see cref="MonthYearResponseDto"/> instances, representing the
