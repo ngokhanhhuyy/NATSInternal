@@ -143,9 +143,11 @@ public static class DisplayNames
 
     public static string Get(object[] objectName)
     {
-        if (objectName == null || !objectName.Any())
+        if (objectName == null || objectName.Length == 0)
         {
-            throw new ArgumentException($"{nameof(objectName)} must be non-null and contain at least 1 element.");
+            string errorMessage = $"{nameof(objectName)} must be non-null and contain at" +
+                "least 1 element.";
+            throw new ArgumentException(errorMessage);
         }
         return Get(objectName
             .Reverse()

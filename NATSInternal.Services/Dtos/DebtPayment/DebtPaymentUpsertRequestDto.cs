@@ -6,7 +6,7 @@ namespace NATSInternal.Services.Dtos
         public string Note { get; set; }
         public DateTime? PaidDateTime { get; set; }
         public int CustomerId { get; set; }
-        public string UpdatingReason { get; set; }
+        public string UpdatedReason { get; set; }
 
         public DateTime? StatsDateTime
         {
@@ -17,7 +17,7 @@ namespace NATSInternal.Services.Dtos
         public void TransformValues()
         {
             Note = Note?.ToNullIfEmpty();
-            UpdatingReason?.ToNullIfEmpty();
+            UpdatedReason?.ToNullIfEmpty();
         }
     }
 }
