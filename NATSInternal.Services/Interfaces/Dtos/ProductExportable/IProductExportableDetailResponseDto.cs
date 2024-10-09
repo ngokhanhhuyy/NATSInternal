@@ -1,29 +1,20 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface IProductExportableDetailResponseDto<
-            TCustomer,
-            TProductItem,
-            TPhoto,
-            TUserBasic,
-            TUpdateHistory,
-            TAuthorization,
-            TCustomerAuthorazation,
-            TUserAuthorization>
+internal interface IProductExportableDetailResponseDto<
+        TProductItem,
+        TPhoto,
+        TUpdateHistory,
+        TAuthorization>
     :
         IProductEngageableDetailResponseDto<
             TProductItem,
             TPhoto,
-            TUserBasic,
             TUpdateHistory,
-            TAuthorization,
-            TUserAuthorization>,
-        IRevuenueBasicResponseDto<TCustomer, TAuthorization, TCustomerAuthorazation>
-    where TCustomer : ICustomerBasicResponseDto<TCustomerAuthorazation>
+            TAuthorization>,
+        IRevuenueBasicResponseDto<TAuthorization>
     where TProductItem : IProductEngageableItemResponseDto
     where TPhoto : IPhotoResponseDto
-    where TUserBasic : IUserBasicResponseDto<TUserAuthorization>
-    where TUpdateHistory : IUpdateHistoryResponseDto<TUserBasic, TUserAuthorization>
+    where TUpdateHistory : IUpdateHistoryResponseDto
     where TAuthorization: IFinancialEngageableAuthorizationResponseDto
-    where TCustomerAuthorazation : IUpsertableAuthorizationResponseDto
 {
 }

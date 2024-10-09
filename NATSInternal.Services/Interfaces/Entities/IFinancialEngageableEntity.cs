@@ -9,23 +9,8 @@ internal interface IFinancialEngageableEntity<T, TUpdateHistory>
 {
     DateTime StatsDateTime { get; set; }
     string Note { get; set; }
-
-    [NotMapped]
-    public bool IsLocked
-    {
-        get
-        {
-            DateTime lockedMonthAndYear = CreatedDateTime
-                .AddMonths(2)
-                .AddDays(-CreatedDateTime.Day)
-                .AddHours(-CreatedDateTime.Hour);
-            DateTime lockedDateTime = new DateTime(
-                lockedMonthAndYear.Year, lockedMonthAndYear.Month, 1,
-                0, 0, 0);
-            DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
-            return currentDateTime >= lockedDateTime;
-        }
-    }
+    bool IsDeleted { get; set; }
+    bool IsLocked { get; }
 
     abstract static Expression<Func<T, DateTime>> StatsDateTimeExpression { get; }
 }

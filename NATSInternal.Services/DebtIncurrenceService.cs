@@ -52,10 +52,10 @@ internal class DebtIncurrenceService : LockableEntityService, IDebtIncurrenceSer
         // Filter by month and year if specified.
         if (!requestDto.IgnoreMonthYear)
         {
-            DateTime startDateTime = new DateTime(requestDto.Year, requestDto.Month, 1);
-            DateTime endDateTime = startDateTime.AddMonths(1);
+            DateTime startingDateTime = new DateTime(requestDto.Year, requestDto.Month, 1);
+            DateTime endingDateTime = startingDateTime.AddMonths(1);
             query = query.Where(di =>
-                di.IncurredDateTime >= startDateTime && di.IncurredDateTime < endDateTime);
+                di.IncurredDateTime >= startingDateTime && di.IncurredDateTime < endingDateTime);
         }
 
         // Filter by user id if specified.
@@ -225,7 +225,7 @@ internal class DebtIncurrenceService : LockableEntityService, IDebtIncurrenceSer
 
             // Prevent IncurredDateTime to be modified when the debt incurrence has already
             // been locked.
-            if (debt.Is)
+            if (debt.IsLocked)
             {
                 string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
                     .ReplaceResourceName(DisplayNames.Debt)
@@ -321,7 +321,7 @@ internal class DebtIncurrenceService : LockableEntityService, IDebtIncurrenceSer
     public async Task DeleteAsync(int id)
     {
         // Fetch and ensure the entity with the given id exists in the database.
-        DebtIncurrence debt = await _context.DebtIncurrences
+        DebtIncurrence debtIncurrence = await _context.DebtIncurrences
             .Include(d => d.Customer).ThenInclude(c => c.DebtPayments)
             .Where(d => d.Id == id)
             .Where(d => !d.IsDeleted)
@@ -334,8 +334,8 @@ internal class DebtIncurrenceService : LockableEntityService, IDebtIncurrenceSer
             throw new AuthorizationException();
         }
         
-        // Verify that if this debt is deleted, will the remaining debt amount be negative.
-        if (debt.Customer.DebtAmount - debt.Amount < 0)
+        // Ensure that the remaining debt amount- of the cusotmer will not be negative.
+        if (debtIncurrence.Customer.DebtAmount < debtIncurrence.Amount)
         {
             throw new OperationException(ErrorMessages.NegativeRemainingDebtAmount);
         }
@@ -347,12 +347,12 @@ internal class DebtIncurrenceService : LockableEntityService, IDebtIncurrenceSer
         // Perform deleting operation and adjust stats.
         try
         {
-            _context.DebtIncurrences.Remove(debt);
+            _context.DebtIncurrences.Remove(debtIncurrence);
             await _context.SaveChangesAsync();
             
             // DebtIncurrence has been deleted successfully, adjust the stats.
-            DateOnly createdDate = DateOnly.FromDateTime(debt.CreatedDateTime);
-            await _statsService.IncrementDebtAmountAsync(- debt.Amount, createdDate);
+            DateOnly createdDate = DateOnly.FromDateTime(debtIncurrence.CreatedDateTime);
+            await _statsService.IncrementDebtAmountAsync(- debtIncurrence.Amount, createdDate);
             
             // Commit the transaction, finish the operation.
             await transaction.CommitAsync();
@@ -373,11 +373,11 @@ internal class DebtIncurrenceService : LockableEntityService, IDebtIncurrenceSer
                 // Soft delete when the entity is restricted to be deleted.
                 if (exceptionHandler.IsDeleteOrUpdateRestricted)
                 {
-                    debt.IsDeleted = true;
+                    debtIncurrence.IsDeleted = true;
                     
                     // Adjust the stats.
-                    DateOnly createdDate = DateOnly.FromDateTime(debt.CreatedDateTime);
-                    await _statsService.IncrementDebtAmountAsync(debt.Amount, createdDate);
+                    DateOnly createdDate = DateOnly.FromDateTime(debtIncurrence.CreatedDateTime);
+                    await _statsService.IncrementDebtAmountAsync(debtIncurrence.Amount, createdDate);
                     
                     // Save changes and commit the transaction again, finish the operation.
                     await _context.SaveChangesAsync();

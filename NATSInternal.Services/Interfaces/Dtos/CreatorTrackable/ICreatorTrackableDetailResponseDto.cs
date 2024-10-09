@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface ICreatorTrackableDetailResponseDto<TAuthorization>
+internal interface ICreatorTrackableDetailResponseDto<TAuthorization>
     : IUpsertableDetailResponseDto<TAuthorization>
     where TAuthorization : IUpsertableAuthorizationResponseDto
 {

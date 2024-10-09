@@ -18,26 +18,18 @@ namespace NATSInternal.Services.Interfaces.Dtos;
 /// The type of the authorization DTO, containing the information of the permissions to
 /// interact with the entity.
 /// </typeparam>
-public interface IProductEngageableDetailResponseDto<
+internal interface IProductEngageableDetailResponseDto<
         TProductItem,
         TPhoto,
-        TUserBasic,
         TUpdateHistory,
-        TAuthorization,
-        TUserAuthorization>
+        TAuthorization>
     :
-        IFinancialEngageableDetailResponseDto<
-            TUserBasic,
-            TUpdateHistory,
-            TAuthorization,
-            TUserAuthorization>,
+        IFinancialEngageableDetailResponseDto<TUpdateHistory, TAuthorization>,
         IHasPhotoDetailResponseDto<TPhoto>
     where TProductItem : IProductEngageableItemResponseDto
     where TPhoto : IPhotoResponseDto
-    where TUserBasic : IUserBasicResponseDto<TUserAuthorization>
-    where TUpdateHistory : IUpdateHistoryResponseDto<TUserBasic, TUserAuthorization>
+    where TUpdateHistory : IUpdateHistoryResponseDto
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
-    where TUserAuthorization : IUpsertableAuthorizationResponseDto
 {
     /// <summary>
     /// Contains the product-related engagements' information and the

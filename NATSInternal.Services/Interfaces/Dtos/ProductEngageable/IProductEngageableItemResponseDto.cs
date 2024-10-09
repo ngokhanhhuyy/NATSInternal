@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface IProductEngageableItemResponseDto
+internal interface IProductEngageableItemResponseDto
 {
     int Id { get; set; }
     long AmountBeforeVatPerUnit { get; set; }

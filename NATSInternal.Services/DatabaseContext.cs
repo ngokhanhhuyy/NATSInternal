@@ -12,8 +12,7 @@ internal class DatabaseContext
             UserRole,
             IdentityUserLogin<int>,
             IdentityRoleClaim<int>,
-            IdentityUserToken<int>>,
-        IDatabaseContext<User, Customer, Product>
+            IdentityUserToken<int>>
         
 {
     public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)

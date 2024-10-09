@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface IProductEngageableListRequestDto : IFinancialEngageableListRequestDto
+internal interface IProductEngageableListRequestDto : IFinancialEngageableListRequestDto
 {
     int? ProductId { get; set; }
 }

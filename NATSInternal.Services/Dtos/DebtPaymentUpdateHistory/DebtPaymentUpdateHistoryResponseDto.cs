@@ -1,12 +1,12 @@
 namespace NATSInternal.Services.Dtos;
 
-public class DebtPaymentUpdateHistoryResponseDto
+public class DebtPaymentUpdateHistoryResponseDto : IUpdateHistoryResponseDto
 {
     private readonly DebtPaymentUpdateHistoryDataDto _oldData;
     private readonly DebtPaymentUpdateHistoryDataDto _newData;
     
-    public DateTime UpdatedDateTime { get; private set; }
-    public UserBasicResponseDto UpdatedUser { get; private set; }
+    public DateTime UpdatedDateTime { get; set; }
+    public UserBasicResponseDto UpdatedUser { get; set; }
     public string Reason { get; set; }
     
     public DateTime OldPaidDateTime => _oldData.PaidDateTime;

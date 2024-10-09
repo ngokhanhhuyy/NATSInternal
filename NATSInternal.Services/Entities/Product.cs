@@ -1,6 +1,9 @@
 namespace NATSInternal.Services.Entities;
 
-internal class Product : IHasPhotoEntity<Product, ProductPhoto>
+internal class Product
+    :
+        FinancialEngageableAbstractEntity,
+        IHasPhotoEntity<Product, ProductPhoto>
 {
     [Key]
     public int Id { get; set; }
@@ -27,9 +30,6 @@ internal class Product : IHasPhotoEntity<Product, ProductPhoto>
 
     [Required]
     public bool IsDiscontinued { get; set; }
-
-    [Required]
-    public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
     
     public DateTime? UpdatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
     

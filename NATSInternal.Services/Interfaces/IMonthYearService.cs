@@ -6,9 +6,6 @@ namespace NATSInternal.Services.Interfaces;
 /// <typeparam name="T">
 /// The type of the entity which <c>StatsDateTime</c> is based on.
 /// </typeparam>
-/// <typeparam name="TUser">
-/// The type of the user entity which is associated with the <see cref="T"/> entity.
-/// </typeparam>
 /// <typeparam name="TUpdateHistory">
 /// The type of the update history entity which is associated with the <see cref="T"/> entity.
 /// </typeparam>

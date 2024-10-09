@@ -1,131 +1,85 @@
 namespace NATSInternal.Services;
 
 /// <inheritdoc cref="IDebtPaymentService" />
-internal class DebtPaymentService : LockableEntityService, IDebtPaymentService
+internal class DebtPaymentService
+    :
+        DebtService<
+            DebtPayment,
+            DebtPaymentUpdateHistory,
+            DebtPaymentListRequestDto,
+            DebtPaymentUpsertRequestDto,
+            DebtPaymentListResponseDto,
+            DebtPaymentBasicResponseDto,
+            DebtPaymentDetailResponseDto,
+            DebtPaymentUpdateHistoryResponseDto,
+            DebtPaymentListAuthorizationResponseDto,
+            DebtPaymentAuthorizationResponseDto>,
+        IDebtPaymentService
 {
-    private readonly DatabaseContext _context;
-    private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService<DebtPayment, User, DebtPaymentUpdateHistory> _statsService;
-    private readonly IUpdateHistoryService<DebtPayment, User, DebtPaymentUpdateHistory, DebtPaymentUpdateHistoryDataDto> _updateHistoryService;
-    private readonly IMonthYearService<DebtPayment, User, DebtPaymentUpdateHistory> _monthYearService;
+    private readonly IUpdateHistoryService<DebtPayment, DebtPaymentUpdateHistory, DebtPaymentUpdateHistoryDataDto> _updateHistoryService;
 
     public DebtPaymentService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService<DebtPayment, User, DebtPaymentUpdateHistory> statsService,
-            IUpdateHistoryService<DebtPayment, User, DebtPaymentUpdateHistory, DebtPaymentUpdateHistoryDataDto> updateHistoryService,
-            IMonthYearService<DebtPayment, User, DebtPaymentUpdateHistory> monthYearService)
+            IStatsInternalService<DebtPayment, DebtPaymentUpdateHistory> statsService,
+            IUpdateHistoryService<DebtPayment, DebtPaymentUpdateHistory, DebtPaymentUpdateHistoryDataDto> updateHistoryService,
+            IMonthYearService<DebtPayment, DebtPaymentUpdateHistory> monthYearService)
+        : base(
+            context,
+            authorizationService,
+            statsService,
+            monthYearService,
+            DebtType.DebtPayment)
     {
-        _context = context;
-        _authorizationService = authorizationService;
-        _statsService = statsService;
         _updateHistoryService = updateHistoryService;
-        _monthYearService = monthYearService;
     }
 
-    public async Task<DebtPaymentListResponseDto> GetListAsync(
+    protected override DbSet<DebtPayment> GetRepository(DatabaseContext context)
+    {
+        return context.DebtPayments;
+    }
+
+    protected override IOrderedQueryable<DebtPayment> SortListQuery(
+            IQueryable<DebtPayment> query,
             DebtPaymentListRequestDto requestDto)
     {
-        // Initialize list of month and year options.
-        List<MonthYearResponseDto> monthYearOptions = await _monthYearService
-            .GenerateMonthYearOptions(dbContext => dbContext.DebtPayments);
-
-        // Initialize query.
-        IQueryable<DebtPayment> query = _context.DebtPayments
-            .Include(dp => dp.Customer);
-
-        // Sort by the specified direction and field.
         switch (requestDto.OrderByField)
         {
-            case nameof(DebtPaymentListRequestDto.FieldOptions.Amount):
-                query = requestDto.OrderByAscending
-                    ? query.OrderBy(di => di.Amount).ThenBy(di => di.PaidDateTime)
-                    : query.OrderByDescending(di => di.Amount)
-                        .ThenByDescending(di => di.PaidDateTime);
-                break;
+            case nameof(DebtIncurrenceListRequestDto.FieldOptions.Amount):
+                return requestDto.OrderByAscending
+                    ? query.OrderBy(dp => dp.Amount).ThenBy(dp => dp.PaidDateTime)
+                    : query.OrderByDescending(dp => dp.Amount)
+                        .ThenByDescending(dp => dp.PaidDateTime);
             default:
-                query = requestDto.OrderByAscending
-                    ? query.OrderBy(di => di.PaidDateTime).ThenBy(di => di.Amount)
-                    : query.OrderByDescending(di => di.PaidDateTime)
-                        .ThenByDescending(di => di.Amount);
-                break;
+                return requestDto.OrderByAscending
+                    ? query.OrderBy(dp => dp.PaidDateTime).ThenBy(dp => dp.Amount)
+                    : query.OrderByDescending(dp => dp.PaidDateTime)
+                        .ThenByDescending(dp => dp.Amount);
         }
-
-        // Filter by month and year if specified.
-        if (!requestDto.IgnoreMonthYear)
-        {
-            DateTime startDateTime = new DateTime(requestDto.Year, requestDto.Month, 1);
-            DateTime endDateTime = startDateTime.AddMonths(1);
-            query = query.Where(dp =>
-                dp.PaidDateTime >= startDateTime && dp.PaidDateTime < endDateTime);
-        }
-
-        // Filter by user id if specified.
-        if (requestDto.CreatedUserId.HasValue)
-        {
-            query = query.Where(o => o.CreatedUserId == requestDto.CreatedUserId);
-        }
-
-        // Filter by customer id if specified.
-        if (requestDto.CustomerId.HasValue)
-        {
-            query = query.Where(o => o.CustomerId == requestDto.CustomerId);
-        }
-
-        // Filter by not being soft deleted.
-        query = query.Where(o => !o.IsDeleted);
-
-        // Initialize response dto.
-        DebtPaymentListResponseDto responseDto = new DebtPaymentListResponseDto
-        {
-            MonthYearOptions = monthYearOptions,
-            Authorization = _authorizationService.GetDebtPaymentListAuthorization()
-        };
-
-        int resultCount = await query.CountAsync();
-        if (resultCount == 0)
-        {
-            responseDto.PageCount = 0;
-            return responseDto;
-        }
-        
-        responseDto.PageCount = (int)Math.Ceiling(
-            (double)resultCount / requestDto.ResultsPerPage);
-        responseDto.Items = await query
-            .Select(dp => new DebtPaymentBasicResponseDto(
-                dp,
-                _authorizationService.GetDebtPaymentAuthorization(dp)))
-            .Skip(requestDto.ResultsPerPage * (requestDto.Page - 1))
-            .Take(requestDto.ResultsPerPage)
-            .AsSplitQuery()
-            .ToListAsync();
-
-        return responseDto;
     }
 
-    /// <inheritdoc />
-    public async Task<DebtPaymentDetailResponseDto> GetDetailAsync(int id)
+    protected override IQueryable<DebtPayment> FilterByMonthYearListQuery(
+            IQueryable<DebtPayment> query,
+            DateTime startingDateTime,
+            DateTime endingDateTime)
     {
-        // Initalize query.
-        IQueryable<DebtPayment> query = _context.DebtPayments
-            .Include(d => d.Customer)
-            .Include(d => d.CreatedUser).ThenInclude(u => u.Role);
-        
-        // Determine if the update histories should be fetched.
-        bool shouldIncludeUpdateHistories = _authorizationService
-            .CanAccessDebtPaymentUpdateHistories();
-        if (shouldIncludeUpdateHistories)
-        {
-            query = query.Include(dp => dp.UpdateHistories);
-        }
+        return query
+            .Where(dp => dp.PaidDateTime >= startingDateTime)
+            .Where(dp => dp.PaidDateTime < endingDateTime);
+    }
+    
+    protected override DebtPaymentBasicResponseDto InitializeBasicResponseDto(
+            DebtPayment debtPayment)
+    {
+        return new DebtPaymentBasicResponseDto(
+            debtPayment,
+            _authorizationService.GetDebtPaymentAuthorization(debtPayment));
+    }
 
-        // Fetch the entity with the given id and ensure it exists in the database.
-        DebtPayment debtPayment = await query
-            .Where(dp => dp.Id == id && !dp.IsDeleted)
-            .AsSplitQuery()
-            .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException();
-        
+    protected override DebtPaymentDetailResponseDto InitializeDetailResponseDto(
+            DebtPayment debtPayment,
+            bool shouldIncludeUpdateHistories)
+    {
         return new DebtPaymentDetailResponseDto(
             debtPayment,
             _authorizationService.GetDebtPaymentAuthorization(debtPayment),
@@ -133,81 +87,14 @@ internal class DebtPaymentService : LockableEntityService, IDebtPaymentService
     }
 
     /// <inheritdoc />
-    public async Task<int> CreateAsync(DebtPaymentUpsertRequestDto requestDto)
+    public async Task<DebtPaymentDetailResponseDto> GetDetailAsync(int id)
     {
-        // Determining the paid datetime.
-        DateTime paidDateTime = DateTime.UtcNow.ToApplicationTime();
-        if (requestDto.PaidDateTime.HasValue)
-        {
-            // Check if the current user has permission to specify the created datetime for the
-            // debt payment.
-            if (!_authorizationService.CanSetDebtPaymentPaidDateTime())
-            {
-                throw new AuthorizationException();
-            }
-            
-            paidDateTime = requestDto.PaidDateTime.Value;
-        }
-
-        // Find the customer with the specified id.
-        Customer customer = await _context.Customers
-            .Include(c => c.DebtIncurrences)
-            .Include(c => c.DebtPayments)
-            .SingleOrDefaultAsync(c => c.Id == requestDto.CustomerId);
-        if (customer == null)
-        {
-            string customerNotFoundErrorMessage = ErrorMessages.NotFoundByProperty
-                .ReplaceResourceName(DisplayNames.Customer)
-                .ReplacePropertyName(DisplayNames.Id)
-                .ReplaceAttemptedValue(requestDto.ToString());
-            throw new OperationException(
-                nameof(requestDto.CustomerId),
-                customerNotFoundErrorMessage);
-        }
-
-        // Ensure the remaining debt amount will not be negative after the operation.
-        if (customer.DebtAmount < requestDto.Amount)
-        {
-            const string amountErrorMessage = ErrorMessages.NegativeRemainingDebtAmount;
-            throw new OperationException(nameof(requestDto.Amount), amountErrorMessage);
-        }
-        
-        // Initialize debt payment entity.
-        DebtPayment debtPayment = new DebtPayment
-        {
-            Amount = requestDto.Amount,
-            Note = requestDto.Note,
-            PaidDateTime = paidDateTime,
-            CustomerId = requestDto.CustomerId,
-            CreatedUserId = _authorizationService.GetUserId()
-        };
-        _context.DebtPayments.Add(debtPayment);
-        
-        // Using transaction for atomic operations.
-        await using IDbContextTransaction transaction = await _context.Database
-            .BeginTransactionAsync();
-        
-        // Perform the creating operation.
-        try
-        {
-            await _context.SaveChangesAsync();
-            
-            // The debt is saved successfully, adjust the stats.
-            await _statsService.IncrementDebtPaidAmountAsync(
-                debtPayment.Amount,
-                DateOnly.FromDateTime(debtPayment.PaidDateTime));
-            
-            // Commit the transaction, finish all operations.
-            await transaction.CommitAsync();
-            
-            return debtPayment.Id;
-        }
-        catch (DbUpdateException exception)
-        when (exception.InnerException is MySqlException sqlException)
-        {
-            HandleCreateOrUpdateException(sqlException);
-            throw;
-        }
+        return await base.GetDetailAsync(
+            id,
+            (debtPayment, shouldIncludeUpdateHistories) => new DebtPaymentDetailResponseDto(
+                debtPayment,
+                _authorizationService.GetDebtPaymentAuthorization(debtPayment),
+                mapUpdateHistories: shouldIncludeUpdateHistories));
     }
     
     /// <inheritdoc />

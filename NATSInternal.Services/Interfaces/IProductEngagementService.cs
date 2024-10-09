@@ -10,13 +10,13 @@ namespace NATSInternal.Services.Interfaces;
 /// </typeparam>
 /// <typeparam name="TPhoto">
 /// The type of the photo entity, which is contained by the
-/// <see cref="IProductEngageableEntity{T, TItem, TProduct, TPhoto, TUser, TUpdateHistory}"/>
-/// entity that contains the <see cref="TItem"/> entities.
+/// <see cref="IProductEngageableEntity{T, TItem, TPhoto, TUpdateHistory}"/> entity that
+/// contains the <see cref="TItem"/> entities.
 /// </typeparam>
 /// <typeparam name="TUpdateHistory">
 /// The type of the update history entity which is associated with the
-/// <see cref="IProductEngageableEntity{T, TItem, TProduct, TPhoto, TUser, TUpdateHistory}"/>
-/// entity that contains the <see cref="TItem"/> entities.
+/// <see cref="IProductEngageableEntity{T, TItem, TPhoto, TUpdateHistory}"/> entity that
+/// contains the <see cref="TItem"/> entities.
 /// </typeparam>
 internal interface IProductEngagementService<TItem, TPhoto, TUpdateHistory>
     where TItem : class, IProductEngageableItemEntity<TItem>, new()
@@ -81,7 +81,6 @@ internal interface IProductEngagementService<TItem, TPhoto, TUpdateHistory>
             string itemDisplayName)
         where TItemRequestDto : IProductEngageableItemRequestDto;
 
-    
     /// <summary>
     /// Deletes the existing product engagement items from the specified collection and
     /// repository, based on the specified engagement operation type.

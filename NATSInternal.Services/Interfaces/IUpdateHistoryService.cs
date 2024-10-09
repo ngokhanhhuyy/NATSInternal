@@ -6,19 +6,15 @@ namespace NATSInternal.Services.Interfaces;
 /// <typeparam name="T">
 /// The type of the entity class with which the logging update history is associated.
 /// </typeparam>
-/// <typeparam name="TUser">
-/// The type of the user entity with which the logging update history is associated.
-/// </typeparam>
 /// <typeparam name="TUpdateHistory">
 /// The type of the update history entity which is used to store the logging details.
 /// </typeparam>
 /// <typeparam name="TUpdateHistoryDataDto">
 /// The type of the DTO which contains the data before and after modificiations.
 /// </typeparam>
-internal interface IUpdateHistoryService<T, TUser, TUpdateHistory, TUpdateHistoryDataDto>
-    where T : class, IFinancialEngageableEntity<T, TUser, TUpdateHistory>, new()
-    where TUser : class, IUserEntity<TUser>, new()
-    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, TUser>, new()
+internal interface IUpdateHistoryService<T, TUpdateHistory, TUpdateHistoryDataDto>
+    where T : class, IFinancialEngageableEntity<T, TUpdateHistory>, new()
+    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
 {
     /// <summary>
     /// Logs the old and new data to update history for the specified entity.

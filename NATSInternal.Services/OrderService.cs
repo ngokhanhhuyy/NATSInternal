@@ -6,19 +6,19 @@ internal class OrderService : LockableEntityService, IOrderService
     private readonly DatabaseContext _context;
     private readonly IPhotoService<Order, OrderPhoto> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService<Order, User, OrderUpdateHistory> _statsService;
-    private readonly IUpdateHistoryService<Order, User, OrderUpdateHistory, OrderUpdateHistoryDataDto> _updateHistoryService;
-    private readonly IProductEngagementService<OrderItem, Product, OrderPhoto, User, OrderUpdateHistory> _productEngagementService;
-    private readonly IMonthYearService<Order, User, OrderUpdateHistory> _monthYearService;
+    private readonly IStatsInternalService<Order, OrderUpdateHistory> _statsService;
+    private readonly IUpdateHistoryService<Order, OrderUpdateHistory, OrderUpdateHistoryDataDto> _updateHistoryService;
+    private readonly IProductEngagementService<OrderItem, OrderPhoto, OrderUpdateHistory> _productEngagementService;
+    private readonly IMonthYearService<Order, OrderUpdateHistory> _monthYearService;
 
     public OrderService(
         DatabaseContext context,
         IPhotoService<Order, OrderPhoto> photoService,
         IAuthorizationInternalService authorizationService,
-        IStatsInternalService<Order, User, OrderUpdateHistory> statsService,
-        IUpdateHistoryService<Order, User, OrderUpdateHistory, OrderUpdateHistoryDataDto> updateHistoryService,
-        IProductEngagementService<OrderItem, Product, OrderPhoto, User, OrderUpdateHistory> productEngagementService,
-        IMonthYearService<Order, User, OrderUpdateHistory> monthYearService)
+        IStatsInternalService<Order, OrderUpdateHistory> statsService,
+        IUpdateHistoryService<Order, OrderUpdateHistory, OrderUpdateHistoryDataDto> updateHistoryService,
+        IProductEngagementService<OrderItem, OrderPhoto, OrderUpdateHistory> productEngagementService,
+        IMonthYearService<Order, OrderUpdateHistory> monthYearService)
     {
         _context = context;
         _photoService = photoService;
@@ -444,7 +444,7 @@ internal class OrderService : LockableEntityService, IOrderService
 
         _productEngagementService.DeleteItems(
             order.Items,
-            _context.OrderItems,
+            dbContext => dbContext.OrderItems,
             ProductEngagementType.Export);
 
         // Perform the deleting operation.

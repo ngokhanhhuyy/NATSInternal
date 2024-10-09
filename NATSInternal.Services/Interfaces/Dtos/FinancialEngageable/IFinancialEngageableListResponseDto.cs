@@ -1,11 +1,11 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface IFinancialEngageableListResponseDto<
+internal interface IFinancialEngageableListResponseDto<
         TBasic,
         TAuthorization,
         TListAuthorization>
     : IUpsertableListResponseDto<TBasic, TAuthorization, TListAuthorization>
-    where TBasic : IFinancialEngageableBasicResponseDto<TAuthorization>
+    where TBasic : class, IFinancialEngageableBasicResponseDto< TAuthorization>
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
     where TListAuthorization : IUpsertableListAuthorizationResponseDto
 {

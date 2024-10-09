@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Entities;
 
-internal class Customer
+internal class Customer : IUpsertableEntity<Customer>
 {
     [Key]
     public int Id { get; set; }
