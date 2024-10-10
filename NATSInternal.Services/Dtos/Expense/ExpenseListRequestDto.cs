@@ -1,8 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class ExpenseListRequestDto :
-        IRequestDto<ExpenseListRequestDto>,
-        ILockableEntityListRequestDto
+public class ExpenseListRequestDto : IFinancialEngageableListRequestDto
 {
     public bool OrderByAscending { get; set; } = false;
     public string OrderByField { get; set; } = nameof(FieldOptions.PaidDateTime);
@@ -10,6 +8,7 @@ public class ExpenseListRequestDto :
     public int Year { get; set; }
     public bool IgnoreMonthYear { get; set; }
     public ExpenseCategory? Category { get; set; }
+    public int? CreatedUserId { get; set; }
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
     
@@ -34,7 +33,7 @@ public class ExpenseListRequestDto :
     
     public enum FieldOptions
     {
+        PaidDateTime,
         Amount,
-        PaidDateTime
     }
 }

@@ -7,7 +7,7 @@ public class TreatmentUpdateHistoryResponseDto : IUpdateHistoryResponseDto
 
     public DateTime UpdatedDateTime { get; internal set; }
     public UserBasicResponseDto UpdatedUser { get; internal set; }
-    public string Reason { get; internal set; }
+    public string UpdatedReason { get; internal set; }
 
     public DateTime OldPaidDateTime => _oldData.PaidDateTime;
     public DateTime NewPaidDateTime => _newData.PaidDateTime;
@@ -37,6 +37,6 @@ public class TreatmentUpdateHistoryResponseDto : IUpdateHistoryResponseDto
             .Deserialize<TreatmentUpdateHistoryDataDto>(updateHistory.NewData);
         UpdatedDateTime = updateHistory.UpdatedDateTime;
         UpdatedUser = new UserBasicResponseDto(updateHistory.UpdatedUser);
-        Reason = updateHistory.Reason;
+        UpdatedReason = updateHistory.Reason;
     }
 }

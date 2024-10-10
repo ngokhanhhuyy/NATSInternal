@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore.Query;
-
 namespace NATSInternal.Services;
 
 /// <summary>
@@ -46,6 +44,18 @@ namespace NATSInternal.Services;
 /// list retrieving and detail retrieving operations.
 /// </typeparam>
 internal abstract class DebtAbstractService<
+        T,
+        TUpdateHistory,
+        TListRequestDto,
+        TUpsertRequestDto,
+        TListResponseDto,
+        TBasicResponseDto,
+        TDetailResponseDto,
+        TUpdateHistoryResponseDto,
+        TUpdateHistoryDataDto,
+        TListAuthorizationResponseDto,
+        TAuthorizationResponseDto>
+    : FinancialEngageableAbstractService<
         T,
         TUpdateHistory,
         TListRequestDto,
@@ -204,10 +214,6 @@ internal abstract class DebtAbstractService<
     /// <param name="requestDto">
     /// An DTO containing the data for the creating operation.
     /// </param>
-    /// <param name="entityInitializer">
-    /// (Optional) An expression which is called immediately after the initialization of the
-    /// new entity, used to customize the data assignment to the properties of the entity.
-    /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asychronous operation, which result is the id of
     /// the new debt entity.
@@ -268,25 +274,17 @@ internal abstract class DebtAbstractService<
         try
         {
             await _context.SaveChangesAsync();
-            
-            // The entity is saved successfully, adjust the stats based on the debt type.
-            long statsAmount;
-            switch (_debtType)
-            {
-                case DebtType.DebtIncurrence:
-                    statsAmount = entity.Amount;
-                    break;
-                case DebtType.DebtPayment:
-                    statsAmount = -entity.Amount;
-                    break;
-                default:
-                    string errorMessage = $"[{_debtType}] is not a supported value.";
-                    throw new NotImplementedException(errorMessage);
-            }
 
-            await _statsService.IncrementDebtAmountAsync(
-                statsAmount,
-                DateOnly.FromDateTime(entity.CreatedDateTime));
+            // The entity is saved successfully, adjust the stats based on the debt type.
+            DateOnly statsDate = DateOnly.FromDateTime(entity.StatsDateTime);
+            if (_debtType == DebtType.DebtIncurrence)
+            {
+                await _statsService.IncrementDebtIncurredAmountAsync(entity.Amount, statsDate);
+            }
+            else
+            {
+                await _statsService.IncrementDebtPaidAmountAsync(entity.Amount, statsDate);
+            }
             
             // Commit the transaction, finish all operations.
             await transaction.CommitAsync();
@@ -374,14 +372,14 @@ internal abstract class DebtAbstractService<
         
         // Store the old data and create new data for stats adjustment.
         long oldAmount = entity.Amount;
-        DateOnly oldPaidDate = DateOnly.FromDateTime(entity.StatsDateTime);
+        DateOnly oldDate = DateOnly.FromDateTime(entity.StatsDateTime);
         TUpdateHistoryDataDto oldData = InitializeUpdateHistoryDataDto(entity);
 
         // Update the paid datetime if specified.
         if (requestDto.StatsDateTime.HasValue)
         {
             // Check if the current user has permission to change the created datetime.
-            if (!_authorizationService.CanSetDebtIncurredDateTime())
+            if (!_authorizationService.CanSetDebtIncurrenceIncurredDateTime())
             {
                 throw new AuthorizationException();
             }
@@ -460,28 +458,17 @@ internal abstract class DebtAbstractService<
             
             // The debt payment can be updated successfully without any error.
             // Adjust the stats.
-            // Revert the old stats.
-            long oldStatsAmount;
-            long newStatsAmount;
-            switch (_debtType)
+            DateOnly newDate = DateOnly.FromDateTime(entity.StatsDateTime);
+            if (_debtType == DebtType.DebtIncurrence)
             {
-                case DebtType.DebtIncurrence:
-                    oldStatsAmount = oldAmount;
-                    newStatsAmount = -entity.Amount;
-                    break;
-                case DebtType.DebtPayment:
-                    oldStatsAmount = -oldAmount;
-                    newStatsAmount = entity.Amount;
-                    break;
-                default:
-                    string errorMessage = $"[{_debtType}] is not a supported value.";
-                    throw new NotImplementedException(errorMessage);
+                await _statsService.IncrementDebtIncurredAmountAsync(-oldAmount, oldDate);
+                await _statsService.IncrementDebtIncurredAmountAsync(entity.Amount, newDate);
             }
-            await _statsService.IncrementDebtAmountAsync(oldAmount, oldPaidDate);
-            
-            // Add new stats.
-            DateOnly newStatsDate = DateOnly.FromDateTime(entity.StatsDateTime);
-            await _statsService.IncrementDebtAmountAsync(newStatsAmount, newStatsDate);
+            else
+            {
+                await _statsService.IncrementDebtPaidAmountAsync(-oldAmount, oldDate);
+                await _statsService.IncrementDebtPaidAmountAsync(entity.Amount, newDate);
+            }
             
             // Commit the transaction and finish the operation.
             await transaction.CommitAsync();
@@ -504,12 +491,101 @@ internal abstract class DebtAbstractService<
         }
     }
 
+    public virtual async Task DeleteAsync(int id)
+    {
+        // Fetch and ensure the entity with the given debtPaymentId exists in the database.
+        T entity = await GetRepository(_context)
+            .Include(d => d.Customer).ThenInclude(c => c.DebtIncurrences)
+            .Include(d => d.Customer).ThenInclude(c => c.DebtPayments)
+            .Where(dp => dp.Id == id && !dp.IsDeleted)
+            .SingleOrDefaultAsync()
+            ?? throw new ResourceNotFoundException();
+        
+        // Ensure the user has permission to delete this debt entity.
+        if (!CanDelete(_authorizationService))
+        {
+            throw new AuthorizationException();
+        }
+
+        // Verify that if this debt entity is closed.
+        if (entity.IsLocked)
+        {
+            string errorMessage = ErrorMessages.ModificationTimeExpired
+                .ReplaceResourceName(DisplayNames.Get(typeof(T).Name));
+            throw new OperationException(errorMessage);
+        }
+        
+        // Ensure the remaining debt amount of the customer isn't negative after the operation.
+        if (entity.Customer.DebtAmount < entity.Amount)
+        {
+            throw new OperationException(ErrorMessages.NegativeRemainingDebtAmount);
+        }
+        
+        // Using transaction for atomic operations.
+        await using IDbContextTransaction transaction = await _context.Database
+            .BeginTransactionAsync();
+        
+        // Perform deleting operation and adjust stats.
+        try
+        {
+            GetRepository(_context).Remove(entity);
+            await _context.SaveChangesAsync();
+            
+            // The entity has been deleted successfully, adjust the stats based on debt type.
+            DateOnly statsDate = DateOnly.FromDateTime(entity.StatsDateTime);
+            if (_debtType == DebtType.DebtIncurrence)
+            {
+                await _statsService.IncrementDebtIncurredAmountAsync(-entity.Amount, statsDate);
+            }
+            else
+            {
+                await _statsService.IncrementDebtPaidAmountAsync(-entity.Amount, statsDate);
+            }
+            
+            // Commit the transaction, finish the operation.
+            await transaction.CommitAsync();
+        }
+        catch (DbUpdateException exception)
+        {
+            // Handle concurrency exception.
+            if (exception is DbUpdateConcurrencyException)
+            {
+                throw new ConcurrencyException();
+            }
+            
+            // Handle deleting restricted exception.
+            if (exception.InnerException is MySqlException sqlException)
+            {
+                SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
+                exceptionHandler.Handle(sqlException);
+                // Soft delete when the entity is restricted to be deleted.
+                if (exceptionHandler.IsDeleteOrUpdateRestricted)
+                {
+                    entity.IsDeleted = true;
+                    
+                    // Adjust the stats.
+                    DateOnly createdDate = DateOnly.FromDateTime(entity.StatsDateTime);
+                    await _statsService
+                        .IncrementDebtIncurredAmountAsync(entity.Amount, createdDate);
+                    
+                    // Save changes and commit the transaction again, finish the operation.
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// Initializes the query for list retrieving operation, based on the filtering, sorting
     /// and paginating conditions specified in the request DTO.
     /// </summary>
-    /// <param name="requestDto">A DTO containing the conditions for the results.</param>
-    /// <returns>A query instance used to perform the list retrieving operation.</returns>
+    /// <param name="requestDto">
+    /// A DTO containing the conditions for the results.
+    /// </param>
+    /// <returns>
+    /// A query instance used to perform the list retrieving operation.
+    /// </returns>
     protected virtual IQueryable<T> InitializeListQuery(TListRequestDto requestDto)
     {
         IQueryable<T> query = GetRepository(_context)
@@ -609,9 +685,15 @@ internal abstract class DebtAbstractService<
     /// Provides the sorting conditions for the list retrieving operation, based on the
     /// specified conditions.
     /// </summary>
-    /// <param name="query">An initialized query instance.</param>
-    /// <param name="requestDto">The DTO containing the conditions for sorting.</param>
-    /// <returns>A sorted query used for list retrieving operation.</returns>
+    /// <param name="query">
+    /// An initialized query instance.
+    /// </param>
+    /// <param name="requestDto">
+    /// The DTO containing the conditions for sorting.
+    /// </param>
+    /// <returns>
+    /// A sorted query used for list retrieving operation.
+    /// </returns>
     protected abstract IOrderedQueryable<T> SortListQuery(
             IQueryable<T> query,
             TListRequestDto requestDto);
@@ -620,7 +702,7 @@ internal abstract class DebtAbstractService<
     /// Provides the filtering conditions by month and year, based on the specified conditions.
     /// </summary>
     /// <param name="query">
-    /// An initialized query instnace.
+    /// An initialized query instance.
     /// </param>
     /// <param name="minimumDateTime">
     /// The minimum <see cref="DateTime"/> value that the value of the <c>StatsDateTime</c>
@@ -629,7 +711,9 @@ internal abstract class DebtAbstractService<
     /// <param name="maximumDateTime">
     /// The maximum <see cref="DateTime"/> value that the value of the <c>StatsDateTime</c>
     /// in the entity has to be greater than to fulfill the condition.</param>
-    /// <returns></returns>
+    /// <returns>
+    /// The query instance after adding the filtering conditions.
+    /// </returns>
     protected abstract IQueryable<T> FilterByMonthYearListQuery(
             IQueryable<T> query,
             DateTime minimumDateTime,
@@ -638,19 +722,27 @@ internal abstract class DebtAbstractService<
     /// <summary>
     /// Initializes a response DTO, contanining the basic information of the given entity.
     /// </summary>
-    /// <param name="entity">The entity to map to the DTO.</param>
-    /// <returns>The initialized DTO.</returns>
+    /// <param name="entity">
+    /// The entity to map to the DTO.
+    /// </param>
+    /// <returns>
+    /// The initialized DTO.
+    /// </returns>
     protected abstract TBasicResponseDto InitializeBasicResponseDto(T entity);
 
     /// <summary>
     /// Initializes a response DTO, contanining the details of the given entity.
     /// </summary>
-    /// <param name="entity">The entity to map to the DTO.</param>
+    /// <param name="entity">
+    /// The entity to map to the DTO.
+    /// </param>
     /// <param name="shouldIncludeUpdateHistories">
     /// Indicates that the associated update history DTOs should also be included in the detail
     /// response DTO.
     /// </param>
-    /// <returns>The initialized DTO.</returns>
+    /// <returns>
+    /// The initialized DTO.
+    /// </returns>
     protected abstract TDetailResponseDto InitializeDetailResponseDto(
             T entity,
             bool shouldIncludeUpdateHistories);
@@ -662,7 +754,9 @@ internal abstract class DebtAbstractService<
     /// <param name="authorizationService">
     /// The authorization service to retrieve the authorization information.
     /// </param>
-    /// <returns>The initialized DTO.</returns>
+    /// <returns>
+    /// The initialized DTO.
+    /// </returns>
     protected abstract TListAuthorizationResponseDto InitializeListAuthorizationResponseDto(
             IAuthorizationInternalService authorizationService);
 
@@ -677,7 +771,9 @@ internal abstract class DebtAbstractService<
     /// <param name="entity">
     /// The entity to retrive the authorization for.
     /// </param>
-    /// <returns>The initialized DTO.</returns>
+    /// <returns>
+    /// The initialized DTO.
+    /// </returns>
     protected abstract TAuthorizationResponseDto InitializeAuthorizationResponseDto(
             IAuthorizationInternalService authorizationService,
             T entity);
@@ -687,24 +783,11 @@ internal abstract class DebtAbstractService<
     /// at the called time, used for storing the data before and after modifications in the
     /// updating operation.
     /// </summary>
-    /// <param name="entity">The entity which data is to be stored.</param>
-    /// <returns>The intialized DTO.</returns>
+    /// <param name="entity">
+    /// The entity which data is to be stored.
+    /// </param>
+    /// <returns>
+    /// The intialized DTO.
+    /// </returns>
     protected abstract TUpdateHistoryDataDto InitializeUpdateHistoryDataDto(T entity);
-
-    /// <summary>
-    /// Determines whether the current user has enough permissions to access the update history
-    /// of any entity, used in the detail retrieving operation.
-    /// </summary>
-    /// <param name="service">The service providing the authorization information.</param>
-    /// <returns>A <see cref="bool"/> value representing the permission.</returns>
-    protected abstract bool CanAccessUpdateHistory(IAuthorizationInternalService service);
-
-    /// <summary>
-    /// Determines whether the current user has enough permissions to set a value for the
-    /// <c>StatsDateTime</c> property in the entity, used in the creating or updating
-    /// operation.
-    /// </summary>
-    /// <param name="service">The service providing the authorization information.</param>
-    /// <returns>A <see cref="bool"/> value representing the permission.</returns>
-    protected abstract bool CanSetStatsDateTime(IAuthorizationInternalService service);
 }

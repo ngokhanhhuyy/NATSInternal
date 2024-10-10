@@ -2,10 +2,10 @@ namespace NATSInternal.Services;
 
 /// <inheritdoc />
 internal class ProductEngagementService<TItem, TPhoto, TUpdateHistory>
-    : IProductEngagementService<TItem, Product, TPhoto, User, TUpdateHistory>
-    where TItem : class, IProductEngageableItemEntity<TItem, Product>, new()
+    : IProductEngagementService<TItem, TPhoto, TUpdateHistory>
+    where TItem : class, IProductEngageableItemEntity<TItem>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
-    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, User>, new()
+    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
 {
     protected readonly DatabaseContext _context;
 

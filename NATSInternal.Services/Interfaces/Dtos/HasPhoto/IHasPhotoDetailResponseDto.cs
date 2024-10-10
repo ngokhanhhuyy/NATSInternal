@@ -5,5 +5,5 @@ public interface IHasPhotoDetailResponseDto : IHasPhotoBasicResponseDto;
 public interface IHasPhotoDetailResponseDto<TPhoto> : IHasPhotoDetailResponseDto
     where TPhoto : IPhotoResponseDto
 {
-    List<TPhoto> Photos { get; set; }
+    List<TPhoto> Photos { get; }
 }

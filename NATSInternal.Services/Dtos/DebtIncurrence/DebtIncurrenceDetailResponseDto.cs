@@ -1,6 +1,9 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
 public class DebtIncurrenceDetailResponseDto
+    : IDebtDetailResponseDto<
+        DebtIncurrenceUpdateHistoryResponseDto,
+        DebtIncurrenceAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public long Amount { get; set; }

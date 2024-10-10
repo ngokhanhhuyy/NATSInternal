@@ -1,13 +1,12 @@
 namespace NATSInternal.Services;
 
 /// <inheritdoc />
-internal class StatsInternalService<T, TUser, TUpdateHistory>
+internal class StatsInternalService<T, TUpdateHistory>
     :
         StatsService,
-        IStatsInternalService<T, TUser, TUpdateHistory>
-    where T : class, IFinancialEngageableEntity<T, TUser, TUpdateHistory>, new()
-    where TUser : class, IUserEntity<TUser>, new()
-    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, TUser>, new()
+        IStatsInternalService<T, TUpdateHistory>
+    where T : class, IFinancialEngageableEntity<T, TUpdateHistory>, new()
+    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
 {
     public StatsInternalService(DatabaseContext context) : base(context) { }
 
@@ -63,7 +62,7 @@ internal class StatsInternalService<T, TUser, TUpdateHistory>
     }
     
     /// <inheritdoc />
-    public async Task IncrementDebtAmountAsync(long value, DateOnly? date = null)
+    public async Task IncrementDebtIncurredAmountAsync(long value, DateOnly? date = null)
     {
         DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.DebtIncurredAmount += value;

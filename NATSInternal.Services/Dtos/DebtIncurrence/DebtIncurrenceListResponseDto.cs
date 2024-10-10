@@ -1,6 +1,9 @@
 namespace NATSInternal.Services.Dtos;
 
-public class DebtIncurrenceListResponseDto
+public class DebtIncurrenceListResponseDto : IFinancialEngageableListResponseDto<
+        DebtIncurrenceBasicResponseDto,
+        DebtIncurrenceAuthorizationResponseDto,
+        DebtIncurrenceListAuthorizationResponseDto>
 {
     public List<DebtIncurrenceBasicResponseDto> Items { get; set; }
     public int PageCount { get; set; }

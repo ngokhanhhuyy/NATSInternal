@@ -1,10 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class OrderBasicResponseDto
-    : IRevuenueBasicResponseDto<
-        CustomerBasicResponseDto,
-        OrderAuthorizationResponseDto,
-        CustomerAuthorizationResponseDto>
+public class OrderBasicResponseDto : IRevuenueBasicResponseDto<OrderAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public DateTime PaidDateTime { get; set; }

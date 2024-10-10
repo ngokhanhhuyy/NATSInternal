@@ -115,9 +115,8 @@ internal class ProductService : IProductService
         // Create thumbnail if specified.
         if (requestDto.ThumbnailFile != null)
         {
-            string thumbnailUrl = await _photoService
+            product.ThumbnailUrl = await _photoService
                 .CreateAsync(requestDto.ThumbnailFile, true);
-            product.ThumbnailUrl = thumbnailUrl;
         }
 
         // Create photos if specified.

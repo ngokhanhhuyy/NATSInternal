@@ -5,20 +5,12 @@ internal class DebtPaymentService
     :
         DebtAbstractService<DebtPayment, DebtPaymentUpdateHistory, DebtPaymentListRequestDto,
             DebtPaymentUpsertRequestDto, DebtPaymentListResponseDto,
-                DebtPaymentBasicResponseDto, DebtPaymentDetailResponseDto,
-                DebtPaymentUpdateHistoryResponseDto, DebtPaymentUpdateHistoryDataDto,
-                DebtPaymentListAuthorizationResponseDto, DebtPaymentAuthorizationResponseDto>,
+            DebtPaymentBasicResponseDto, DebtPaymentDetailResponseDto,
+            DebtPaymentUpdateHistoryResponseDto, DebtPaymentUpdateHistoryDataDto,
+            DebtPaymentListAuthorizationResponseDto, DebtPaymentAuthorizationResponseDto>,
         IDebtPaymentService
 {
-    private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService<
-        DebtPayment,
-        DebtPaymentUpdateHistory> _statsService;
-    private readonly IUpdateHistoryService<
-        DebtPayment,
-        DebtPaymentUpdateHistory,
-        DebtPaymentUpdateHistoryDataDto> _updateHistoryService;
 
     public DebtPaymentService(
             DatabaseContext context,
@@ -34,92 +26,9 @@ internal class DebtPaymentService
             monthYearService,
             DebtType.DebtPayment)
     {
-        _context = context;
-        _statsService = statsService;
         _authorizationService = authorizationService;
-        _updateHistoryService = updateHistoryService;
     }
     
-    /// <inheritdoc />
-    public async Task DeleteAsync(int id)
-    {
-        // Fetch and ensure the entity with the given debtPaymentId exists in the database.
-        DebtPayment debtPayment = await _context.DebtPayments
-            .Include(d => d.Customer).ThenInclude(c => c.DebtPayments)
-            .Where(dp => dp.Id == id && !dp.IsDeleted)
-            .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException();
-        
-        // Ensure the user has permission to delete this debt payment.
-        if (!_authorizationService.CanDeleteDebtPayment())
-        {
-            throw new AuthorizationException();
-        }
-
-        // Verify that if this debt payment is closed.
-        if (debtPayment.IsLocked)
-        {
-            string errorMessage = ErrorMessages.ModificationTimeExpired
-                .ReplaceResourceName(DisplayNames.DebtPayment);
-            throw new OperationException(errorMessage);
-        }
-        
-        // Verify that if this debt payment is deleted, will the remaining debt amount be
-        // negative.
-        if (debtPayment.Customer.DebtAmount < debtPayment.Amount)
-        {
-            throw new OperationException(ErrorMessages.NegativeRemainingDebtAmount);
-        }
-        
-        // Using transaction for atomic operations.
-        await using IDbContextTransaction transaction = await _context.Database
-            .BeginTransactionAsync();
-        
-        // Perform deleting operation and adjust stats.
-        try
-        {
-            _context.DebtPayments.Remove(debtPayment);
-            await _context.SaveChangesAsync();
-            
-            // DebtIncurrence payment has been deleted successfully, adjust the stats.
-            DateOnly createdDate = DateOnly.FromDateTime(debtPayment.PaidDateTime);
-            await _statsService
-                .IncrementDebtPaidAmountAsync(- debtPayment.Amount, createdDate);
-            
-            // Commit the transaction, finish the operation.
-            await transaction.CommitAsync();
-        }
-        catch (DbUpdateException exception)
-        {
-            // Handle concurrency exception.
-            if (exception is DbUpdateConcurrencyException)
-            {
-                throw new ConcurrencyException();
-            }
-            
-            // Handle deleting restricted exception.
-            if (exception.InnerException is MySqlException sqlException)
-            {
-                SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
-                exceptionHandler.Handle(sqlException);
-                // Soft delete when the entity is restricted to be deleted.
-                if (exceptionHandler.IsDeleteOrUpdateRestricted)
-                {
-                    debtPayment.IsDeleted = true;
-                    
-                    // Adjust the stats.
-                    DateOnly createdDate = DateOnly.FromDateTime(debtPayment.PaidDateTime);
-                    await _statsService
-                        .IncrementDebtAmountAsync(debtPayment.Amount, createdDate);
-                    
-                    // Save changes and commit the transaction again, finish the operation.
-                    await _context.SaveChangesAsync();
-                    await transaction.CommitAsync();
-                }
-            }
-        }
-    }
-
     /// <inheritdoc />
     protected override DbSet<DebtPayment> GetRepository(DatabaseContext context)
     {
@@ -210,5 +119,11 @@ internal class DebtPaymentService
     protected override bool CanSetStatsDateTime(IAuthorizationInternalService service)
     {
         return service.CanSetDebtPaymentPaidDateTime();
+    }
+
+    /// <inheritdoc />
+    protected override bool CanDelete(IAuthorizationInternalService service)
+    {
+        return service.CanDeleteDebtPayment();
     }
 }

@@ -80,47 +80,45 @@ internal interface IStatsInternalService<T, TUpdateHistory> : IStatsService
     Task IncrementConsultantGrossRevenueAsync(long value, DateOnly? date = null);
     
     /// <summary>
-    /// Increases the debt amount statistics for a specific date 
-    /// or today if not specified.
+    /// Increases the debt incurrence amount statistics for a specific date or today if not
+    /// specified.
     /// </summary>
     /// <param name="value">
     /// The amount by which to increment the debt amount.
     /// </param>
     /// <param name="date">
-    /// Optional. The date for which to update the statistics. 
-    /// If not provided, today's date is used.
+    /// (Optional) The date for which the statistics is updated. If not specified, today's date
+    /// is used.
     /// </param>
     /// <returns>
     /// A task representing the asynchronous operation.
     /// </returns>
     /// <remarks>
-    /// This method updates both the daily and monthly debt
-    /// amount statistics. If <paramref name="date"/> is not
-    /// specified, the statistics for today are updated. The
+    /// This method updates both the daily and monthly debt amount statistics. If
+    /// <paramref name="date"/> is not specified, the statistics for today are updated. The
     /// changes are persisted to the database immediately
     /// after the increment operation.
     /// </remarks>
-    Task IncrementDebtAmountAsync(long value, DateOnly? date = null);
+    Task IncrementDebtIncurredAmountAsync(long value, DateOnly? date = null);
 
     /// <summary>
-    /// Increases the debt paid amount statistics for a specific date 
-    /// or today if not specified.
+    /// Increases the debt paid amount statistics for a specific date or today if not
+    /// specified.
     /// </summary>
     /// <param name="amount">
     /// The amount by which to increment the debt paid amount.
     /// </param>
     /// <param name="date">
-    /// Optional. The date for which to update the statistics. 
-    /// If not provided, today's date is used.
+    /// (Optional) The date for which to update the statistics. If not provided, today's date
+    /// is used.
     /// </param>
     /// <returns>
     /// A task representing the asynchronous operation.
     /// </returns>
     /// <remarks>
-    /// This method updates both the daily and monthly debt paid
-    /// amount statistics. If <paramref name="date"/> is not specified,
-    /// the statistics for today are updated. The changes are persisted
-    /// to the database immediately after the increment operation.
+    /// This method updates both the daily and monthly debt paid amount statistics. If
+    /// <paramref name="date"/> is not specified, the statistics for today are updated. The
+    /// changes are persisted to the database immediately after the increment operation.
     /// </remarks>
     Task IncrementDebtPaidAmountAsync(long amount, DateOnly? date = null);
 

@@ -7,7 +7,7 @@ public class DebtPaymentUpdateHistoryResponseDto : IUpdateHistoryResponseDto
     
     public DateTime UpdatedDateTime { get; set; }
     public UserBasicResponseDto UpdatedUser { get; set; }
-    public string Reason { get; set; }
+    public string UpdatedReason { get; set; }
     
     public DateTime OldPaidDateTime => _oldData.PaidDateTime;
     public DateTime NewPaidDateTime => _newData.PaidDateTime;
@@ -26,6 +26,6 @@ public class DebtPaymentUpdateHistoryResponseDto : IUpdateHistoryResponseDto
             .Deserialize<DebtPaymentUpdateHistoryDataDto>(updateHistory.NewData);
         UpdatedDateTime = updateHistory.UpdatedDateTime;
         UpdatedUser = new UserBasicResponseDto(updateHistory.UpdatedUser);
-        Reason = updateHistory.Reason;
+        UpdatedReason = updateHistory.Reason;
     }
 }

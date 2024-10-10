@@ -1,14 +1,13 @@
 namespace NATSInternal.Services.Dtos;
 
-public class ConsultantListRequestDto :
-        IRequestDto<ConsultantListRequestDto>,
-        ILockableEntityListRequestDto
+public class ConsultantListRequestDto : IFinancialEngageableListRequestDto
 {
     public bool OrderByAscending { get; set; }
     public string OrderByField { get; set; } = nameof(FieldOptions.PaidDateTime);
     public int Month { get; set; }
     public int Year { get; set; }
     public bool IgnoreMonthYear { get; set; }
+    public int? CreatedUserId { get; set; }
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
 

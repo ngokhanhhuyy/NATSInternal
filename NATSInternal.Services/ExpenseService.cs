@@ -6,15 +6,15 @@ internal class ExpenseService : LockableEntityService, IExpenseService
     private readonly DatabaseContext _context;
     private readonly IPhotoService<Expense, ExpensePhoto> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService<Expense, User, ExpenseUpdateHistory> _statsService;
-    private readonly IMonthYearService<Expense, User, ExpenseUpdateHistory> _monthYearService;
+    private readonly IStatsInternalService<Expense, ExpenseUpdateHistory> _statsService;
+    private readonly IMonthYearService<Expense, ExpenseUpdateHistory> _monthYearService;
 
     public ExpenseService(
             DatabaseContext context,
             IPhotoService<Expense, ExpensePhoto> photoService,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService<Expense, User, ExpenseUpdateHistory> statsService,
-            IMonthYearService<Expense, User, ExpenseUpdateHistory> monthYearService)
+            IStatsInternalService<Expense, ExpenseUpdateHistory> statsService,
+            IMonthYearService<Expense, ExpenseUpdateHistory> monthYearService)
     {
         _context = context;
         _photoService = photoService;
@@ -137,7 +137,7 @@ internal class ExpenseService : LockableEntityService, IExpenseService
         DateTime paidDateTime = DateTime.UtcNow.ToApplicationTime();
         if (requestDto.PaidDateTime.HasValue)
         {
-            // Check if the current user has permission to specify the paid datetime.
+            // Check if the current user has permission to specify a value for PaidDateTime.
             if (!_authorizationService.CanSetExpensePaidDateTime())
             {
                 throw new AuthorizationException();
@@ -156,6 +156,7 @@ internal class ExpenseService : LockableEntityService, IExpenseService
             CreatedUserId = _authorizationService.GetUserId(),
             Photos = new List<ExpensePhoto>()
         };
+        
         _context.Expenses.Add(expense);
 
         // Set expense payee

@@ -4,5 +4,5 @@ internal interface ICustomerEngageableBasicResponseDto<TAuthorization>
     : IFinancialEngageableBasicResponseDto<TAuthorization>
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
 {
-    CustomerBasicResponseDto Customer { get; set; }
+    CustomerBasicResponseDto Customer { get; }
 }

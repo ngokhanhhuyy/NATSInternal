@@ -35,5 +35,5 @@ internal interface IProductEngageableDetailResponseDto<
     /// Contains the product-related engagements' information and the
     /// products' identities
     /// </summary>
-    List<TProductItem> Items { get; set; }
+    List<TProductItem> Items { get; }
 }

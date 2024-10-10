@@ -1,7 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
 public class CustomerBasicResponseDto
-    : ICustomerBasicResponseDto<CustomerAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public string FullName { get; set; }

@@ -5,14 +5,14 @@ internal class ConsultantService : LockableEntityService, IConsultantService
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService<Consultant, User, ConsultantUpdateHistory> _statsService;
-    private readonly IMonthYearService<Consultant, User, ConsultantUpdateHistory> _monthYearService;
+    private readonly IStatsInternalService<Consultant, ConsultantUpdateHistory> _statsService;
+    private readonly IMonthYearService<Consultant, ConsultantUpdateHistory> _monthYearService;
 
     public ConsultantService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService<Consultant, User, ConsultantUpdateHistory> statsService,
-            IMonthYearService<Consultant, User, ConsultantUpdateHistory> monthYearService)
+            IStatsInternalService<Consultant, ConsultantUpdateHistory> statsService,
+            IMonthYearService<Consultant, ConsultantUpdateHistory> monthYearService)
     {
         _context = context;
         _authorizationService = authorizationService;
@@ -128,7 +128,7 @@ internal class ConsultantService : LockableEntityService, IConsultantService
         DateTime paidDateTime = DateTime.UtcNow.ToApplicationTime();
         if (requestDto.PaidDateTime.HasValue)
         {
-            // Check if the current user has permission to specify the SupplyDateTime.
+            // Check if the current user has permission to specify a value for PaidDateTime.
             if (!_authorizationService.CanSetExpensePaidDateTime())
             {
                 throw new AuthorizationException();
@@ -401,10 +401,7 @@ internal class ConsultantService : LockableEntityService, IConsultantService
             UpdatedUserId = _authorizationService.GetUserId()
         };
 
-        if (consultant.UpdateHistories == null)
-        {
-            consultant.UpdateHistories = new List<ConsultantUpdateHistory>();
-        }
+        consultant.UpdateHistories ??= new List<ConsultantUpdateHistory>();
         consultant.UpdateHistories.Add(updateHistory);
     }
 }

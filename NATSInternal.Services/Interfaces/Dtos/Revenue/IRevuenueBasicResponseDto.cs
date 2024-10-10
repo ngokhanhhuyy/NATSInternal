@@ -16,9 +16,4 @@ internal interface IRevuenueBasicResponseDto<TAuthorization>
     /// Represents the date and time when the transaction is paid.
     /// </summary>
     DateTime PaidDateTime { get; }
-    
-    /// <summary>
-    /// Represents the amount after VAT of the revenue.
-    /// </summary>
-    long AmountAfterVat { get; }
 }

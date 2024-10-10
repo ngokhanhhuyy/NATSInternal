@@ -226,7 +226,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         {
             CanEdit = CanEditDebtIncurrence(debt),
             CanDelete = CanDeleteDebtIncurrence(),
-            CanSetCreatedDateTime = CanSetDebtIncurredDateTime()
+            CanSetIncurredDateTime = CanSetDebtIncurrenceIncurredDateTime()
         };
     }
 
@@ -534,7 +534,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         return _user.HasPermission(PermissionConstants.DeleteDebtIncurrence);
     }
     
-    public bool CanSetDebtIncurredDateTime()
+    public bool CanSetDebtIncurrenceIncurredDateTime()
     {
         return _user.HasPermission(PermissionConstants.SetDebtIncurrenceIncurredDateTime);
     }

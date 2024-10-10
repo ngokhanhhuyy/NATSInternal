@@ -1,8 +1,9 @@
 namespace NATSInternal.Services.Dtos;
 
-public class DebtIncurrenceListRequestDto :
-        IRequestDto<DebtIncurrenceListRequestDto>,
-        ILockableEntityListRequestDto
+public class DebtIncurrenceListRequestDto
+    :
+        IFinancialEngageableListRequestDto,
+        ICustomerEngageableListRequestDto
 {
     public bool OrderByAscending { get; set; }
     public string OrderByField { get; set; } = nameof(FieldOptions.IncurredDateTime);

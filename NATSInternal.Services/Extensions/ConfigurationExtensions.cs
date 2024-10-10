@@ -92,60 +92,60 @@ public static class ConfigurationExtensions
         services.AddScoped<IStatsService>(provider => provider
             .GetRequiredService<StatsService>());
         services.AddScoped<
-            IStatsInternalService<Expense, User, ExpenseUpdateHistory>,
-            StatsInternalService<Expense, User, ExpenseUpdateHistory>>();
+            IStatsInternalService<Expense, ExpenseUpdateHistory>,
+            StatsInternalService<Expense, ExpenseUpdateHistory>>();
         services.AddScoped<
-            IStatsInternalService<Supply, User, SupplyUpdateHistory>,
-            StatsInternalService<Supply, User, SupplyUpdateHistory>>();
+            IStatsInternalService<Supply, SupplyUpdateHistory>,
+            StatsInternalService<Supply, SupplyUpdateHistory>>();
         services.AddScoped<
-            IStatsInternalService<Order, User, OrderUpdateHistory>,
-            StatsInternalService<Order, User, OrderUpdateHistory>>();
+            IStatsInternalService<Order, OrderUpdateHistory>,
+            StatsInternalService<Order, OrderUpdateHistory>>();
         services.AddScoped<
-            IStatsInternalService<Treatment, User, TreatmentUpdateHistory>,
-            StatsInternalService<Treatment, User, TreatmentUpdateHistory>>();
+            IStatsInternalService<Treatment, TreatmentUpdateHistory>,
+            StatsInternalService<Treatment, TreatmentUpdateHistory>>();
         services.AddScoped<
-            IStatsInternalService<Consultant, User, ConsultantUpdateHistory>,
-            StatsInternalService<Consultant, User, ConsultantUpdateHistory>>();
+            IStatsInternalService<Consultant, ConsultantUpdateHistory>,
+            StatsInternalService<Consultant, ConsultantUpdateHistory>>();
         services.AddScoped<
-            IStatsInternalService<DebtIncurrence, User, DebtIncurrenceUpdateHistory>,
-            StatsInternalService<DebtIncurrence, User, DebtIncurrenceUpdateHistory>>();
+            IStatsInternalService<DebtIncurrence, DebtIncurrenceUpdateHistory>,
+            StatsInternalService<DebtIncurrence, DebtIncurrenceUpdateHistory>>();
         services.AddScoped<
-            IStatsInternalService<DebtPayment, User, DebtPaymentUpdateHistory>,
-            StatsInternalService<DebtPayment, User, DebtPaymentUpdateHistory>>();
+            IStatsInternalService<DebtPayment, DebtPaymentUpdateHistory>,
+            StatsInternalService<DebtPayment, DebtPaymentUpdateHistory>>();
 
         // Product-engagement services.
         services.AddScoped<
-            IProductEngagementService<SupplyItem, Product, SupplyPhoto, User, SupplyUpdateHistory>,
+            IProductEngagementService<SupplyItem, SupplyPhoto, SupplyUpdateHistory>,
             ProductEngagementService<SupplyItem, SupplyPhoto, SupplyUpdateHistory>>();
         services.AddScoped<
-            IProductEngagementService<OrderItem, Product, OrderPhoto, User, OrderUpdateHistory>,
+            IProductEngagementService<OrderItem, OrderPhoto, OrderUpdateHistory>,
             ProductEngagementService<OrderItem, OrderPhoto, OrderUpdateHistory>>();
         services.AddScoped<
-            IProductEngagementService<TreatmentItem, Product, TreatmentPhoto, User, TreatmentUpdateHistory>,
+            IProductEngagementService<TreatmentItem, TreatmentPhoto, TreatmentUpdateHistory>,
             ProductEngagementService<TreatmentItem, TreatmentPhoto, TreatmentUpdateHistory>>();
 
         // Month-year services.
         services.AddScoped<
-            IMonthYearService<Expense, User, ExpenseUpdateHistory>,
-            MonthYearService<Expense, User, ExpenseUpdateHistory>>();
+            IMonthYearService<Expense, ExpenseUpdateHistory>,
+            MonthYearService<Expense, ExpenseUpdateHistory>>();
         services.AddScoped<
-            IMonthYearService<Supply, User, SupplyUpdateHistory>,
-            MonthYearService<Supply, User, SupplyUpdateHistory>>();
+            IMonthYearService<Supply, SupplyUpdateHistory>,
+            MonthYearService<Supply, SupplyUpdateHistory>>();
         services.AddScoped<
-            IMonthYearService<Order, User, OrderUpdateHistory>,
-            MonthYearService<Order, User, OrderUpdateHistory>>();
+            IMonthYearService<Order, OrderUpdateHistory>,
+            MonthYearService<Order, OrderUpdateHistory>>();
         services.AddScoped<
-            IMonthYearService<Treatment, User, TreatmentUpdateHistory>,
-            MonthYearService<Treatment, User, TreatmentUpdateHistory>>();
+            IMonthYearService<Treatment, TreatmentUpdateHistory>,
+            MonthYearService<Treatment, TreatmentUpdateHistory>>();
         services.AddScoped<
-            IMonthYearService<Consultant, User, ConsultantUpdateHistory>,
-            MonthYearService<Consultant, User, ConsultantUpdateHistory>>();
+            IMonthYearService<Consultant, ConsultantUpdateHistory>,
+            MonthYearService<Consultant, ConsultantUpdateHistory>>();
         services.AddScoped<
-            IMonthYearService<DebtIncurrence, User, DebtIncurrenceUpdateHistory>,
-            MonthYearService<DebtIncurrence, User, DebtIncurrenceUpdateHistory>>();
+            IMonthYearService<DebtIncurrence, DebtIncurrenceUpdateHistory>,
+            MonthYearService<DebtIncurrence, DebtIncurrenceUpdateHistory>>();
         services.AddScoped<
-            IMonthYearService<DebtPayment, User, DebtPaymentUpdateHistory>,
-            MonthYearService<DebtPayment, User, DebtPaymentUpdateHistory>>();
+            IMonthYearService<DebtPayment, DebtPaymentUpdateHistory>,
+            MonthYearService<DebtPayment, DebtPaymentUpdateHistory>>();
 
         return services;
     }

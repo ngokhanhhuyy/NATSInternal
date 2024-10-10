@@ -15,6 +15,4 @@ internal interface IProductExportableDetailResponseDto<
     where TProductItem : IProductEngageableItemResponseDto
     where TPhoto : IPhotoResponseDto
     where TUpdateHistory : IUpdateHistoryResponseDto
-    where TAuthorization: IFinancialEngageableAuthorizationResponseDto
-{
-}
+    where TAuthorization : IFinancialEngageableAuthorizationResponseDto;

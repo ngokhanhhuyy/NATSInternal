@@ -1,6 +1,7 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
 public class DebtIncurrenceBasicResponseDto
+    : ICustomerEngageableBasicResponseDto<DebtIncurrenceAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public long Amount { get; set; }

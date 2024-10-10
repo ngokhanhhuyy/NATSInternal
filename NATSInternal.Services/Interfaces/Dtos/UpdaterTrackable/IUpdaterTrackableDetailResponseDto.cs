@@ -5,5 +5,5 @@ internal interface IUpdaterTrackableDetailResponseDto<TUpdateHistory, TAuthoriza
     where TUpdateHistory : IUpdateHistoryResponseDto
     where TAuthorization : IUpsertableAuthorizationResponseDto
 {
-    List<TUpdateHistory> UpdateHistories { get; set; }
+    List<TUpdateHistory> UpdateHistories { get; }
 }

@@ -21,6 +21,9 @@ internal class Expense
     [StringLength(255)]
     public string Note { get; set; }
 
+    [Required]
+    public bool IsDeleted { get; set; }
+
     // Foreign keys
     [Required]
     public int CreatedUserId { get; set; }

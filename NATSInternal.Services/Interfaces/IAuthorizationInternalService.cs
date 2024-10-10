@@ -94,7 +94,7 @@ internal interface IAuthorizationInternalService : IAuthorizationService
     bool CanCreateDebtIncurrence();
     bool CanEditDebtIncurrence(DebtIncurrence debt);
     bool CanDeleteDebtIncurrence();
-    bool CanSetDebtIncurredDateTime();
+    bool CanSetDebtIncurrenceIncurredDateTime();
     bool CanAccessDebtIncurrenceUpdateHistories();
 
     // Permissions to interact with debt payments.

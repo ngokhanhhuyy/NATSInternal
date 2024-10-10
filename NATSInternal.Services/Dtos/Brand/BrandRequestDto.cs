@@ -21,6 +21,6 @@ public class BrandRequestDto : IRequestDto
         PhoneNumber = PhoneNumber?.ToNullIfEmpty();
         Email = Email?.ToNullIfEmpty();
         Address = Address?.ToNullIfEmpty();
-        Country = Country?.TransformValues();
+        Country?.TransformValues();
     }
 }

@@ -2,5 +2,5 @@ namespace NATSInternal.Services.Interfaces.Dtos;
 
 internal interface IBasicResponseDto
 {
-    int Id { get; set; }
+    int Id { get; }
 }
