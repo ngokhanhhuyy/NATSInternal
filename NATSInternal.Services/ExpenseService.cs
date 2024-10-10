@@ -81,7 +81,8 @@ internal class ExpenseService : LockableEntityService, IExpenseService
             responseDto.PageCount = 0;
             return responseDto;
         }
-        responseDto.PageCount = (int)Math.Ceiling((double)resultCount / requestDto.ResultsPerPage);
+        responseDto.PageCount = (int)Math.Ceiling(
+            (double)resultCount / requestDto.ResultsPerPage);
         responseDto.Items = await query
             .Select(e => new ExpenseBasicResponseDto(
                 e,

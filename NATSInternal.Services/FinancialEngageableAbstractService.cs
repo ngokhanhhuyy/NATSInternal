@@ -93,7 +93,28 @@ internal abstract class FinancialEngageableAbstractService<
             shouldIncludeUpdateHistories);
     }
 
-    protected virtual async Task<int> CreateAsync(TUpsertRequestDto requestDto)
+    /// <summary>
+    /// Creates a new entity with the specified data.
+    /// </summary>
+    /// <param name="requestDto">
+    /// A DTO containing the data for the creating operation.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is the id of
+    /// the new entity.
+    /// </returns>
+    /// <exception cref="ConcurrencyException">
+    /// Throws when a concurrency-related conflict occurs during the operation.
+    /// </exception>
+    /// <exception cref="AuthorizationException">
+    /// Throws when the value for the <c>StatsDateTime</c> property has been provided in the
+    /// <c>requestDto</c>, but the requesting user doesn't have enough permissions to do so.
+    /// </exception>
+    /// <exception cref="OperationException">
+    /// Throws when a requesting-user-related conflict or when a payee-related conflict occurs
+    /// during the operation.
+    /// </exception>
+    public virtual async Task<int> CreateAsync(TUpsertRequestDto requestDto)
     {
         // Use transaction for atomic operations.
         await using IDbContextTransaction transaction = await _context.Database
@@ -142,70 +163,6 @@ internal abstract class FinancialEngageableAbstractService<
         }
     }
 
-    protected async Task UpdateAsync(IQueryable<T> query, TUpsertRequestDto requestDto)
-    {
-        // Fetch the entity from the database and ensure it exists.
-        T entity = await query.SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException();
-
-        // Ensure the entity is editable by the requester.
-        if (CanEdit(_authorizationService, entity))
-        {
-            throw new AuthorizationException();
-        }
-
-        // Using transaction for atomic operations.
-        await using IDbContextTransaction transaction = await _context.Database
-            .BeginTransactionAsync();
-
-        // Revert stats and storing the old data for update history logging.
-        await IncrementStatsAsync(_statsService, entity);
-        TUpdateHistoryDataDto oldData = InitializeUpdateHistoryDataDto(entity);
-
-        // Determine the value for StatsDateTime if the request has specified a value.
-        if (requestDto.StatsDateTime.HasValue)
-        {
-            // Check if the current user has permission to specify the paid datetime.
-            if (!CanSetStatsDateTime(_authorizationService))
-            {
-                throw new AuthorizationException();
-            }
-
-            // Prevent StatsDateTime to be modified when the entity is locked.
-            if (entity.IsLocked)
-            {
-                string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
-                    .ReplaceResourceName(DisplayNames.Get(typeof(T).Name))
-                    .ReplacePropertyName(DisplayNames.Get(entity.GetStatsPropertyName()));
-                throw new OperationException(entity.GetStatsPropertyName(), errorMessage);
-            }
-
-            // Assign the new StatsDateTime value only if it's different from the old one.
-            if (requestDto.StatsDateTime.Value != entity.StatsDateTime)
-            {
-                // Validate and assign the specified StatsDateTime value from the request.
-                try
-                {
-                    _statsService
-                        .ValidateStatsDateTime(entity, requestDto.StatsDateTime.Value);
-                    entity.StatsDateTime = requestDto.StatsDateTime.Value;
-                }
-                catch (ValidationException exception)
-                {
-                    string errorMessage = exception.Message
-                        .ReplacePropertyName(DisplayNames.Get(entity.GetStatsPropertyName()));
-                    throw new OperationException(entity.GetStatsPropertyName(), errorMessage);
-                }
-            }
-        }
-        
-        entity.Note = requestDto.Note;
-
-        CustomizeEntityUpdatePostAssignment(entity, requestDto);
-
-        TUpdateHistoryDataDto newData = InitializeUpdateHistoryDataDto(entity);
-    }
-
     /// <summary>
     /// Customizes the post-data-assignment process from the request DTO to the new initialized
     /// entity in the creating operation.
@@ -223,12 +180,6 @@ internal abstract class FinancialEngageableAbstractService<
     protected virtual void CustomizeEntityCreatingPostAssignment(
             T entity,
             TUpsertRequestDto requestDto) { }
-
-    protected abstract void CustomizePostUpdatingTransactionCommit();
-
-    protected abstract void CustomizeEntityUpdatePostAssignment(
-            T entity,
-            TUpsertRequestDto requestDto);
 
     /// <inheritdoc />
     protected sealed override TBasicResponseDto InitializeBasicResponseDto(T entity)
@@ -318,7 +269,17 @@ internal abstract class FinancialEngageableAbstractService<
     /// </returns>
     protected abstract bool CanSetStatsDateTime(IAuthorizationInternalService service);
 
-    protected abstract bool CanEdit(IAuthorizationInternalService service, T entity);
+    /// <summary>
+    /// Determines whether the current user has enough permissions to edit the specified
+    /// entity, used in the creating or updating operation.
+    /// </summary>
+    /// <param name="service">
+    /// The service providing the authorization information.
+    /// </param>
+    /// <returns>
+    /// A <see cref="bool"/> value representing the permission.
+    /// </returns>
+    protected abstract bool CanEdit(T entity, IAuthorizationInternalService service);
 
     /// <summary>
     /// Determines whether the current user has enough permissions to delete a specific entity,
@@ -355,6 +316,4 @@ internal abstract class FinancialEngageableAbstractService<
     /// The exception instance thrown by the database.
     /// </param>
     protected abstract void HandleCreatingOperationException(DbUpdateException exception);
-
-    protected abstract void HandleUpdatingOperationException(DbUpdateException exception);
 }

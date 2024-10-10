@@ -101,23 +101,14 @@ internal abstract class DebtAbstractService<
             IAuthorizationInternalService authorizationService,
             IStatsInternalService<T, TUpdateHistory> statsService,
             IUpdateHistoryService<T, TUpdateHistory, TUpdateHistoryDataDto> updateHistoryService,
-            IMonthYearService<T, TUpdateHistory> monthYearService,
-            DebtType debtType)
+            IMonthYearService<T, TUpdateHistory> monthYearService)
+        : base(context, authorizationService, monthYearService)
     {
         _context = context;
         _authorizationService = authorizationService;
         _statsService = statsService;
         _updateHistoryService = updateHistoryService;
         _monthYearService = monthYearService;
-
-        if (debtType != DebtType.DebtIncurrence && debtType!= DebtType.DebtPayment)
-        {
-            string errorMessage = $"[{_debtType}] is not a supported value. Please update " +
-                "the logic in this class to add support for the specified value to avoid " +
-                "any unexpected error.";
-            throw new ArgumentException(errorMessage, nameof(debtType));
-        }
-        _debtType = debtType;
     }
 
     /// <summary>
@@ -205,98 +196,10 @@ internal abstract class DebtAbstractService<
             .SingleOrDefaultAsync()
             ?? throw new ResourceNotFoundException();
 
-        return InitializeDetailResponseDto(entity, shouldIncludeUpdateHistories);
-    }
-
-    /// <summary>
-    /// Creates a new debt entity based on the specified data from the request.
-    /// </summary>
-    /// <param name="requestDto">
-    /// An DTO containing the data for the creating operation.
-    /// </param>
-    /// <returns>
-    /// A <see cref="Task"/> representing the asychronous operation, which result is the id of
-    /// the new debt entity.
-    /// </returns>
-    /// <exception cref="AuthorizationException">
-    /// Throws when the requesting user doesn't have enough permissions to specify a value
-    /// for the <c>StatsDateTime</c> property in the <c>requestDto</c> argument.
-    /// </exception>
-    /// <exception cref="ConcurrencyException">
-    /// Throws when the information of the requesting user has already been deleted before the
-    /// operation.
-    /// </exception>
-    /// <exception cref="OperationException">
-    /// Throws under the following circumstances:<br/>
-    /// - The customer specified by the <c>CustomerId</c> in the <c>requestDto</c> argument
-    /// doesn't exist or has already been deleted.
-    /// - The remaining debt amount of the specified customer becomes negative after the
-    /// operation.
-    /// </exception>
-    /// <exception cref="NotImplementedException">
-    /// Throws the <c>_debtType</c> field has a value which handling logic hasn't been
-    /// implemented yet.
-    /// </exception>
-    public virtual async Task<int> CreateAsync(TUpsertRequestDto requestDto)
-    {
-        // Determining the stats datetime.
-        DateTime statsDateTime = DateTime.UtcNow.ToApplicationTime();
-        if (requestDto.StatsDateTime.HasValue)
-        {
-            // Ensure the current user has permission to specify a value for StatsDateTime.
-            if (CanSetStatsDateTime(_authorizationService))
-            {
-                throw new AuthorizationException();
-            }
-
-            statsDateTime = requestDto.StatsDateTime.Value;
-        }
-        
-        // Initialize the entity.
-        T entity = new T
-        {
-            Amount = requestDto.Amount,
-            Note = requestDto.Note,
-            StatsDateTime = statsDateTime,
-            CustomerId = requestDto.CustomerId,
-            CreatedUserId = _authorizationService.GetUserId()
-        };
-
-        CustomizeEntityInitialization(entity, requestDto);
-
-        GetRepository(_context).Add(entity);
-        
-        // Using transaction for atomic operations.
-        await using IDbContextTransaction transaction = await _context.Database
-            .BeginTransactionAsync();
-        
-        // Perform the creating operation.
-        try
-        {
-            await _context.SaveChangesAsync();
-
-            // The entity is saved successfully, adjust the stats based on the debt type.
-            DateOnly statsDate = DateOnly.FromDateTime(entity.StatsDateTime);
-            if (_debtType == DebtType.DebtIncurrence)
-            {
-                await _statsService.IncrementDebtIncurredAmountAsync(entity.Amount, statsDate);
-            }
-            else
-            {
-                await _statsService.IncrementDebtPaidAmountAsync(entity.Amount, statsDate);
-            }
-            
-            // Commit the transaction, finish all operations.
-            await transaction.CommitAsync();
-            
-            return entity.Id;
-        }
-        catch (DbUpdateException exception)
-        when (exception.InnerException is MySqlException sqlException)
-        {
-            HandleCreateOrUpdateException(sqlException);
-            throw;
-        }
+        return InitializeDetailResponseDto(
+            entity,
+            _authorizationService,
+            shouldIncludeUpdateHistories);
     }
 
     /// <summary>
@@ -491,6 +394,25 @@ internal abstract class DebtAbstractService<
         }
     }
 
+    /// <summary>
+    /// Deletes an existing debt entity by its id.
+    /// </summary>
+    /// <param name="id">The ID of the debt entity to delete.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <exception cref="AuthorizationException">
+    /// Throws when the user doesn't have permission to delete the specifed debt entity.
+    /// </exception>
+    /// <exception cref="ResourceNotFoundException">
+    /// Throws when the debt entity with the specified id doens't exist or has already been
+    /// deleted.
+    /// </exception>
+    /// <exception cref="ConcurrencyException">
+    /// Throws when a concurrency-related conflict occurs during the operation.
+    /// </exception>
+    /// <exception cref="OperationException">
+    /// Throws when the debt entity's deletion is restricted due to the existence of some
+    /// related data.
+    /// </exception>
     public virtual async Task DeleteAsync(int id)
     {
         // Fetch and ensure the entity with the given debtPaymentId exists in the database.
@@ -672,14 +594,6 @@ internal abstract class DebtAbstractService<
     protected virtual void CustomizeEntityInitialization(
             T entity,
             TUpsertRequestDto requestDto) { }
-
-    /// <summary>
-    /// Gets the entity repository in the <see cref="DatabaseContext"/> class.
-    /// <param name="context">
-    /// An instance of the injected <see cref="DatabaseContext"/>
-    /// </param>
-    /// <returns>The entity repository.</returns>
-    protected abstract DbSet<T> GetRepository(DatabaseContext context);
     
     /// <summary>
     /// Provides the sorting conditions for the list retrieving operation, based on the
@@ -718,76 +632,4 @@ internal abstract class DebtAbstractService<
             IQueryable<T> query,
             DateTime minimumDateTime,
             DateTime maximumDateTime);
-
-    /// <summary>
-    /// Initializes a response DTO, contanining the basic information of the given entity.
-    /// </summary>
-    /// <param name="entity">
-    /// The entity to map to the DTO.
-    /// </param>
-    /// <returns>
-    /// The initialized DTO.
-    /// </returns>
-    protected abstract TBasicResponseDto InitializeBasicResponseDto(T entity);
-
-    /// <summary>
-    /// Initializes a response DTO, contanining the details of the given entity.
-    /// </summary>
-    /// <param name="entity">
-    /// The entity to map to the DTO.
-    /// </param>
-    /// <param name="shouldIncludeUpdateHistories">
-    /// Indicates that the associated update history DTOs should also be included in the detail
-    /// response DTO.
-    /// </param>
-    /// <returns>
-    /// The initialized DTO.
-    /// </returns>
-    protected abstract TDetailResponseDto InitializeDetailResponseDto(
-            T entity,
-            bool shouldIncludeUpdateHistories);
-
-    /// <summary>
-    /// Initializes a response DTO, containing the authorization information for the list
-    /// response DTO, used in the list retrieving operation.
-    /// </summary>
-    /// <param name="authorizationService">
-    /// The authorization service to retrieve the authorization information.
-    /// </param>
-    /// <returns>
-    /// The initialized DTO.
-    /// </returns>
-    protected abstract TListAuthorizationResponseDto InitializeListAuthorizationResponseDto(
-            IAuthorizationInternalService authorizationService);
-
-    /// <summary>
-    /// Initializes a response DTO, containing the authorization information of a specified
-    /// entity for the basic and the detail response DTO, used in the list retrieving and
-    /// detail retriving operation.
-    /// </summary>
-    /// <param name="authorizationService">
-    /// The authorization service to retrieve the authorization information.
-    /// </param>
-    /// <param name="entity">
-    /// The entity to retrive the authorization for.
-    /// </param>
-    /// <returns>
-    /// The initialized DTO.
-    /// </returns>
-    protected abstract TAuthorizationResponseDto InitializeAuthorizationResponseDto(
-            IAuthorizationInternalService authorizationService,
-            T entity);
-
-    /// <summary>
-    /// Initializes an update history data DTO, containing the data of the specified entity
-    /// at the called time, used for storing the data before and after modifications in the
-    /// updating operation.
-    /// </summary>
-    /// <param name="entity">
-    /// The entity which data is to be stored.
-    /// </param>
-    /// <returns>
-    /// The intialized DTO.
-    /// </returns>
-    protected abstract TUpdateHistoryDataDto InitializeUpdateHistoryDataDto(T entity);
 }

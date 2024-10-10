@@ -23,8 +23,7 @@ internal class DebtPaymentService
             authorizationService,
             statsService,
             updateHistoryService,
-            monthYearService,
-            DebtType.DebtPayment)
+            monthYearService)
     {
         _authorizationService = authorizationService;
     }
@@ -68,16 +67,18 @@ internal class DebtPaymentService
 
     /// <inheritdoc />
     protected override DebtPaymentBasicResponseDto InitializeBasicResponseDto(
-            DebtPayment debtPayment)
+            DebtPayment debtPayment,
+            IAuthorizationInternalService service)
     {
         return new DebtPaymentBasicResponseDto(
             debtPayment,
-            _authorizationService.GetDebtPaymentAuthorization(debtPayment));
+            service.GetDebtPaymentAuthorization(debtPayment));
     }
 
     /// <inheritdoc />
     protected override DebtPaymentDetailResponseDto InitializeDetailResponseDto(
             DebtPayment debtPayment,
+            IAuthorizationInternalService service,
             bool shouldIncludeUpdateHistories)
     {
         return new DebtPaymentDetailResponseDto(

@@ -24,8 +24,7 @@ internal class DebtIncurrenceService
             authorizationService,
             statsService,
             updateHistoryService,
-            monthYearService,
-            DebtType.DebtIncurrence)
+            monthYearService)
     {
         _authorizationService = authorizationService;
     }
@@ -69,21 +68,23 @@ internal class DebtIncurrenceService
 
     /// <inheritdoc />
     protected override DebtIncurrenceBasicResponseDto InitializeBasicResponseDto(
-            DebtIncurrence debtIncurrence)
+            DebtIncurrence debtIncurrence,
+            IAuthorizationInternalService authorizationService)
     {
         return new DebtIncurrenceBasicResponseDto(
             debtIncurrence,
-            _authorizationService.GetDebtIncurrenceAuthorization(debtIncurrence));
+            authorizationService.GetDebtIncurrenceAuthorization(debtIncurrence));
     }
 
     /// <inheritdoc />
     protected override DebtIncurrenceDetailResponseDto InitializeDetailResponseDto(
             DebtIncurrence debtIncurrence,
+            IAuthorizationInternalService authorizationService,
             bool shouldIncludeUpdateHistories)
     {
         return new DebtIncurrenceDetailResponseDto(
             debtIncurrence,
-            _authorizationService.GetDebtIncurrenceAuthorization(debtIncurrence),
+            authorizationService.GetDebtIncurrenceAuthorization(debtIncurrence),
             mapUpdateHistories: shouldIncludeUpdateHistories);
     }
 
@@ -116,6 +117,15 @@ internal class DebtIncurrenceService
         return service.CanAccessDebtIncurrenceUpdateHistories();
     }
 
+
+    /// <inheritdoc />
+    protected override bool CanEdit(
+            DebtIncurrence entity,
+            IAuthorizationInternalService service)
+    {
+        return service.CanEditDebtIncurrence(entity);
+    }
+
     /// <inheritdoc />
     protected override bool CanSetStatsDateTime(IAuthorizationInternalService service)
     {
@@ -126,5 +136,11 @@ internal class DebtIncurrenceService
     protected override bool CanDelete(IAuthorizationInternalService service)
     {
         return service.CanDeleteDebtIncurrence();
+    }
+
+    /// <inheritdoc />
+    protected override void HandleCreatingOperationException(DbUpdateException exception)
+    {
+        throw new NotImplementedException();
     }
 }
