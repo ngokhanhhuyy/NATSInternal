@@ -10,12 +10,24 @@ internal abstract class UpsertableAbstractService<
         TAuthorizationResponseDto>
     where T : class, IIdentifiableEntity<T>, new()
     where TListRequestDto : IOrderableListRequestDto
-    where TListResponseDto : IListResponseDto<TBasicResponseDto>, new()
-    where TBasicResponseDto : class, IBasicResponseDto
+    where TListResponseDto :
+        IUpsertableListResponseDto<
+            TBasicResponseDto,
+            TAuthorizationResponseDto,
+            TListAuthorizationResponseDto>,
+        new()
+    where TBasicResponseDto : class, IUpsertableBasicResponseDto<TAuthorizationResponseDto>
     where TDetailResponseDto : IBasicResponseDto
     where TListAuthorizationResponseDto : IUpsertableListAuthorizationResponseDto
     where TAuthorizationResponseDto : IUpsertableAuthorizationResponseDto
 {
+    private readonly IAuthorizationInternalService _authorizationService;
+
+    protected UpsertableAbstractService(IAuthorizationInternalService authorizationService)
+    {
+        _authorizationService = authorizationService;
+    }
+
     protected virtual async Task<TListResponseDto> GetListAsync(
         IQueryable<T> query,
         TListRequestDto requestDto)
@@ -39,6 +51,8 @@ internal abstract class UpsertableAbstractService<
             .AsSplitQuery()
             .ToListAsync();
         responseDto.Items = entities.Select(InitializeBasicResponseDto).ToList();
+        responseDto.Authorization = InitializeListAuthorizationResponseDto(
+            _authorizationService);
 
         return responseDto;
     }

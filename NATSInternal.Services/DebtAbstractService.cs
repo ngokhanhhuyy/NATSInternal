@@ -92,22 +92,18 @@ internal abstract class DebtAbstractService<
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IStatsInternalService<T, TUpdateHistory> _statsService;
-    private readonly IUpdateHistoryService<T, TUpdateHistory, TUpdateHistoryDataDto> _updateHistoryService;
     private readonly IMonthYearService<T, TUpdateHistory> _monthYearService;
-    private readonly DebtType _debtType;
 
     protected DebtAbstractService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
             IStatsInternalService<T, TUpdateHistory> statsService,
-            IUpdateHistoryService<T, TUpdateHistory, TUpdateHistoryDataDto> updateHistoryService,
             IMonthYearService<T, TUpdateHistory> monthYearService)
         : base(context, authorizationService, monthYearService)
     {
         _context = context;
         _authorizationService = authorizationService;
         _statsService = statsService;
-        _updateHistoryService = updateHistoryService;
         _monthYearService = monthYearService;
     }
 
@@ -126,40 +122,9 @@ internal abstract class DebtAbstractService<
     /// </returns>
     public virtual async Task<TListResponseDto> GetListAsync(TListRequestDto requestDto)
     {
-        // Generate month year options.
-        List<MonthYearResponseDto> monthYearOptions = await _monthYearService
-            .GenerateMonthYearOptions(GetRepository);
-
-        // Initialize query.
-        IQueryable<T> query = InitializeListQuery(requestDto);
-
-        // Initialize response dto.
-        TListResponseDto responseDto = new TListResponseDto
-        {
-            MonthYearOptions = monthYearOptions,
-            Authorization = InitializeListAuthorizationResponseDto(_authorizationService)
-        };
-
-        int resultCount = await query.CountAsync();
-        if (resultCount == 0)
-        {
-            responseDto.PageCount = 0;
-            return responseDto;
-        }
-        
-        responseDto.PageCount = (int)Math.Ceiling(
-            (double)resultCount / requestDto.ResultsPerPage);
-
-        List<T> entities = await query
-            .Skip(requestDto.ResultsPerPage * (requestDto.Page - 1))
-            .Take(requestDto.ResultsPerPage)
-            .AsSplitQuery()
-            .ToListAsync();
-        responseDto.Items = entities.Select(InitializeBasicResponseDto).ToList();
-
-        return responseDto;
+        return await base.GetListAsync(InitializeListQuery(requestDto), requestDto);
     }
-
+    
     /// <summary>
     /// Retrieves the details of a specific debt entity by its id.
     /// </summary>
@@ -178,8 +143,8 @@ internal abstract class DebtAbstractService<
     {
         // Initialize query.
         IQueryable<T> query = GetRepository(_context)
-            .Include(d => d.Customer)
-            .Include(d => d.CreatedUser).ThenInclude(u => u.Roles);
+            .Where(d => d.Id == id)
+            .Where(d => !d.IsDeleted);
 
         // Determine if the update histories should be fetched.
         bool shouldIncludeUpdateHistories = CanAccessUpdateHistory(_authorizationService);
@@ -188,20 +153,103 @@ internal abstract class DebtAbstractService<
             query = query.Include(d => d.UpdateHistories);
         }
 
+        query = query
+            .Include(d => d.Customer)
+            .Include(d => d.CreatedUser).ThenInclude(u => u.Roles);
+
         // Fetch the entity with the given id and ensure it exists in the database.
         T entity = await query
             .AsSplitQuery()
-            .Where(d => d.Id == id)
-            .Where(d => !d.IsDeleted)
             .SingleOrDefaultAsync()
             ?? throw new ResourceNotFoundException();
 
-        return InitializeDetailResponseDto(
-            entity,
-            _authorizationService,
-            shouldIncludeUpdateHistories);
+        return await base.GetDetailAsync(query);
     }
 
+    /// <summary>
+    /// Creates a new debt entity based on the specified data from the request.
+    /// </summary>
+    /// <param name="requestDto">
+    /// An DTO containing the data for the creating operation.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asychronous operation, which result is the id of
+    /// the new debt entity.
+    /// </returns>
+    /// <exception cref="AuthorizationException">
+    /// Throws when the requesting user doesn't have enough permissions to specify a value
+    /// for the <c>StatsDateTime</c> property in the <c>requestDto</c> argument.
+    /// </exception>
+    /// <exception cref="ConcurrencyException">
+    /// Throws when the information of the requesting user has already been deleted before the
+    /// operation.
+    /// </exception>
+    /// <exception cref="OperationException">
+    /// Throws under the following circumstances:<br/>
+    /// - The customer specified by the <c>CustomerId</c> in the <c>requestDto</c> argument
+    /// doesn't exist or has already been deleted.
+    /// - The remaining debt amount of the specified customer becomes negative after the
+    /// operation.
+    /// </exception>
+    /// <exception cref="NotImplementedException">
+    /// Throws the <c>_debtType</c> field has a value which handling logic hasn't been
+    /// implemented yet.
+    /// </exception>
+    public virtual async Task<int> CreateAsync(TUpsertRequestDto requestDto)
+    {
+        // Determining the stats datetime.
+        DateTime statsDateTime = DateTime.UtcNow.ToApplicationTime();
+        if (requestDto.StatsDateTime.HasValue)
+        {
+            // Ensure the current user has permission to specify a value for StatsDateTime.
+            if (CanSetStatsDateTime(_authorizationService))
+            {
+                throw new AuthorizationException();
+            }
+
+            statsDateTime = requestDto.StatsDateTime.Value;
+        }
+        
+        // Initialize the entity.
+        T entity = new T
+        {
+            Amount = requestDto.Amount,
+            Note = requestDto.Note,
+            StatsDateTime = statsDateTime,
+            CustomerId = requestDto.CustomerId,
+            CreatedUserId = _authorizationService.GetUserId()
+        };
+
+        CustomizeEntityInitialization(entity, requestDto);
+
+        GetRepository(_context).Add(entity);
+        
+        // Using transaction for atomic operations.
+        await using IDbContextTransaction transaction = await _context.Database
+            .BeginTransactionAsync();
+        
+        // Perform the creating operation.
+        try
+        {
+            await _context.SaveChangesAsync();
+
+            // The entity is saved successfully, adjust the stats based on the debt type.
+            DateOnly statsDate = DateOnly.FromDateTime(entity.StatsDateTime);
+            await IncrementStatsAsync(entity.Amount, statsDate, _statsService);
+            
+            // Commit the transaction, finish all operations.
+            await transaction.CommitAsync();
+            
+            return entity.Id;
+        }
+        catch (DbUpdateException exception)
+        when (exception.InnerException is MySqlException sqlException)
+        {
+            HandleCreateOrUpdateException(sqlException);
+            throw;
+        }
+    }
+    
     /// <summary>
     /// Updates an existing debt entity, based on its id and the provided data.
     /// </summary>
@@ -272,10 +320,10 @@ internal abstract class DebtAbstractService<
         // Using transaction for atomic operations.
         await using IDbContextTransaction transaction = await _context.Database
             .BeginTransactionAsync();
-        
-        // Store the old data and create new data for stats adjustment.
-        long oldAmount = entity.Amount;
+
+        // Adjust the stats and store the old data for update history logging.
         DateOnly oldDate = DateOnly.FromDateTime(entity.StatsDateTime);
+        await IncrementStatsAsync(-entity.Amount, oldDate, _statsService);
         TUpdateHistoryDataDto oldData = InitializeUpdateHistoryDataDto(entity);
 
         // Update the paid datetime if specified.
@@ -351,27 +399,16 @@ internal abstract class DebtAbstractService<
         TUpdateHistoryDataDto newData = InitializeUpdateHistoryDataDto(entity);
         
         // Log update history.
-        _updateHistoryService
-            .LogUpdateHistory(entity, oldData, newData, requestDto.UpdatedReason);
+        LogUpdateHistory(entity, oldData, newData, requestDto.UpdatedReason);
         
         // Perform the update operations.
         try
         {
             await _context.SaveChangesAsync();
             
-            // The debt payment can be updated successfully without any error.
-            // Adjust the stats.
+            // The debt payment can be updated successfully without any error, djust the stats.
             DateOnly newDate = DateOnly.FromDateTime(entity.StatsDateTime);
-            if (_debtType == DebtType.DebtIncurrence)
-            {
-                await _statsService.IncrementDebtIncurredAmountAsync(-oldAmount, oldDate);
-                await _statsService.IncrementDebtIncurredAmountAsync(entity.Amount, newDate);
-            }
-            else
-            {
-                await _statsService.IncrementDebtPaidAmountAsync(-oldAmount, oldDate);
-                await _statsService.IncrementDebtPaidAmountAsync(entity.Amount, newDate);
-            }
+            await IncrementStatsAsync(-entity.Amount, newDate, _statsService);
             
             // Commit the transaction and finish the operation.
             await transaction.CommitAsync();
@@ -455,14 +492,7 @@ internal abstract class DebtAbstractService<
             
             // The entity has been deleted successfully, adjust the stats based on debt type.
             DateOnly statsDate = DateOnly.FromDateTime(entity.StatsDateTime);
-            if (_debtType == DebtType.DebtIncurrence)
-            {
-                await _statsService.IncrementDebtIncurredAmountAsync(-entity.Amount, statsDate);
-            }
-            else
-            {
-                await _statsService.IncrementDebtPaidAmountAsync(-entity.Amount, statsDate);
-            }
+            await IncrementStatsAsync(-entity.Amount, statsDate, _statsService);
             
             // Commit the transaction, finish the operation.
             await transaction.CommitAsync();
@@ -496,50 +526,6 @@ internal abstract class DebtAbstractService<
                 }
             }
         }
-    }
-
-    /// <summary>
-    /// Initializes the query for list retrieving operation, based on the filtering, sorting
-    /// and paginating conditions specified in the request DTO.
-    /// </summary>
-    /// <param name="requestDto">
-    /// A DTO containing the conditions for the results.
-    /// </param>
-    /// <returns>
-    /// A query instance used to perform the list retrieving operation.
-    /// </returns>
-    protected virtual IQueryable<T> InitializeListQuery(TListRequestDto requestDto)
-    {
-        IQueryable<T> query = GetRepository(_context)
-            .Include(entity => entity.Customer);
-
-        // Sort by the specified direction and field.
-        query = SortListQuery(query, requestDto);
-
-        // Filter by month and year if specified.
-        if (!requestDto.IgnoreMonthYear)
-        {
-            DateTime startingDateTime = new DateTime(requestDto.Year, requestDto.Month, 1);
-            DateTime endingDateTime = startingDateTime.AddMonths(1);
-            query = FilterByMonthYearListQuery(query, startingDateTime, endingDateTime);
-        }
-
-        // Filter by user id if specified.
-        if (requestDto.CreatedUserId.HasValue)
-        {
-            query = query.Where(o => o.CreatedUserId == requestDto.CreatedUserId);
-        }
-
-        // Filter by customer id if specified.
-        if (requestDto.CustomerId.HasValue)
-        {
-            query = query.Where(o => o.CustomerId == requestDto.CustomerId);
-        }
-
-        // Filter by not being soft deleted.
-        query = query.Where(o => !o.IsDeleted);
-
-        return query;
     }
 
     /// <summary>
@@ -593,43 +579,26 @@ internal abstract class DebtAbstractService<
     /// </param>
     protected virtual void CustomizeEntityInitialization(
             T entity,
-            TUpsertRequestDto requestDto) { }
+            TUpsertRequestDto requestDto)
+    {
+    }
     
     /// <summary>
-    /// Provides the sorting conditions for the list retrieving operation, based on the
-    /// specified conditions.
+    /// Increment the statistics amount based on the specified <see cref="T"/> entity.
     /// </summary>
-    /// <param name="query">
-    /// An initialized query instance.
+    /// <param name="amount">
+    /// The amount of the entity to increment.
     /// </param>
-    /// <param name="requestDto">
-    /// The DTO containing the conditions for sorting.
+    /// <param name="date">
+    /// The statistics date of the entity to increment.
+    /// <param name="service">
+    /// An instance of the service to handle the statistics amount incrementing operation.
     /// </param>
     /// <returns>
-    /// A sorted query used for list retrieving operation.
+    /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    protected abstract IOrderedQueryable<T> SortListQuery(
-            IQueryable<T> query,
-            TListRequestDto requestDto);
-
-    /// <summary>
-    /// Provides the filtering conditions by month and year, based on the specified conditions.
-    /// </summary>
-    /// <param name="query">
-    /// An initialized query instance.
-    /// </param>
-    /// <param name="minimumDateTime">
-    /// The minimum <see cref="DateTime"/> value that the value of the <c>StatsDateTime</c>
-    /// in the entity has to be greater than to fulfill the condition.
-    /// </param>
-    /// <param name="maximumDateTime">
-    /// The maximum <see cref="DateTime"/> value that the value of the <c>StatsDateTime</c>
-    /// in the entity has to be greater than to fulfill the condition.</param>
-    /// <returns>
-    /// The query instance after adding the filtering conditions.
-    /// </returns>
-    protected abstract IQueryable<T> FilterByMonthYearListQuery(
-            IQueryable<T> query,
-            DateTime minimumDateTime,
-            DateTime maximumDateTime);
+    protected abstract Task IncrementStatsAsync(
+            long amount,
+            DateOnly date,
+            IStatsInternalService<T, TUpdateHistory> service);
 }

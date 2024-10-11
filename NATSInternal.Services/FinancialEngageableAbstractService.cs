@@ -44,14 +44,13 @@ internal abstract class FinancialEngageableAbstractService<
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService<T, TUpdateHistory> _statsService;
-    private readonly IUpdateHistoryService<T, TUpdateHistory, TUpdateHistoryDataDto> _updateHistoryService;
     private readonly IMonthYearService<T, TUpdateHistory> _monthYearService;
 
     protected FinancialEngageableAbstractService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
             IMonthYearService<T, TUpdateHistory> monthYearService)
+        : base(authorizationService)
     {
         _context = context;
         _authorizationService = authorizationService;
@@ -93,93 +92,49 @@ internal abstract class FinancialEngageableAbstractService<
             shouldIncludeUpdateHistories);
     }
 
+
     /// <summary>
-    /// Creates a new entity with the specified data.
+    /// Initializes the query for list retrieving operation, based on the filtering, sorting
+    /// and paginating conditions specified in the request DTO.
     /// </summary>
     /// <param name="requestDto">
-    /// A DTO containing the data for the creating operation.
+    /// A DTO containing the conditions for the results.
     /// </param>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is the id of
-    /// the new entity.
+    /// A query instance used to perform the list retrieving operation.
     /// </returns>
-    /// <exception cref="ConcurrencyException">
-    /// Throws when a concurrency-related conflict occurs during the operation.
-    /// </exception>
-    /// <exception cref="AuthorizationException">
-    /// Throws when the value for the <c>StatsDateTime</c> property has been provided in the
-    /// <c>requestDto</c>, but the requesting user doesn't have enough permissions to do so.
-    /// </exception>
-    /// <exception cref="OperationException">
-    /// Throws when a requesting-user-related conflict or when a payee-related conflict occurs
-    /// during the operation.
-    /// </exception>
-    public virtual async Task<int> CreateAsync(TUpsertRequestDto requestDto)
+    protected virtual IQueryable<T> InitializeListQuery(TListRequestDto requestDto)
     {
-        // Use transaction for atomic operations.
-        await using IDbContextTransaction transaction = await _context.Database
-            .BeginTransactionAsync();
+        IQueryable<T> query = GetRepository(_context)
 
-        // Determine the value for StatsDateTime.
-        DateTime statsDateTime = DateTime.UtcNow.ToApplicationTime();
-        if (requestDto.StatsDateTime.HasValue)
+        // Sort by the specified direction and field.
+        query = SortListQuery(query, requestDto);
+
+        // Filter by month and year if specified.
+        if (!requestDto.IgnoreMonthYear)
         {
-            // Check if the current user has permission to specify a value for PaidDateTime.
-            if (!_authorizationService.CanSetExpensePaidDateTime())
-            {
-                throw new AuthorizationException();
-            }
-
-            statsDateTime = requestDto.StatsDateTime.Value;
+            DateTime startingDateTime = new DateTime(requestDto.Year, requestDto.Month, 1);
+            DateTime endingDateTime = startingDateTime.AddMonths(1);
+            query = FilterByMonthYearListQuery(query, startingDateTime, endingDateTime);
         }
 
-        // Initialize entity.
-        T entity = new T
+        // Filter by user id if specified.
+        if (requestDto.CreatedUserId.HasValue)
         {
-            StatsDateTime = statsDateTime,
-            Note = requestDto.Note,
-            CreatedUserId = _authorizationService.GetUserId(),
-        };
-
-        GetRepository(_context).Add(entity);
-
-        CustomizeEntityCreatingPostAssignment(entity, requestDto);
-
-        try
-        {
-            await _context.SaveChangesAsync();
-
-            // The entity can be created successfully, adjust the stats.
-            await IncrementStatsAsync(_statsService, entity);
-
-            // Commit the transaction, finishing the operation.
-            await transaction.CommitAsync();
-            return entity.Id;
+            query = query.Where(o => o.CreatedUserId == requestDto.CreatedUserId);
         }
-        catch (DbUpdateException exception)
+
+        // Filter by customer id if specified.
+        if (requestDto.CustomerId.HasValue)
         {
-            HandleCreatingOperationException(exception);
-            throw;
+            query = query.Where(o => o.CustomerId == requestDto.CustomerId);
         }
+
+        // Filter by not being soft deleted.
+        query = query.Where(o => !o.IsDeleted);
+
+        return query;
     }
-
-    /// <summary>
-    /// Customizes the post-data-assignment process from the request DTO to the new initialized
-    /// entity in the creating operation.
-    /// </summary>
-    /// <remarks>
-    /// This method is called immediately right after the new entity has been initialized.
-    /// Override this method to provide the post-assignment customization.
-    /// </remarks>
-    /// <param name="entity">
-    /// The entity of which properties data assignment are to be customized.
-    /// </param>
-    /// <param name="requestDto">
-    /// A DTO containing the data for the new entity creating operation.
-    /// </param>
-    protected virtual void CustomizeEntityCreatingPostAssignment(
-            T entity,
-            TUpsertRequestDto requestDto) { }
 
     /// <inheritdoc />
     protected sealed override TBasicResponseDto InitializeBasicResponseDto(T entity)
@@ -192,6 +147,41 @@ internal abstract class FinancialEngageableAbstractService<
     {
         return InitializeDetailResponseDto(entity, _authorizationService, false);
     }
+    
+    /// <summary>
+    /// Logs the old and new data to update history for the specified entity.
+    /// </summary>
+    /// <param name="entity">
+    /// An instance of the <see cref="T"/> entity class, representing the entity to be logged.
+    /// </param>
+    /// <param name="oldData">
+    /// An instance of the <see cref="TUpdateHistoryDataDto"/> class, containing the data of
+    /// the entity before the modification.
+    /// </param>
+    /// <param name="newData">
+    /// An instance of the <see cref="TUpdateHistoryDataDto"/> class, containing the data of
+    /// the entity after the modification.
+    /// </param>
+    /// <param name="reason">
+    /// The reason of the modification.
+    /// </param>
+    public void LogUpdateHistory(
+            T entity,
+            TUpdateHistoryDataDto oldData,
+            TUpdateHistoryDataDto newData,
+            string reason)
+    {
+        TUpdateHistory updateHistory = new TUpdateHistory
+        {
+            Reason = reason,
+            OldData = JsonSerializer.Serialize(oldData),
+            NewData = JsonSerializer.Serialize(newData),
+            UpdatedDateTime = DateTime.UtcNow.ToApplicationTime(),
+            UpdatedUserId = _authorizationService.GetUserId()
+        };
+        entity.UpdateHistories ??= new List<TUpdateHistory>();
+        entity.UpdateHistories.Add(updateHistory);
+    }
 
     /// <summary>
     /// Gets the entity repository in the <see cref="DatabaseContext"/> class.
@@ -200,6 +190,44 @@ internal abstract class FinancialEngageableAbstractService<
     /// </param>
     /// <returns>The entity repository.</returns>
     protected abstract DbSet<T> GetRepository(DatabaseContext context);
+
+    /// <summary>
+    /// Provides the sorting conditions for the list retrieving operation, based on the
+    /// specified conditions.
+    /// </summary>
+    /// <param name="query">
+    /// An initialized query instance.
+    /// </param>
+    /// <param name="requestDto">
+    /// The DTO containing the conditions for sorting.
+    /// </param>
+    /// <returns>
+    /// A sorted query used for list retrieving operation.
+    /// </returns>
+    protected abstract IOrderedQueryable<T> SortListQuery(
+            IQueryable<T> query,
+            TListRequestDto requestDto);
+
+    /// <summary>
+    /// Provides the filtering conditions by month and year, based on the specified conditions.
+    /// </summary>
+    /// <param name="query">
+    /// An initialized query instance.
+    /// </param>
+    /// <param name="minimumDateTime">
+    /// The minimum <see cref="DateTime"/> value that the value of the <c>StatsDateTime</c>
+    /// in the entity has to be greater than to fulfill the condition.
+    /// </param>
+    /// <param name="maximumDateTime">
+    /// The maximum <see cref="DateTime"/> value that the value of the <c>StatsDateTime</c>
+    /// in the entity has to be greater than to fulfill the condition.</param>
+    /// <returns>
+    /// The query instance after adding the filtering conditions.
+    /// </returns>
+    protected abstract IQueryable<T> FilterByMonthYearListQuery(
+            IQueryable<T> query,
+            DateTime minimumDateTime,
+            DateTime maximumDateTime);
 
     /// <summary>
     /// Initializes a response DTO, contanining the basic information of the given entity.
@@ -292,28 +320,4 @@ internal abstract class FinancialEngageableAbstractService<
     /// A <see cref="bool"/> value representing the permission.
     /// </returns>
     protected abstract bool CanDelete(IAuthorizationInternalService service);
-
-    /// <summary>
-    /// Increment the statistics amount based on the specified <see cref="T"/> entity.
-    /// </summary>
-    /// <param name="service">
-    /// An instance of the service to handle the statistics amount incrementing operation.
-    /// </param>
-    /// <param name="entity">
-    /// The entity to which the incremnenting statistics amount belongs.
-    /// </param>
-    /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation.
-    /// </returns>
-    protected abstract Task IncrementStatsAsync(
-            IStatsInternalService<T, TUpdateHistory> service,
-            T entity);
-
-    /// <summary>
-    /// Handles the exception thrown by the database during the creating operation.
-    /// </summary>
-    /// <param name="exception">
-    /// The exception instance thrown by the database.
-    /// </param>
-    protected abstract void HandleCreatingOperationException(DbUpdateException exception);
 }

@@ -11,8 +11,6 @@ internal class DebtIncurrenceService
             DebtIncurrenceAuthorizationResponseDto>,
         IDebtIncurrenceService
 {
-    private readonly IAuthorizationInternalService _authorizationService;
-    
     public DebtIncurrenceService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
@@ -26,7 +24,6 @@ internal class DebtIncurrenceService
             updateHistoryService,
             monthYearService)
     {
-        _authorizationService = authorizationService;
     }
     
     /// <inheritdoc />
@@ -106,9 +103,9 @@ internal class DebtIncurrenceService
 
     /// <inheritdoc />
     protected override DebtIncurrenceUpdateHistoryDataDto
-        InitializeUpdateHistoryDataDto(DebtIncurrence entity)
+        InitializeUpdateHistoryDataDto(DebtIncurrence debtIncurrence)
     {
-        return new DebtIncurrenceUpdateHistoryDataDto(entity);
+        return new DebtIncurrenceUpdateHistoryDataDto(debtIncurrence);
     }
 
     /// <inheritdoc />
@@ -117,13 +114,12 @@ internal class DebtIncurrenceService
         return service.CanAccessDebtIncurrenceUpdateHistories();
     }
 
-
     /// <inheritdoc />
     protected override bool CanEdit(
-            DebtIncurrence entity,
+            DebtIncurrence debtIncurrence,
             IAuthorizationInternalService service)
     {
-        return service.CanEditDebtIncurrence(entity);
+        return service.CanEditDebtIncurrence(debtIncurrence);
     }
 
     /// <inheritdoc />
@@ -139,8 +135,11 @@ internal class DebtIncurrenceService
     }
 
     /// <inheritdoc />
-    protected override void HandleCreatingOperationException(DbUpdateException exception)
+    protected override async Task IncrementStatsAsync(
+            long amount,
+            DateOnly date,
+            IStatsInternalService<DebtIncurrence, DebtIncurrenceUpdateHistory> service)
     {
-        throw new NotImplementedException();
+        await service.IncrementDebtIncurredAmountAsync(amount, date);
     }
 }

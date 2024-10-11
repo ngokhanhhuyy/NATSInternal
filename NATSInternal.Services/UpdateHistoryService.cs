@@ -1,11 +1,10 @@
 namespace NATSInternal.Services;
 
 /// <inheritdoc />
-internal class UpdateHistoryService<T, TUser, TUpdateHistory, TUpdateHistoryDataDto>
-    : IUpdateHistoryService<T, TUser, TUpdateHistory, TUpdateHistoryDataDto>
-    where T : class, IFinancialEngageableEntity<T, TUser, TUpdateHistory>, new()
-    where TUser : class, IUserEntity<TUser>, new()
-    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory, TUser>, new()
+internal class UpdateHistoryService<T, TUpdateHistory, TUpdateHistoryDataDto>
+    : IUpdateHistoryService<T, TUpdateHistory, TUpdateHistoryDataDto>
+    where T : class, IFinancialEngageableEntity<T, TUpdateHistory>, new()
+    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
 {
     private readonly IAuthorizationInternalService _authorizationService;
 

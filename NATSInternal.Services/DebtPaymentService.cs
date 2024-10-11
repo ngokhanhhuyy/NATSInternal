@@ -1,3 +1,4 @@
+
 namespace NATSInternal.Services;
 
 /// <inheritdoc cref="IDebtPaymentService" />
@@ -123,8 +124,25 @@ internal class DebtPaymentService
     }
 
     /// <inheritdoc />
+    protected override bool CanEdit(
+            DebtPayment debtPayment,
+            IAuthorizationInternalService service)
+    {
+        return service.CanEditDebtPayment(debtPayment);
+    }
+
+    /// <inheritdoc />
     protected override bool CanDelete(IAuthorizationInternalService service)
     {
         return service.CanDeleteDebtPayment();
+    }
+
+    /// <inheritdoc />
+    protected override async Task IncrementStatsAsync(
+            long amount,
+            DateOnly date,
+            IStatsInternalService<DebtPayment, DebtPaymentUpdateHistory> service)
+    {
+        await service.IncrementDebtPaidAmountAsync(amount, date);
     }
 }
