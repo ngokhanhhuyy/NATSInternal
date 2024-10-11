@@ -109,7 +109,7 @@ internal class DebtIncurrenceService
     }
 
     /// <inheritdoc />
-    protected override bool CanAccessUpdateHistory(IAuthorizationInternalService service)
+    protected override bool CanAccessUpdateHistories(IAuthorizationInternalService service)
     {
         return service.CanAccessDebtIncurrenceUpdateHistories();
     }

@@ -8,7 +8,7 @@ internal abstract class UpsertableAbstractService<
         TDetailResponseDto,
         TListAuthorizationResponseDto,
         TAuthorizationResponseDto>
-    where T : class, IIdentifiableEntity<T>, new()
+    where T : class, IUpsertableEntity<T>, new()
     where TListRequestDto : IOrderableListRequestDto
     where TListResponseDto :
         IUpsertableListResponseDto<
@@ -21,17 +21,32 @@ internal abstract class UpsertableAbstractService<
     where TListAuthorizationResponseDto : IUpsertableListAuthorizationResponseDto
     where TAuthorizationResponseDto : IUpsertableAuthorizationResponseDto
 {
+    private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
 
-    protected UpsertableAbstractService(IAuthorizationInternalService authorizationService)
+    protected UpsertableAbstractService(
+            DatabaseContext context,
+            IAuthorizationInternalService authorizationService)
     {
+        _context = context;
         _authorizationService = authorizationService;
     }
 
-    protected virtual async Task<TListResponseDto> GetListAsync(
-        IQueryable<T> query,
-        TListRequestDto requestDto)
+    /// <summary>
+    /// Gets a list of entities, based on the specified filtering, sorting and paginating
+    /// conditions.
+    /// </summary>
+    /// <param name="requestDto">
+    /// A DTO containing conditions for the results.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> which representing the asynchronous operation, which result is
+    /// a DTO, containing the results and the additional information for pagination.
+    /// </returns>
+    public virtual async Task<TListResponseDto> GetListAsync(TListRequestDto requestDto)
     {
+        IQueryable<T> query = InitializeListQuery(requestDto);
+
         // Initialize response dto.
         TListResponseDto responseDto = new TListResponseDto();
 
@@ -60,8 +75,8 @@ internal abstract class UpsertableAbstractService<
     /// <summary>
     /// Retrieves the details of a specific entity by its id.
     /// </summary>
-    /// <param name="query">s
-    /// The query instance used to fetch the entity.
+    /// <param name="id">
+    /// The id of the entity to retrieve.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is a DTO
@@ -71,10 +86,76 @@ internal abstract class UpsertableAbstractService<
     /// Throws when the entity with the specified <c>id</c> arguments doesn't exist or has
     /// already been deleted.
     /// </exception>
-    protected virtual async Task<TDetailResponseDto> GetDetailAsync(IQueryable<T> query)
+    public virtual async Task<TDetailResponseDto> GetDetailAsync(int id)
     {
-        return InitializeDetailResponseDto(await query.SingleOrDefaultAsync());
+        IQueryable<T> query = InitializeDetailQuery().Where(e => e.Id == id);
+        T entity = await query.SingleOrDefaultAsync()
+            ?? throw new ResourceNotFoundException(
+                typeof(T).Name,
+                nameof(id),
+                id.ToString());
+
+        return InitializeDetailResponseDto(entity);
     }
+
+    /// <summary>
+    /// Gets the entity repository in the <see cref="DatabaseContext"/> class.
+    /// <param name="context">
+    /// An instance of the injected <see cref="DatabaseContext"/>
+    /// </param>
+    /// <returns>The entity repository.</returns>
+    protected abstract DbSet<T> GetRepository(DatabaseContext context);
+
+    /// <summary>
+    /// Initializes the query for list retrieving operation, based on the sorting conditions
+    /// specified in the request DTO.
+    /// </summary>
+    /// <param name="requestDto">
+    /// A DTO containing the conditions for the results.
+    /// </param>
+    /// <returns>
+    /// A query instance used to perform the list retrieving operation.
+    /// </returns>
+    protected virtual IQueryable<T> InitializeListQuery(TListRequestDto requestDto)
+    {
+        IQueryable<T> query = GetRepository(_context);
+
+        // Sort by the specified direction and field.
+        return SortListQuery(query, requestDto.OrderByAscending, requestDto.OrderByField);
+    }
+
+    /// <summary>
+    /// Initializes the query for detail retrieving operation, based on specified id of the
+    /// entity.
+    /// </summary>
+    /// <returns>
+    /// A query instance used to perform the detail retrieving operation.
+    /// </returns>
+    protected virtual IQueryable<T> InitializeDetailQuery()
+    {
+        return GetRepository(_context);
+    }
+
+    /// <summary>
+    /// Provides the sorting conditions for the list retrieving operation, based on the
+    /// specified conditions.
+    /// </summary>
+    /// <param name="query">
+    /// An initialized query instance.
+    /// </param>
+    /// <param name="orderByAscending">
+    /// Indicates whether the results should be ordered by ascending.
+    /// </param>
+    /// <param name="orderByField">
+    /// Indicates the name of the field by which the results should be ordered.
+    /// </param>
+    /// <returns>
+    /// A sorted query used for list retrieving operation.
+    /// </returns>
+    protected abstract IOrderedQueryable<T> SortListQuery(
+            IQueryable<T> query,
+            bool orderByAscending,
+            string orderByField);
 
     /// <summary>
     /// Initializes a response DTO, contanining the basic information of the given entity.
@@ -94,26 +175,26 @@ internal abstract class UpsertableAbstractService<
     /// Initializes a response DTO, containing the authorization information for the list
     /// response DTO, used in the list retrieving operation.
     /// </summary>
-    /// <param name="authorizationService">
+    /// <param name="service">
     /// The authorization service to retrieve the authorization information.
     /// </param>
     /// <returns>The initialized DTO.</returns>
     protected abstract TListAuthorizationResponseDto InitializeListAuthorizationResponseDto(
-            IAuthorizationInternalService authorizationService);
+            IAuthorizationInternalService service);
 
     /// <summary>
     /// Initializes a response DTO, containing the authorization information of a specified
     /// entity for the basic and the detail response DTO, used in the list retrieving and
     /// detail retriving operation.
     /// </summary>
-    /// <param name="authorizationService">
-    /// The authorization service to retrieve the authorization information.
-    /// </param>
     /// <param name="entity">
     /// The entity to retrive the authorization for.
     /// </param>
+    /// <param name="service">
+    /// The authorization service to retrieve the authorization information.
+    /// </param>
     /// <returns>The initialized DTO.</returns>
     protected abstract TAuthorizationResponseDto InitializeAuthorizationResponseDto(
-            IAuthorizationInternalService authorizationService,
-            T entity);
+            T entity,
+            IAuthorizationInternalService service);
 }

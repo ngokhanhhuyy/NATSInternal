@@ -59,7 +59,6 @@ internal abstract class DebtAbstractService<
         T,
         TUpdateHistory,
         TListRequestDto,
-        TUpsertRequestDto,
         TListResponseDto,
         TBasicResponseDto,
         TDetailResponseDto,
@@ -72,7 +71,7 @@ internal abstract class DebtAbstractService<
     where TListRequestDto :
         IFinancialEngageableListRequestDto,
         ICustomerEngageableListRequestDto
-    where TUpsertRequestDto : ICustomerEngageableUpsertRequestDto
+    where TUpsertRequestDto : IDebtUpsertRequestDto
     where TListResponseDto :
         IFinancialEngageableListResponseDto<
             TBasicResponseDto,
@@ -92,7 +91,6 @@ internal abstract class DebtAbstractService<
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IStatsInternalService<T, TUpdateHistory> _statsService;
-    private readonly IMonthYearService<T, TUpdateHistory> _monthYearService;
 
     protected DebtAbstractService(
             DatabaseContext context,
@@ -104,7 +102,6 @@ internal abstract class DebtAbstractService<
         _context = context;
         _authorizationService = authorizationService;
         _statsService = statsService;
-        _monthYearService = monthYearService;
     }
 
     /// <summary>
@@ -147,7 +144,7 @@ internal abstract class DebtAbstractService<
             .Where(d => !d.IsDeleted);
 
         // Determine if the update histories should be fetched.
-        bool shouldIncludeUpdateHistories = CanAccessUpdateHistory(_authorizationService);
+        bool shouldIncludeUpdateHistories = CanAccessUpdateHistories(_authorizationService);
         if (shouldIncludeUpdateHistories)
         {
             query = query.Include(d => d.UpdateHistories);

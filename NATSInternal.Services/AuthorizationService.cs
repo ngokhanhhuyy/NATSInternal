@@ -25,8 +25,7 @@ internal class AuthorizationService : IAuthorizationInternalService
 
     public UserDetailResponseDto GetUserDetail()
     {
-        UserDetailResponseDto responseDto = new UserDetailResponseDto(_user);
-        return responseDto;
+        return new UserDetailResponseDto(_user);
     }
 
     // Authorization for users.
@@ -149,7 +148,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         {
             CanEdit = CanEditSupply(supply),
             CanDelete = CanEditSupply(supply),
-            CanSetPaidDateTime = CanSetSupplyPaidDateTime()
+            CanSetSuppliedDateTime = CanSetSupplyPaidDateTime()
         };
     }
     
@@ -205,7 +204,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         return new TreatmentAuthorizationResponseDto
         {
             CanEdit = CanEditTreatment(treatment),
-            CanDelete = CanDeleteTreatment(),
+            CanDelete = CanDeleteTreatment(treatment),
             CanSetPaidDateTime = CanSetTreatmentPaidDateTime()
         };
     }
@@ -220,12 +219,12 @@ internal class AuthorizationService : IAuthorizationInternalService
     }
 
     public DebtIncurrenceAuthorizationResponseDto GetDebtIncurrenceAuthorization(
-            DebtIncurrence debt)
+            DebtIncurrence debtIncurrence)
     {
         return new DebtIncurrenceAuthorizationResponseDto
         {
-            CanEdit = CanEditDebtIncurrence(debt),
-            CanDelete = CanDeleteDebtIncurrence(),
+            CanEdit = CanEditDebtIncurrence(debtIncurrence),
+            CanDelete = CanDeleteDebtIncurrence(debtIncurrence),
             CanSetIncurredDateTime = CanSetDebtIncurrenceIncurredDateTime()
         };
     }
@@ -245,7 +244,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         return new DebtPaymentAuthorizationResponseDto
         {
             CanEdit = CanEditDebtPayment(debtPayment),
-            CanDelete = CanDeleteDebtPayment(),
+            CanDelete = CanDeleteDebtPayment(debtPayment),
             CanSetPaidDateTime = CanSetDebtPaymentPaidDateTime()
         };
     }
@@ -264,7 +263,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         return new ConsultantAuthorizationResponseDto
         {
             CanEdit = CanEditConsultant(consultant),
-            CanDelete = CanDeleteConsultant(),
+            CanDelete = CanDeleteConsultant(consultant),
             CanSetPaidDateTime = CanSetConsultantPaidDateTime(),
             CanAccessUpdateHistories = CanAccessConsultantUpdateHistories()
         };
@@ -377,17 +376,7 @@ internal class AuthorizationService : IAuthorizationInternalService
 
     public bool CanDeleteSupply(Supply supply)
     {
-        if (!_user.HasPermission(PermissionConstants.DeleteSupply))
-        {
-            return false;
-        }
-
-        if (supply.IsLocked)
-        {
-            return false;
-        }
-
-        return true;
+        return !supply.IsLocked && _user.HasPermission(PermissionConstants.DeleteSupply);
     }
 
     public bool CanSetSupplyPaidDateTime()
@@ -423,7 +412,7 @@ internal class AuthorizationService : IAuthorizationInternalService
     
     public bool CanDeleteExpense(Expense expense)
     {
-        return _user.HasPermission(PermissionConstants.DeleteExpense) && !expense.IsLocked;
+        return !expense.IsLocked && _user.HasPermission(PermissionConstants.DeleteExpense);
     }
 
     public bool CanSetExpensePaidDateTime()
@@ -493,9 +482,9 @@ internal class AuthorizationService : IAuthorizationInternalService
         return true;
     }
     
-    public bool CanDeleteTreatment()
+    public bool CanDeleteTreatment(Treatment treatment)
     {
-        return _user.HasPermission(PermissionConstants.DeleteTreatment);
+        return !treatment.IsLocked && _user.HasPermission(PermissionConstants.DeleteTreatment);
     }
 
     public bool CanSetTreatmentPaidDateTime()
@@ -514,14 +503,14 @@ internal class AuthorizationService : IAuthorizationInternalService
         return _user.HasPermission(PermissionConstants.CreateDebtIncurrence);
     }
 
-    public bool CanEditDebtIncurrence(DebtIncurrence debt)
+    public bool CanEditDebtIncurrence(DebtIncurrence debtIncurrence)
     {
         if (!_user.HasPermission(PermissionConstants.EditDebtIncurrence))
         {
             return false;
         }
         
-        if (debt.IsLocked && !_user.HasPermission(PermissionConstants.EditLockedDebtIncurrence))
+        if (debtIncurrence.IsLocked && !_user.HasPermission(PermissionConstants.EditLockedDebtIncurrence))
         {
             return false;
         }
@@ -529,9 +518,10 @@ internal class AuthorizationService : IAuthorizationInternalService
         return true;
     }
     
-    public bool CanDeleteDebtIncurrence()
+    public bool CanDeleteDebtIncurrence(DebtIncurrence debtIncurrence)
     {
-        return _user.HasPermission(PermissionConstants.DeleteDebtIncurrence);
+        return !debtIncurrence.IsLocked &&
+            _user.HasPermission(PermissionConstants.DeleteDebtIncurrence);
     }
     
     public bool CanSetDebtIncurrenceIncurredDateTime()
@@ -565,9 +555,10 @@ internal class AuthorizationService : IAuthorizationInternalService
         return true;
     }
 
-    public bool CanDeleteDebtPayment()
+    public bool CanDeleteDebtPayment(DebtPayment debtPayment)
     {
-        return _user.HasPermission(PermissionConstants.DeleteDebtPayment);
+        return !debtPayment.IsLocked &&
+            _user.HasPermission(PermissionConstants.DeleteDebtPayment);
     }
 
     public bool CanSetDebtPaymentPaidDateTime()
@@ -602,9 +593,10 @@ internal class AuthorizationService : IAuthorizationInternalService
         return true;
     }
 
-    public bool CanDeleteConsultant()
+    public bool CanDeleteConsultant(Consultant consultant)
     {
-        return _user.HasPermission(PermissionConstants.DeleteConsultant);
+        return !consultant.IsLocked &&
+            _user.HasPermission(PermissionConstants.DeleteConsultant);
     }
     
     public bool CanSetConsultantPaidDateTime()

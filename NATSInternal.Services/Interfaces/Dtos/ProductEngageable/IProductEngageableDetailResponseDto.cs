@@ -3,7 +3,7 @@ namespace NATSInternal.Services.Interfaces.Dtos;
 /// <summary>
 /// A DTO containing the details of the financial entities which are related to customer.
 /// </summary>
-/// <typeparam name="TProductItem">
+/// <typeparam name="TItem">
 /// The type of the item DTOs, containing the product-related engagements' information and the
 /// products' identities.
 /// </typeparam>
@@ -19,14 +19,14 @@ namespace NATSInternal.Services.Interfaces.Dtos;
 /// interact with the entity.
 /// </typeparam>
 internal interface IProductEngageableDetailResponseDto<
-        TProductItem,
+        TItem,
         TPhoto,
         TUpdateHistory,
         TAuthorization>
     :
         IFinancialEngageableDetailResponseDto<TUpdateHistory, TAuthorization>,
         IHasPhotoDetailResponseDto<TPhoto>
-    where TProductItem : IProductEngageableItemResponseDto
+    where TItem : IProductEngageableItemResponseDto
     where TPhoto : IPhotoResponseDto
     where TUpdateHistory : IUpdateHistoryResponseDto
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
@@ -35,5 +35,5 @@ internal interface IProductEngageableDetailResponseDto<
     /// Contains the product-related engagements' information and the
     /// products' identities
     /// </summary>
-    List<TProductItem> Items { get; }
+    List<TItem> Items { get; }
 }

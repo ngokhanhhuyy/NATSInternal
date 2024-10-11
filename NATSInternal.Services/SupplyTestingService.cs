@@ -1,156 +1,40 @@
-﻿namespace NATSInternal.Services;
+namespace NATSInternal.Services;
 
 /// <inheritdoc cref="ISupplyService" />
-internal class SupplyService : LockableEntityService, ISupplyService
+internal class SupplyTestingService : ProductEngageableAbstractService<
+        Supply,
+        SupplyItem,
+        SupplyPhoto,
+        SupplyUpdateHistory,
+        SupplyListRequestDto,
+        SupplyUpsertRequestDto,
+        SupplyListResponseDto,
+        SupplyBasicResponseDto,
+        SupplyDetailResponseDto,
+        SupplyItemResponseDto,
+        SupplyPhotoResponseDto,
+        SupplyUpdateHistoryResponseDto,
+        SupplyUpdateHistoryDataDto,
+        SupplyListAuthorizationResponseDto,
+        SupplyAuthorizationResponseDto>,
+    ISupplyService
 {
     private readonly DatabaseContext _context;
     private readonly IPhotoService<Supply, SupplyPhoto> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IStatsInternalService<Supply, SupplyUpdateHistory> _statsService;
-    private readonly IProductEngagementService<SupplyItem, SupplyPhoto, SupplyUpdateHistory> _productEngagementService;
-    private readonly IUpdateHistoryService<Supply, SupplyUpdateHistory, SupplyUpdateHistoryDataDto> _updateHistoryService;
-    private readonly IMonthYearService<Supply, SupplyUpdateHistory> _monthYearService;
 
-    public SupplyService(
+    public SupplyTestingService(
             DatabaseContext context,
             IPhotoService<Supply, SupplyPhoto> photoservice,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService<Supply, SupplyUpdateHistory> statsService,
-            IProductEngagementService<SupplyItem, SupplyPhoto, SupplyUpdateHistory> productEngagementService,
-            IUpdateHistoryService<Supply, SupplyUpdateHistory, SupplyUpdateHistoryDataDto> updateHistoryService,
-            IMonthYearService<Supply, SupplyUpdateHistory> monthYearService)
+            IStatsInternalService<Supply, SupplyUpdateHistory> statsService)
+        : base(context, authorizationService)
     {
         _context = context;
         _photoService = photoservice;
         _authorizationService = authorizationService;
         _statsService = statsService;
-        _productEngagementService = productEngagementService;
-        _updateHistoryService = updateHistoryService;
-        _monthYearService = monthYearService;
-    }
-
-    /// <inheritdoc />
-    public async Task<SupplyListResponseDto> GetListAsync(SupplyListRequestDto requestDto)
-    {
-        // Initialize list of month and year options.
-        List<MonthYearResponseDto> monthYearOptions = await _monthYearService
-            .GenerateMonthYearOptions(dbContext => dbContext.Supplies);
-
-        // Query initialization.
-        IQueryable<Supply> query = _context.Supplies
-            .Include(s => s.CreatedUser).ThenInclude(u => u.Roles)
-            .Include(s => s.Items)
-            .Include(s => s.Photos);
-
-        // Sorting directing and sorting by field.
-        switch (requestDto.OrderByField)
-        {
-            case nameof(SupplyListRequestDto.FieldOptions.TotalAmount):
-                query = requestDto.OrderByAscending
-                    ? query.OrderBy(s => s.Amount)
-                        .ThenBy(s => s.SuppliedDateTime)
-                    : query.OrderByDescending(s => s.Items.Sum(i => i.AmountPerUnit))
-                        .ThenByDescending(s => s.SuppliedDateTime);
-                break;
-            case nameof(SupplyListRequestDto.FieldOptions.PaidDateTime):
-                query = requestDto.OrderByAscending
-                    ? query.OrderBy(s => s.SuppliedDateTime)
-                        .ThenBy(s => s.Items.Sum(i => i.AmountPerUnit))
-                    : query.OrderByDescending(s => s.SuppliedDateTime)
-                        .ThenByDescending(s => s.Items.Sum(i => i.AmountPerUnit));
-                break;
-            case nameof(SupplyListRequestDto.FieldOptions.ItemAmount):
-                query = requestDto.OrderByAscending
-                    ? query.OrderBy(s => s.ItemAmount)
-                        .ThenBy(s => s.SuppliedDateTime)
-                    : query.OrderByDescending(s => s.ItemAmount)
-                        .ThenByDescending(s => s.SuppliedDateTime);
-                break;
-            case nameof(SupplyListRequestDto.FieldOptions.ShipmentFee):
-                query = requestDto.OrderByAscending
-                    ? query.OrderBy(s => s.ShipmentFee)
-                        .ThenBy(s => s.SuppliedDateTime)
-                    : query.OrderByDescending(s => s.ShipmentFee)
-                        .ThenByDescending(s => s.SuppliedDateTime);
-                break;
-        }
-
-        // Filter by month and year if specified.
-        if (!requestDto.IgnoreMonthYear)
-        {
-            DateTime startDateTime;
-            startDateTime = new DateTime(requestDto.Year, requestDto.Month, 1);
-            DateTime endDateTime = startDateTime.AddMonths(1);
-            query = query
-                .Where(s => s.SuppliedDateTime >= startDateTime && s.SuppliedDateTime < endDateTime);
-        }
-
-        // Filter by user id if specified.
-        if (requestDto.CreatedUserId.HasValue)
-        {
-            query = query.Where(s => s.CreatedUserId == requestDto.CreatedUserId.Value);
-        }
-
-        // Filter by product id if specified.
-        if (requestDto.ProductId.HasValue)
-        {
-            query = query.Where(s => s.Items.Any(si => si.ProductId == requestDto.ProductId));
-        }
-
-        // Initialize response dto.
-        SupplyListResponseDto responseDto = new SupplyListResponseDto
-        {
-            MonthYearOptions = monthYearOptions,
-            Authorization = _authorizationService.GetSupplyListAuthorization()
-        };
-        int resultCount = await query.CountAsync();
-        if (resultCount == 0)
-        {
-            responseDto.PageCount = 0;
-            return responseDto;
-        }
-        responseDto.PageCount = (int)Math.Ceiling(
-            (double)resultCount / requestDto.ResultsPerPage);
-        responseDto.Items = await query
-            .Select(s => new SupplyBasicResponseDto(s))
-            .Skip(requestDto.ResultsPerPage * (requestDto.Page - 1))
-            .Take(requestDto.ResultsPerPage)
-            .AsSingleQuery()
-            .ToListAsync();
-
-        return responseDto;
-    }
-
-    /// <inheritdoc />
-    public async Task<SupplyDetailResponseDto> GetDetailAsync(int id)
-    {
-        // Initialize query.
-        IQueryable<Supply> query = _context.Supplies
-            .Include(s => s.Items).ThenInclude(si => si.Product)
-            .Include(s => s.Photos)
-            .Include(s => s.CreatedUser).ThenInclude(u => u.Roles);
-
-        // Determine if the update histories should be fetched.
-        bool shouldIncludeUpdateHistories = _authorizationService
-            .CanAccessSupplyUpdateHistories();
-        if (shouldIncludeUpdateHistories)
-        {
-            query = query.Include(s => s.UpdateHistories);
-        }
-
-        // Fetch the entity with the given id and ensure it exists in the database.
-        Supply supply = await query
-            .AsSplitQuery()
-            .SingleOrDefaultAsync(s => s.Id == id && !s.IsDeleted)
-            ?? throw new ResourceNotFoundException(
-                nameof(Supply),
-                nameof(id),
-                id.ToString());
-
-        return new SupplyDetailResponseDto(
-            supply,
-            _authorizationService.GetSupplyAuthorization(supply),
-            mapUpdateHistories: shouldIncludeUpdateHistories);
     }
 
     /// <inheritdoc />
@@ -187,8 +71,7 @@ internal class SupplyService : LockableEntityService, ISupplyService
         _context.Supplies.Add(supply);
 
         // Initialize items
-        await _productEngagementService
-            .CreateItemsAsync(supply.Items, requestDto.Items, ProductEngagementType.Import);
+        await CreateItemsAsync(supply.Items, requestDto.Items, ProductEngagementType.Import);
 
         // Initialize photos
         if (requestDto.Photos != null)
@@ -221,7 +104,7 @@ internal class SupplyService : LockableEntityService, ISupplyService
                 _photoService.Delete(supplyPhoto.Url);
             }
 
-            HandleCreateOrUpdateException(sqlException);
+            HandleCreateOrUpdateException(sqlException, requestDto);
             throw;
         }
     }
@@ -289,7 +172,7 @@ internal class SupplyService : LockableEntityService, ISupplyService
         supply.Note = requestDto.Note;
 
         // Update supply items.
-        await _productEngagementService.UpdateItemsAsync(
+        await UpdateItemsAsync(
             supply.Items,
             requestDto.Items,
             ProductEngagementType.Import,
@@ -310,8 +193,7 @@ internal class SupplyService : LockableEntityService, ISupplyService
         SupplyUpdateHistoryDataDto newData = new SupplyUpdateHistoryDataDto(supply);
 
         // Log update history.
-        _updateHistoryService
-            .LogUpdateHistory(supply, oldData, newData, requestDto.UpdateReason);
+        LogUpdateHistory(supply, oldData, newData, requestDto.UpdateReason);
 
         // Perform the updating operation.
         try
@@ -349,7 +231,7 @@ internal class SupplyService : LockableEntityService, ISupplyService
                 {
                     _photoService.Delete(url);
                 }
-                HandleCreateOrUpdateException(sqlException);
+                HandleCreateOrUpdateException(sqlException, requestDto);
             }
             
             throw;
@@ -379,7 +261,7 @@ internal class SupplyService : LockableEntityService, ISupplyService
             .BeginTransactionAsync();
 
         // Remove all the items.
-        _productEngagementService.DeleteItems(
+        DeleteItems(
             supply.Items,
             dbContext => dbContext.SupplyItems,
             ProductEngagementType.Export);
@@ -423,27 +305,155 @@ internal class SupplyService : LockableEntityService, ISupplyService
             
             throw;
         }
+    }
 
+    /// <inheritdoc />
+    protected override DbSet<Supply> GetRepository(DatabaseContext context)
+    {
+        return context.Supplies;
+    }
+
+    /// <inheritdoc />
+    protected override IOrderedQueryable<Supply> SortListQuery(
+            IQueryable<Supply> query,
+            bool orderByAscending,
+            string orderByField)
+    {
+        switch (orderByField)
+        {
+            case nameof(SupplyListRequestDto.FieldOptions.TotalAmount):
+                return orderByAscending
+                    ? query.OrderBy(s => s.Amount)
+                        .ThenBy(s => s.SuppliedDateTime)
+                    : query.OrderByDescending(s => s.Items.Sum(i => i.AmountPerUnit))
+                        .ThenByDescending(s => s.SuppliedDateTime);
+            case nameof(SupplyListRequestDto.FieldOptions.PaidDateTime):
+                return  orderByAscending
+                    ? query.OrderBy(s => s.SuppliedDateTime)
+                        .ThenBy(s => s.Items.Sum(i => i.AmountPerUnit))
+                    : query.OrderByDescending(s => s.SuppliedDateTime)
+                        .ThenByDescending(s => s.Items.Sum(i => i.AmountPerUnit));
+            case nameof(SupplyListRequestDto.FieldOptions.ItemAmount):
+                return orderByAscending
+                    ? query.OrderBy(s => s.ItemAmount)
+                        .ThenBy(s => s.SuppliedDateTime)
+                    : query.OrderByDescending(s => s.ItemAmount)
+                        .ThenByDescending(s => s.SuppliedDateTime);
+            case nameof(SupplyListRequestDto.FieldOptions.ShipmentFee):
+                return orderByAscending
+                    ? query.OrderBy(s => s.ShipmentFee)
+                        .ThenBy(s => s.SuppliedDateTime)
+                    : query.OrderByDescending(s => s.ShipmentFee)
+                        .ThenByDescending(s => s.SuppliedDateTime);
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
+    /// <inheritdoc />
+    protected override IQueryable<Supply> FilterByMonthYearListQuery(
+            IQueryable<Supply> query,
+            DateTime minimumDateTime,
+            DateTime maximumDateTime)
+    {
+        return query
+            .Where(s => s.SuppliedDateTime >= minimumDateTime)
+            .Where(s => s.SuppliedDateTime < maximumDateTime);
+    }
+
+    /// <inheritdoc />
+    protected override SupplyBasicResponseDto InitializeBasicResponseDto(
+            Supply supply,
+            IAuthorizationInternalService service)
+    {
+        return new SupplyBasicResponseDto(supply, service.GetSupplyAuthorization(supply));
+    }
+
+    /// <inheritdoc />
+    protected override SupplyDetailResponseDto InitializeDetailResponseDto(
+            Supply supply,
+            IAuthorizationInternalService service,
+            bool shouldIncludeUpdateHistories)
+    {
+        return new SupplyDetailResponseDto(
+            supply,
+            service.GetSupplyAuthorization(supply),
+            mapUpdateHistories: shouldIncludeUpdateHistories);
+    }
+
+    /// <inheritdoc />
+    protected override SupplyUpdateHistoryDataDto InitializeUpdateHistoryDataDto(Supply supply)
+    {
+        return new SupplyUpdateHistoryDataDto(supply);
+    }
+
+    protected override SupplyListAuthorizationResponseDto
+        InitializeListAuthorizationResponseDto(
+            IAuthorizationInternalService service)
+    {
+        return service.GetSupplyListAuthorization();
+    }
+    
+    protected override SupplyAuthorizationResponseDto
+        InitializeAuthorizationResponseDto(
+            Supply supply,
+            IAuthorizationInternalService service)
+    {
+        return service.GetSupplyAuthorization(supply);
+    }
+
+    /// <inheritdoc />
+    protected override bool CanAccessUpdateHistories(IAuthorizationInternalService service)
+    {
+        return service.CanAccessSupplyUpdateHistories();
+    }
+
+    /// <inheritdoc />
+    protected override bool CanSetStatsDateTime(IAuthorizationInternalService service)
+    {
+        return service.CanSetSupplyPaidDateTime();
+    }
+
+    /// <inheritdoc />
+    protected override bool CanEdit(Supply supply, IAuthorizationInternalService service)
+    {
+        return service.CanEditSupply(supply);
+    }
+
+    /// <inheritdoc />
+    protected override bool CanDelete(Supply supply, IAuthorizationInternalService service)
+    {
+        return service.CanDeleteSupply(supply);
     }
 
     /// <summary>
-    /// Convert all the exceptions those are thrown by the database during the creating
-    /// or updating operation into the appropriate execptions.
+    /// Convert all the exceptions those are thrown by the database during the creating or
+    /// updating operation into the appropriate execptions.
     /// </summary>
-    /// <param name="exception">The exeception thrown by the database.</param>
-    /// <exception cref="OperationException"></exception>
-    private static void HandleCreateOrUpdateException(MySqlException exception)
+    /// <param name="exception">
+    /// The exeception thrown by the database.
+    /// </param>
+    /// <param name="requestDto">
+    /// The DTO containing data for the operation which caused the exception.
+    /// </param>
+    /// <exception cref="OperationException">
+    /// Throws when the some item references to a the product which doesn't exist or has
+    /// already been deleted.
+    /// </exception>
+    private static void HandleCreateOrUpdateException(
+            MySqlException exception,
+            SupplyUpsertRequestDto requestDto)
     {
         SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
         exceptionHandler.Handle(exception);
-        if (exceptionHandler.IsForeignKeyNotFound)
+        if (exceptionHandler.IsForeignKeyNotFound &&
+            exceptionHandler.ViolatedFieldName == "product_id")
         {
-            if (exceptionHandler.ViolatedFieldName == "product_id")
-            {
-                string errorMessage = ErrorMessages.NotFound
-                    .ReplaceResourceName(DisplayNames.Product);
-                throw new OperationException($"items.productId", errorMessage);
-            }
+            int productId = Convert.ToInt32(exceptionHandler.ViolatedValue);
+            int index = requestDto.Items.FindIndex(i => i.ProductId == productId);
+            string errorMessage = ErrorMessages.NotFound
+                .ReplaceResourceName(DisplayNames.Product);
+            throw new OperationException($"items[{index}]", errorMessage);
         }
     }
 

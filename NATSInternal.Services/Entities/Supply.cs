@@ -45,7 +45,7 @@ internal class Supply
     public long ItemAmount => Items.Sum(i => i.AmountPerUnit * i.Quantity);
 
     [NotMapped]
-    public long TotalAmount => ItemAmount + ShipmentFee;
+    public long Amount => ItemAmount + ShipmentFee;
 
     [NotMapped]
     public DateTime? UpdatedDateTime => UpdateHistories

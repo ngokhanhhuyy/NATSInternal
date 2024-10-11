@@ -4,7 +4,7 @@ internal interface IProductEngageableItemResponseDto
 {
     int Id { get; set; }
     long AmountBeforeVatPerUnit { get; }
-    decimal VatAmountPerUnit { get; }
+    long VatAmountPerUnit { get; }
     int Quantity { get; }
     ProductBasicResponseDto Product { get; }
 }

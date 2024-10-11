@@ -86,28 +86,28 @@ internal interface IAuthorizationInternalService : IAuthorizationService
     // Permissions to interact with treatments.
     bool CanCreateTreatment();
     bool CanEditTreatment(Treatment treatment);
-    bool CanDeleteTreatment();
+    bool CanDeleteTreatment(Treatment treatment);
     bool CanSetTreatmentPaidDateTime();
     bool CanAccessTreatmentUpdateHistories();
 
     // Permisisons to interact with debt incurrences.
     bool CanCreateDebtIncurrence();
-    bool CanEditDebtIncurrence(DebtIncurrence debt);
-    bool CanDeleteDebtIncurrence();
+    bool CanEditDebtIncurrence(DebtIncurrence debtIncurrence);
+    bool CanDeleteDebtIncurrence(DebtIncurrence debtIncurrence);
     bool CanSetDebtIncurrenceIncurredDateTime();
     bool CanAccessDebtIncurrenceUpdateHistories();
 
     // Permissions to interact with debt payments.
     bool CanCreateDebtPayment();
     bool CanEditDebtPayment(DebtPayment debtPayment);
-    bool CanDeleteDebtPayment();
+    bool CanDeleteDebtPayment(DebtPayment debtPayment);
     bool CanSetDebtPaymentPaidDateTime();
     bool CanAccessDebtPaymentUpdateHistories();
 
     // Permissions to interact with consultant.
     bool CanCreateConsultant();
     bool CanEditConsultant(Consultant consultant);
-    bool CanDeleteConsultant();
+    bool CanDeleteConsultant(Consultant consultant);
     bool CanSetConsultantPaidDateTime();
     bool CanAccessConsultantUpdateHistories();
 }

@@ -4,7 +4,7 @@ namespace NATSInternal.Services.Dtos;
 /// A DTO class representing the data from the requests for the debt payment creating and
 /// updating operations.
 /// </summary>
-public class DebtPaymentUpsertRequestDto : ICustomerEngageableUpsertRequestDto
+public class DebtPaymentUpsertRequestDto : IDebtUpsertRequestDto
 {
     /// <summary>
     /// Represents the paid amount of the debt.

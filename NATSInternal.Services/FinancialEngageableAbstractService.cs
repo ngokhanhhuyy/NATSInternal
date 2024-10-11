@@ -4,7 +4,6 @@ internal abstract class FinancialEngageableAbstractService<
         T,
         TUpdateHistory,
         TListRequestDto,
-        TUpsertRequestDto,
         TListResponseDto,
         TBasicResponseDto,
         TDetailResponseDto,
@@ -22,10 +21,7 @@ internal abstract class FinancialEngageableAbstractService<
         TAuthorizationResponseDto>
     where T : class, IFinancialEngageableEntity<T, TUpdateHistory>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
-    where TListRequestDto :
-        IFinancialEngageableListRequestDto,
-        ICustomerEngageableListRequestDto
-    where TUpsertRequestDto : ICustomerEngageableUpsertRequestDto
+    where TListRequestDto : IFinancialEngageableListRequestDto
     where TListResponseDto :
         IFinancialEngageableListResponseDto<
             TBasicResponseDto,
@@ -34,8 +30,8 @@ internal abstract class FinancialEngageableAbstractService<
         new()
     where TBasicResponseDto :
         class,
-        ICustomerEngageableBasicResponseDto<TAuthorizationResponseDto>
-    where TDetailResponseDto : IDebtDetailResponseDto<
+        IFinancialEngageableBasicResponseDto<TAuthorizationResponseDto>
+    where TDetailResponseDto : IFinancialEngageableDetailResponseDto<
         TUpdateHistoryResponseDto,
         TAuthorizationResponseDto>
     where TUpdateHistoryResponseDto : IUpdateHistoryResponseDto
@@ -44,71 +40,36 @@ internal abstract class FinancialEngageableAbstractService<
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IMonthYearService<T, TUpdateHistory> _monthYearService;
 
     protected FinancialEngageableAbstractService(
             DatabaseContext context,
-            IAuthorizationInternalService authorizationService,
-            IMonthYearService<T, TUpdateHistory> monthYearService)
-        : base(authorizationService)
+            IAuthorizationInternalService authorizationService)
+        : base(context, authorizationService)
     {
         _context = context;
         _authorizationService = authorizationService;
-        _monthYearService = monthYearService;
     }
 
     /// <inheritdoc />
-    protected override async Task<TListResponseDto> GetListAsync(
-        IQueryable<T> query,
-        TListRequestDto requestDto)
+    public override async Task<TListResponseDto> GetListAsync(TListRequestDto requestDto)
     {
         // Initialize month years options.
-        List<MonthYearResponseDto> monthYearOptions = await _monthYearService
-            .GenerateMonthYearOptions(GetRepository);
+        List<MonthYearResponseDto> monthYearOptions;
+        monthYearOptions = await GenerateMonthYearOptions();
 
-        TListResponseDto responseDto = await base.GetListAsync(query, requestDto);
+        TListResponseDto responseDto = await base.GetListAsync(requestDto);
         responseDto.MonthYearOptions = monthYearOptions;
 
         return responseDto;
     }
-    
+
     /// <inheritdoc />
-    protected override async Task<TDetailResponseDto> GetDetailAsync(IQueryable<T> query)
+    protected override IQueryable<T> InitializeListQuery(TListRequestDto requestDto)
     {
-        // Determine if the update histories should be fetched.
-        bool shouldIncludeUpdateHistories = CanAccessUpdateHistory(_authorizationService);
-        if (shouldIncludeUpdateHistories)
-        {
-            query = query.Include(d => d.UpdateHistories);
-        }
-
-        // Fetch the entity with the given id and ensure it exists in the database.
-        T entity = await query.SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException();
-
-        return InitializeDetailResponseDto(
-            entity,
-            _authorizationService,
-            shouldIncludeUpdateHistories);
-    }
-
-
-    /// <summary>
-    /// Initializes the query for list retrieving operation, based on the filtering, sorting
-    /// and paginating conditions specified in the request DTO.
-    /// </summary>
-    /// <param name="requestDto">
-    /// A DTO containing the conditions for the results.
-    /// </param>
-    /// <returns>
-    /// A query instance used to perform the list retrieving operation.
-    /// </returns>
-    protected virtual IQueryable<T> InitializeListQuery(TListRequestDto requestDto)
-    {
-        IQueryable<T> query = GetRepository(_context)
+        IQueryable<T> query = GetRepository(_context);
 
         // Sort by the specified direction and field.
-        query = SortListQuery(query, requestDto);
+        query = SortListQuery(query, requestDto.OrderByAscending, requestDto.OrderByField);
 
         // Filter by month and year if specified.
         if (!requestDto.IgnoreMonthYear)
@@ -124,14 +85,24 @@ internal abstract class FinancialEngageableAbstractService<
             query = query.Where(o => o.CreatedUserId == requestDto.CreatedUserId);
         }
 
-        // Filter by customer id if specified.
-        if (requestDto.CustomerId.HasValue)
-        {
-            query = query.Where(o => o.CustomerId == requestDto.CustomerId);
-        }
-
         // Filter by not being soft deleted.
         query = query.Where(o => !o.IsDeleted);
+
+        return query;
+    }
+
+    /// <inheritdoc />
+    protected override IQueryable<T> InitializeDetailQuery()
+    {
+        IQueryable<T> query = base.InitializeDetailQuery()
+            .Include(e => e.CreatedUser).ThenInclude(u => u.Roles).ThenInclude(r => r.Claims);
+            
+        // Determine if the update histories should be fetched.
+        bool shouldIncludeUpdateHistories = CanAccessUpdateHistories(_authorizationService);
+        if (shouldIncludeUpdateHistories)
+        {
+            query = query.Include(d => d.UpdateHistories);
+        }
 
         return query;
     }
@@ -184,29 +155,64 @@ internal abstract class FinancialEngageableAbstractService<
     }
 
     /// <summary>
-    /// Gets the entity repository in the <see cref="DatabaseContext"/> class.
-    /// <param name="context">
-    /// An instance of the injected <see cref="DatabaseContext"/>
-    /// </param>
-    /// <returns>The entity repository.</returns>
-    protected abstract DbSet<T> GetRepository(DatabaseContext context);
-
-    /// <summary>
-    /// Provides the sorting conditions for the list retrieving operation, based on the
-    /// specified conditions.
+    /// Generates a list of the <see cref="MonthYearResponseDto"/> instances, representing the
+    /// options that users can select as filtering condition when fetching a list of
+    /// <see cref="T"/> DTOs.
     /// </summary>
-    /// <param name="query">
-    /// An initialized query instance.
-    /// </param>
-    /// <param name="requestDto">
-    /// The DTO containing the conditions for sorting.
-    /// </param>
     /// <returns>
-    /// A sorted query used for list retrieving operation.
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is a
+    /// <see cref="List{T}"/> of <see cref="MonthYearResponseDto"/> instances, representing
+    /// the options.
     /// </returns>
-    protected abstract IOrderedQueryable<T> SortListQuery(
-            IQueryable<T> query,
-            TListRequestDto requestDto);
+    public async Task<List<MonthYearResponseDto>> GenerateMonthYearOptions()
+    {
+        EarliestRecordedMonthYear ??= await GetRepository(_context)
+            .OrderBy(T.StatsDateTimeExpression)
+            .Select(entity => new MonthYearResponseDto
+            {
+                Year = entity.StatsDateTime.Year,
+                Month = entity.StatsDateTime.Month
+            }).FirstOrDefaultAsync();
+
+        DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
+        int currentYear = currentDateTime.Year;
+        int currentMonth = currentDateTime.Month;
+        List<MonthYearResponseDto> monthYearOptions = new List<MonthYearResponseDto>();
+        if (EarliestRecordedMonthYear != null)
+        {
+            for (int initializingYear = EarliestRecordedMonthYear.Year;
+                initializingYear <= currentYear;
+                initializingYear++)
+            {
+                int initializingMonth = 1;
+                if (initializingYear == EarliestRecordedMonthYear.Year)
+                {
+                    initializingMonth = EarliestRecordedMonthYear.Month;
+                }
+                
+                while (initializingMonth <= 12)
+                {
+                    MonthYearResponseDto option;
+                    option = new MonthYearResponseDto(
+                        initializingYear,
+                        initializingMonth);
+                    monthYearOptions.Add(option);
+                    initializingMonth++;
+                    if (initializingYear == currentYear && initializingMonth > currentMonth)
+                    {
+                        break;
+                    }
+                }
+            }
+            monthYearOptions.Reverse();
+        }
+        else
+        {
+            monthYearOptions.Add(new MonthYearResponseDto(currentYear, currentMonth));
+        }
+
+        return monthYearOptions;
+    }
 
     /// <summary>
     /// Provides the filtering conditions by month and year, based on the specified conditions.
@@ -282,7 +288,7 @@ internal abstract class FinancialEngageableAbstractService<
     /// <returns>
     /// A <see cref="bool"/> value representing the permission.
     /// </returns>
-    protected abstract bool CanAccessUpdateHistory(IAuthorizationInternalService service);
+    protected abstract bool CanAccessUpdateHistories(IAuthorizationInternalService service);
 
     /// <summary>
     /// Determines whether the current user has enough permissions to set a value for the
@@ -319,5 +325,11 @@ internal abstract class FinancialEngageableAbstractService<
     /// <returns>
     /// A <see cref="bool"/> value representing the permission.
     /// </returns>
-    protected abstract bool CanDelete(IAuthorizationInternalService service);
+    protected abstract bool CanDelete(T entity, IAuthorizationInternalService service);
+
+    /// <summary>
+    /// Stores the month and year information of the entity instance which is created earliest
+    /// in the table as static value and doesn't change over requests.
+    /// </summary>
+    protected static MonthYearResponseDto EarliestRecordedMonthYear { get; set; }
 }

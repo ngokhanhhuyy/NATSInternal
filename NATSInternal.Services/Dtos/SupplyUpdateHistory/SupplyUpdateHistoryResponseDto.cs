@@ -1,13 +1,13 @@
 namespace NATSInternal.Services.Dtos;
 
-public class SupplyUpdateHistoryResponseDto
+public class SupplyUpdateHistoryResponseDto : IUpdateHistoryResponseDto
 {
     private readonly SupplyUpdateHistoryDataDto _oldData;
     private readonly SupplyUpdateHistoryDataDto _newData;
     
-    public DateTime UpdatedDateTime { get; private set; }
-    public UserBasicResponseDto UpdatedUser { get; private set; }
-    public string Reason { get; private set; }
+    public DateTime UpdatedDateTime { get; set; }
+    public UserBasicResponseDto UpdatedUser { get; set; }
+    public string UpdatedReason { get; set; }
     
     public DateTime OldPaidDateTime => _oldData.PaidDateTime;
     public DateTime NewPaidDateTime => _newData.PaidDateTime;
@@ -27,6 +27,6 @@ public class SupplyUpdateHistoryResponseDto
         _newData = JsonSerializer.Deserialize<SupplyUpdateHistoryDataDto>(updateHistory.NewData);
         UpdatedDateTime = updateHistory.UpdatedDateTime;
         UpdatedUser = new UserBasicResponseDto(updateHistory.UpdatedUser);
-        Reason = updateHistory.Reason;
+        UpdatedReason = updateHistory.Reason;
     }
 }

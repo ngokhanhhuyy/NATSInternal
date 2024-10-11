@@ -1,10 +1,11 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
 public class SupplyBasicResponseDto
+    : IFinancialEngageableBasicResponseDto<SupplyAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public DateTime PaidDateTime { get; set; }
-    public long TotalAmount { get; set; }
+    public long Amount { get; set; }
     public bool IsLocked { get; set; }
     public UserBasicResponseDto User { get; set; }
     public string FirstPhotoUrl { get; set; }
@@ -25,7 +26,7 @@ public class SupplyBasicResponseDto
     {
         Id = supply.Id;
         PaidDateTime = supply.SuppliedDateTime;
-        TotalAmount = supply.TotalAmount;
+        Amount = supply.Amount;
         IsLocked = supply.IsLocked;
         User = new UserBasicResponseDto(supply.CreatedUser);
         FirstPhotoUrl = supply.FirstPhotoUrl;

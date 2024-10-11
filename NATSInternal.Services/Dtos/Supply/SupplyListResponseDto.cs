@@ -1,6 +1,9 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class SupplyListResponseDto
+public class SupplyListResponseDto : IFinancialEngageableListResponseDto<
+        SupplyBasicResponseDto,
+        SupplyAuthorizationResponseDto,
+        SupplyListAuthorizationResponseDto>
 {
     public List<SupplyBasicResponseDto> Items { get; set; }
     public int PageCount { get; set; }

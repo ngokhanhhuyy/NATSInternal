@@ -38,7 +38,6 @@ internal abstract class ProductEngageableAbstractService<
         T,
         TUpdateHistory,
         TListRequestDto,
-        TUpsertRequestDto,
         TListResponseDto,
         TBasicResponseDto,
         TDetailResponseDto,
@@ -50,10 +49,7 @@ internal abstract class ProductEngageableAbstractService<
     where TItem : class, IProductEngageableItemEntity<TItem>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
-    where TListRequestDto :
-        IFinancialEngageableListRequestDto,
-        ICustomerEngageableListRequestDto
-    where TUpsertRequestDto : ICustomerEngageableUpsertRequestDto
+    where TListRequestDto : IProductEngageableListRequestDto
     where TListResponseDto :
         IFinancialEngageableListResponseDto<
             TBasicResponseDto,
@@ -62,46 +58,49 @@ internal abstract class ProductEngageableAbstractService<
         new()
     where TBasicResponseDto :
         class,
-        ICustomerEngageableBasicResponseDto<TAuthorizationResponseDto>
-    where TDetailResponseDto : IDebtDetailResponseDto<
+        IFinancialEngageableBasicResponseDto<TAuthorizationResponseDto>
+    where TDetailResponseDto : IProductEngageableDetailResponseDto<
+        TItemResponseDto,
+        TPhotoResponseDto,
         TUpdateHistoryResponseDto,
         TAuthorizationResponseDto>
     where TItemResponseDto : IProductEngageableItemResponseDto
-    where TPhotoResponseDto : IProductEngageableItemResponseDto
+    where TPhotoResponseDto : IPhotoResponseDto
     where TUpdateHistoryResponseDto : IUpdateHistoryResponseDto
     where TListAuthorizationResponseDto : IUpsertableListAuthorizationResponseDto
     where TAuthorizationResponseDto : IFinancialEngageableAuthorizationResponseDto
 {
     private readonly DatabaseContext _context;
-    private readonly IPhotoService<T, TPhoto> _photoService;
 
     protected ProductEngageableAbstractService(
             DatabaseContext context,
-            IAuthorizationInternalService authorizationService,
-            IPhotoService<T, TPhoto> photoService,
-            IMonthYearService<T, TUpdateHistory> monthYearService)
-        : base (authorizationService, monthYearService)
+            IAuthorizationInternalService authorizationService)
+        : base(context, authorizationService)
     {
         _context = context;
-        _photoService = photoService;
     }
 
-    /// <summary>
-    /// Retrieves a list of DTOs containing the basic information of the debt instances,
-    /// specified filtering, sorting and paginating conditions.
-    /// </summary>
-    /// <param name="requestDto">
-    /// An instance of the <see cref="DebtPaymentListRequestDto"/> class, containing the
-    /// conditions for the results.
-    /// </param>
-    /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is a
-    /// <see cref="List{T}"/> of DTOs, containing the results of the operation and the additional
-    /// information for pagination.
-    /// </returns>
-    public virtual async Task<TListResponseDto> GetListAsync(TListRequestDto requestDto)
+    /// <inheritdoc />
+    protected override IQueryable<T> InitializeListQuery(TListRequestDto requestDto)
     {
-        return await base.GetListAsync(InitializeListQuery(requestDto), requestDto);
+        IQueryable<T> query = base.InitializeListQuery(requestDto)
+            .Include(e => e.Items).ThenInclude(ei => ei.Product)
+            .Include(e => e.Photos.OrderBy(ep => ep.Id).FirstOrDefault());
+
+        if (requestDto.ProductId.HasValue)
+        {
+            query.Where(e => e.Items.Any(ei => ei.ProductId == requestDto.ProductId));
+        }
+
+        return query;
+    }
+
+    /// <inheritdoc />
+    protected override IQueryable<T> InitializeDetailQuery()
+    {
+        return base.InitializeDetailQuery()
+            .Include(e => e.Items).ThenInclude(i => i.Product)
+            .Include(e => e.Photos);
     }
 
     /// <summary>
@@ -183,7 +182,7 @@ internal abstract class ProductEngageableAbstractService<
             itemEntities.Add(item);
         }
     }
-    
+
     /// <summary>
     /// Updates the existing product engagement items and creates new product engagement items
     /// (if specified), based on the specified items' collection, items data and engagement
@@ -306,7 +305,7 @@ internal abstract class ProductEngageableAbstractService<
             }
         }
     }
-    
+
     /// <summary>
     /// Deletes the existing product engagement items from the specified collection and
     /// repository, based on the specified engagement operation type.
@@ -351,47 +350,4 @@ internal abstract class ProductEngageableAbstractService<
             repositorySelector(_context).Remove(item);
         }
     }
-
-    /// <summary>
-    /// Initializes the query for list retrieving operation, based on the filtering, sorting
-    /// and paginating conditions specified in the request DTO.
-    /// </summary>
-    /// <param name="requestDto">
-    /// A DTO containing the conditions for the results.
-    /// </param>
-    /// <returns>
-    /// A query instance used to perform the list retrieving operation.
-    /// </returns>
-    protected virtual IQueryable<T> InitializeListQuery(TListRequestDto requestDto)
-    {
-        IQueryable<T> query = GetRepository(_context)
-            .Include(entity => entity.Customer);
-
-        // Sort by the specified direction and field.
-        query = SortListQuery(query, requestDto);
-
-        // Filter by month and year if specified.
-        if (!requestDto.IgnoreMonthYear)
-        {
-            DateTime startingDateTime = new DateTime(requestDto.Year, requestDto.Month, 1);
-            DateTime endingDateTime = startingDateTime.AddMonths(1);
-            query = FilterByMonthYearListQuery(query, startingDateTime, endingDateTime);
-        }
-
-        // Filter by user id if specified.
-        if (requestDto.CreatedUserId.HasValue)
-        {
-            query = query.Where(o => o.CreatedUserId == requestDto.CreatedUserId);
-        }
-
-        // Filter by customer id if specified.
-        if (requestDto.CustomerId.HasValue)
-        {
-            query = query.Where(o => o.CustomerId == requestDto.CustomerId);
-        }
-
-        // Filter by not being soft deleted.
-        query = query.Where(o => !o.IsDeleted);
-
-        return query;
-    }
+}
