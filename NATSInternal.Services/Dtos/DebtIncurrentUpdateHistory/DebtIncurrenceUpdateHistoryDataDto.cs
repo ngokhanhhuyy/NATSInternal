@@ -4,12 +4,12 @@ public class DebtIncurrenceUpdateHistoryDataDto
 {
     public long Amount { get; set; }
     public string Note { get; set; }
-    public DateTime IncurredDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
     
-    internal DebtIncurrenceUpdateHistoryDataDto(DebtIncurrence debt)
+    internal DebtIncurrenceUpdateHistoryDataDto(DebtIncurrence debtIncurrence)
     {
-        Amount = debt.Amount;
-        Note = debt.Note;
-        IncurredDateTime = debt.IncurredDateTime;
+        Amount = debtIncurrence.Amount;
+        Note = debtIncurrence.Note;
+        StatsDateTime = debtIncurrence.StatsDateTime;
     }
 }

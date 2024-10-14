@@ -1,7 +1,10 @@
 namespace NATSInternal.Services;
 
 /// <inheritdoc cref="INotificationService" />
-internal class NotificationService : INotificationService
+internal class NotificationService
+    :
+        UpsertableAbstractService<Notification, NotificationListRequestDto>,
+        INotificationService
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
@@ -26,36 +29,27 @@ internal class NotificationService : INotificationService
             .Include(n => n.CreatedUser).ThenInclude(u => u.Roles)
             .Include(n => n.ReadUsers).ThenInclude(u => u.Roles)
             .Include(n => n.ReadUsers).ThenInclude(u => u.ReceivedNotifications)
-            .OrderByDescending(n => n.DateTime)
+            .OrderByDescending(n => n.CreatedDateTime)
             .Where(n => n.ReceivedUsers.Select(u => u.Id).Contains(currentUserId));
 
         // Filter by unread notifications only.
         if (requestDto.UnreadOnly)
         {
-            query = query
-                .Where(n => !n.ReadUsers
-                    .Select(u => u.Id)
-                    .Contains(currentUserId));
+            query = query.Where(n => !n.ReadUsers.Select(u => u.Id).Contains(currentUserId));
         }
 
-        // Initialize response dto.
-        NotificationListResponseDto responseDto = new NotificationListResponseDto();
-        int resultCount = await query.CountAsync();
-        if (resultCount == 0)
+        // Fetch the list of the entities.
+        EntityListDto<Notification> listDto = await GetListOfEntitiesAsync(query, requestDto);
+
+        return new NotificationListResponseDto
         {
-            responseDto.PageCount = 0;
-            return responseDto;
-        }
-        responseDto.PageCount = (int)Math.Ceiling(
-            (double)resultCount / requestDto.ResultsPerPage);
-        responseDto.Items = await query
-            .Select(user => new NotificationResponseDto(user, currentUserId))
-            .Skip(requestDto.ResultsPerPage * (requestDto.Page - 1))
-            .Take(requestDto.ResultsPerPage)
-            .AsSplitQuery()
-            .ToListAsync();
-
-        return responseDto;
+            PageCount = listDto.PageCount,
+            Items = listDto.Items
+                .Select(notification => new NotificationResponseDto(
+                    notification,
+                    currentUserId))
+                .ToList()
+        };
     }
 
     public async Task<NotificationResponseDto> GetSingleAsync(int id)
@@ -156,7 +150,7 @@ internal class NotificationService : INotificationService
         Notification notification = new Notification
         {
             Type = type,
-            DateTime = DateTime.UtcNow.ToApplicationTime(),
+            CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),
             ResourceIds = resourceIds,
             CreatedUserId = createdUserId
         };

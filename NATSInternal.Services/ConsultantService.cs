@@ -1,7 +1,14 @@
 namespace NATSInternal.Services;
 
 /// <inheritdoc cref="IConsultantService" />
-internal class ConsultantService : LockableEntityService, IConsultantService
+internal class ConsultantService
+    :
+        FinancialEngageableAbstractService<
+            Consultant,
+            ConsultantUpdateHistory,
+            ConsultantListRequestDto,
+            ConsultantUpdateHistoryDataDto>,
+        IConsultantService
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
@@ -13,6 +20,7 @@ internal class ConsultantService : LockableEntityService, IConsultantService
             IAuthorizationInternalService authorizationService,
             IStatsInternalService<Consultant, ConsultantUpdateHistory> statsService,
             IMonthYearService<Consultant, ConsultantUpdateHistory> monthYearService)
+        : base(context, authorizationService)
     {
         _context = context;
         _authorizationService = authorizationService;
@@ -24,66 +32,44 @@ internal class ConsultantService : LockableEntityService, IConsultantService
     public async Task<ConsultantListResponseDto> GetListAsync(
             ConsultantListRequestDto requestDto)
     {
-        // Generate month year options.
-        List<MonthYearResponseDto> monthYearOptions = await _monthYearService
-            .GenerateMonthYearOptions(dbContext => dbContext.Consultants);
-
         // Initialize query.
         IQueryable<Consultant> query = _context.Consultants
             .Include(c => c.Customer);
 
-        // Sorting direction and sorting by field.
+        // Sort results.
+        Expression<Func<Consultant, long>> amountExpression = (Consultant consultant) =>
+            consultant.AmountBeforeVat + consultant.VatAmount;
         switch (requestDto.OrderByField)
         {
-            case nameof(ConsultantListRequestDto.FieldOptions.Amount):
+            case nameof(OrderByFieldOptions.Amount):
                 query = requestDto.OrderByAscending
-                    ? query.OrderBy(e => e.AmountBeforeVat)
-                        .ThenBy(e => e.PaidDateTime)
-                    : query.OrderByDescending(e => e.AmountBeforeVat)
-                        .ThenByDescending(e => e.PaidDateTime);
+                    ? query.OrderBy(amountExpression).ThenBy(e => e.StatsDateTime)
+                    : query.OrderByDescending(amountExpression)
+                        .ThenByDescending(e => e.StatsDateTime);
+                break;
+            case nameof(OrderByFieldOptions.StatsDateTime):
+                query = requestDto.OrderByAscending
+                    ? query.OrderBy(e => e.StatsDateTime).ThenBy(amountExpression)
+                    : query.OrderByDescending(e => e.StatsDateTime)
+                        .ThenByDescending(amountExpression);
                 break;
             default:
-                query = requestDto.OrderByAscending
-                    ? query.OrderBy(e => e.PaidDateTime)
-                        .ThenBy(e => e.AmountBeforeVat)
-                    : query.OrderByDescending(e => e.PaidDateTime)
-                        .ThenByDescending(e => e.AmountBeforeVat);
-                break;
+                throw new NotImplementedException();
         }
 
-        // Filter by month and year if specified.
-        if (!requestDto.IgnoreMonthYear)
-        {
-            DateTime startDateTime = new DateTime(requestDto.Year, requestDto.Month, 1);
-            DateTime endDateTime = startDateTime.AddMonths(1);
-            query = query
-                .Where(s => s.PaidDateTime >= startDateTime && s.PaidDateTime < endDateTime);
-        }
+        EntityListDto<Consultant> listDto = await GetListOfEntitiesAsync(query, requestDto);
 
-        // Initialize response dto.
-        ConsultantListResponseDto responseDto = new ConsultantListResponseDto
+        return new ConsultantListResponseDto
         {
-            MonthYearOptions = monthYearOptions,
+            PageCount = listDto.PageCount,
+            Items = listDto.Items
+                .Select(consultant => new ConsultantBasicResponseDto(
+                    consultant,
+                    _authorizationService.GetConsultantAuthorization(consultant)))
+                .ToList(),
+            MonthYearOptions = await GenerateMonthYearOptions(),
             Authorization = _authorizationService.GetConsultantListAuthorization()
         };
-        int resultCount = await query.CountAsync();
-        if (resultCount == 0)
-        {
-            responseDto.PageCount = 0;
-            return responseDto;
-        }
-        responseDto.PageCount = (int)Math.Ceiling(
-            (double)resultCount / requestDto.ResultsPerPage);
-        responseDto.Items = await query
-            .Select(c => new ConsultantBasicResponseDto(
-                c,
-                _authorizationService.GetConsultantAuthorization(c)))
-            .Skip(requestDto.ResultsPerPage * (requestDto.Page - 1))
-            .Take(requestDto.ResultsPerPage)
-            .AsSplitQuery()
-            .ToListAsync();
-
-        return responseDto;
     }
 
     /// <inheritdoc />
@@ -94,27 +80,12 @@ internal class ConsultantService : LockableEntityService, IConsultantService
             .Include(c => c.CreatedUser).ThenInclude(c => c.Roles)
             .Include(c => c.Customer);
 
-        // Determine if the update histories should be fetched.
-        bool shouldIncludeUpdateHistories = _authorizationService
-            .CanAccessConsultantUpdateHistories();
-        if (shouldIncludeUpdateHistories)
-        {
-            query = query.Include(c => c.UpdateHistories);
-        }
+        // Fetch the entity.
+        Consultant consultant = await GetEntityAsync(query, id);
+        ConsultantAuthorizationResponseDto authorization = _authorizationService
+            .GetConsultantAuthorization(consultant);
 
-        // Fetch the entity with the given id and ensure it exists in the database.
-        Consultant consultant = await query
-            .AsSingleQuery()
-            .SingleOrDefaultAsync(c => c.Id == id && !c.IsDeleted)
-            ?? throw new ResourceNotFoundException(
-                nameof(Expense),
-                nameof(id),
-                id.ToString());
-
-        return new ConsultantDetailResponseDto(
-            consultant,
-            _authorizationService.GetConsultantAuthorization(consultant),
-            mapUpdateHistory: _authorizationService.CanAccessConsultantUpdateHistories());
+        return new ConsultantDetailResponseDto(consultant, authorization);
     }
 
     /// <inheritdoc />
@@ -124,24 +95,24 @@ internal class ConsultantService : LockableEntityService, IConsultantService
         await using IDbContextTransaction transaction = await _context.Database
             .BeginTransactionAsync();
 
-        // Determine paid datetime.
+        // Determine StatsDateTime.
         DateTime paidDateTime = DateTime.UtcNow.ToApplicationTime();
-        if (requestDto.PaidDateTime.HasValue)
+        if (requestDto.StatsDateTime.HasValue)
         {
-            // Check if the current user has permission to specify a value for PaidDateTime.
+            // Check if the current user has permission to specify a value for StatsDateTime.
             if (!_authorizationService.CanSetExpensePaidDateTime())
             {
                 throw new AuthorizationException();
             }
 
-            paidDateTime = requestDto.PaidDateTime.Value;
+            paidDateTime = requestDto.StatsDateTime.Value;
         }
 
-        // Initialize entity.
+        // Initialize consultant.
         Consultant consultant = new Consultant
         {
             AmountBeforeVat = requestDto.Amount,
-            PaidDateTime = paidDateTime,
+            StatsDateTime = paidDateTime,
             Note = requestDto.Note,
             CustomerId = requestDto.CustomerId,
             CreatedUserId = _authorizationService.GetUserId()
@@ -166,25 +137,8 @@ internal class ConsultantService : LockableEntityService, IConsultantService
         when (exception.InnerException is MySqlException sqlException)
         {
             // Handle exception and convert to the appropriate exception.
-            SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
-            exceptionHandler.Handle(sqlException);
-            if (exceptionHandler.IsForeignKeyNotFound)
-            {
-                string propertyName = string.Empty;
-                string errorMessage = ErrorMessages.NotFound;
-                switch (exceptionHandler.ViolatedFieldName)
-                {
-                    case "user_id":
-                        propertyName = nameof(consultant.CreatedUserId);
-                        errorMessage = errorMessage.ReplaceResourceName(DisplayNames.User);
-                        break;
-                    case "customer_id":
-                        propertyName = nameof(consultant.CustomerId);
-                        errorMessage = errorMessage.ReplaceResourceName(DisplayNames.Customer);
-                        break;
-                }
-                throw new OperationException(propertyName, errorMessage);
-            }
+            SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(sqlException);
+            HandleCreateOrUpdateException(exceptionHandler);
             throw;
         }
         catch (DbUpdateConcurrencyException)
@@ -196,7 +150,7 @@ internal class ConsultantService : LockableEntityService, IConsultantService
     /// <inheritdoc />
     public async Task UpdateAsync(int id, ConsultantUpsertRequestDto requestDto)
     {
-        // Fetch the entity from the database and ensure it exists.
+        // Fetch the consultant from the database and ensure it exists.
         Consultant consultant = await _context.Consultants
             .Include(c => c.CreatedUser)
             .Include(c => c.Customer)
@@ -208,7 +162,7 @@ internal class ConsultantService : LockableEntityService, IConsultantService
                 nameof(id),
                 id.ToString());
 
-        // Ensure the entity is editable by the requester.
+        // Ensure the consultant is editable by the requester.
         if (!_authorizationService.CanEditConsultant(consultant))
         {
             throw new AuthorizationException();
@@ -221,11 +175,12 @@ internal class ConsultantService : LockableEntityService, IConsultantService
         // Store the old data for history logging and stats adjustment.
         ConsultantUpdateHistoryDataDto oldData;
         oldData = new ConsultantUpdateHistoryDataDto(consultant);
-        long oldAmount = consultant.AmountBeforeVat;
-        DateOnly oldPaidDate = DateOnly.FromDateTime(consultant.PaidDateTime);
+        await _statsService.IncrementConsultantGrossRevenueAsync(
+            -consultant.AmountBeforeVat,
+            DateOnly.FromDateTime(consultant.StatsDateTime));
 
-        // Determining the SupplyDateTime value based on the specified data from the request.
-        if (requestDto.PaidDateTime.HasValue)
+        // Determining the StatsDateTime value based on the specified data from the request.
+        if (requestDto.StatsDateTime.HasValue)
         {
             // Check if the current user has permission to specify the paid datetime.
             if (!_authorizationService.CanSetConsultantPaidDateTime())
@@ -233,7 +188,7 @@ internal class ConsultantService : LockableEntityService, IConsultantService
                 throw new AuthorizationException();
             }
 
-            // Prevent the consultant's SupplyDateTime to be modified when the consultant is
+            // Prevent the consultant's StatsDateTime to be modified when the consultant is
             // locked.
             if (consultant.IsLocked)
             {
@@ -241,30 +196,28 @@ internal class ConsultantService : LockableEntityService, IConsultantService
                     .ReplaceResourceName(DisplayNames.Consultant)
                     .ReplacePropertyName(DisplayNames.PaidDateTime);
                 throw new OperationException(
-                    nameof(requestDto.PaidDateTime),
+                    nameof(requestDto.StatsDateTime),
                     errorMessage);
             }
 
-            // Assign the new SupplyDateTime value only if it's different from the old one.
-            if (requestDto.PaidDateTime.Value != consultant.PaidDateTime)
+            // Assign the new StatsDateTime value only if it's different from the old one.
+            if (requestDto.StatsDateTime.Value != consultant.StatsDateTime)
             {
-                // Validate the specfied SupplyDateTime from the request.
+                // Validate the specfied StatsDateTime from the request.
                 try
                 {
-                    _statsService.ValidateStatsDateTime(
-                        consultant,
-                        requestDto.PaidDateTime.Value);
+                    ValidateStatsDateTime(consultant, requestDto.StatsDateTime.Value);
                 }
                 catch (ValidationException exception)
                 {
                     string errorMessage = exception.Message
                         .ReplacePropertyName(DisplayNames.PaidDateTime);
                     throw new OperationException(
-                        nameof(requestDto.PaidDateTime),
+                        nameof(requestDto.StatsDateTime),
                         errorMessage);
                 }
 
-                consultant.PaidDateTime = requestDto.PaidDateTime.Value;
+                consultant.StatsDateTime = requestDto.StatsDateTime.Value;
             }
         }
 
@@ -277,23 +230,17 @@ internal class ConsultantService : LockableEntityService, IConsultantService
         newData = new ConsultantUpdateHistoryDataDto(consultant);
 
         // Initialize update history.
-        LogUpdateHistory(consultant, oldData, newData, requestDto.UpdateReason);
+        LogUpdateHistory(consultant, oldData, newData, requestDto.UpdatedReason);
 
         // Perform the updating operation.
         try
         {
             await _context.SaveChangesAsync();
 
-            // Consultant can be updated without any error.
-            // Revert the old stats.
-            await _statsService.IncrementConsultantGrossRevenueAsync(
-                -oldAmount,
-                oldPaidDate);
-
-            // Adjust new stats.
+            // Incurement new stats.
             await _statsService.IncrementConsultantGrossRevenueAsync(
                 consultant.AmountBeforeVat,
-                DateOnly.FromDateTime(consultant.PaidDateTime));
+                DateOnly.FromDateTime(consultant.StatsDateTime));
 
             // Commit the transaction and finishing the operation.
             await transaction.CommitAsync();
@@ -302,27 +249,8 @@ internal class ConsultantService : LockableEntityService, IConsultantService
         when (exception.InnerException is MySqlException sqlException)
         {
             // Handle exception and convert to the appropriate exception.
-            SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
-            exceptionHandler.Handle(sqlException);
-            if (exceptionHandler.IsForeignKeyNotFound)
-            {
-                string propertyName = string.Empty;
-                string errorMessage = ErrorMessages.NotFound;
-                switch (exceptionHandler.ViolatedFieldName)
-                {
-                    case "user_id":
-                        propertyName = nameof(consultant.CreatedUserId);
-                        errorMessage = errorMessage
-                            .ReplaceResourceName(DisplayNames.User);
-                        break;
-                    case "customer_id":
-                        propertyName = nameof(consultant.CustomerId);
-                        errorMessage = errorMessage
-                            .ReplaceResourceName(DisplayNames.Customer);
-                        break;
-                }
-                throw new OperationException(propertyName, errorMessage);
-            }
+            SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(sqlException);
+            HandleCreateOrUpdateException(exceptionHandler);
             throw;
         }
         catch (DbUpdateConcurrencyException)
@@ -334,7 +262,7 @@ internal class ConsultantService : LockableEntityService, IConsultantService
     /// <inheritdoc/>
     public async Task DeleteAsync(int id)
     {
-        // Fetch the entity from the database and ensure it exists.
+        // Fetch the consultant from the database and ensure it exists.
         Consultant consultant = await _context.Consultants
             .SingleOrDefaultAsync(c => c.Id == id && !c.IsDeleted)
             ?? throw new ResourceNotFoundException(
@@ -342,9 +270,11 @@ internal class ConsultantService : LockableEntityService, IConsultantService
                 nameof(id),
                 id.ToString());
 
-        // Ensure the 
-
-
+        // Ensure the consultant is editable by the requester.
+        if (!_authorizationService.CanEditConsultant(consultant))
+        {
+            throw new AuthorizationException();
+        }
 
         // Remove expense.
         _context.Consultants.Remove(consultant);
@@ -357,13 +287,12 @@ internal class ConsultantService : LockableEntityService, IConsultantService
             // The expense can be deleted sucessfully without any error, revert the stats.
             await _statsService.IncrementConsultantGrossRevenueAsync(
                 -consultant.AmountBeforeVat,
-                DateOnly.FromDateTime(consultant.PaidDateTime));
+                DateOnly.FromDateTime(consultant.StatsDateTime));
         }
         catch (DbUpdateException exception)
         when (exception.InnerException is MySqlException sqlExecption)
         {
-            SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
-            exceptionHandler.Handle(sqlExecption);
+            SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(sqlExecption);
             if (exceptionHandler.IsDeleteOrUpdateRestricted)
             {
                 string errorMessage = ErrorMessages.DeleteRestricted
@@ -379,29 +308,46 @@ internal class ConsultantService : LockableEntityService, IConsultantService
         }
     }
 
-    /// <summary>
-    /// Log the update history for the specified consultant entity.
-    /// </summary>
-    /// <param name="consultant">The consultant to be logged a new update history.</param>
-    /// <param name="oldData">The old data before updating of the consultant.</param>
-    /// <param name="newData">The new data after updating of the consultant.</param>
-    /// <param name="reason">The reason of the modification.</param>
-    private void LogUpdateHistory(
-            Consultant consultant,
-            ConsultantUpdateHistoryDataDto oldData,
-            ConsultantUpdateHistoryDataDto newData,
-            string reason)
+    /// <inheritdoc/>
+    protected override DbSet<Consultant> GetRepository(DatabaseContext context)
     {
-        ConsultantUpdateHistory updateHistory = new ConsultantUpdateHistory
-        {
-            UpdatedDateTime = DateTime.UtcNow.ToApplicationTime(),
-            Reason = reason,
-            OldData = JsonSerializer.Serialize(oldData),
-            NewData = JsonSerializer.Serialize(newData),
-            UpdatedUserId = _authorizationService.GetUserId()
-        };
+        return context.Consultants;
+    }
 
-        consultant.UpdateHistories ??= new List<ConsultantUpdateHistory>();
-        consultant.UpdateHistories.Add(updateHistory);
+    /// <inheritdoc />
+    protected override bool CanAccessUpdateHistories(IAuthorizationInternalService service)
+    {
+        return service.CanAccessConsultantUpdateHistories();
+    }
+
+    /// <summary>
+    /// Handles the exception throws by the database when saving during the creating or
+    /// updating operation.
+    /// </summary>
+    /// <param name="handler">
+    /// An initialized exception handler that captured the exception.
+    /// </param>
+    /// <exception cref="ConcurrencyException">
+    /// Throws when the information of the requesting user has already been deleted before
+    /// the operation.
+    /// </exception>
+    /// <exception cref="OperationException">
+    /// Throws when the referenced <see cref="Customer"/> who has id specfied by the value of
+    /// the <c>CustomerId</c> property in the consultant doesn't exist or has already been deleted.
+    /// </exception>
+    private static void HandleCreateOrUpdateException(SqlExceptionHandler handler)
+    {
+        if (handler.IsForeignKeyNotFound)
+        {
+            switch (handler.ViolatedFieldName)
+            {
+                case nameof(Consultant.CreatedUserId):
+                    throw new ConcurrencyException();
+                case nameof(Consultant.CustomerId):
+                    string errorMessage = ErrorMessages.NotFound
+                        .ReplaceResourceName(DisplayNames.Customer);
+                    throw new OperationException(nameof(Consultant.Customer), errorMessage);
+            }
+        }
     }
 }

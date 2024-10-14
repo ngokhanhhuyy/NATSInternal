@@ -29,8 +29,9 @@ public class SupplyController : ControllerBase
             [FromQuery] SupplyListRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _listValidator.Validate(requestDto.TransformValues());
+        validationResult = _listValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -67,9 +68,11 @@ public class SupplyController : ControllerBase
             [FromBody] SupplyUpsertRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult = _upsertValidator
-            .Validate(requestDto.TransformValues(), options =>
-                options.IncludeRuleSets("Create").IncludeRulesNotInRuleSet());
+            .Validate(
+                requestDto,
+                options => options.IncludeRuleSets("Create").IncludeRulesNotInRuleSet());
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -109,9 +112,11 @@ public class SupplyController : ControllerBase
             [FromBody] SupplyUpsertRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult = _upsertValidator
-            .Validate(requestDto.TransformValues(), options =>
-                options.IncludeRuleSets("Update").IncludeRulesNotInRuleSet());
+            .Validate(
+                requestDto,
+                options => options.IncludeRuleSets("Update").IncludeRulesNotInRuleSet());
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

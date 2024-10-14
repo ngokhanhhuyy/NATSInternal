@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Entities;
 
-internal class Announcement : IIdentifiableEntity<Announcement>
+internal class Announcement : IUpsertableEntity<Announcement>
 {
     [Key]
     public int Id { get; set; }
@@ -42,7 +42,6 @@ internal class Announcement : IIdentifiableEntity<Announcement>
         entity.HasOne(a => a.CreatedUser)
             .WithMany(u => u.CreatedAnnouncements)
             .HasForeignKey(a => a.CreatedUserId)
-            .HasConstraintName($"FK_Announcements_CreatedUser_CreatedUserId")
             .OnDelete(DeleteBehavior.Cascade);
         entity.Property(c => c.RowVersion)
             .IsRowVersion();

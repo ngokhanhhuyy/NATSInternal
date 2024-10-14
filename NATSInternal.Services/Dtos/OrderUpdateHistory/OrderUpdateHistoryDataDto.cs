@@ -2,7 +2,7 @@ namespace NATSInternal.Services.Dtos;
 
 public class OrderUpdateHistoryDataDto
 {
-    public DateTime PaidDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
     public string Note { get; set; }
     public int CustomerId { get; set; }
     public List<OrderItemUpdateHistoryDataDto> Items { get; set; }
@@ -11,7 +11,7 @@ public class OrderUpdateHistoryDataDto
     
     internal OrderUpdateHistoryDataDto(Order order)
     {
-        PaidDateTime = order.PaidDateTime;
+        StatsDateTime = order.StatsDateTime;
         Note = order.Note;
         CustomerId = order.CustomerId;
         Items = order.Items

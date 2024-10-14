@@ -6,24 +6,46 @@
 public class ProductCategoryController : ControllerBase
 {
     private readonly IProductCategoryService _service;
-    private readonly IValidator<ProductCategoryRequestDto> _validator;
+    private readonly IValidator<ProductCategoryListRequestDto> _listValidator;
+    private readonly IValidator<ProductCategoryRequestDto> _upsertValidator;
     private readonly INotifier _notifier;
 
     public ProductCategoryController(
             IProductCategoryService service,
-            IValidator<ProductCategoryRequestDto> validator,
+            IValidator<ProductCategoryListRequestDto> listValidator,
+            IValidator<ProductCategoryRequestDto> upsertValidator,
             INotifier notifier)
     {
         _service = service;
-        _validator = validator;
+        _listValidator = listValidator;
+        _upsertValidator = upsertValidator;
         _notifier = notifier;
     }
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> ProductCategoryList()
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ProductCategoryList(
+            [FromQuery] ProductCategoryListRequestDto requestDto)
     {
-        return Ok(await _service.GetListAsync());
+        // Validate data from the request.
+
+        requestDto.TransformValues();
+        ValidationResult validationResult = _listValidator.Validate(requestDto);
+        if (!validationResult.IsValid)
+        {
+            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
+            return BadRequest(ModelState);
+        }
+
+        return Ok(await _service.GetListAsync(requestDto));
+    }
+
+    [HttpGet("All")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ProductCategoryAll()
+    {
+        return Ok(await _service.GetAllAsync());
     }
 
     [HttpGet("{id:int}")]
@@ -51,8 +73,9 @@ public class ProductCategoryController : ControllerBase
             [FromBody] ProductCategoryRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _validator.Validate(requestDto.TransformValues());
+        validationResult = _upsertValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -91,8 +114,9 @@ public class ProductCategoryController : ControllerBase
             [FromBody] ProductCategoryRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _validator.Validate(requestDto.TransformValues());
+        validationResult = _upsertValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

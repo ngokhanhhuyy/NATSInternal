@@ -9,30 +9,30 @@ public class CustomerDebtOperationResponseDto
     public CustomerDebtOperationAuthorizationResponseDto Authorization { get; set; }
     
     internal CustomerDebtOperationResponseDto(
-            DebtIncurrence debt,
+            DebtIncurrence debtIncurrence,
             IAuthorizationInternalService authorizationService)
     {
         Operation = DebtOperationType.DebtIncurrence;
-        Amount = debt.Amount;
-        OperatedDateTime = debt.IncurredDateTime;
-        IsLocked = debt.IsLocked;
+        Amount = debtIncurrence.Amount;
+        OperatedDateTime = debtIncurrence.StatsDateTime;
+        IsLocked = debtIncurrence.IsLocked;
         
         DebtIncurrenceAuthorizationResponseDto authorization;
-        authorization = authorizationService.GetDebtIncurrenceAuthorization(debt);
+        authorization = authorizationService.GetDebtIncurrenceAuthorization(debtIncurrence);
         Authorization = new CustomerDebtOperationAuthorizationResponseDto(authorization);
     }
     
     internal CustomerDebtOperationResponseDto(
-            DebtPayment payment,
+            DebtPayment debtPayment,
             IAuthorizationInternalService authorizationService)
     {
         Operation = DebtOperationType.DebtPayment;
-        Amount = payment.Amount;
-        OperatedDateTime = payment.PaidDateTime;
-        IsLocked = payment.IsLocked;
+        Amount = debtPayment.Amount;
+        OperatedDateTime = debtPayment.StatsDateTime;
+        IsLocked = debtPayment.IsLocked;
         
         DebtPaymentAuthorizationResponseDto authorization;
-        authorization = authorizationService.GetDebtPaymentAuthorization(payment);
+        authorization = authorizationService.GetDebtPaymentAuthorization(debtPayment);
         Authorization = new CustomerDebtOperationAuthorizationResponseDto(authorization);
     }
 }

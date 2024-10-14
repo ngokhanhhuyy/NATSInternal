@@ -29,8 +29,9 @@ public class CustomerController : ControllerBase
             [FromQuery] CustomerListRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _listValidator.Validate(requestDto.TransformValues());
+        validationResult = _listValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -87,8 +88,9 @@ public class CustomerController : ControllerBase
             [FromBody] CustomerUpsertRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto.TransformValues());
+        validationResult = _upsertValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -124,8 +126,9 @@ public class CustomerController : ControllerBase
             [FromBody] CustomerUpsertRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto.TransformValues());
+        validationResult = _upsertValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

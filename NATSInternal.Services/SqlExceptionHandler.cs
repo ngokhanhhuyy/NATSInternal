@@ -2,13 +2,18 @@
 
 namespace NATSInternal.Services;
 
+/// <summary>
+/// A handler to handle the exception thrown by the database during the saving operation.
+/// </summary>
 internal partial class SqlExceptionHandler
 {
-    /// <summary>
-    /// Extracts the errors details from the specified <c>exception</c>
-    /// </summary>
-    /// <param name="exception"></param>
-    public void Handle(MySqlException exception)
+
+    private string _violatedTableName;
+    private string _violatedFieldName;
+    private string _violatedConstraintName;
+    private object _violatedValue;
+
+    public SqlExceptionHandler(MySqlException exception)
     {
         Match match;
         switch (exception.Number)
@@ -18,10 +23,10 @@ internal partial class SqlExceptionHandler
                 match = UniqueConstraintRegex().Match(exception.Message);
                 if (match.Success)
                 {
-                    ViolatedTableName = match.Groups["tableName"].Value;
-                    ViolatedConstraintName = match.Groups["constraintName"].Value;
-                    ViolatedFieldName = ViolatedConstraintName.Split("__").Last();
-                    ViolatedValue = match.Groups["duplicatedKeyValue"].Value;
+                    _violatedTableName = match.Groups["tableName"].Value;
+                    _violatedConstraintName = match.Groups["constraintName"].Value;
+                    _violatedFieldName = ViolatedConstraintName.Split("__").Last();
+                    _violatedValue = match.Groups["duplicatedKeyValue"].Value;
                 }
 
                 break;
@@ -31,7 +36,7 @@ internal partial class SqlExceptionHandler
                 match = NotNullConstraintRegex().Match(exception.Message);
                 if (match.Success)
                 {
-                    ViolatedFieldName = match.Groups["columnName"].Value;
+                    _violatedFieldName = match.Groups["columnName"].Value;
                 }
 
                 break;
@@ -41,7 +46,7 @@ internal partial class SqlExceptionHandler
                 match = MaxLengthConstraintRegex().Match(exception.Message);
                 if (match.Success)
                 {
-                    ViolatedFieldName = match.Groups["columnName"].Value;
+                    _violatedFieldName = match.Groups["columnName"].Value;
                 }
 
                 break;
@@ -51,9 +56,9 @@ internal partial class SqlExceptionHandler
                 match = DeleteOrUpdateRestrictedRegex().Match(exception.Message);
                 if (match.Success)
                 {
-                    ViolatedConstraintName = match.Groups["constraintName"].Value;
-                    ViolatedTableName = match.Groups["tableName"].Value;
-                    ViolatedFieldName = match.Groups["columnName"].Value;
+                    _violatedConstraintName = match.Groups["constraintName"].Value;
+                    _violatedTableName = match.Groups["tableName"].Value;
+                    _violatedFieldName = match.Groups["columnName"].Value;
                 }
 
                 break;
@@ -63,9 +68,9 @@ internal partial class SqlExceptionHandler
                 match = ForeignKeyNotFoundRegex().Match(exception.Message);
                 if (match.Success)
                 {
-                    ViolatedConstraintName = match.Groups["constraintName"].Value;
-                    ViolatedTableName = match.Groups["tableName"].Value;
-                    ViolatedFieldName = match.Groups["columnName"].Value;
+                    _violatedConstraintName = match.Groups["constraintName"].Value;
+                    _violatedTableName = match.Groups["tableName"].Value;
+                    _violatedFieldName = match.Groups["columnName"].Value;
                 }
 
                 break;
@@ -82,13 +87,29 @@ internal partial class SqlExceptionHandler
 
     public bool IsDeleteOrUpdateRestricted { get; protected set; }
 
-    public string ViolatedTableName { get; protected set; }
+    public string ViolatedTableName
+    {
+        get => _violatedTableName;
+        protected set => _violatedTableName = value.SnakeCaseToPascalCase();
+    }
 
-    public string ViolatedFieldName { get; protected set; }
+    public string ViolatedFieldName
+    {
+        get => _violatedFieldName;
+        set => _violatedFieldName = value
+            .SnakeCaseToPascalCase()
+            .Replace("Username", "UserName");
+    }
 
-    public string ViolatedConstraintName { get; protected set; }
+    public string ViolatedConstraintName
+    {
+        get => _violatedConstraintName;
+        set => _violatedConstraintName = value
+            .SnakeCaseToPascalCase()
+            .Replace("Username", "UserName");
+    }
 
-    public object ViolatedValue { get; protected set; }
+    public object ViolatedValue => _violatedValue;
 
     [GeneratedRegex(@"Duplicate entry\s+\'(?<duplicatedKeyValue>.+)\'\s+for key\s+\'(?<tableName>\w+)\.(?<constraintName>\w+)'")]
     private static partial Regex UniqueConstraintRegex();

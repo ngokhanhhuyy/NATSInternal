@@ -13,7 +13,7 @@ public class UserCreateRequestDto : IRequestDto
         UserName = UserName?.ToNullIfEmpty();
         Password = Password?.ToNullIfEmpty();
         ConfirmationPassword = ConfirmationPassword?.ToNullIfEmpty();
-        PersonalInformation = PersonalInformation.TransformValues();
-        UserInformation = UserInformation.TransformValues();
+        PersonalInformation.TransformValues();
+        UserInformation.TransformValues();
     }
 }

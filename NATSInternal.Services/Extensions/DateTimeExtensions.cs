@@ -51,7 +51,7 @@ public static class DateTimeExtensions
         {
             throw new ArgumentException(
                 "Value for pastDateTime parameter cannot be later " +
-                "than current DateTime value."
+                "than current CreatedDateTime value."
             );
         }
 
@@ -71,7 +71,7 @@ public static class DateTimeExtensions
         {
             throw new ArgumentException(
                 "Value for futureDateTime parameter cannot be earlier" +
-                "than current DateTime value."
+                "than current CreatedDateTime value."
             );
         }
 
@@ -88,7 +88,7 @@ public static class DateTimeExtensions
         {
             throw new ArgumentException(
                 "Value for pastDateTime parameter cannot be later " +
-                "than current DateTime value."
+                "than current CreatedDateTime value."
             );
         }
 

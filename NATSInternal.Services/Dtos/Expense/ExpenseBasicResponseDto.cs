@@ -1,10 +1,11 @@
 namespace NATSInternal.Services.Dtos;
 
 public class ExpenseBasicResponseDto
+    : IFinancialEngageableBasicResponseDto<ExpenseAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public long Amount { get; set; }
-    public DateTime PaidDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
     public ExpenseCategory Category { get; set; }
     public bool IsLocked { get; set; }
     public ExpenseAuthorizationResponseDto Authorization { get; set; }
@@ -26,7 +27,7 @@ public class ExpenseBasicResponseDto
     {
         Id = expense.Id;
         Amount = expense.Amount;
-        PaidDateTime = expense.PaidDateTime;
+        StatsDateTime = expense.StatsDateTime;
         Category = expense.Category;
         IsLocked = expense.IsLocked;
     }

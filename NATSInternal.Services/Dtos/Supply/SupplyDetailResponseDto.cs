@@ -7,7 +7,7 @@ public class SupplyDetailResponseDto : IProductEngageableDetailResponseDto<
         SupplyAuthorizationResponseDto>
 {
     public int Id { get; internal set; }
-    public DateTime PaidDateTime { get; internal set; }
+    public DateTime StatsDateTime { get; internal set; }
     public long ShipmentFee { get; internal set; }
     public long ItemAmount { get; internal set; }
     public long Amount { get; internal set; }
@@ -29,11 +29,10 @@ public class SupplyDetailResponseDto : IProductEngageableDetailResponseDto<
 
     internal SupplyDetailResponseDto(
             Supply supply,
-            SupplyAuthorizationResponseDto authorization, 
-            bool mapUpdateHistories = false)
+            SupplyAuthorizationResponseDto authorization)
     {
         Id = supply.Id;
-        PaidDateTime = supply.SuppliedDateTime;
+        StatsDateTime = supply.StatsDateTime;
         ShipmentFee = supply.ShipmentFee;
         ItemAmount = supply.ItemAmount;
         Amount = supply.Amount;
@@ -49,12 +48,8 @@ public class SupplyDetailResponseDto : IProductEngageableDetailResponseDto<
             .Select(p => new SupplyPhotoResponseDto(p)).ToList();
         User = new UserBasicResponseDto(supply.CreatedUser);
         Authorization = authorization;
-        
-        if (mapUpdateHistories)
-        {
-            UpdateHistories = supply.UpdateHistories
-                .Select(uh => new SupplyUpdateHistoryResponseDto(uh))
-                .ToList();
-        }
+        UpdateHistories = supply.UpdateHistories
+            .Select(uh => new SupplyUpdateHistoryResponseDto(uh))
+            .ToList();
     }
 }

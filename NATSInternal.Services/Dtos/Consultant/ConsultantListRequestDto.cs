@@ -3,7 +3,7 @@ namespace NATSInternal.Services.Dtos;
 public class ConsultantListRequestDto : IFinancialEngageableListRequestDto
 {
     public bool OrderByAscending { get; set; }
-    public string OrderByField { get; set; } = nameof(FieldOptions.PaidDateTime);
+    public string OrderByField { get; set; } = nameof(OrderByFieldOptions.StatsDateTime);
     public int Month { get; set; }
     public int Year { get; set; }
     public bool IgnoreMonthYear { get; set; }
@@ -14,6 +14,11 @@ public class ConsultantListRequestDto : IFinancialEngageableListRequestDto
     public void TransformValues()
     {
         OrderByField = OrderByField?.ToNullIfEmpty();
+
+        if (CreatedUserId == 0)
+        {
+            CreatedUserId = null;
+        }
 
         DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
         if (!IgnoreMonthYear)
@@ -28,11 +33,5 @@ public class ConsultantListRequestDto : IFinancialEngageableListRequestDto
                 Year = currentDateTime.Year;
             }
         }
-    }
-
-    public enum FieldOptions
-    {
-        PaidDateTime,
-        Amount
     }
 }

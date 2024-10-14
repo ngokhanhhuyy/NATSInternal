@@ -1,7 +1,10 @@
 ﻿namespace NATSInternal.Services;
 
 /// <inheritdoc />
-internal class ProductCategoryService : IProductCategoryService
+internal class ProductCategoryService
+    :
+        UpsertableAbstractService<ProductCategory, ProductCategoryListRequestDto>,
+        IProductCategoryService
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
@@ -15,24 +18,47 @@ internal class ProductCategoryService : IProductCategoryService
     }
 
     /// <inheritdoc />
-    public async Task<ProductCategoryListResponseDto> GetListAsync()
+    public async Task<ProductCategoryListResponseDto> GetListAsync(
+            ProductCategoryListRequestDto requestDto = null)
     {
+        // Initialize query.
+        IQueryable<ProductCategory> query = _context.ProductCategories
+                .OrderBy(productCategory => productCategory.Id);
+
+        EntityListDto<ProductCategory> listDto;
+        listDto = await GetListOfEntitiesAsync(query, requestDto);
+
         return new ProductCategoryListResponseDto
         {
-            Items = await _context.ProductCategories
-                .OrderBy(pc => pc.Id)
-                .Select(pc => new ProductCategoryResponseDto(pc))
-                .ToListAsync(),
+            PageCount = listDto.PageCount,
+            Items = listDto.Items
+                .Select(category => new ProductCategoryResponseDto(
+                    category,
+                    _authorizationService.GetProductCategoryAuthorization()))
+                .ToList(),
             Authorization = _authorizationService.GetProductCategoryAuthorization()
         };
+    }
+
+    /// <inheritdoc />
+    public async Task<List<ProductCategoryResponseDto>> GetAllAsync()
+    {
+        return await _context.ProductCategories
+            .OrderBy(pc => pc.Id)
+            .Select(productCategory => new ProductCategoryResponseDto(
+                productCategory,
+                _authorizationService.GetProductCategoryAuthorization()))
+            .ToListAsync();
     }
 
     /// <inheritdoc />
     public async Task<ProductCategoryResponseDto> GetDetailAsync(int id)
     {
         return await _context.ProductCategories
-            .Where(p => p.Id == id)
-            .Select(p => new ProductCategoryResponseDto(p))
+            .Where(pc => pc.Id == id)
+            .Select(pc => new ProductCategoryResponseDto(
+                pc,
+                _authorizationService.GetProductCategoryAuthorization()))
             .SingleOrDefaultAsync()
             ?? throw new ResourceNotFoundException(
                 nameof(ProductCategory),
@@ -170,8 +196,7 @@ internal class ProductCategoryService : IProductCategoryService
     /// </exception>
     private static void HandleException(MySqlException exception)
     {
-        SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
-        exceptionHandler.Handle(exception);
+        SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(exception);
         string errorMessage;
         
         if (exceptionHandler.IsUniqueConstraintViolated)

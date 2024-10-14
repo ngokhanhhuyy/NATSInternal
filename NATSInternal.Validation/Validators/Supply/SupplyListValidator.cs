@@ -6,7 +6,7 @@ public class SupplyListValidator : Validator<SupplyListRequestDto>
     {
         RuleFor(dto => dto.OrderByField)
             .NotEmpty()
-            .Must(IsEnumElementName<SupplyListRequestDto.FieldOptions>)
+            .IsOneOfFieldOptions(FieldOptions)
             .WithName(DisplayNames.OrderByField);
         RuleFor(dto => dto.Month)
             .IsValidQueryStatsMonth()
@@ -23,5 +23,14 @@ public class SupplyListValidator : Validator<SupplyListRequestDto>
             .GreaterThanOrEqualTo(5)
             .LessThan(50)
             .WithName(DisplayNames.ResultsPerPage);
+    }
+
+    private static IEnumerable<OrderByFieldOptions> FieldOptions
+    {
+        get => new List<OrderByFieldOptions>
+        {
+            OrderByFieldOptions.Amount,
+            OrderByFieldOptions.StatsDateTime,
+        };
     }
 }

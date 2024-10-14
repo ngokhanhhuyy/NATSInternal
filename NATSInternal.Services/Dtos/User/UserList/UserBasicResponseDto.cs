@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class UserBasicResponseDto : IUserBasicResponseDto<UserBasicAuthorizationResponseDto>
+public class UserBasicResponseDto
 {
     public int Id { get; set; }
     public string UserName { get; set; }

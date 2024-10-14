@@ -50,7 +50,7 @@ public interface IDebtIncurrenceService
     /// </returns>
     /// <exception cref="AuthorizationException">
     /// Throws when the requesting user doens't have enough permissions to specify a value for
-    /// the <c>IncurredDateTime</c> property in the <c>requestDto</c> argument.
+    /// the <c>StatsDateTime</c> property in the <c>requestDto</c> argument.
     /// </exception>
     /// <exception cref="ConcurrencyException">
     /// Throws under the following circumstances:
@@ -74,7 +74,7 @@ public interface IDebtIncurrenceService
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
     /// <exception cref="ValidationException">
-    /// Throws when the specified value for the <c>IncurredDateTime</c> property is invalid.
+    /// Throws when the specified value for the <c>StatsDateTime</c> property is invalid.
     /// </exception>
     /// <exception cref="ResourceNotFoundException">
     /// Throws when the debt incurrence, specified by the value of the <c>id</c> argument,
@@ -85,7 +85,7 @@ public interface IDebtIncurrenceService
     /// - When the requesting user doesn't have enough permissions to update the specified debt
     /// incurrencesome of the new entity's properties.<br/>
     /// - When the requesting user doesn't have enough permissions to specify a value for the
-    /// <c>IncurredDateTime</c> property in the <c>requestDto</c> argument.
+    /// <c>StatsDateTime</c> property in the <c>requestDto</c> argument.
     /// </exception>
     /// <exception cref="ConcurrencyException">
     /// Throws under the following circumstances:<br/>
@@ -95,7 +95,7 @@ public interface IDebtIncurrenceService
     /// </exception>
     /// <exception cref="OperationException">
     /// Throws under the following circumstances:<br/>
-    /// - The <c>IncurredDateTime</c> property in the <c>requestDto</c> argument is specified a
+    /// - The <c>StatsDateTime</c> property in the <c>requestDto</c> argument is specified a
     /// value when the debt incurrence has already been locked.<br/>
     /// - The remaining debt amount of the specified customer becomes negative after the
     /// operation.

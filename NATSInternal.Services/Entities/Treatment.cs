@@ -13,13 +13,13 @@ internal class Treatment
     public int Id { get; set; }
 
     [Required]
-    public DateTime PaidDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
 
     [Required]
-    public long ServiceAmountBeforeVat { get; set; } = 0;
+    public long ServiceAmountBeforeVat { get; set; }
 
     [Required]
-    public int ServiceVatAmount { get; set; } = 10;
+    public long ServiceVatAmount { get; set; }
 
     [StringLength(255)]
     public string Note { get; set; }
@@ -96,19 +96,6 @@ internal class Treatment
         .FirstOrDefault();
 
     [NotMapped]
-    public DateTime StatsDateTime
-    {
-        get => PaidDateTime;
-        set => PaidDateTime = value;
-    }
-
-    [NotMapped]
-    public static Expression<Func<Treatment, DateTime>> StatsDateTimeExpression
-    {
-        get => (treatment) => treatment.PaidDateTime;
-    }
-
-    [NotMapped]
     public static Expression<Func<Treatment, long>> AmountAfterVatExpression
     {
         get => (Treatment t) =>
@@ -132,7 +119,7 @@ internal class Treatment
             .WithMany(c => c.Treatments)
             .HasForeignKey(t => t.CustomerId)
             .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder.HasIndex(t => t.PaidDateTime);
+        entityBuilder.HasIndex(t => t.StatsDateTime);
         entityBuilder.HasIndex(t => t.IsDeleted);
         entityBuilder.Property(t => t.RowVersion)
             .IsRowVersion();

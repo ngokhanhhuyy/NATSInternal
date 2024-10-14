@@ -46,7 +46,8 @@ internal class StatsService : IStatsService
     }
 
     /// <inheritdoc />
-    public async Task<DailyStatsDetailResponseDto> GetDailyStatsDetailAsync(DateOnly? recordedDate)
+    public async Task<DailyStatsDetailResponseDto> GetDailyStatsDetailAsync(
+            DateOnly? recordedDate)
     {
         DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
         DateOnly date = recordedDate ?? DateOnly.FromDateTime(currentDateTime);

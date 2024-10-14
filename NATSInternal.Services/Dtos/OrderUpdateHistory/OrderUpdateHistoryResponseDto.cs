@@ -9,8 +9,8 @@ public class OrderUpdateHistoryResponseDto : IUpdateHistoryResponseDto
     public UserBasicResponseDto UpdatedUser { get; set; }
     public string UpdatedReason { get; set; }
     
-    public DateTime OldPaidDateTime => _oldData.PaidDateTime;
-    public DateTime NewPaidDateTime => _newData.PaidDateTime;
+    public DateTime OldPaidDateTime => _oldData.StatsDateTime;
+    public DateTime NewPaidDateTime => _newData.StatsDateTime;
     
     public string OldNote => _oldData.Note;
     public string NewNote => _newData.Note;

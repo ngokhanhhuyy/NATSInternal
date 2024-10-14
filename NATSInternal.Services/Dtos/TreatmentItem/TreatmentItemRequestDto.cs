@@ -1,10 +1,10 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class TreatmentItemRequestDto : IProductEngageableItemRequestDto
+public class TreatmentItemRequestDto : IProductExportableItemRequestDto
 {
     public int? Id { get; set; }
-    public long AmountPerUnit { get; set; }
-    public int VatAmount { get; set; }
+    public long ProductAmountPerUnit { get; set; }
+    public long VatAmountPerUnit { get; set; }
     public int Quantity { get; set; }
     public int ProductId { get; set; }
     public bool HasBeenChanged { get; set; }

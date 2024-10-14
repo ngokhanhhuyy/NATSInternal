@@ -9,8 +9,8 @@ public class DebtPaymentUpdateHistoryResponseDto : IUpdateHistoryResponseDto
     public UserBasicResponseDto UpdatedUser { get; set; }
     public string UpdatedReason { get; set; }
     
-    public DateTime OldPaidDateTime => _oldData.PaidDateTime;
-    public DateTime NewPaidDateTime => _newData.PaidDateTime;
+    public DateTime OldPaidDateTime => _oldData.StatsDateTime;
+    public DateTime NewPaidDateTime => _newData.StatsDateTime;
     
     public long OldAmount => _oldData.Amount;
     public long NewAmount => _newData.Amount;

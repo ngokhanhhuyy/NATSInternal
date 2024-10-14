@@ -4,7 +4,7 @@ public class OrderUpsertValidator : Validator<OrderUpsertRequestDto>
 {
     public OrderUpsertValidator()
     {
-        RuleFor(dto => dto.PaidDateTime)
+        RuleFor(dto => dto.StatsDateTime)
             .IsValidStatsDateTime()
             .WithName(DisplayNames.PaidDateTime);
         RuleFor(dto => dto.Note)
@@ -23,7 +23,7 @@ public class OrderUpsertValidator : Validator<OrderUpsertRequestDto>
 
         RuleSet("Update", () =>
         {
-            RuleFor(dto => dto.UpdateReason)
+            RuleFor(dto => dto.UpdatedReason)
                 .NotEmpty()
                 .MaximumLength(255)
                 .WithName(DisplayNames.Reason);

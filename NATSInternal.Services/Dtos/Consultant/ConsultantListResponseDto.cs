@@ -1,6 +1,9 @@
 namespace NATSInternal.Services.Dtos;
 
-public class ConsultantListResponseDto
+public class ConsultantListResponseDto : IFinancialEngageableListResponseDto<
+        ConsultantBasicResponseDto,
+        ConsultantAuthorizationResponseDto,
+        ConsultantListAuthorizationResponseDto>
 {
     public int PageCount { get; set; }
     public List<ConsultantBasicResponseDto> Items { get; set; }

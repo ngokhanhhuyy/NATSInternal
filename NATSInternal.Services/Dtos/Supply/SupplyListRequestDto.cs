@@ -3,7 +3,7 @@
 public class SupplyListRequestDto : IProductEngageableListRequestDto
 {
     public bool OrderByAscending { get; set; }
-    public string OrderByField { get; set; } = nameof(FieldOptions.PaidDateTime);
+    public string OrderByField { get; set; } = nameof(OrderByFieldOptions.StatsDateTime);
     public int Year { get; set; }
     public int Month { get; set; }
     public bool IgnoreMonthYear { get; set; }
@@ -15,6 +15,16 @@ public class SupplyListRequestDto : IProductEngageableListRequestDto
     public void TransformValues()
     {
         OrderByField = OrderByField?.ToNullIfEmpty();
+
+        if (CreatedUserId == 0)
+        {
+            CreatedUserId = null;
+        }
+
+        if (ProductId == 0)
+        {
+            ProductId = null;
+        }
 
         DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
         if (!IgnoreMonthYear)
@@ -29,13 +39,5 @@ public class SupplyListRequestDto : IProductEngageableListRequestDto
                 Year = currentDateTime.Year;
             }
         }
-    }
-
-    public enum FieldOptions
-    {
-        TotalAmount,
-        PaidDateTime,
-        ShipmentFee,
-        ItemAmount,
     }
 }

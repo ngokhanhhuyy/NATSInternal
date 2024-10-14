@@ -9,7 +9,7 @@ internal class Supply
     public int Id { get; set; }
 
     [Required]
-    public DateTime SuppliedDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
 
     [Required]
     public long ShipmentFee { get; set; } = 0;
@@ -42,7 +42,7 @@ internal class Supply
         .FirstOrDefault();
     
     [NotMapped]
-    public long ItemAmount => Items.Sum(i => i.AmountPerUnit * i.Quantity);
+    public long ItemAmount => Items.Sum(i => i.ProductAmountPerUnit * i.Quantity);
 
     [NotMapped]
     public long Amount => ItemAmount + ShipmentFee;
@@ -72,19 +72,6 @@ internal class Supply
         .Select(uh => uh.UpdatedUser)
         .LastOrDefault();
 
-    [NotMapped]
-    public DateTime StatsDateTime
-    {
-        get => SuppliedDateTime;
-        set => SuppliedDateTime = value;
-    }
-
-    [NotMapped]
-    public static Expression<Func<Supply, DateTime>> StatsDateTimeExpression
-    {
-        get => (supply) => supply.SuppliedDateTime;
-    }
-
     // Model configurations.
     public static void ConfigureModel(EntityTypeBuilder<Supply> entityBuilder)
     {
@@ -93,7 +80,7 @@ internal class Supply
             .WithMany(u => u.Supplies)
             .HasForeignKey(s => s.CreatedUserId)
             .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder.HasIndex(s => s.SuppliedDateTime)
+        entityBuilder.HasIndex(s => s.StatsDateTime)
             .IsUnique();
         entityBuilder.HasIndex(s => s.IsDeleted);
         entityBuilder.Property(c => c.RowVersion)

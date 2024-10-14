@@ -13,7 +13,7 @@ internal class Expense
     public long Amount { get; set; }
 
     [Required]
-    public DateTime PaidDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
     
     [Required]
     public ExpenseCategory Category { get; set; }
@@ -31,7 +31,7 @@ internal class Expense
     [Required]
     public int PayeeId { get; set; }
 
-    // Concurrency operation tracking field
+    // Concurrency operation tracking field.
     [Timestamp]
     public byte[] RowVersion { get; set; }
 
@@ -59,19 +59,6 @@ internal class Expense
         .OrderBy(uh => uh.UpdatedDateTime)
         .Select(uh => uh.UpdatedUser)
         .LastOrDefault();
-
-    [NotMapped]
-    public DateTime StatsDateTime
-    {
-        get => PaidDateTime;
-        set => PaidDateTime = value;
-    }
-
-    [NotMapped]
-    public static Expression<Func<Expense, DateTime>> StatsDateTimeExpression
-    {
-        get => (expense) => expense.PaidDateTime;
-    }
 
     // Model configurations.
     public static void ConfigureModel(EntityTypeBuilder<Expense> entityBuilder)

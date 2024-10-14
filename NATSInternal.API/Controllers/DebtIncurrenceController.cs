@@ -29,8 +29,9 @@ public class DebtIncurrenceController : ControllerBase
             [FromQuery] DebtIncurrenceListRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _listValidator.Validate(requestDto.TransformValues());
+        validationResult = _listValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -67,8 +68,9 @@ public class DebtIncurrenceController : ControllerBase
             [FromBody] DebtIncurrenceUpsertRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto.TransformValues());
+        validationResult = _upsertValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -118,8 +120,9 @@ public class DebtIncurrenceController : ControllerBase
             [FromBody] DebtIncurrenceUpsertRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto.TransformValues());
+        validationResult = _upsertValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

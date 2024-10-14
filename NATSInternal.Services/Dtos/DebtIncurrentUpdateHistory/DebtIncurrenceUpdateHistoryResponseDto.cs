@@ -9,8 +9,8 @@ public class DebtIncurrenceUpdateHistoryResponseDto : IUpdateHistoryResponseDto
     public UserBasicResponseDto UpdatedUser { get; set; }
     public string UpdatedReason { get; set; }
     
-    public DateTime OldIncurredDateTime => _oldData.IncurredDateTime;
-    public DateTime NewInCurredDateTime => _newData.IncurredDateTime;
+    public DateTime OldIncurredDateTime => _oldData.StatsDateTime;
+    public DateTime NewInCurredDateTime => _newData.StatsDateTime;
     
     public long OldAmount => _oldData.Amount;
     public long NewAmount => _newData.Amount;

@@ -29,8 +29,8 @@ public class ExpenseController : ControllerBase
             [FromQuery] ExpenseListRequestDto requestDto)
     {
         // Validate data from request.
-        ValidationResult validationResult = _listValidator
-            .Validate(requestDto.TransformValues());
+        requestDto.TransformValues();
+        ValidationResult validationResult = _listValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -67,8 +67,10 @@ public class ExpenseController : ControllerBase
             [FromBody] ExpenseUpsertRequestDto requestDto)
     {
         // Validate data from the request.
-        ValidationResult validationResult = _upsertValidator
-            .Validate(requestDto.TransformValues(), options => options
+        requestDto.TransformValues();
+        ValidationResult validationResult = _upsertValidator.Validate(
+            requestDto,
+            options => options
                 .IncludeRuleSets("Create").IncludeRulesNotInRuleSet());
         if (!validationResult.IsValid)
         {
@@ -109,8 +111,10 @@ public class ExpenseController : ControllerBase
             [FromBody] ExpenseUpsertRequestDto requestDto)
     {
         // Validate data from the request.
-        ValidationResult validationResult = _upsertValidator
-            .Validate(requestDto.TransformValues(), options => options
+        requestDto.TransformValues();
+        ValidationResult validationResult = _upsertValidator.Validate(
+            requestDto,
+            options => options
                 .IncludeRuleSets("Update").IncludeRulesNotInRuleSet());
         if (!validationResult.IsValid)
         {

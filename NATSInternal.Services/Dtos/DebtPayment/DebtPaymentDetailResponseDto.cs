@@ -8,7 +8,7 @@ public class DebtPaymentDetailResponseDto
     public int Id { get; set; }
     public long Amount { get; set; }
     public string Note { get; set; }
-    public DateTime PaidDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
@@ -24,7 +24,7 @@ public class DebtPaymentDetailResponseDto
         Id = payment.Id;
         Amount = payment.Amount;
         Note = payment.Note;
-        PaidDateTime = payment.PaidDateTime;
+        StatsDateTime = payment.StatsDateTime;
         CreatedDateTime = payment.CreatedDateTime;
         IsLocked = payment.IsLocked;
         Customer = new CustomerBasicResponseDto(payment.Customer);

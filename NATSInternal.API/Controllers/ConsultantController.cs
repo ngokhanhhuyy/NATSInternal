@@ -29,8 +29,9 @@ public class ConsultantController : ControllerBase
             [FromQuery] ConsultantListRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _listValidator.Validate(requestDto.TransformValues());
+        validationResult = _listValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -68,12 +69,11 @@ public class ConsultantController : ControllerBase
             [FromBody] ConsultantUpsertRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(
-            requestDto.TransformValues(),
-            options => options
-                .IncludeRuleSets("Create")
-                .IncludeRulesNotInRuleSet());
+        validationResult = _upsertValidator.Validate(requestDto, options => options
+            .IncludeRuleSets("Create")
+            .IncludeRulesNotInRuleSet());
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -125,12 +125,11 @@ public class ConsultantController : ControllerBase
             [FromBody] ConsultantUpsertRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(
-            requestDto.TransformValues(),
-            options => options
-                .IncludeRuleSets("Update")
-                .IncludeRulesNotInRuleSet());
+        validationResult = _upsertValidator.Validate(requestDto, options => options
+            .IncludeRuleSets("Update")
+            .IncludeRulesNotInRuleSet());
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

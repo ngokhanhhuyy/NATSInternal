@@ -40,8 +40,9 @@ public class StatsController : ControllerBase
     public async Task<IActionResult> MonthlyStats([FromQuery] MonthlyStatsRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _monthlyValidator.Validate(requestDto.TransformValues());
+        validationResult = _monthlyValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

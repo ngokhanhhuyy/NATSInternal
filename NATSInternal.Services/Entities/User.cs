@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Entities;
 
-internal class User : IdentityUser<int>, IIdentifiableEntity<User>
+internal class User : IdentityUser<int>, IIdentifiableEntity<User>, IHasPhotoEntity<User>
 {
     [Required]
     [StringLength(10)]

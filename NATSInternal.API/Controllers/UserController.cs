@@ -40,8 +40,9 @@ public class UserController : ControllerBase
     public async Task<IActionResult> UserList([FromQuery] UserListRequestDto requestDto)
     {
         // Validate data from request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _listValidator.Validate(requestDto.TransformValues());
+        validationResult = _listValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -120,8 +121,9 @@ public class UserController : ControllerBase
     public async Task<IActionResult> UserCreate([FromBody] UserCreateRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _createValidator.Validate(requestDto.TransformValues());
+        validationResult = _createValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -169,8 +171,9 @@ public class UserController : ControllerBase
             [FromBody] UserUpdateRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _updateValidator.Validate(requestDto.TransformValues());
+        validationResult = _updateValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -215,8 +218,9 @@ public class UserController : ControllerBase
             [FromBody] UserPasswordChangeRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _passwordChangeValidator.Validate(requestDto.TransformValues());
+        validationResult = _passwordChangeValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -257,8 +261,9 @@ public class UserController : ControllerBase
             [FromBody] UserPasswordResetRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _passwordResetValidator.Validate(requestDto.TransformValues());
+        validationResult = _passwordResetValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

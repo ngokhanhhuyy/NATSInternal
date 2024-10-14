@@ -9,7 +9,7 @@ internal class Consultant
     public int Id { get; set; }
     
     [Required]
-    public DateTime PaidDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
 
     [Required]
     public long AmountBeforeVat { get; set; }
@@ -48,19 +48,6 @@ internal class Consultant
         .Select(uh => uh.UpdatedUser)
         .LastOrDefault();
 
-    [NotMapped]
-    public DateTime StatsDateTime
-    {
-        get => PaidDateTime;
-        set => PaidDateTime = value;
-    }
-
-    [NotMapped]
-    public static Expression<Func<Consultant, DateTime>> StatsDateTimeExpression
-    {
-        get => (consultant) => consultant.PaidDateTime;
-    }
-
     // Model configurations.
     public static void ConfigureModel(EntityTypeBuilder<Consultant> entityBuilder)
     {
@@ -73,6 +60,7 @@ internal class Consultant
             .WithMany(u => u.Consultants)
             .HasForeignKey(cst => cst.CreatedUserId)
             .OnDelete(DeleteBehavior.Restrict);
+        entityBuilder.HasIndex(cst => cst.StatsDateTime);
         entityBuilder.HasIndex(cst => cst.IsDeleted);
     }
 }

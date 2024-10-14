@@ -6,7 +6,7 @@ internal class OrderItem : IProductExportableItemEntity<OrderItem>
     public int Id { get; set; }
 
     [Required]
-    public long AmountPerUnit { get; set; }
+    public long ProductAmountPerUnit { get; set; }
 
     [Required]
     public long VatAmountPerUnit { get; set; }

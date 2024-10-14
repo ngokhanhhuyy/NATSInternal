@@ -301,8 +301,7 @@ internal class ProductService : IProductService
             // Handle the business-logic-related exception.
             if (exception.InnerException is MySqlException sqlException)
             {
-                SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
-                exceptionHandler.Handle(sqlException);
+                SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(sqlException);
                 // Entity is referenced by some other column's entity, perform soft delete
                 // instead.
                 if (exceptionHandler.IsDeleteOrUpdateRestricted)
@@ -328,8 +327,7 @@ internal class ProductService : IProductService
     /// <exception cref="OperationException"></exception>
     private void HandleDeleteOrUpdateException(MySqlException exception)
     {
-        SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
-        exceptionHandler.Handle(exception.InnerException as MySqlException);
+        SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(exception);
         // Handle foreign key exception.
         if (exceptionHandler.IsForeignKeyNotFound)
         {

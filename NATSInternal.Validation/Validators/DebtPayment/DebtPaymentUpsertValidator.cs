@@ -11,10 +11,9 @@ public class DebtPaymentUpsertValidator : Validator<DebtPaymentUpsertRequestDto>
         RuleFor(dto => dto.Note)
             .MaximumLength(255)
             .WithName(DisplayNames.Note);
-        RuleFor(dto => dto.PaidDateTime)
-            .LaterThanOrEqualToDateTime(statsService.GetResourceMinimumOpenedDateTime())
-            .EarlierThanOrEqualToNow()
-            .WithName(DisplayNames.PaidDateTime);
+        RuleFor(dto => dto.StatsDateTime)
+            .IsValidStatsDateTime()
+            .WithName(DisplayNames.StatsDateTime);
 
         RuleSet("Create", () =>
         {
@@ -25,7 +24,7 @@ public class DebtPaymentUpsertValidator : Validator<DebtPaymentUpsertRequestDto>
 
         RuleSet("Update", () =>
         {
-            RuleFor(dto => dto.UpdatingReason)
+            RuleFor(dto => dto.UpdatedReason)
                 .NotEmpty()
                 .MaximumLength(255)
                 .WithName(DisplayNames.Reason);

@@ -1,98 +1,75 @@
 namespace NATSInternal.Services;
 
 /// <inheritdoc cref="IExpenseService" />
-internal class ExpenseService : LockableEntityService, IExpenseService
+internal class ExpenseService
+    :
+        FinancialEngageableAbstractService<
+            Expense,
+            ExpenseUpdateHistory,
+            ExpenseListRequestDto,
+            ExpenseUpdateHistoryDataDto>,
+        IExpenseService
 {
     private readonly DatabaseContext _context;
     private readonly IPhotoService<Expense, ExpensePhoto> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IStatsInternalService<Expense, ExpenseUpdateHistory> _statsService;
-    private readonly IMonthYearService<Expense, ExpenseUpdateHistory> _monthYearService;
 
     public ExpenseService(
             DatabaseContext context,
             IPhotoService<Expense, ExpensePhoto> photoService,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService<Expense, ExpenseUpdateHistory> statsService,
-            IMonthYearService<Expense, ExpenseUpdateHistory> monthYearService)
+            IStatsInternalService<Expense, ExpenseUpdateHistory> statsService)
+        : base(context, authorizationService)
     {
         _context = context;
         _photoService = photoService;
         _authorizationService = authorizationService;
         _statsService = statsService;
-        _monthYearService = monthYearService;
     }
 
     /// <inheritdoc/>
-    public async Task<ExpenseListResponseDto> GetListAsync(
-            ExpenseListRequestDto requestDto)
+    public async Task<ExpenseListResponseDto> GetListAsync(ExpenseListRequestDto requestDto)
     {
-        // Generate month year options.
-        List<MonthYearResponseDto> monthYearOptions = await _monthYearService
-            .GenerateMonthYearOptions(dbContext => dbContext.Expenses);
-
-        // Initialize query.
+        // Initializing the query.
         IQueryable<Expense> query = _context.Expenses
             .Include(e => e.Photos);
 
-        // Sorting direction and sorting by field.
+        // Sort the results.
         switch (requestDto.OrderByField)
         {
-            case nameof(ExpenseListRequestDto.FieldOptions.Amount):
+            case nameof(OrderByFieldOptions.Amount):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(e => e.Amount)
-                        .ThenBy(e => e.PaidDateTime)
+                        .ThenBy(e => e.StatsDateTime)
                     : query.OrderByDescending(e => e.Amount)
-                        .ThenByDescending(e => e.PaidDateTime);
+                        .ThenByDescending(e => e.StatsDateTime);
                 break;
-            default:
+            case nameof(OrderByFieldOptions.StatsDateTime):
                 query = requestDto.OrderByAscending
-                    ? query.OrderBy(e => e.PaidDateTime)
+                    ? query.OrderBy(e => e.StatsDateTime)
                         .ThenBy(e => e.Amount)
-                    : query.OrderByDescending(e => e.PaidDateTime)
+                    : query.OrderByDescending(e => e.StatsDateTime)
                         .ThenByDescending(e => e.Amount);
                 break;
+            default:
+                throw new NotImplementedException();
         }
 
-        // Filter by month and year if specified.
-        if (!requestDto.IgnoreMonthYear)
-        {
-            DateTime startDateTime = new DateTime(requestDto.Year, requestDto.Month, 1);
-            DateTime endDateTime = startDateTime.AddMonths(1);
-            query = query
-                .Where(s => s.PaidDateTime >= startDateTime && s.PaidDateTime < endDateTime);
-        }
+        // Fetch the entities.
+        EntityListDto<Expense> listDto = await GetListOfEntitiesAsync(query, requestDto);
 
-        // Filter by category.
-        if (requestDto.Category.HasValue)
+        return new ExpenseListResponseDto
         {
-            query = query.Where(e => e.Category == requestDto.Category.Value);
-        }
-
-        // Initialize response dto.
-        ExpenseListResponseDto responseDto = new ExpenseListResponseDto
-        {
-            MonthYearOptions = monthYearOptions,
+            PageCount = listDto.PageCount,
+            Items = listDto.Items
+                .Select(expense => new ExpenseBasicResponseDto(
+                    expense,
+                    _authorizationService.GetExpenseAuthorization(expense)))
+                .ToList(),
+            MonthYearOptions = await GenerateMonthYearOptions(),
             Authorization = _authorizationService.GetExpenseListAuthorization()
         };
-        int resultCount = await query.CountAsync();
-        if (resultCount == 0)
-        {
-            responseDto.PageCount = 0;
-            return responseDto;
-        }
-        responseDto.PageCount = (int)Math.Ceiling(
-            (double)resultCount / requestDto.ResultsPerPage);
-        responseDto.Items = await query
-            .Select(e => new ExpenseBasicResponseDto(
-                e,
-                _authorizationService.GetExpenseAuthorization(e)))
-            .Skip(requestDto.ResultsPerPage * (requestDto.Page - 1))
-            .Take(requestDto.ResultsPerPage)
-            .AsSplitQuery()
-            .ToListAsync();
-
-        return responseDto;
     }
 
     /// <inheritdoc/>
@@ -123,8 +100,7 @@ internal class ExpenseService : LockableEntityService, IExpenseService
 
         return new ExpenseDetailResponseDto(
             expense,
-            _authorizationService.GetExpenseAuthorization(expense),
-            mapHistories: shouldIncludeUpdateHistories);
+            _authorizationService.GetExpenseAuthorization(expense));
     }
 
     /// <inheritdoc/>
@@ -135,29 +111,29 @@ internal class ExpenseService : LockableEntityService, IExpenseService
             .BeginTransactionAsync();
 
         // Determine paid datetime.
-        DateTime paidDateTime = DateTime.UtcNow.ToApplicationTime();
-        if (requestDto.PaidDateTime.HasValue)
+        DateTime statsDateTime = DateTime.UtcNow.ToApplicationTime();
+        if (requestDto.StatsDateTime.HasValue)
         {
-            // Check if the current user has permission to specify a value for PaidDateTime.
+            // Check if the current user has permission to specify a value for StatsDateTime.
             if (!_authorizationService.CanSetExpensePaidDateTime())
             {
                 throw new AuthorizationException();
             }
 
-            paidDateTime = requestDto.PaidDateTime.Value;
+            statsDateTime = requestDto.StatsDateTime.Value;
         }
 
-        // Initialize entity.
+        // Initialize expense.
         Expense expense = new Expense
         {
             Amount = requestDto.Amount,
-            PaidDateTime = paidDateTime,
+            StatsDateTime = statsDateTime,
             Category = requestDto.Category,
             Note = requestDto.Note,
             CreatedUserId = _authorizationService.GetUserId(),
             Photos = new List<ExpensePhoto>()
         };
-        
+
         _context.Expenses.Add(expense);
 
         // Set expense payee
@@ -186,7 +162,7 @@ internal class ExpenseService : LockableEntityService, IExpenseService
             await _context.SaveChangesAsync();
 
             // Expense can be created successfully, adjust the stats.
-            DateOnly paidDate = DateOnly.FromDateTime(paidDateTime);
+            DateOnly paidDate = DateOnly.FromDateTime(statsDateTime);
             await _statsService
                 .IncrementExpenseAsync(expense.Amount, expense.Category, paidDate);
 
@@ -204,26 +180,7 @@ internal class ExpenseService : LockableEntityService, IExpenseService
             }
 
             // Handle exception and convert to the appropriate exception.
-            SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
-            exceptionHandler.Handle(sqlException);
-            if (exceptionHandler.IsForeignKeyNotFound)
-            {
-                string propertyName = string.Empty;
-                string errorMessage = ErrorMessages.NotFound;
-                switch (exceptionHandler.ViolatedFieldName)
-                {
-                    case "user_id":
-                        propertyName = nameof(expense.CreatedUserId);
-                        errorMessage = errorMessage.ReplaceResourceName(DisplayNames.User);
-                        break;
-                    case "payee_id":
-                        propertyName = nameof(expense.PayeeId);
-                        errorMessage = errorMessage
-                            .ReplaceResourceName(DisplayNames.ExpensePayee);
-                        break;
-                }
-                throw new OperationException(propertyName, errorMessage);
-            }
+            HandleException(sqlException);
             throw;
         }
         catch (DbUpdateConcurrencyException)
@@ -235,17 +192,16 @@ internal class ExpenseService : LockableEntityService, IExpenseService
     /// <inheritdoc/>
     public async Task UpdateAsync(int id, ExpenseUpsertRequestDto requestDto)
     {
-        // Fetch the entity from the database and ensure it exists.
+        // Fetch the expense from the database and ensure it exists.
         Expense expense = await _context.Expenses
             .Include(e => e.CreatedUser)
             .Include(e => e.Payee)
             .Include(e => e.Photos)
-            .Where(e => e.Id == id)
             .AsSplitQuery()
-            .SingleOrDefaultAsync()
+            .SingleOrDefaultAsync(e => e.Id == id && !e.IsDeleted)
             ?? throw new ResourceNotFoundException(nameof(Expense), nameof(id), id.ToString());
 
-        // Ensure the entity is editable by the requester.
+        // Ensure the expense is editable by the requester.
         if (!_authorizationService.CanEditExpense(expense))
         {
             throw new AuthorizationException();
@@ -255,14 +211,17 @@ internal class ExpenseService : LockableEntityService, IExpenseService
         await using IDbContextTransaction transaction = await _context.Database
             .BeginTransactionAsync();
 
-        // Storing the old data for update history logging and stats adjustment.
-        long oldAmount = expense.Amount;
-        ExpenseCategory oldCategory = expense.Category;
-        DateOnly oldPaidDate = DateOnly.FromDateTime(expense.PaidDateTime);
+        // Decrement the old stats.
+        await _statsService.IncrementExpenseAsync(
+            - expense.Amount,
+            expense.Category,
+            DateOnly.FromDateTime(expense.StatsDateTime));
+
+        // Store the current data as the old data for update history logging.
         ExpenseUpdateHistoryDataDto oldData = new ExpenseUpdateHistoryDataDto(expense);
 
         // Determine the SupplyDateTime if the request has specified a value.
-        if (requestDto.PaidDateTime.HasValue)
+        if (requestDto.StatsDateTime.HasValue)
         {
             // Check if the current user has permission to specify the paid datetime.
             if (!_authorizationService.CanSetExpensePaidDateTime())
@@ -270,34 +229,32 @@ internal class ExpenseService : LockableEntityService, IExpenseService
                 throw new AuthorizationException();
             }
 
-            // Prevent the consultant's SupplyDateTime to be modified when the consultant is
-            // locked.
+            // Ensure the StatsDateTime isn't modified when the expense is locked.
             if (expense.IsLocked)
             {
                 string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
                     .ReplaceResourceName(DisplayNames.Consultant)
                     .ReplacePropertyName(DisplayNames.PaidDateTime);
                 throw new OperationException(
-                    nameof(requestDto.PaidDateTime),
+                    nameof(requestDto.StatsDateTime),
                     errorMessage);
             }
 
             // Assign the new SupplyDateTime value only if it's different from the old one.
-            if (requestDto.PaidDateTime.Value != expense.PaidDateTime)
+            if (requestDto.StatsDateTime.Value != expense.StatsDateTime)
             {
                 // Validate and assign the specified SupplyDateTime value from the request.
                 try
                 {
-                    _statsService
-                        .ValidateStatsDateTime(expense, requestDto.PaidDateTime.Value);
-                    expense.PaidDateTime = requestDto.PaidDateTime.Value;
+                    ValidateStatsDateTime(expense, requestDto.StatsDateTime.Value);
+                    expense.StatsDateTime = requestDto.StatsDateTime.Value;
                 }
                 catch (ValidationException exception)
                 {
                     string errorMessage = exception.Message
                         .ReplacePropertyName(DisplayNames.PaidDateTime);
                     throw new OperationException(
-                        nameof(requestDto.PaidDateTime),
+                        nameof(requestDto.StatsDateTime),
                         errorMessage);
                 }
             }
@@ -342,22 +299,18 @@ internal class ExpenseService : LockableEntityService, IExpenseService
         ExpenseUpdateHistoryDataDto newData = new ExpenseUpdateHistoryDataDto(expense);
 
         // Log update history.
-        LogUpdateHistory(expense, oldData, newData, requestDto.UpdateReason);
+        LogUpdateHistory(expense, oldData, newData, requestDto.UpdatedReason);
 
         // Perform the updating operation.
         try
         {
             await _context.SaveChangesAsync();
 
-            // The expense can be saved without error.
-            // Revert the old stats.
-            await _statsService.IncrementExpenseAsync(
-                -oldAmount, oldCategory, oldPaidDate);
-
             // Add the new stats.
-            DateOnly newPaidDate = DateOnly.FromDateTime(expense.PaidDateTime);
             await _statsService.IncrementExpenseAsync(
-                expense.Amount, expense.Category, newPaidDate);
+                expense.Amount,
+                expense.Category,
+                DateOnly.FromDateTime(expense.StatsDateTime));
 
             // Commit the transaction, finish the opeartion.
             await transaction.CommitAsync();
@@ -385,27 +338,7 @@ internal class ExpenseService : LockableEntityService, IExpenseService
             // Handle operation exception.
             if (exception.InnerException is MySqlException sqlException)
             {
-                SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
-                exceptionHandler.Handle(sqlException);
-                if (exceptionHandler.IsForeignKeyNotFound)
-                {
-                    string propertyName = string.Empty;
-                    string errorMessage = ErrorMessages.NotFound;
-                    switch (exceptionHandler.ViolatedFieldName)
-                    {
-                        case "created_user_id":
-                            propertyName = nameof(expense.CreatedUserId);
-                            errorMessage = errorMessage
-                                .ReplaceResourceName(DisplayNames.User);
-                            break;
-                        case "payee_id":
-                            propertyName = nameof(expense.PayeeId);
-                            errorMessage = errorMessage
-                                .ReplaceResourceName(DisplayNames.ExpensePayee);
-                            break;
-                    }
-                    throw new OperationException(propertyName, errorMessage);
-                }
+                HandleException(sqlException);
             }
 
             throw;
@@ -415,7 +348,7 @@ internal class ExpenseService : LockableEntityService, IExpenseService
     /// <inheritdoc/>
     public async Task DeleteAsync(int id)
     {
-        // Fetch the entity from the database and ensure it exists.
+        // Fetch the expense from the database and ensure it exists.
         Expense expense = await _context.Expenses
             .Include(e => e.Payee)
             .Include(e => e.Photos)
@@ -457,7 +390,7 @@ internal class ExpenseService : LockableEntityService, IExpenseService
             await _statsService.IncrementExpenseAsync(
                 -expense.Amount,
                 expense.Category,
-                DateOnly.FromDateTime(expense.PaidDateTime));
+                DateOnly.FromDateTime(expense.StatsDateTime));
 
             // Remove all expense photos.
             foreach (string url in photoUrlsToBeDeletedWhenSucceeded)
@@ -468,14 +401,8 @@ internal class ExpenseService : LockableEntityService, IExpenseService
         catch (DbUpdateException exception)
         when (exception.InnerException is MySqlException sqlExecption)
         {
-            SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
-            exceptionHandler.Handle(sqlExecption);
-            if (exceptionHandler.IsDeleteOrUpdateRestricted)
-            {
-                string errorMessage = ErrorMessages.DeleteRestricted
-                    .ReplaceResourceName(DisplayNames.Expense);
-                throw new OperationException(errorMessage);
-            }
+            SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(sqlExecption);
+            HandleException(sqlExecption);
 
             throw;
         }
@@ -485,39 +412,53 @@ internal class ExpenseService : LockableEntityService, IExpenseService
         }
     }
 
-    /// <summary>
-    /// Logs the old and new data to update history for the specified expense.
-    /// </summary>
-    /// <param name="expense">
-    /// An instance of the <see cref="Expense"/> entity class, representing the expense to be
-    /// logged.
-    /// </param>
-    /// <param name="oldData">
-    /// An instance of the <see cref="ExpenseUpdateHistoryDataDto"/> class, containing the data
-    /// of the expense before the modification.
-    /// </param>
-    /// <param name="newData">
-    /// An instance of the <see cref="ExpenseUpdateHistoryDataDto"/> class, containing the data
-    /// of the expense after the modification.
-    /// </param>
-    /// <param name="reason">
-    /// A <see cref="string"/> value representing the reason of the modification.
-    /// </param>
-    private void LogUpdateHistory(
-            Expense expense,
-            ExpenseUpdateHistoryDataDto oldData,
-            ExpenseUpdateHistoryDataDto newData,
-            string reason)
+    /// <inheritdoc/>
+    protected override DbSet<Expense> GetRepository(DatabaseContext context)
     {
-        ExpenseUpdateHistory updateHistory = new ExpenseUpdateHistory
-        {
-            Reason = reason,
-            OldData = JsonSerializer.Serialize(oldData),
-            NewData = JsonSerializer.Serialize(newData),
-            UpdatedUserId = _authorizationService.GetUserId()
-        };
+        return context.Expenses;
+    }
 
-        expense.UpdateHistories ??= new List<ExpenseUpdateHistory>();
-        expense.UpdateHistories.Add(updateHistory);
+    /// <inheritdoc/>
+    protected override bool CanAccessUpdateHistories(IAuthorizationInternalService service)
+    {
+        return service.CanAccessExpenseUpdateHistories();
+    }
+
+    /// <summary>
+    /// Handles the exception thrown by the database when saving during the creating, updating
+    /// or deleting operations.
+    /// </summary>
+    /// <param name="exception">
+    /// The exception thrown by the database during the operation.
+    /// </param>
+    /// <exception cref="ConcurrencyException">
+    /// Throws under the following circumstances:<br/>
+    /// - When the <see cref="ExpensePayee"/> specified by the <c>PayeeName</c> in the request
+    /// DTO exists when checking but not found when performing the saving action.<br/>
+    /// - When the information of the requesting user has already been deleted before the
+    /// operation.
+    /// </exception>
+    private static void HandleException(MySqlException exception)
+    {
+        SqlExceptionHandler handler = new SqlExceptionHandler(exception);
+
+        // Handle foreign key not found cases in updating operation.
+        if (handler.IsForeignKeyNotFound &&
+            (handler.ViolatedFieldName == nameof(Expense.CreatedUserId) ||
+            handler.ViolatedFieldName == nameof(Expense.PayeeId)))
+        {
+            switch (handler.ViolatedFieldName)
+            {
+                case nameof(Expense.CreatedUserId) or nameof(Expense.PayeeId):
+                    throw new ConcurrencyException();
+            }
+        }
+
+        // Handle delete restriction in deleting operation.
+        else if (handler.IsDeleteOrUpdateRestricted)
+        {
+            throw new OperationException(ErrorMessages.DeleteRestricted
+                .ReplaceResourceName(DisplayNames.Expense));
+        }
     }
 }

@@ -29,8 +29,9 @@ public class TreatmentController : ControllerBase
             [FromQuery] TreatmentListRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _listValidator.Validate(requestDto.TransformValues());
+        validationResult = _listValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -66,8 +67,9 @@ public class TreatmentController : ControllerBase
     public async Task<IActionResult> TreatmentCreate([FromBody] TreatmentUpsertRequestDto requestDto)
     {
         // Validate the data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto.TransformValues());
+        validationResult = _upsertValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -116,8 +118,9 @@ public class TreatmentController : ControllerBase
     public async Task<IActionResult> TreatmentUpdate(int id, [FromBody] TreatmentUpsertRequestDto requestDto)
     {
         // Validate the data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto.TransformValues());
+        validationResult = _upsertValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

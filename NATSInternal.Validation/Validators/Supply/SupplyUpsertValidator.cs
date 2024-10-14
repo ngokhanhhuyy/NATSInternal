@@ -4,9 +4,9 @@ public class SupplyUpsertValidator : Validator<SupplyUpsertRequestDto>
 {
     public SupplyUpsertValidator()
     {
-        RuleFor(dto => dto.PaidDateTime)
+        RuleFor(dto => dto.StatsDateTime)
             .IsValidStatsDateTime()
-            .WithName(DisplayNames.PaidDateTime);
+            .WithName(DisplayNames.StatsDateTime);
         RuleFor(dto => dto.ShipmentFee)
             .GreaterThanOrEqualTo(0)
             .WithName(DisplayNames.ShipmentFee);
@@ -24,7 +24,7 @@ public class SupplyUpsertValidator : Validator<SupplyUpsertRequestDto>
 
         RuleSet("Update", () =>
         {
-            RuleFor(dto => dto.UpdateReason)
+            RuleFor(dto => dto.UpdatedReason)
                 .MaximumLength(255)
                 .WithName(DisplayNames.Reason);
             RuleForEach(dto => dto.Photos)

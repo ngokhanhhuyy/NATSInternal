@@ -39,9 +39,12 @@ public static class StringExtensions
             {
                 pascalCaseSegment += snakeCaseSegment[1..];
             }
+            pascalCaseSegment = pascalCaseSegment
+                .Replace("Username", "UserName")
+                .Replace("Datetime", "CreatedDateTime");
             pascalCaseSegments.Add(pascalCaseSegment);
         }
-        return string.Concat(pascalCaseSegments);
+        return string.Concat();
     }
 
     public static string SnakeCaseToCamelCase(this string snakeCaseString)
@@ -62,7 +65,10 @@ public static class StringExtensions
             }
             pascalCaseSegments.Add(pascalCaseSegment);
         }
-        return string.Concat(pascalCaseSegments);
+        return string.Concat(pascalCaseSegments)
+            .Replace("Fullname", "FullName")
+            .Replace("Username", "UserName")
+            .Replace("Datetime", "DateTime");
     }
 
     public static string PascalCaseToSnakeCase(this string pascalCaseString)
@@ -108,7 +114,11 @@ public static class StringExtensions
             }
         }
 
-        return string.Join("_", snakeCaseWords);
+        return string
+            .Join("_", snakeCaseWords)
+            .Replace("full_name", "fullname")
+            .Replace("user_name", "username")
+            .Replace("date_time", "datetime");
     }
 
     public static string ToNonDiacritics(this string value)

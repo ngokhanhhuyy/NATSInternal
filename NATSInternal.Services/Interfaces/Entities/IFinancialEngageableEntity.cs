@@ -11,6 +11,4 @@ internal interface IFinancialEngageableEntity<T, TUpdateHistory>
     string Note { get; set; }
     bool IsDeleted { get; set; }
     bool IsLocked { get; }
-
-    abstract static Expression<Func<T, DateTime>> StatsDateTimeExpression { get; }
 }

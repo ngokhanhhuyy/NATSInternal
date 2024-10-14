@@ -6,7 +6,7 @@ public class DebtPaymentListValidator : Validator<DebtPaymentListRequestDto>
     {
         RuleFor(dto => dto.OrderByField)
             .NotNull()
-            .IsEnumName(typeof(DebtPaymentListRequestDto.FieldOptions))
+            .IsOneOfFieldOptions(FieldOptions)
             .WithName(DisplayNames.OrderByField);
         RuleFor(dto => dto.Month)
             .IsValidQueryStatsMonth()
@@ -23,5 +23,14 @@ public class DebtPaymentListValidator : Validator<DebtPaymentListRequestDto>
             .GreaterThanOrEqualTo(5)
             .LessThanOrEqualTo(50)
             .WithName(DisplayNames.ResultsPerPage);
+    }
+
+    private static IEnumerable<OrderByFieldOptions> FieldOptions
+    {
+        get => new List<OrderByFieldOptions>
+        {
+            OrderByFieldOptions.Amount,
+            OrderByFieldOptions.StatsDateTime
+        };
     }
 }

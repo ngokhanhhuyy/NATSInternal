@@ -11,9 +11,9 @@ public class DebtIncurrenceUpsertValidator : Validator<DebtIncurrenceUpsertReque
         RuleFor(dto => dto.Note)
             .MaximumLength(255)
             .WithName(DisplayNames.Note);
-        RuleFor(dto => dto.IncurredDateTime)
+        RuleFor(dto => dto.StatsDateTime)
             .IsValidStatsDateTime()
-            .WithName(DisplayNames.IncurredDateTime);
+            .WithName(DisplayNames.StatsDateTime);
 
         RuleSet("Create", () =>
         {
@@ -25,7 +25,7 @@ public class DebtIncurrenceUpsertValidator : Validator<DebtIncurrenceUpsertReque
 
         RuleSet("Update", () =>
         {
-            RuleFor(dto => dto.UpdatingReason)
+            RuleFor(dto => dto.UpdatedReason)
                 .NotEmpty()
                 .MaximumLength(255)
                 .WithName(DisplayNames.Reason);

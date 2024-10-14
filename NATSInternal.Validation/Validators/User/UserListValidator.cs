@@ -6,8 +6,7 @@ public class UserListValidator : Validator<UserListRequestDto>
     {
         RuleFor(dto => dto.OrderByField)
             .NotNull()
-            .Must(IsEnumElementName<UserListRequestDto.FieldToBeOrdered>)
-            .WithMessage(ErrorMessages.Invalid)
+            .IsOneOfFieldOptions(FieldOptions)
             .WithName(dto => DisplayNames.Get(nameof(dto.OrderByField)));
         RuleFor(dto => dto.Content)
             .MinimumLength(3)
@@ -28,5 +27,19 @@ public class UserListValidator : Validator<UserListRequestDto>
         public const int PageMinimumValue = 1;
         public const int ResultsPerPageMinimumValue = 5;
         public const int ResultsPerPageMaximumValue = 50;
+    }
+
+    private static IEnumerable<OrderByFieldOptions> FieldOptions
+    {
+        get => new List<OrderByFieldOptions>
+        {
+            OrderByFieldOptions.LastName,
+            OrderByFieldOptions.FirstName,
+            OrderByFieldOptions.UserName,
+            OrderByFieldOptions.Birthday,
+            OrderByFieldOptions.Age,
+            OrderByFieldOptions.CreatedDateTime,
+            OrderByFieldOptions.Role,
+        };
     }
 }

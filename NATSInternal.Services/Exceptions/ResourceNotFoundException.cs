@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-
-namespace NATSInternal.Services.Exceptions;
+﻿namespace NATSInternal.Services.Exceptions;
 
 public class ResourceNotFoundException : Exception
 {

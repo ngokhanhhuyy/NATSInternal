@@ -15,5 +15,5 @@ internal interface IRevuenueBasicResponseDto<TAuthorization>
     /// <summary>
     /// Represents the date and time when the transaction is paid.
     /// </summary>
-    DateTime PaidDateTime { get; }
+    DateTime StatsDateTime { get; }
 }

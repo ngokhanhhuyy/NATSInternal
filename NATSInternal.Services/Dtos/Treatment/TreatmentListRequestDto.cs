@@ -1,13 +1,13 @@
 namespace NATSInternal.Services.Dtos;
 
-public class TreatmentListRequestDto : IOrderableListRequestDto, ILockableEntityListRequestDto
+public class TreatmentListRequestDto : IProductExportableListRequestDto
 {
     public bool OrderByAscending { get; set; }
-    public string OrderByField { get; set; } = nameof(FieldOptions.PaidDateTime);
+    public string OrderByField { get; set; } = nameof(OrderByFieldOptions.StatsDateTime);
     public int Month { get; set; }
     public int Year { get; set; }
     public bool IgnoreMonthYear { get; set; }
-    public int? UserId { get; set; }
+    public int? CreatedUserId { get; set; }
     public int? CustomerId { get; set; }
     public int? ProductId { get; set; }
     public int Page { get; set; } = 1;
@@ -16,8 +16,23 @@ public class TreatmentListRequestDto : IOrderableListRequestDto, ILockableEntity
     public void TransformValues()
     {
         OrderByField = OrderByField?.ToNullIfEmpty();
-        DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
 
+        if (CreatedUserId == 0)
+        {
+            CreatedUserId = null;
+        }
+
+        if (CustomerId == 0)
+        {
+            CustomerId = null;
+        }
+
+        if (ProductId == 0)
+        {
+            ProductId = null;
+        }
+
+        DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
         if (!IgnoreMonthYear)
         {
             if (Month == 0)
@@ -30,11 +45,5 @@ public class TreatmentListRequestDto : IOrderableListRequestDto, ILockableEntity
                 Year = currentDateTime.Year;
             }
         }
-    }
-    
-    public enum FieldOptions
-    {
-        PaidDateTime,
-        Amount
     }
 }

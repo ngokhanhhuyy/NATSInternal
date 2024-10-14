@@ -1,14 +1,14 @@
-
 namespace NATSInternal.Services;
 
 /// <inheritdoc cref="IDebtPaymentService" />
 internal class DebtPaymentService
     :
-        DebtAbstractService<DebtPayment, DebtPaymentUpdateHistory, DebtPaymentListRequestDto,
-            DebtPaymentUpsertRequestDto, DebtPaymentListResponseDto,
-            DebtPaymentBasicResponseDto, DebtPaymentDetailResponseDto,
-            DebtPaymentUpdateHistoryResponseDto, DebtPaymentUpdateHistoryDataDto,
-            DebtPaymentListAuthorizationResponseDto, DebtPaymentAuthorizationResponseDto>,
+        DebtAbstractService<DebtPayment, DebtPaymentUpdateHistory,
+            DebtPaymentListRequestDto, DebtPaymentUpsertRequestDto,
+            DebtPaymentListResponseDto, DebtPaymentBasicResponseDto,
+            DebtPaymentDetailResponseDto, DebtPaymentUpdateHistoryResponseDto,
+            DebtPaymentUpdateHistoryDataDto, DebtPaymentListAuthorizationResponseDto,
+            DebtPaymentAuthorizationResponseDto>,
         IDebtPaymentService
 {
     private readonly IAuthorizationInternalService _authorizationService;
@@ -16,19 +16,43 @@ internal class DebtPaymentService
     public DebtPaymentService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService<DebtPayment, DebtPaymentUpdateHistory> statsService,
-            IUpdateHistoryService<DebtPayment, DebtPaymentUpdateHistory, DebtPaymentUpdateHistoryDataDto> updateHistoryService,
-            IMonthYearService<DebtPayment, DebtPaymentUpdateHistory> monthYearService)
-        : base(
-            context,
-            authorizationService,
-            statsService,
-            updateHistoryService,
-            monthYearService)
+            IStatsInternalService<DebtPayment, DebtPaymentUpdateHistory> statsService)
+        : base(context, authorizationService, statsService)
     {
         _authorizationService = authorizationService;
     }
-    
+
+    /// <inheritdoc />
+    public async Task<DebtPaymentListResponseDto> GetListAsync(
+            DebtPaymentListRequestDto requestDto)
+    {
+        EntityListDto<DebtPayment> entityListDto = await GetListOfEntitiesAsync(requestDto);
+
+        return new DebtPaymentListResponseDto
+        {
+            PageCount = entityListDto.PageCount,
+            Items = entityListDto.Items
+                .Select(dp =>
+                {
+                    DebtPaymentAuthorizationResponseDto authorization;
+                    authorization = _authorizationService.GetDebtPaymentAuthorization(dp);
+                    return new DebtPaymentBasicResponseDto(dp, authorization);
+                }).ToList(),
+            MonthYearOptions = await GenerateMonthYearOptions(),
+            Authorization = _authorizationService.GetDebtPaymentListAuthorization()
+        };
+    }
+
+    /// <inheritdoc />
+    public async Task<DebtPaymentDetailResponseDto> GetDetailAsync(int id)
+    {
+        DebtPayment debtPayment = await GetEntityAsync(id);
+        DebtPaymentAuthorizationResponseDto authorization;
+        authorization = _authorizationService.GetDebtPaymentAuthorization(debtPayment);
+
+        return new DebtPaymentDetailResponseDto(debtPayment, authorization);
+    }
+
     /// <inheritdoc />
     protected override DbSet<DebtPayment> GetRepository(DatabaseContext context)
     {
@@ -36,91 +60,16 @@ internal class DebtPaymentService
     }
 
     /// <inheritdoc />
-    protected override IOrderedQueryable<DebtPayment> SortListQuery(
-            IQueryable<DebtPayment> query,
-            DebtPaymentListRequestDto requestDto)
-    {
-        switch (requestDto.OrderByField)
-        {
-            case nameof(DebtIncurrenceListRequestDto.FieldOptions.Amount):
-                return requestDto.OrderByAscending
-                    ? query.OrderBy(dp => dp.Amount).ThenBy(dp => dp.PaidDateTime)
-                    : query.OrderByDescending(dp => dp.Amount)
-                        .ThenByDescending(dp => dp.PaidDateTime);
-            default:
-                return requestDto.OrderByAscending
-                    ? query.OrderBy(dp => dp.PaidDateTime).ThenBy(dp => dp.Amount)
-                    : query.OrderByDescending(dp => dp.PaidDateTime)
-                        .ThenByDescending(dp => dp.Amount);
-        }
-    }
-
-    /// <inheritdoc />
-    protected override IQueryable<DebtPayment> FilterByMonthYearListQuery(
-            IQueryable<DebtPayment> query,
-            DateTime startingDateTime,
-            DateTime endingDateTime)
-    {
-        return query
-            .Where(dp => dp.PaidDateTime >= startingDateTime)
-            .Where(dp => dp.PaidDateTime < endingDateTime);
-    }
-
-    /// <inheritdoc />
-    protected override DebtPaymentBasicResponseDto InitializeBasicResponseDto(
-            DebtPayment debtPayment,
-            IAuthorizationInternalService service)
-    {
-        return new DebtPaymentBasicResponseDto(
-            debtPayment,
-            service.GetDebtPaymentAuthorization(debtPayment));
-    }
-
-    /// <inheritdoc />
-    protected override DebtPaymentDetailResponseDto InitializeDetailResponseDto(
-            DebtPayment debtPayment,
-            IAuthorizationInternalService service,
-            bool shouldIncludeUpdateHistories)
-    {
-        return new DebtPaymentDetailResponseDto(
-            debtPayment,
-            _authorizationService.GetDebtPaymentAuthorization(debtPayment),
-            mapUpdateHistories: shouldIncludeUpdateHistories);
-    }
-
-    /// <inheritdoc />
-    protected override DebtPaymentListAuthorizationResponseDto
-        InitializeListAuthorizationResponseDto(IAuthorizationInternalService service)
-    {
-        return service.GetDebtPaymentListAuthorization();
-    }
-
-    /// <inheritdoc />
-    protected override DebtPaymentAuthorizationResponseDto
-        InitializeAuthorizationResponseDto(
-            IAuthorizationInternalService service,
-            DebtPayment debtPayment)
-    {
-        return service.GetDebtPaymentAuthorization(debtPayment);
-    }
-
-    /// <inheritdoc />
     protected override DebtPaymentUpdateHistoryDataDto
-        InitializeUpdateHistoryDataDto(DebtPayment entity)
+        InitializeUpdateHistoryDataDto(DebtPayment debtPayment)
     {
-        return new DebtPaymentUpdateHistoryDataDto(entity);
+        return new DebtPaymentUpdateHistoryDataDto(debtPayment);
     }
 
     /// <inheritdoc />
     protected override bool CanAccessUpdateHistories(IAuthorizationInternalService service)
     {
         return service.CanAccessDebtPaymentUpdateHistories();
-    }
-
-    /// <inheritdoc />
-    protected override bool CanSetStatsDateTime(IAuthorizationInternalService service)
-    {
-        return service.CanSetDebtPaymentPaidDateTime();
     }
 
     /// <inheritdoc />
@@ -132,17 +81,27 @@ internal class DebtPaymentService
     }
 
     /// <inheritdoc />
-    protected override bool CanDelete(IAuthorizationInternalService service)
+    protected override bool CanSetStatsDateTime(IAuthorizationInternalService service)
     {
-        return service.CanDeleteDebtPayment();
+        return service.CanSetDebtPaymentPaidDateTime();
     }
 
     /// <inheritdoc />
-    protected override async Task IncrementStatsAsync(
-            long amount,
-            DateOnly date,
-            IStatsInternalService<DebtPayment, DebtPaymentUpdateHistory> service)
+    protected override bool CanDelete(
+            DebtPayment debtPayment,
+            IAuthorizationInternalService service)
     {
-        await service.IncrementDebtPaidAmountAsync(amount, date);
+        return service.CanDeleteDebtPayment(debtPayment);
+    }
+
+    /// <inheritdoc />
+    protected override async Task AdjustStatsAsync(
+            DebtPayment debtPayment,
+            IStatsInternalService<DebtPayment, DebtPaymentUpdateHistory> service,
+            bool isIncrement)
+    {
+        long amountToIncrement = isIncrement ? debtPayment.Amount : -debtPayment.Amount;
+        DateOnly date = DateOnly.FromDateTime(debtPayment.StatsDateTime);
+        await service.IncrementDebtPaidAmountAsync(amountToIncrement, date);
     }
 }

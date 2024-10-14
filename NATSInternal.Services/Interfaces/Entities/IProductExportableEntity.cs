@@ -17,4 +17,5 @@ internal interface IProductExportableEntity<T, TItem, TPhoto, TUpdateHistory>
 {
     long ProductAmountBeforeVat { get; }
     long ProductVatAmount { get; }
+    static abstract Expression<Func<T, long>> AmountAfterVatExpression { get; }
 }

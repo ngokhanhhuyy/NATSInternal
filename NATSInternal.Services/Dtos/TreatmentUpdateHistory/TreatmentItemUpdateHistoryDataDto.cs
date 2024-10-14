@@ -3,16 +3,16 @@ namespace NATSInternal.Services.Dtos;
 public class TreatmentItemUpdateHistoryDataDto
 {
     public int Id { get; set; }
-    public long Amount { get; set; }
-    public decimal VatFactor { get; set; }
+    public long ProductAmountPerUnit { get; set; }
+    public long VatAmountPerUnit { get; set; }
     public int Quantity { get; set; }
     public string ProductName { get; set; }
 
     internal TreatmentItemUpdateHistoryDataDto(TreatmentItem item)
     {
         Id = item.Id;
-        Amount = item.Amount;
-        VatFactor = item.VatFactor;
+        ProductAmountPerUnit = item.ProductAmountPerUnit;
+        VatAmountPerUnit = item.VatAmountPerUnit;
         Quantity = item.Quantity;
         ProductName = item.Product.Name;
     }

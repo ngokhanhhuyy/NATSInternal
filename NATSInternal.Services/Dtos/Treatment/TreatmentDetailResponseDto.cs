@@ -8,7 +8,7 @@ public class TreatmentDetailResponseDto
         TreatmentAuthorizationResponseDto>
 {
     public int Id { get; set; }
-    public DateTime PaidDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public long ServiceAmount { get; set; }
     public int ServiceVat { get; set; }
@@ -33,11 +33,10 @@ public class TreatmentDetailResponseDto
 
     internal TreatmentDetailResponseDto(
             Treatment treatment,
-            TreatmentAuthorizationResponseDto authorization,
-            bool mapUpdateHistories = false)
+            TreatmentAuthorizationResponseDto authorization)
     {
         Id = treatment.Id;
-        PaidDateTime = treatment.PaidDateTime;
+        StatsDateTime = treatment.StatsDateTime;
         ServiceAmount = treatment.ServiceAmountBeforeVat;
         ServiceVatAmount = treatment.ServiceVatAmount;
         ProductAmount = treatment.ProductAmountBeforeVat;
@@ -50,12 +49,8 @@ public class TreatmentDetailResponseDto
         Items = treatment.Items?.Select(ti => new TreatmentItemResponseDto(ti)).ToList();
         Photos = treatment.Photos?.Select(tp => new TreatmentPhotoResponseDto(tp)).ToList();
         Authorization = authorization;
-
-        if (mapUpdateHistories)
-        {
-            UpdateHistories = treatment.UpdateHistories
-                .Select(uh => new TreatmentUpdateHistoryResponseDto(uh))
-                .ToList();
-        }
+        UpdateHistories = treatment.UpdateHistories
+            .Select(uh => new TreatmentUpdateHistoryResponseDto(uh))
+            .ToList();
     }
 }

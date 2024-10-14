@@ -14,7 +14,7 @@ internal class DebtIncurrence
     [StringLength(255)]
     public string Note { get; set; }
     
-    public DateTime IncurredDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
 
     [Required]
     public bool IsDeleted { get; set; }
@@ -42,19 +42,6 @@ internal class DebtIncurrence
         .OrderBy(uh => uh.UpdatedDateTime)
         .Select(uh => uh.UpdatedUser)
         .LastOrDefault();
-
-    [NotMapped]
-    public DateTime StatsDateTime
-    {
-        get => IncurredDateTime;
-        set => IncurredDateTime = value;
-    }
-
-    [NotMapped]
-    public static Expression<Func<DebtIncurrence, DateTime>> StatsDateTimeExpression
-    {
-        get => (debtIncurrence) => debtIncurrence.IncurredDateTime;
-    }
     
     // Model configurations.
     public static void ConfigureModel(EntityTypeBuilder<DebtIncurrence> entityBuilder)
@@ -68,7 +55,7 @@ internal class DebtIncurrence
             .WithMany(u => u.Debts)
             .HasForeignKey(d => d.CreatedUserId)
             .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder.HasIndex(d => d.CreatedDateTime);
+        entityBuilder.HasIndex(d => d.StatsDateTime);
         entityBuilder.HasIndex(d => d.IsDeleted);
     }
 }

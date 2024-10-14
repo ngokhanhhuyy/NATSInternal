@@ -4,9 +4,9 @@ public class ExpenseUpsertValidator : Validator<ExpenseUpsertRequestDto>
 {
     public ExpenseUpsertValidator()
     {
-        RuleFor(dto => dto.PaidDateTime)
+        RuleFor(dto => dto.StatsDateTime)
             .IsValidStatsDateTime()
-            .WithName(DisplayNames.PaidDateTime);
+            .WithName(DisplayNames.StatsDateTime);
         RuleFor(dto => dto.Amount)
             .GreaterThan(0)
             .WithName(DisplayNames.Amount);
@@ -31,7 +31,7 @@ public class ExpenseUpsertValidator : Validator<ExpenseUpsertRequestDto>
         {
             RuleForEach(dto => dto.Photos)
                 .SetValidator(new ExpensePhotoValidator(), ruleSets: "Update");
-            RuleFor(dto => dto.UpdateReason)
+            RuleFor(dto => dto.UpdatedReason)
                 .NotEmpty()
                 .MaximumLength(255)
                 .WithName(DisplayNames.Reason);

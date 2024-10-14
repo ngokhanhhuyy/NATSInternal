@@ -1,6 +1,9 @@
 namespace NATSInternal.Services.Dtos;
 
-public class TreatmentListResponseDto
+public class TreatmentListResponseDto : IFinancialEngageableListResponseDto<
+        TreatmentBasicResponseDto,
+        TreatmentAuthorizationResponseDto,
+        TreatmentListAuthorizationResponseDto>
 {
     public int PageCount { get; set; }
     public List<TreatmentBasicResponseDto> Items { get; set; }

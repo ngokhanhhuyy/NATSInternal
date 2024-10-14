@@ -48,7 +48,6 @@ public static class ConfigurationExtensions
         services.AddScoped<RoleManager<Role>>();
         services.AddScoped<DatabaseContext>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
-        services.AddScoped<SqlExceptionHandler>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRoleService, RoleService>();
 
@@ -86,7 +85,26 @@ public static class ConfigurationExtensions
             .GetRequiredService<AuthorizationService>());
         services.AddScoped<IAuthorizationInternalService>(provider => provider
             .GetRequiredService<AuthorizationService>());
-            
+
+        // Photo services.
+        services.AddScoped<IPhotoService<User>, PhotoService<User>>();
+        services.AddScoped<IPhotoService<Brand>, PhotoService<Brand>>();
+        services.AddScoped<
+            IPhotoService<Product, ProductPhoto>,
+            PhotoService<Product, ProductPhoto>>();
+        services.AddScoped<
+            IPhotoService<Expense, ExpensePhoto>,
+            PhotoService<Expense, ExpensePhoto>>();
+        services.AddScoped<
+            IPhotoService<Supply, SupplyPhoto>,
+            PhotoService<Supply, SupplyPhoto>>();
+        services.AddScoped<
+            IPhotoService<Order, OrderPhoto>,
+            PhotoService<Order, OrderPhoto>>();
+        services.AddScoped<
+            IPhotoService<Treatment, TreatmentPhoto>,
+            PhotoService<Treatment, TreatmentPhoto>>();
+
         // Stats services.
         services.AddScoped<StatsService>();
         services.AddScoped<IStatsService>(provider => provider

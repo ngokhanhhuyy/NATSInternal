@@ -4,7 +4,7 @@ public class ConsultantUpdateHistoryDataDto
 {
     public long Amount { get; set; }
     public string Note { get; set; }
-    public DateTime PaidDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
 
     internal ConsultantUpdateHistoryDataDto() { }
     
@@ -12,6 +12,6 @@ public class ConsultantUpdateHistoryDataDto
     {
         Amount = consultant.AmountBeforeVat;
         Note = consultant.Note;
-        PaidDateTime = consultant.PaidDateTime;
+        StatsDateTime = consultant.StatsDateTime;
     }
 }

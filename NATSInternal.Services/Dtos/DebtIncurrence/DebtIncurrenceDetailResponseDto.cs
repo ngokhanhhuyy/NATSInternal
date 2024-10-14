@@ -8,6 +8,7 @@ public class DebtIncurrenceDetailResponseDto
     public int Id { get; set; }
     public long Amount { get; set; }
     public string Note { get; set; }
+    public DateTime StatsDateTime { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
@@ -16,24 +17,19 @@ public class DebtIncurrenceDetailResponseDto
     public List<DebtIncurrenceUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
     internal DebtIncurrenceDetailResponseDto(
-            DebtIncurrence debt,
-            DebtIncurrenceAuthorizationResponseDto authorization,
-            bool mapUpdateHistories = false)
+            DebtIncurrence debtIncurrence,
+            DebtIncurrenceAuthorizationResponseDto authorization)
     {
-        Id = debt.Id;
-        Amount = debt.Amount;
-        Note = debt.Note;
-        CreatedDateTime = debt.CreatedDateTime;
-        IsLocked = debt.IsLocked;
-        Customer = new CustomerBasicResponseDto(debt.Customer);
-        CreatedUser = new UserBasicResponseDto(debt.CreatedUser);
+        Id = debtIncurrence.Id;
+        Amount = debtIncurrence.Amount;
+        Note = debtIncurrence.Note;
+        CreatedDateTime = debtIncurrence.CreatedDateTime;
+        IsLocked = debtIncurrence.IsLocked;
+        Customer = new CustomerBasicResponseDto(debtIncurrence.Customer);
+        CreatedUser = new UserBasicResponseDto(debtIncurrence.CreatedUser);
         Authorization = authorization;
-        
-        if (mapUpdateHistories)
-        {
-            UpdateHistories = debt.UpdateHistories
-                .Select(uh => new DebtIncurrenceUpdateHistoryResponseDto(uh))
-                .ToList();
-        }
+        UpdateHistories = debtIncurrence.UpdateHistories?
+            .Select(uh => new DebtIncurrenceUpdateHistoryResponseDto(uh))
+            .ToList();
     }
 }

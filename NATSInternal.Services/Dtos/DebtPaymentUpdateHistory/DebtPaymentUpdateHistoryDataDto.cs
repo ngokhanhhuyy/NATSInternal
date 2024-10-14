@@ -4,18 +4,12 @@ public class DebtPaymentUpdateHistoryDataDto : IDebtUpdateHistoryDataDto
 {
     public long Amount { get; set; }
     public string Note { get; set; }
-    public DateTime PaidDateTime { get; set; }
-
-    public DateTime StatsDateTime
-    {
-        get => PaidDateTime;
-        set => PaidDateTime = value;
-    }
+    public DateTime StatsDateTime { get; set; }
     
-    internal DebtPaymentUpdateHistoryDataDto(DebtPayment payment)
+    internal DebtPaymentUpdateHistoryDataDto(DebtPayment debtPayment)
     {
-        Amount = payment.Amount;
-        Note = payment.Note;
-        PaidDateTime = payment.PaidDateTime;
+        Amount = debtPayment.Amount;
+        Note = debtPayment.Note;
+        StatsDateTime = debtPayment.StatsDateTime;
     }
 }

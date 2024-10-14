@@ -1,8 +1,7 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class ProductCategoryAuthorizationResponseDto
+public class ProductCategoryAuthorizationResponseDto : IUpsertableAuthorizationResponseDto
 {
-    public bool CanCreate { get; set; }
     public bool CanEdit { get; set; }
     public bool CanDelete { get; set; }
 }

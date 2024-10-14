@@ -11,21 +11,48 @@ internal class DebtIncurrenceService
             DebtIncurrenceAuthorizationResponseDto>,
         IDebtIncurrenceService
 {
+    private readonly IAuthorizationInternalService _authorizationService;
+
     public DebtIncurrenceService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService<DebtIncurrence, DebtIncurrenceUpdateHistory> statsService,
-            IUpdateHistoryService<DebtIncurrence, DebtIncurrenceUpdateHistory, DebtIncurrenceUpdateHistoryDataDto> updateHistoryService,
-            IMonthYearService<DebtIncurrence, DebtIncurrenceUpdateHistory> monthYearService)
-        : base(
-            context,
-            authorizationService,
-            statsService,
-            updateHistoryService,
-            monthYearService)
+            IStatsInternalService<DebtIncurrence, DebtIncurrenceUpdateHistory> statsService)
+        : base(context, authorizationService, statsService)
     {
+        _authorizationService = authorizationService;
     }
-    
+
+    /// <inheritdoc />
+    public async Task<DebtIncurrenceListResponseDto> GetListAsync(
+            DebtIncurrenceListRequestDto requestDto)
+    {
+        EntityListDto<DebtIncurrence> entityListDto = await GetListOfEntitiesAsync(requestDto);
+
+        return new DebtIncurrenceListResponseDto
+        {
+            PageCount = entityListDto.PageCount,
+            Items = entityListDto.Items
+                .Select(di =>
+                {
+                    DebtIncurrenceAuthorizationResponseDto authorization;
+                    authorization = _authorizationService.GetDebtIncurrenceAuthorization(di);
+                    return new DebtIncurrenceBasicResponseDto(di, authorization);
+                }).ToList(),
+            MonthYearOptions = await GenerateMonthYearOptions(),
+            Authorization = _authorizationService.GetDebtIncurrenceListAuthorization()
+        };
+    }
+
+    /// <inheritdoc />
+    public async Task<DebtIncurrenceDetailResponseDto> GetDetailAsync(int id)
+    {
+        DebtIncurrence debtIncurrence = await GetEntityAsync(id);
+        DebtIncurrenceAuthorizationResponseDto authorization = _authorizationService
+            .GetDebtIncurrenceAuthorization(debtIncurrence);
+
+        return new DebtIncurrenceDetailResponseDto(debtIncurrence, authorization);
+    }
+
     /// <inheritdoc />
     protected override DbSet<DebtIncurrence> GetRepository(DatabaseContext context)
     {
@@ -33,85 +60,10 @@ internal class DebtIncurrenceService
     }
 
     /// <inheritdoc />
-    protected override IOrderedQueryable<DebtIncurrence> SortListQuery(
-            IQueryable<DebtIncurrence> query,
-            DebtIncurrenceListRequestDto requestDto)
-    {
-        switch (requestDto.OrderByField)
-        {
-            case nameof(DebtIncurrenceListRequestDto.FieldOptions.Amount):
-                return requestDto.OrderByAscending
-                    ? query.OrderBy(dp => dp.Amount).ThenBy(dp => dp.IncurredDateTime)
-                    : query.OrderByDescending(dp => dp.Amount)
-                        .ThenByDescending(dp => dp.IncurredDateTime);
-            default:
-                return requestDto.OrderByAscending
-                    ? query.OrderBy(dp => dp.IncurredDateTime).ThenBy(dp => dp.Amount)
-                    : query.OrderByDescending(dp => dp.IncurredDateTime)
-                        .ThenByDescending(dp => dp.Amount);
-        }
-    }
-
-    /// <inheritdoc />
-    protected override IQueryable<DebtIncurrence> FilterByMonthYearListQuery(
-            IQueryable<DebtIncurrence> query,
-            DateTime startingDateTime,
-            DateTime endingDateTime)
-    {
-        return query
-            .Where(dp => dp.IncurredDateTime >= startingDateTime)
-            .Where(dp => dp.IncurredDateTime < endingDateTime);
-    }
-
-    /// <inheritdoc />
-    protected override DebtIncurrenceBasicResponseDto InitializeBasicResponseDto(
-            DebtIncurrence debtIncurrence,
-            IAuthorizationInternalService authorizationService)
-    {
-        return new DebtIncurrenceBasicResponseDto(
-            debtIncurrence,
-            authorizationService.GetDebtIncurrenceAuthorization(debtIncurrence));
-    }
-
-    /// <inheritdoc />
-    protected override DebtIncurrenceDetailResponseDto InitializeDetailResponseDto(
-            DebtIncurrence debtIncurrence,
-            IAuthorizationInternalService authorizationService,
-            bool shouldIncludeUpdateHistories)
-    {
-        return new DebtIncurrenceDetailResponseDto(
-            debtIncurrence,
-            authorizationService.GetDebtIncurrenceAuthorization(debtIncurrence),
-            mapUpdateHistories: shouldIncludeUpdateHistories);
-    }
-
-    /// <inheritdoc />
-    protected override DebtIncurrenceListAuthorizationResponseDto
-        InitializeListAuthorizationResponseDto(IAuthorizationInternalService service)
-    {
-        return service.GetDebtIncurrenceListAuthorization();
-    }
-
-    /// <inheritdoc />
-    protected override DebtIncurrenceAuthorizationResponseDto
-        InitializeAuthorizationResponseDto(
-            IAuthorizationInternalService service,
+    protected override DebtIncurrenceUpdateHistoryDataDto InitializeUpdateHistoryDataDto(
             DebtIncurrence debtIncurrence)
     {
-        return service.GetDebtIncurrenceAuthorization(debtIncurrence);
-    }
-
-    /// <inheritdoc />
-    protected override DebtIncurrenceUpdateHistoryDataDto
-        InitializeUpdateHistoryDataDto(DebtIncurrence debtIncurrence)
-    {
         return new DebtIncurrenceUpdateHistoryDataDto(debtIncurrence);
-    }
-
-    /// <inheritdoc />
-    protected override bool CanAccessUpdateHistories(IAuthorizationInternalService service)
-    {
-        return service.CanAccessDebtIncurrenceUpdateHistories();
     }
 
     /// <inheritdoc />
@@ -129,17 +81,27 @@ internal class DebtIncurrenceService
     }
 
     /// <inheritdoc />
-    protected override bool CanDelete(IAuthorizationInternalService service)
+    protected override bool CanAccessUpdateHistories(IAuthorizationInternalService service)
     {
-        return service.CanDeleteDebtIncurrence();
+        return service.CanAccessDebtIncurrenceUpdateHistories();
     }
 
     /// <inheritdoc />
-    protected override async Task IncrementStatsAsync(
-            long amount,
-            DateOnly date,
-            IStatsInternalService<DebtIncurrence, DebtIncurrenceUpdateHistory> service)
+    protected override bool CanDelete(
+            DebtIncurrence debtIncurrence,
+            IAuthorizationInternalService service)
     {
-        await service.IncrementDebtIncurredAmountAsync(amount, date);
+        return service.CanDeleteDebtIncurrence(debtIncurrence);
+    }
+
+    /// <inheritdoc />
+    protected override async Task AdjustStatsAsync(
+            DebtIncurrence debtIncurrence,
+            IStatsInternalService<DebtIncurrence, DebtIncurrenceUpdateHistory> service,
+            bool isIncrement)
+    {
+        long amountToIncrement = isIncrement ? debtIncurrence.Amount : -debtIncurrence.Amount;
+        DateOnly date = DateOnly.FromDateTime(debtIncurrence.StatsDateTime);
+        await service.IncrementDebtIncurredAmountAsync(amountToIncrement, date);
     }
 }

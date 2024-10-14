@@ -55,7 +55,7 @@ internal class ProductEngagementService<TItem, TPhoto, TUpdateHistory>
             // Initialize entity.
             TItem item = new TItem
             {
-                AmountPerUnit = itemRequestDto.AmountPerUnit,
+                ProductAmountPerUnit = itemRequestDto.ProductAmountPerUnit,
                 Quantity = itemRequestDto.Quantity,
                 Product = product
             };
@@ -131,7 +131,7 @@ internal class ProductEngagementService<TItem, TPhoto, TUpdateHistory>
                         continue;
                     }
 
-                    item.AmountPerUnit = itemRequestDto.AmountPerUnit;
+                    item.ProductAmountPerUnit = itemRequestDto.ProductAmountPerUnit;
                     item.Product.StockingQuantity -= item.Quantity;
                     item.Quantity = itemRequestDto.Quantity;
                 }
@@ -154,7 +154,7 @@ internal class ProductEngagementService<TItem, TPhoto, TUpdateHistory>
                     // Initialize new supply item.
                     item = new TItem
                     {
-                        AmountPerUnit = itemRequestDto.AmountPerUnit,
+                        ProductAmountPerUnit = itemRequestDto.ProductAmountPerUnit,
                         Quantity = itemRequestDto.Quantity,
                         ProductId = itemRequestDto.ProductId
                     };

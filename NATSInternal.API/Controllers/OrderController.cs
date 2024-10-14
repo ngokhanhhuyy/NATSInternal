@@ -29,8 +29,9 @@ public class OrderController : ControllerBase
             [FromQuery] OrderListRequestDto requestDto)
     {
         // Validate data from request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _listValidator.Validate(requestDto.TransformValues());
+        validationResult = _listValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -66,9 +67,10 @@ public class OrderController : ControllerBase
             [FromBody] OrderUpsertRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
         validationResult = _upsertValidator.Validate(
-            requestDto.TransformValues(),
+            requestDto,
             options => options.IncludeRuleSets("Create").IncludeRulesNotInRuleSet());
         if (!validationResult.IsValid)
         {
@@ -109,9 +111,10 @@ public class OrderController : ControllerBase
             [FromBody] OrderUpsertRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
         validationResult = _upsertValidator.Validate(
-            requestDto.TransformValues(),
+            requestDto,
             options => options.IncludeRuleSets("Update").IncludeRulesNotInRuleSet());
         if (!validationResult.IsValid)
         {

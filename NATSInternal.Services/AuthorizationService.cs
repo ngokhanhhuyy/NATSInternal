@@ -127,7 +127,6 @@ internal class AuthorizationService : IAuthorizationInternalService
     {
         return new()
         {
-            CanCreate = _user.HasPermission(PermissionConstants.CreateProductCategory),
             CanEdit = _user.HasPermission(PermissionConstants.EditProductCategory),
             CanDelete = _user.HasPermission(PermissionConstants.DeleteProductCategory)
         };

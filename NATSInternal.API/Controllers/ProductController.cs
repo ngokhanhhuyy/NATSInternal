@@ -6,27 +6,38 @@
 public class ProductController : ControllerBase
 {
     private readonly IProductService _service;
-    private readonly IValidator<ProductUpsertRequestDto> _validator;
+    private readonly IValidator<ProductListRequestDto> _listValidator;
+    private readonly IValidator<ProductUpsertRequestDto> _upsertValidator;
     private readonly INotifier _notifier;
 
     public ProductController(
             IProductService productService,
+            IValidator<ProductListRequestDto> listValidator,
             IValidator<ProductUpsertRequestDto> upsertValidator,
             INotifier notifier)
     {
         _service = productService;
-        _validator = upsertValidator;
+        _listValidator = listValidator;
+        _upsertValidator = upsertValidator;
         _notifier = notifier;
     }
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ProductList(
             [FromQuery] ProductListRequestDto requestDto)
     {
-        ProductListResponseDto responseDto;
-        responseDto = await _service.GetListAsync(requestDto.TransformValues());
-        return Ok(responseDto);
+        // Validate data from the request.
+        requestDto.TransformValues();
+        ValidationResult validationResult = _listValidator.Validate(requestDto);
+        if (!validationResult.IsValid)
+        {
+            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
+            return BadRequest(ModelState);
+        }
+
+        return Ok(await _service.GetListAsync(requestDto));
     }
 
     [HttpGet("{id:int}")]
@@ -58,8 +69,9 @@ public class ProductController : ControllerBase
             [FromBody] ProductUpsertRequestDto requestDto)
     {
         // Validate the data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _validator.Validate(requestDto.TransformValues());
+        validationResult = _upsertValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -98,8 +110,9 @@ public class ProductController : ControllerBase
             [FromBody] ProductUpsertRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _validator.Validate(requestDto.TransformValues());
+        validationResult = _upsertValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

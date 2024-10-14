@@ -6,7 +6,7 @@ public class OrderListValidator : Validator<OrderListRequestDto>
     {
         RuleFor(dto => dto.OrderByField)
             .NotEmpty()
-            .Must(IsEnumElementName<OrderListRequestDto.FieldOptions>)
+            .IsOneOfFieldOptions(FieldOptions)
             .WithName(DisplayNames.OrderByField);
         RuleFor(dto => dto.Month)
             .IsValidQueryStatsMonth()
@@ -23,5 +23,14 @@ public class OrderListValidator : Validator<OrderListRequestDto>
             .GreaterThanOrEqualTo(5)
             .LessThanOrEqualTo(50)
             .WithName(DisplayNames.ResultsPerPage);
+    }
+
+    private static IEnumerable<OrderByFieldOptions> FieldOptions
+    {
+        get => new List<OrderByFieldOptions>
+        {
+            OrderByFieldOptions.Amount,
+            OrderByFieldOptions.StatsDateTime
+        };
     }
 }

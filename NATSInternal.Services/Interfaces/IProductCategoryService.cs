@@ -6,6 +6,20 @@
 public interface IProductCategoryService
 {
     /// <summary>
+    /// Retrieves a list of product categories, based on paginating conditions.
+    /// </summary>
+    /// <param name="requestDto">
+    /// A DTO containing the paginating conditions for the results.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is an
+    /// instance of the <see cref="ProductCategoryListResponseDto"/> class, containing the
+    /// results.
+    /// </returns>
+    Task<ProductCategoryListResponseDto> GetListAsync(
+            ProductCategoryListRequestDto requestDto);
+
+    /// <summary>
     /// Retrieves a list of all product categories.
     /// </summary>
     /// <returns>
@@ -13,7 +27,7 @@ public interface IProductCategoryService
     /// instance of the <see cref="ProductCategoryListResponseDto"/> class, containing the
     /// results.
     /// </returns>
-    Task<ProductCategoryListResponseDto> GetListAsync();
+    Task<List<ProductCategoryResponseDto>> GetAllAsync();
 
     /// <summary>
     /// Retrieves the details a specfic product category, based on its id.

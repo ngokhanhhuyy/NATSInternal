@@ -2,7 +2,7 @@ namespace NATSInternal.Services.Dtos;
 
 public class TreatmentUpdateHistoryDataDto
 {
-    public DateTime PaidDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
     public long ServiceAmount { get; set; }
     public decimal ServiceVatFactor { get; set; }
     public string Note { get; set; }
@@ -11,7 +11,7 @@ public class TreatmentUpdateHistoryDataDto
     
     internal TreatmentUpdateHistoryDataDto(Treatment treatment)
     {
-        PaidDateTime = treatment.PaidDateTime;
+        StatsDateTime = treatment.StatsDateTime;
         ServiceAmount = treatment.ServiceAmountBeforeVat;
         ServiceVatFactor = treatment.ServiceVatAmount;
         Note = treatment.Note;

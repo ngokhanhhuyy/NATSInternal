@@ -8,22 +8,19 @@ internal class UserService : IUserService
     private readonly RoleManager<Role> _roleManager;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IPhotoService<User> _photoService;
-    private readonly SqlExceptionHandler _exceptionHandler;
 
     public UserService(
             DatabaseContext context,
             UserManager<User> userManager,
             RoleManager<Role> roleManager,
             IAuthorizationInternalService authorizationService,
-            IPhotoService<User> photoService,
-            SqlExceptionHandler exceptionHandler)
+            IPhotoService<User> photoService)
     {
         _context = context;
         _userManager = userManager;
         _roleManager = roleManager;
         _authorizationService = authorizationService;
         _photoService = photoService;
-        _exceptionHandler = exceptionHandler;
     }
 
     /// <inheritdoc />
@@ -37,39 +34,39 @@ internal class UserService : IUserService
         // Determine the field and the direction to sort.
         switch (requestDto.OrderByField)
         {
-            case nameof(UserListRequestDto.FieldToBeOrdered.FirstName):
+            case nameof(OrderByFieldOptions.FirstName):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(u => u.FirstName)
                     : query.OrderByDescending(u => u.FirstName);
                 break;
-            case nameof(UserListRequestDto.FieldToBeOrdered.UserName):
+            case nameof(OrderByFieldOptions.UserName):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(u => u.UserName)
                     : query.OrderByDescending(u => u.UserName);
                 break;
-            case nameof(UserListRequestDto.FieldToBeOrdered.Birthday):
+            case nameof(OrderByFieldOptions.Birthday):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(u => u.Birthday.Value.Month)
                         .ThenBy(u => u.Birthday.Value.Day)
                     : query.OrderByDescending(u => u.Birthday.Value.Month)
                         .ThenByDescending(u => u.Birthday.Value.Day);
                 break;
-            case nameof(UserListRequestDto.FieldToBeOrdered.Age):
+            case nameof(OrderByFieldOptions.Age):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(u => u.Birthday)
                     : query.OrderByDescending(u => u.Birthday);
                 break;
-            case nameof(UserListRequestDto.FieldToBeOrdered.CreatedDateTime):
+            case nameof(OrderByFieldOptions.CreatedDateTime):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(u => u.CreatedDateTime)
                     : query.OrderByDescending(u => u.CreatedDateTime);
                 break;
-            case nameof(UserListRequestDto.FieldToBeOrdered.Role):
+            case nameof(OrderByFieldOptions.Role):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(u => u.Roles.First().Id)
                     : query.OrderByDescending(u => u.Roles.First().Id);
                 break;
-            case nameof(UserListRequestDto.FieldToBeOrdered.LastName):
+            case nameof(OrderByFieldOptions.LastName):
             default:
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(u => u.LastName)
@@ -306,11 +303,10 @@ internal class UserService : IUserService
         {
             if (exception.InnerException is MySqlException sqlException)
             {
-                _exceptionHandler.Handle(sqlException);
-                if (_exceptionHandler.IsUniqueConstraintViolated)
+                SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(sqlException);
+                if (exceptionHandler.IsUniqueConstraintViolated)
                 {
-                    throw new DuplicatedException(IdentifierCasingExtensions
-                        .SnakeCaseToPascalCase(_exceptionHandler.ViolatedFieldName));
+                    throw new DuplicatedException(exceptionHandler.ViolatedFieldName);
                 }
             }
             throw;

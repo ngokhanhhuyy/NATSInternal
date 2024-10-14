@@ -25,7 +25,7 @@ public class DebtPaymentUpsertRequestDto : IDebtUpsertRequestDto
     /// time. If this is DTO instance is consumed in the updating mode, the value of the debt
     /// payment's paid date and time will not be modified and left untouched.
     /// </remarks>
-    public DateTime? PaidDateTime { get; set; }
+    public DateTime? StatsDateTime { get; set; }
 
     /// <summary>
     /// Represents the id of the customer to which the creating/updating debt payment belongs.
@@ -36,21 +36,6 @@ public class DebtPaymentUpsertRequestDto : IDebtUpsertRequestDto
     /// Contains the reason why the debt payment is updated.
     /// </summary>
     public string UpdatedReason { get; set; }
-
-    /// <summary>
-    /// Represents the date and time when the debt payment.
-    /// </summary>
-    /// <remarks>
-    /// When this property is left as null, if this DTO instance is consumed in creating mode,
-    /// the paid date and time of the creating debt payment will be the current date and
-    /// time. If this is DTO instance is consumed in the updating mode, the value of the debt
-    /// payment's paid date and time will not be modified and left untouched.
-    /// </remarks>
-    public DateTime? StatsDateTime
-    {
-        get => PaidDateTime;
-        set => PaidDateTime = value;
-    }
     
     /// <inheritdoc/>
     public void TransformValues()

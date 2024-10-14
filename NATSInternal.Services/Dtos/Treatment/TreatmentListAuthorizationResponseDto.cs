@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class TreatmentListAuthorizationResponseDto
+public class TreatmentListAuthorizationResponseDto : IUpsertableListAuthorizationResponseDto
 {
     public bool CanCreate { get; set; }
 }

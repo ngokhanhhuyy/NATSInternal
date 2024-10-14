@@ -899,7 +899,7 @@ public sealed class DataInitializer
 
                     SupplyItem supplyItem = new()
                     {
-                        AmountPerUnit = product.DefaultPrice,
+                        ProductAmountPerUnit = product.DefaultPrice,
                         Quantity = random.Next(50),
                         ProductId = product.Id
                     };
@@ -910,7 +910,7 @@ public sealed class DataInitializer
 
                 Supply supply = new()
                 {
-                    SuppliedDateTime = currentDateTime,
+                    StatsDateTime = currentDateTime,
                     ShipmentFee = 0,
                     Note = faker.Lorem.Sentences(5),
                     CreatedDateTime = currentDateTime,
@@ -965,7 +965,7 @@ public sealed class DataInitializer
                 Expense expense = new Expense
                 {
                     Amount = random.Next(500, 5000) * 1000,
-                    PaidDateTime = currentDateTime,
+                    StatsDateTime = currentDateTime,
                     Category = category,
                     Note = null,
                     CreatedUserId = userIds.Skip(random.Next(userIds.Count)).Take(1).Single(),
@@ -1018,7 +1018,7 @@ public sealed class DataInitializer
                 // Initialize order.
                 Order order = new Order
                 {
-                    PaidDateTime = currentDateTime,
+                    StatsDateTime = currentDateTime,
                     Note = null,
                     CustomerId = customerIds.MinBy(_ => Guid.NewGuid()),
                     CreatedUserId = userIds.MinBy(_ => Guid.NewGuid()),
@@ -1039,7 +1039,7 @@ public sealed class DataInitializer
 
                     OrderItem item = new OrderItem
                     {
-                        AmountPerUnit = product.DefaultPrice,
+                        ProductAmountPerUnit = product.DefaultPrice,
                         VatAmountPerUnit = 0,
                         Quantity = Math.Min(5, product.StockingQuantity),
                         ProductId = product.Id
@@ -1184,7 +1184,7 @@ public sealed class DataInitializer
         _context.SaveChanges();
     }
 
-    private void GenerateLockableEntitiesData(bool logResult = false)
+    private async void GenerateLockableEntitiesData(bool logResult = false)
     {
         List<bool> conditions = new List<bool>
         {
@@ -1217,17 +1217,37 @@ public sealed class DataInitializer
             List<Product> products = _context.Products.ToList();
 
             // Get the starting statsDateTime, based on the existing data in the database.
-            DateTime lastGeneratedStatsDateTime = _context.Supplies
-                .Select(s => s.CreatedDateTime)
-                .Union(_context.Expenses.Select(ex => ex.CreatedDateTime))
-                .Union(_context.Orders.Select(o => o.CreatedDateTime))
-                .Union(_context.Treatments.Select(t => t.CreatedDateTime))
-                .Union(_context.Consultants.Select(c => c.CreatedDateTime))
-                .OrderByDescending(e => e)
-                .FirstOrDefault();
-            if (lastGeneratedStatsDateTime > statsDateTime)
+            IEnumerable<DateTime?> lastDateTimes = new List<DateTime?>
             {
-                statsDateTime = lastGeneratedStatsDateTime;
+                _context.Supplies
+                    .OrderByDescending(supply => supply.CreatedDateTime)
+                    .Select(supply => (DateTime?)supply.CreatedDateTime)
+                    .FirstOrDefault(),
+                _context.Expenses
+                    .OrderByDescending(expense => expense.CreatedDateTime)
+                    .Select(expense => (DateTime?)expense.CreatedDateTime)
+                    .FirstOrDefault(),
+                _context.Orders
+                    .OrderByDescending(order => order.CreatedDateTime)
+                    .Select(order => (DateTime?)order.CreatedDateTime)
+                    .FirstOrDefault(),
+                _context.Treatments
+                    .OrderByDescending(treatment => treatment.CreatedDateTime)
+                    .Select(treatment => (DateTime?)treatment.CreatedDateTime)
+                    .FirstOrDefault(),
+                _context.Consultants
+                    .OrderByDescending(consultant => consultant.CreatedDateTime)
+                    .Select(consultant => (DateTime?)consultant.CreatedDateTime)
+                    .FirstOrDefault(),
+            };
+            DateTime? lastGeneratedStatsDateTime = lastDateTimes
+                .Where(dateTime => dateTime.HasValue)
+                .OrderByDescending(dateTime => dateTime)
+                .FirstOrDefault();
+            if (lastGeneratedStatsDateTime.HasValue &&
+                lastGeneratedStatsDateTime > statsDateTime)
+            {
+                statsDateTime = lastGeneratedStatsDateTime.Value;
             }
 
             // Canculate the day differences between 2 ranges in order to calculate
@@ -1318,7 +1338,7 @@ public sealed class DataInitializer
             {
                 SupplyItem item = new SupplyItem
                 {
-                    AmountPerUnit = (int)Math.Round(product.DefaultPrice - product.DefaultPrice * 0.35),
+                    ProductAmountPerUnit = (int)Math.Round(product.DefaultPrice - product.DefaultPrice * 0.35),
                     Quantity = 100 - product.StockingQuantity,
                     ProductId = product.Id,
                 };
@@ -1332,7 +1352,7 @@ public sealed class DataInitializer
         {
             Supply supply = new()
             {
-                SuppliedDateTime = statsDateTime,
+                StatsDateTime = statsDateTime,
                 CreatedDateTime = statsDateTime,
                 ShipmentFee = random.Next(200_000, 500_000),
                 Note = random.Next(0, 2) == 0 ? null : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
@@ -1395,7 +1415,7 @@ public sealed class DataInitializer
         Expense expense = new Expense
         {
             Amount = random.Next(500, 5000) * 1000,
-            PaidDateTime = statsDateTime,
+            StatsDateTime = statsDateTime,
             CreatedDateTime = statsDateTime,
             Category = category,
             Note = random.Next(0, 2) == 0 ? null : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
@@ -1460,7 +1480,7 @@ public sealed class DataInitializer
             // Initialize order.
             Order order = new Order
             {
-                PaidDateTime = statsDateTime,
+                StatsDateTime = statsDateTime,
                 CreatedDateTime = statsDateTime,
                 Note = random.Next(0, 2) == 0 ? null : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
                 CustomerId = customerIds.MinBy(_ => Guid.NewGuid()),
@@ -1487,7 +1507,7 @@ public sealed class DataInitializer
 
                 OrderItem item = new OrderItem
                 {
-                    AmountPerUnit = product.DefaultPrice,
+                    ProductAmountPerUnit = product.DefaultPrice,
                     VatAmountPerUnit = 0,
                     Quantity = Math.Min(random.Next(1, 5), product.StockingQuantity),
                     ProductId = product.Id
@@ -1545,7 +1565,7 @@ public sealed class DataInitializer
             // Initialize treatment entity.
             Treatment treatment = new Treatment
             {
-                PaidDateTime = statsDateTime,
+                StatsDateTime = statsDateTime,
                 CreatedDateTime = statsDateTime,
                 ServiceAmountBeforeVat = random.Next(1_000, 2_000) * 1000,
                 ServiceVatAmount = random.Next(0, 20),
@@ -1619,7 +1639,7 @@ public sealed class DataInitializer
         // Initialize consultant entity.
         Consultant consultant = new Consultant
         {
-            PaidDateTime = statsDateTime,
+            StatsDateTime = statsDateTime,
             CreatedDateTime = statsDateTime,
             AmountBeforeVat = random.Next(500, 2_500) * 1000,
             Note = random.Next(0, 2) == 0 ? null : SliceIfTooLong(faker.Lorem.Sentences(4), 255),

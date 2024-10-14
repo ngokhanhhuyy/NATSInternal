@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 namespace NATSInternal.Validation.Validators;
 
 public partial class Validator<TRequestDto> : AbstractValidator<TRequestDto>
-        where TRequestDto : IRequestDto<TRequestDto>
+        where TRequestDto : IRequestDto
 {
     public Validator()
     {
@@ -67,8 +67,6 @@ public partial class Validator<TRequestDto> : AbstractValidator<TRequestDto>
 
     protected virtual bool IsEnumElementName<TEnum>(string name) where TEnum : Enum
     {
-        return name != null && (
-            Enum.GetNames(typeof(TEnum)).ToList().Contains(name) ||
-            Enum.GetNames(typeof(TEnum)).ToList().Contains(name.CamelCaseToPascalCase()));
+        return name != null && Enum.GetNames(typeof(TEnum)).ToList().Contains(name);
     }
 }

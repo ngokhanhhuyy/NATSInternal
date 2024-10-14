@@ -1,48 +1,48 @@
 ﻿namespace NATSInternal.Services;
 
 /// <inheritdoc />
-internal class CustomerService : ICustomerService
+internal class CustomerService
+    :
+        UpsertableAbstractService<Customer, CustomerListRequestDto>,
+        ICustomerService
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
 
     public CustomerService(
-        DatabaseContext context,
-        IAuthorizationInternalService authorizationService)
+            DatabaseContext context,
+            IAuthorizationInternalService authorizationService)
     {
         _context = context;
         _authorizationService = authorizationService;
     }
 
-    /// <inheritdoc />
-    public async Task<CustomerListResponseDto> GetListAsync(
-            CustomerListRequestDto requestDto)
+    public async Task<CustomerListResponseDto> GetListAsync(CustomerListRequestDto requestDto)
     {
         // Initialize query.
         IQueryable<Customer> query = _context.Customers
             .Include(c => c.DebtIncurrences)
-            .Include(c => c.DebtPayments)
-            .Where(c => !c.IsDeleted);
+            .Include(c => c.DebtPayments);
 
         // Determine the field and the direction the sort.
         switch (requestDto.OrderByField)
         {
-            case nameof(CustomerListRequestDto.FieldToBeOrdered.FullName):
+            case nameof(OrderByFieldOptions.FirstName):
                 query = requestDto.OrderByAscending
-                    ? query.OrderBy(c => c.FullName)
-                    : query.OrderByDescending(c => c.FullName);
+                    ? query.OrderBy(c => c.FirstName)
+                    : query.OrderByDescending(c => c.FirstName);
                 break;
-            case nameof(CustomerListRequestDto.FieldToBeOrdered.Birthday):
+            case nameof(OrderByFieldOptions.Birthday):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(c => c.Birthday)
                     : query.OrderByDescending(c => c.Birthday);
                 break;
-            case nameof(CustomerListRequestDto.FieldToBeOrdered.CreatedDateTime):
+            case nameof(OrderByFieldOptions.CreatedDateTime):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(c => c.CreatedDateTime)
                     : query.OrderByDescending(c => c.CreatedDateTime);
                 break;
-            case nameof(CustomerListRequestDto.FieldToBeOrdered.DebtRemainingAmount):
+            case nameof(OrderByFieldOptions.DebtRemainingAmount):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(c => c.DebtIncurrences
                             .Where(d => !d.IsDeleted)
@@ -57,23 +57,31 @@ internal class CustomerService : ICustomerService
                             .Sum(dp => dp.Amount))
                         .ThenByDescending(c => c.Id);
                 break;
-            default:
+            case nameof(OrderByFieldOptions.LastName):
                 query = requestDto.OrderByAscending
-                    ? query.OrderBy(c => c.LastName)
-                    : query.OrderByDescending(c => c.LastName);
+                    ? query.OrderBy(c => c.LastName).ThenBy(c => c.FirstName)
+                    : query.OrderByDescending(c => c.LastName)
+                        .ThenByDescending(c => c.FirstName);
                 break;
+            default:
+                throw new NotImplementedException();
+
         }
 
         // Filter by search content.
         if (requestDto.SearchByContent != null)
         {
-            bool isValidBirthday = DateOnly.TryParse(requestDto.SearchByContent, out DateOnly birthday);
+            bool isValidBirthday = DateOnly.TryParse(
+                requestDto.SearchByContent,
+                out DateOnly birthday);
             query = query.Where(c =>
-                c.NormalizedFullName.Contains(requestDto.SearchByContent.ToUpper()) ||
+                c.NormalizedFullName.Contains(
+                    requestDto.SearchByContent,
+                    StringComparison.CurrentCultureIgnoreCase) ||
                 c.PhoneNumber.Contains(requestDto.SearchByContent) ||
                 (isValidBirthday && c.Birthday.HasValue && c.Birthday.Value == birthday));
         }
-        
+
         // Filter by remaining debt amount.
         if (requestDto.HasRemainingDebtAmountOnly)
         {
@@ -84,28 +92,19 @@ internal class CustomerService : ICustomerService
                 .Sum(dp => dp.Amount) > 0);
         }
 
-        // Initialize response dto.
-        CustomerListResponseDto responseDto = new CustomerListResponseDto
+        // Fetch the list of the entities.
+        EntityListDto<Customer> listDto = await GetListOfEntitiesAsync(query, requestDto);
+
+        return new CustomerListResponseDto
         {
+            PageCount = listDto.PageCount,
+            Items = listDto.Items
+                .Select(customer => new CustomerBasicResponseDto(
+                    customer,
+                    _authorizationService.GetCustomerAuthorization(customer)))
+                .ToList(),
             Authorization = _authorizationService.GetCustomerListAuthorization()
         };
-        int resultCount = await query.CountAsync();
-        if (resultCount == 0)
-        {
-            responseDto.PageCount = 0;
-            return responseDto;
-        }
-        responseDto.PageCount = (int)Math.Ceiling((double)resultCount / requestDto.ResultsPerPage);
-        responseDto.Results = await query
-            .Skip(requestDto.ResultsPerPage * (requestDto.Page - 1))
-            .Take(requestDto.ResultsPerPage)
-            .Select(c => new CustomerBasicResponseDto(
-                c,
-                _authorizationService.GetCustomerAuthorization(c)))
-            .AsSplitQuery()
-            .ToListAsync();
-
-        return responseDto;
     }
 
     /// <inheritdoc />
@@ -129,12 +128,13 @@ internal class CustomerService : ICustomerService
     public async Task<CustomerDetailResponseDto> GetDetailAsync(int id)
     {
         return await _context.Customers
-            .Include(c => c.Introducer)
-            .Include(c => c.DebtIncurrences)
-            .Include(c => c.DebtPayments)
+            .Include(customer => customer.Introducer)
+            .Include(customer => customer.CreatedUser)
+            .Include(customer => customer.DebtIncurrences)
+            .Include(customer => customer.DebtPayments)
             .Where(c => !c.IsDeleted && c.Id == id)
-            .Select(c => new CustomerDetailResponseDto(
-                c,
+            .Select(customer => new CustomerDetailResponseDto(
+                customer,
                 _authorizationService))
             .SingleOrDefaultAsync()
             ?? throw new ResourceNotFoundException(
@@ -184,14 +184,12 @@ internal class CustomerService : ICustomerService
         {
             if (exception.InnerException is MySqlException sqlException)
             {
-                SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
-                exceptionHandler.Handle(sqlException);
+                SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(sqlException);
                 if (exceptionHandler.IsForeignKeyNotFound)
                 {
                     throw new OperationException(
                         nameof(requestDto.IntroducerId),
-                        ErrorMessages.NotFound
-                            .Replace("{ResourceName}", DisplayNames.Introducer));
+                        ErrorMessages.NotFound.ReplaceResourceName(DisplayNames.Introducer));
                 }
             }
 
@@ -240,7 +238,7 @@ internal class CustomerService : ICustomerService
                     .SetProperty(c => c.Note, requestDto.Note)
                     .SetProperty(c => c.IntroducerId, requestDto.IntroducerId));
             
-            // Check if the entity has been updated.
+            // Check if the customer has been updated.
             if (affactedRows == 0)
             {
                 throw new ResourceNotFoundException(
@@ -249,16 +247,14 @@ internal class CustomerService : ICustomerService
                     id.ToString());
             }
         }
-        catch (MySqlException exception)
+        catch (MySqlException sqlException)
         {
-            SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
-            exceptionHandler.Handle(exception);
+            SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(sqlException);
             if (exceptionHandler.IsForeignKeyNotFound)
             {
                 throw new OperationException(
                     nameof(requestDto.IntroducerId),
-                    ErrorMessages.NotFound
-                        .Replace("{ResourceName}", DisplayNames.Introducer));
+                    ErrorMessages.NotFound.ReplaceResourceName(DisplayNames.Introducer));
             }
 
             throw;

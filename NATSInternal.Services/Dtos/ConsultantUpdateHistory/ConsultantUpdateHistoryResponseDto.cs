@@ -1,16 +1,16 @@
 namespace NATSInternal.Services.Dtos;
 
-public class ConsultantUpdateHistoryResponseDto
+public class ConsultantUpdateHistoryResponseDto : IUpdateHistoryResponseDto
 {
     private readonly ConsultantUpdateHistoryDataDto _oldData;
     private readonly ConsultantUpdateHistoryDataDto _newData;
     
     public DateTime UpdatedDateTime { get; private set; }
     public UserBasicResponseDto UpdatedUser { get; private set; }
-    public string Reason { get; private set; }
+    public string UpdatedReason { get; private set; }
     
-    public DateTime OldPaidDateTime => _oldData.PaidDateTime;
-    public DateTime NewPaidDateTime => _newData.PaidDateTime;
+    public DateTime OldPaidDateTime => _oldData.StatsDateTime;
+    public DateTime NewPaidDateTime => _newData.StatsDateTime;
     
     public long OldAmount => _oldData.Amount;
     public long NewAmount => _newData.Amount;
@@ -26,6 +26,6 @@ public class ConsultantUpdateHistoryResponseDto
             .Deserialize<ConsultantUpdateHistoryDataDto>(updateHistory.NewData);
         UpdatedDateTime = updateHistory.UpdatedDateTime;
         UpdatedUser = new UserBasicResponseDto(updateHistory.UpdatedUser);
-        Reason = updateHistory.Reason;
+        UpdatedReason = updateHistory.Reason;
     }
 }

@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class OrderListRequestDto : IProductEngageableListRequestDto
+public class OrderListRequestDto : IProductExportableListRequestDto
 {
     public bool OrderByAscending { get; set; }
     public string OrderByField { get; set; } = nameof(FieldOptions.PaidDateTime);
@@ -16,6 +16,21 @@ public class OrderListRequestDto : IProductEngageableListRequestDto
     public void TransformValues()
     {
         OrderByField = OrderByField?.ToNullIfEmpty();
+
+        if (CreatedUserId == 0)
+        {
+            CreatedUserId = null;
+        }
+
+        if (CustomerId == 0)
+        {
+            CustomerId = null;
+        }
+
+        if (ProductId == 0)
+        {
+            ProductId = null;
+        }
 
         DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
         if (!IgnoreMonthYear)

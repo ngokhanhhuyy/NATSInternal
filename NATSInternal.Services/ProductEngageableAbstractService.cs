@@ -1,22 +1,27 @@
 namespace NATSInternal.Services;
 
 /// <summary>
-/// A service to handle product-engagement-related operations.
+/// An abstract service to handle operations which interact with the product-engageable
+/// entites.
 /// </summary>
+/// <typeparam name="T">
+/// The type of the entity.
+/// </typeparam>
 /// <typeparam name="TItem">
-/// The type of the item entity, which is the connection between the
-/// <see cref="IProductEngageableEntity{T, TItem, TPhoto, TUpdateHistory}"/>
-/// and the <see cref="TProduct" /> entity.
+/// The type of the item entity associated to the <see cref="T"/> entity.
 /// </typeparam>
 /// <typeparam name="TPhoto">
-/// The type of the photo entity, which is contained by the
-/// <see cref="IProductEngageableEntity{T, TItem, TPhoto, TUpdateHistory}"/> entity that
-/// contains the <see cref="TItem"/> entities.
+/// The type of the photo entity associated to the <see cref="T"/> entity.
 /// </typeparam>
 /// <typeparam name="TUpdateHistory">
-/// The type of the update history entity which is associated with the
-/// <see cref="IProductEngageableEntity{T, TItem, TPhoto, TUpdateHistory}"/> entity that
-/// contains the <see cref="TItem"/> entities.
+/// The type of the update history entity associated to the <see cref="T"/> entity.
+/// </typeparam>
+/// <typeparam name="TListRequestDto">
+/// The type of the request DTO used in the list retrieving operation.
+/// </typeparam>
+/// <typeparam name="TUpdateHistoryDataDto">
+/// The type of the update history data DTO, containing the data of a specific <see cref="T"/>
+/// entity instance after each modification, used in the updating operation.
 /// </typeparam>
 internal abstract class ProductEngageableAbstractService<
         T,
@@ -24,51 +29,19 @@ internal abstract class ProductEngageableAbstractService<
         TPhoto,
         TUpdateHistory,
         TListRequestDto,
-        TUpsertRequestDto,
-        TListResponseDto,
-        TBasicResponseDto,
-        TDetailResponseDto,
-        TItemResponseDto,
-        TPhotoResponseDto,
-        TUpdateHistoryResponseDto,
-        TUpdateHistoryDataDto,
-        TListAuthorizationResponseDto,
-        TAuthorizationResponseDto>
+        TItemRequestDto,
+        TUpdateHistoryDataDto>
     : FinancialEngageableAbstractService<
         T,
         TUpdateHistory,
         TListRequestDto,
-        TListResponseDto,
-        TBasicResponseDto,
-        TDetailResponseDto,
-        TUpdateHistoryResponseDto,
-        TUpdateHistoryDataDto,
-        TListAuthorizationResponseDto,
-        TAuthorizationResponseDto>
+        TUpdateHistoryDataDto>
     where T : class, IProductEngageableEntity<T, TItem, TPhoto, TUpdateHistory>, new()
     where TItem : class, IProductEngageableItemEntity<TItem>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
     where TListRequestDto : IProductEngageableListRequestDto
-    where TListResponseDto :
-        IFinancialEngageableListResponseDto<
-            TBasicResponseDto,
-            TAuthorizationResponseDto,
-            TListAuthorizationResponseDto>,
-        new()
-    where TBasicResponseDto :
-        class,
-        IFinancialEngageableBasicResponseDto<TAuthorizationResponseDto>
-    where TDetailResponseDto : IProductEngageableDetailResponseDto<
-        TItemResponseDto,
-        TPhotoResponseDto,
-        TUpdateHistoryResponseDto,
-        TAuthorizationResponseDto>
-    where TItemResponseDto : IProductEngageableItemResponseDto
-    where TPhotoResponseDto : IPhotoResponseDto
-    where TUpdateHistoryResponseDto : IUpdateHistoryResponseDto
-    where TListAuthorizationResponseDto : IUpsertableListAuthorizationResponseDto
-    where TAuthorizationResponseDto : IFinancialEngageableAuthorizationResponseDto
+    where TItemRequestDto : IProductEngageableItemRequestDto
 {
     private readonly DatabaseContext _context;
 
@@ -81,26 +54,18 @@ internal abstract class ProductEngageableAbstractService<
     }
 
     /// <inheritdoc />
-    protected override IQueryable<T> InitializeListQuery(TListRequestDto requestDto)
+    protected override async Task<EntityListDto<T>> GetListOfEntitiesAsync(
+            IQueryable<T> query,
+            TListRequestDto requestDto)
     {
-        IQueryable<T> query = base.InitializeListQuery(requestDto)
-            .Include(e => e.Items).ThenInclude(ei => ei.Product)
-            .Include(e => e.Photos.OrderBy(ep => ep.Id).FirstOrDefault());
+        IQueryable<T> filteredQuery = query;
 
         if (requestDto.ProductId.HasValue)
         {
-            query.Where(e => e.Items.Any(ei => ei.ProductId == requestDto.ProductId));
+            query = query.Where(e => e.Items.Any(ei => ei.ProductId == requestDto.ProductId));
         }
 
-        return query;
-    }
-
-    /// <inheritdoc />
-    protected override IQueryable<T> InitializeDetailQuery()
-    {
-        return base.InitializeDetailQuery()
-            .Include(e => e.Items).ThenInclude(i => i.Product)
-            .Include(e => e.Photos);
+        return await base.GetListOfEntitiesAsync(query, requestDto);
     }
 
     /// <summary>
@@ -123,11 +88,11 @@ internal abstract class ProductEngageableAbstractService<
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    protected async Task CreateItemsAsync<TItemRequestDto>(
+    protected async Task CreateItemsAsync(
             ICollection<TItem> itemEntities,
             List<TItemRequestDto> requestDtos,
-            ProductEngagementType engagementType)
-        where TItemRequestDto : IProductEngageableItemRequestDto
+            ProductEngagementType engagementType,
+            Action<TItem, TItemRequestDto> itemInitializer = null)
     {
         // Fetch a list of products which ids are specified in the request.
         List<int> requestedProductIds = requestDtos.Select(i => i.ProductId).ToList();
@@ -163,10 +128,12 @@ internal abstract class ProductEngageableAbstractService<
             // Initialize entity.
             TItem item = new TItem
             {
-                AmountPerUnit = itemRequestDto.AmountPerUnit,
+                ProductAmountPerUnit = itemRequestDto.ProductAmountPerUnit,
                 Quantity = itemRequestDto.Quantity,
                 Product = product
             };
+
+            itemInitializer?.Invoke(item, itemRequestDto);
 
             // Adjust the stocking quantity of the associated product.
             if (engagementType == ProductEngagementType.Import)
@@ -201,19 +168,15 @@ internal abstract class ProductEngageableAbstractService<
     /// <param name="engagementType">
     /// The type of the engagement operation.
     /// </param>
-    /// <param name="itemDisplayName">
-    /// A <see cref="string"/> value represent the display name of the item entity, used in
-    /// the error message when the operation fails.
-    /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    protected async Task UpdateItemsAsync<TItemRequestDto>(
+    protected async Task UpdateItemsAsync(
             ICollection<TItem> itemEntities,
             List<TItemRequestDto> requestDtos,
             ProductEngagementType engagementType,
-            string itemDisplayName)
-        where TItemRequestDto : IProductEngageableItemRequestDto
+            Action<TItem, TItemRequestDto> itemInitializer = null,
+            Action<TItem, TItemRequestDto> itemUpdatingAssigner = null)
     {
         // Fetch a list of products for the items which are indicated to be created.
         List<int> productIdsForNewItems = requestDtos
@@ -240,7 +203,7 @@ internal abstract class ProductEngageableAbstractService<
                     if (item == null)
                     {
                         string errorMessage = ErrorMessages.NotFoundByProperty
-                            .ReplaceResourceName(itemDisplayName)
+                            .ReplaceResourceName(DisplayNames.Get(typeof(TItem).Name))
                             .ReplacePropertyName(DisplayNames.Id)
                             .ReplaceAttemptedValue(itemRequestDto.Id.ToString());
                         throw new OperationException($"items[{i}].id", errorMessage);
@@ -263,9 +226,10 @@ internal abstract class ProductEngageableAbstractService<
                         continue;
                     }
 
-                    item.AmountPerUnit = itemRequestDto.AmountPerUnit;
+                    item.ProductAmountPerUnit = itemRequestDto.ProductAmountPerUnit;
                     item.Product.StockingQuantity -= item.Quantity;
                     item.Quantity = itemRequestDto.Quantity;
+                    itemUpdatingAssigner?.Invoke(item, itemRequestDto);
                 }
                 else
                 {
@@ -286,10 +250,11 @@ internal abstract class ProductEngageableAbstractService<
                     // Initialize new supply item.
                     item = new TItem
                     {
-                        AmountPerUnit = itemRequestDto.AmountPerUnit,
+                        ProductAmountPerUnit = itemRequestDto.ProductAmountPerUnit,
                         Quantity = itemRequestDto.Quantity,
                         ProductId = itemRequestDto.ProductId
                     };
+                    itemInitializer?.Invoke(item, itemRequestDto);
                     itemEntities.Add(item);
                 }
 
@@ -350,4 +315,14 @@ internal abstract class ProductEngageableAbstractService<
             repositorySelector(_context).Remove(item);
         }
     }
+
+    /// <summary>
+    /// Gets the item entity repository in the <see cref="DatabaseContext"/> class.
+    /// <param name="context">
+    /// An instance of the injected <see cref="DatabaseContext"/>
+    /// </param>
+    /// <returns>
+    /// The item entity repository.
+    /// </returns>
+    protected abstract DbSet<TItem> GetItemRepository(DatabaseContext context);
 }

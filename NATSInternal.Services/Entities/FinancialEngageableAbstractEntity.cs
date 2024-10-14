@@ -2,7 +2,6 @@ namespace NATSInternal.Services.Entities;
 
 internal abstract class FinancialEngageableAbstractEntity
 {
-    [NotMapped]
     public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
 
     [NotMapped]

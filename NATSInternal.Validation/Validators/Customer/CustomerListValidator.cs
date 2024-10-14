@@ -6,8 +6,7 @@ public class CustomerListValidator : Validator<CustomerListRequestDto>
     {
         RuleFor(dto => dto.OrderByField)
             .NotEmpty()
-            .Must(IsEnumElementName<CustomerListRequestDto.FieldToBeOrdered>)
-            .WithMessage(ErrorMessages.Invalid)
+            .IsOneOfFieldOptions(FieldOptions)
             .WithName(dto => DisplayNames.Get(nameof(dto.OrderByField)));
         RuleFor(dto => dto.Page)
             .GreaterThanOrEqualTo(1)
@@ -16,5 +15,17 @@ public class CustomerListValidator : Validator<CustomerListRequestDto>
             .GreaterThanOrEqualTo(10)
             .LessThanOrEqualTo(50)
             .WithName(dto => DisplayNames.Get(nameof(dto.ResultsPerPage)));
+    }
+
+    private static IEnumerable<OrderByFieldOptions> FieldOptions
+    {
+        get => new List<OrderByFieldOptions>
+        {
+            OrderByFieldOptions.LastName,
+            OrderByFieldOptions.FullName,
+            OrderByFieldOptions.Birthday,
+            OrderByFieldOptions.CreatedDateTime,
+            OrderByFieldOptions.DebtRemainingAmount
+        };
     }
 }

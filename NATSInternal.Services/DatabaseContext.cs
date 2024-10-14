@@ -3,16 +3,8 @@ using Microsoft.EntityFrameworkCore.Metadata;
 namespace NATSInternal.Services;
 
 internal class DatabaseContext
-    :
-        IdentityDbContext<
-            User,
-            Role,
-            int,
-            IdentityUserClaim<int>,
-            UserRole,
-            IdentityUserLogin<int>,
-            IdentityRoleClaim<int>,
-            IdentityUserToken<int>>
+    : IdentityDbContext<User, Role, int, IdentityUserClaim<int>, UserRole,
+        IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
         
 {
     public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
@@ -120,10 +112,7 @@ internal class DatabaseContext
             // Set columns' names.
             foreach (IMutableProperty property in entity.GetProperties())
             {
-                string name = property.Name
-                    .PascalCaseToSnakeCase()
-                    .Replace("full_name", "fullname")
-                    .Replace("user_user", "username");
+                string name = property.Name.PascalCaseToSnakeCase();
                 property.SetColumnName(name);
             }
 
@@ -137,10 +126,7 @@ internal class DatabaseContext
                         {
                             if (p.Name.Any(char.IsUpper))
                             {
-                                return p.Name
-                                    .PascalCaseToSnakeCase()
-                                    .Replace("full_name", "fullname")
-                                    .Replace("user_user", "username");
+                                return p.Name.PascalCaseToSnakeCase();
                             }
 
                             return p.Name;
@@ -166,10 +152,7 @@ internal class DatabaseContext
                         {
                             if (p.Name.Any(char.IsUpper))
                             {
-                                return p.Name
-                                    .PascalCaseToSnakeCase()
-                                    .Replace("full_name", "fullname")
-                                    .Replace("user_user", "username");
+                                return p.Name.PascalCaseToSnakeCase();
                             }
 
                             return p.Name;
@@ -190,10 +173,7 @@ internal class DatabaseContext
                         {
                             if (p.Name.Any(char.IsUpper))
                             {
-                                return p.Name
-                                    .PascalCaseToSnakeCase()
-                                    .Replace("full_name", "fullname")
-                                    .Replace("user_user", "username");
+                                return p.Name.PascalCaseToSnakeCase();
                             }
 
                             return p.Name;

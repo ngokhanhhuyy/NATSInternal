@@ -1,14 +1,17 @@
 namespace NATSInternal.Services.Dtos;
 
-public class ExpenseDetailResponseDto
+public class ExpenseDetailResponseDto : IFinancialEngageableDetailResponseDto<
+    ExpenseUpdateHistoryResponseDto,
+    ExpenseAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public long Amount { get; set; }
-    public DateTime PaidDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
+    public DateTime CreatedDateTime { get; set; }
     public ExpenseCategory Category { get; set; }
     public string Note { get; set; }
     public bool IsLocked { get; set; }
-    public UserBasicResponseDto User { get; set; }
+    public UserBasicResponseDto CreatedUser { get; set; }
     public ExpensePayeeResponseDto Payee { get; set; }
     public List<ExpensePhotoResponseDto> Photos { get; set; }
     public ExpenseAuthorizationResponseDto Authorization { get; set; }
@@ -16,25 +19,20 @@ public class ExpenseDetailResponseDto
 
     internal ExpenseDetailResponseDto(
             Expense expense,
-            ExpenseAuthorizationResponseDto authorization,
-            bool mapHistories = false)
+            ExpenseAuthorizationResponseDto authorization)
     {
         Id = expense.Id;
         Amount = expense.Amount;
-        PaidDateTime = expense.PaidDateTime;
+        StatsDateTime = expense.StatsDateTime;
         Category = expense.Category;
         Note = expense.Note;
         IsLocked = expense.IsLocked;
-        User = new UserBasicResponseDto(expense.CreatedUser);
+        CreatedUser = new UserBasicResponseDto(expense.CreatedUser);
         Payee = new ExpensePayeeResponseDto(expense.Payee);
         Photos = expense.Photos?.Select(p => new ExpensePhotoResponseDto(p)).ToList();
         Authorization = authorization;
-        
-        if (mapHistories)
-        {
-            UpdateHistories = expense.UpdateHistories?
-                .Select(uh => new ExpenseUpdateHistoryResponseDto(uh))
-                .ToList();
-        }
+        UpdateHistories = expense.UpdateHistories?
+            .Select(uh => new ExpenseUpdateHistoryResponseDto(uh))
+            .ToList();
     }
 }

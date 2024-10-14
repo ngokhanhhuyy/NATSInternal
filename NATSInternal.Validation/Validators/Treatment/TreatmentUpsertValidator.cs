@@ -4,15 +4,15 @@ public class TreatmentUpsertValidator : Validator<TreatmentUpsertRequestDto>
 {
     public TreatmentUpsertValidator()
     {
-        RuleFor(dto => dto.PaidDateTime)
+        RuleFor(dto => dto.StatsDateTime)
             .IsValidStatsDateTime()
             .WithName(DisplayNames.PaidDateTime);
-        RuleFor(dto => dto.ServiceAmount)
+        RuleFor(dto => dto.ServiceAmountBeforeVat)
             .GreaterThanOrEqualTo(0)
             .WithName(DisplayNames.ServiceAmount);
-        RuleFor(dto => dto.ServiceVatPercentage)
+        RuleFor(dto => dto.ServiceVatAmount)
             .GreaterThanOrEqualTo(0)
-            .WithName(DisplayNames.VatFactor);
+            .WithName(DisplayNames.VatAmount);
         RuleFor(dto => dto.Note)
             .MaximumLength(255)
             .WithName(DisplayNames.Note);
@@ -22,7 +22,7 @@ public class TreatmentUpsertValidator : Validator<TreatmentUpsertRequestDto>
         RuleFor(dto => dto.TherapistId)
             .NotEmpty()
             .WithName(DisplayNames.Therapist);
-        RuleFor(dto => dto.UpdateReason)
+        RuleFor(dto => dto.UpdatedReason)
             .MaximumLength(255)
             .WithName(DisplayNames.Reason);
         RuleFor(dto => dto.Items)
@@ -40,7 +40,7 @@ public class TreatmentUpsertValidator : Validator<TreatmentUpsertRequestDto>
 
         RuleSet("Update", () =>
         {
-            RuleFor(dto => dto.UpdateReason)
+            RuleFor(dto => dto.UpdatedReason)
                 .NotEmpty()
                 .MaximumLength(255)
                 .WithName(DisplayNames.Reason);

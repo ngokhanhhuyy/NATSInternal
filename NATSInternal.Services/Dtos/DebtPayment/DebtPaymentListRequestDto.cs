@@ -19,6 +19,16 @@ public class DebtPaymentListRequestDto
     {
         OrderByField = OrderByField?.ToNullIfEmpty();
 
+        if (CreatedUserId == 0)
+        {
+            CreatedUserId = null;
+        }
+
+        if (CustomerId == 0)
+        {
+            CustomerId = null;
+        }
+
         if (!IgnoreMonthYear)
         {
             DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();

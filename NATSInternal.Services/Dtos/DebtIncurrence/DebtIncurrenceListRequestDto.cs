@@ -6,7 +6,7 @@ public class DebtIncurrenceListRequestDto
         ICustomerEngageableListRequestDto
 {
     public bool OrderByAscending { get; set; }
-    public string OrderByField { get; set; } = nameof(FieldOptions.IncurredDateTime);
+    public string OrderByField { get; set; } = nameof(OrderByFieldOptions.StatsDateTime);
     public int Month { get; set; }
     public int Year { get; set; }
     public bool IgnoreMonthYear { get; set; }
@@ -18,6 +18,16 @@ public class DebtIncurrenceListRequestDto
     public void TransformValues()
     {
         OrderByField = OrderByField?.ToNullIfEmpty();
+
+        if (CreatedUserId == 0)
+        {
+            CreatedUserId = null;
+        }
+
+        if (CustomerId == 0)
+        {
+            CustomerId = null;
+        }
 
         if (!IgnoreMonthYear)
         {
@@ -35,11 +45,5 @@ public class DebtIncurrenceListRequestDto
         {
             CreatedUserId = null;
         }
-    }
-
-    public enum FieldOptions
-    {
-        IncurredDateTime,
-        Amount
     }
 }

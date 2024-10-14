@@ -6,7 +6,7 @@ internal class SupplyItem : IProductEngageableItemEntity<SupplyItem>
     public int Id { get; set; }
 
     [Required]
-    public long AmountPerUnit { get; set; }
+    public long ProductAmountPerUnit { get; set; }
 
     [Required]
     public int Quantity { get; set; } = 1;

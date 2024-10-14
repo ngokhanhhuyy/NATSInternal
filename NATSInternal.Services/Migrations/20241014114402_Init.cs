@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace NATSInternal.Migrations
+namespace NATSInternal.Services.Migrations
 {
     /// <inheritdoc />
     public partial class Init : Migration
@@ -28,23 +28,23 @@ namespace NATSInternal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_countries", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "expenses_payees",
+                name: "expense_payees",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                    name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    RowVersion = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
+                    row_version = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_expenses_payees", x => x.Id);
+                    table.PrimaryKey("id", x => x.id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -67,14 +67,14 @@ namespace NATSInternal.Migrations
                     office_expense = table.Column<long>(type: "bigint", nullable: false),
                     staff_expense = table.Column<long>(type: "bigint", nullable: false),
                     recorded_month = table.Column<int>(type: "int", nullable: false),
-                    recoreded_year = table.Column<int>(type: "int", nullable: false),
+                    recorded_year = table.Column<int>(type: "int", nullable: false),
                     created_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     temporarily_closed_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     officially_closed_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_monthly_stats", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -90,7 +90,7 @@ namespace NATSInternal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_product_categories", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -107,12 +107,12 @@ namespace NATSInternal.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     normalized_name = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    concurrent_stamp = table.Column<string>(type: "longtext", nullable: true)
+                    concurrency_stamp = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_roles", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -130,7 +130,7 @@ namespace NATSInternal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_user_claims", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -140,7 +140,7 @@ namespace NATSInternal.Migrations
                 {
                     user_id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    login_providers = table.Column<string>(type: "longtext", nullable: false)
+                    login_provider = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     provider_key = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -149,7 +149,7 @@ namespace NATSInternal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_user_logins", x => x.user_id);
+                    table.PrimaryKey("user_id", x => x.user_id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -157,18 +157,18 @@ namespace NATSInternal.Migrations
                 name: "user_tokens",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    user_id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    LoginProvider = table.Column<string>(type: "longtext", nullable: false)
+                    login_provider = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
+                    name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Value = table.Column<string>(type: "longtext", nullable: true)
+                    value = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_user_tokens", x => x.UserId);
+                    table.PrimaryKey("user_id", x => x.user_id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -190,9 +190,9 @@ namespace NATSInternal.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     normalized_last_name = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    full_name = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false)
+                    fullname = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    normalized_full_name = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false)
+                    normalized_fullname = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     gender = table.Column<int>(type: "int", nullable: false),
                     birthday = table.Column<DateOnly>(type: "date", nullable: true),
@@ -204,7 +204,7 @@ namespace NATSInternal.Migrations
                     avatar_url = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     is_deleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    RowVersion = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true),
+                    row_version = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true),
                     username = table.Column<string>(type: "varchar(255)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     normalized_username = table.Column<string>(type: "longtext", nullable: true)
@@ -218,7 +218,7 @@ namespace NATSInternal.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     security_stamp = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    concurrent_stamp = table.Column<string>(type: "longtext", nullable: true)
+                    concurrency_stamp = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     phone_number = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -230,7 +230,7 @@ namespace NATSInternal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_users", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -254,13 +254,14 @@ namespace NATSInternal.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     thumbnail_url = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    created_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     country_id = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_brands", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__brands__countries__country_id",
+                        name: "FK__countries__brands__country_id",
                         column: x => x.country_id,
                         principalTable: "countries",
                         principalColumn: "id",
@@ -294,9 +295,9 @@ namespace NATSInternal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_daily_stats", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__daily_stats__monthly_stats__monthly_id",
+                        name: "FK__monthly_stats__daily_stats__monthly_stats_id",
                         column: x => x.monthly_stats_id,
                         principalTable: "monthly_stats",
                         principalColumn: "id",
@@ -318,9 +319,9 @@ namespace NATSInternal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_role_claims", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK_role_claims_roles_role_id",
+                        name: "FK__roles__role_claims__role_id",
                         column: x => x.role_id,
                         principalTable: "roles",
                         principalColumn: "id",
@@ -343,13 +344,13 @@ namespace NATSInternal.Migrations
                     ending_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     created_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     created_user_id = table.Column<int>(type: "int", nullable: false),
-                    RowVersion = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
+                    row_version = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_announcements", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__announcements__created_users__created_user_id",
+                        name: "FK__users__announcements__created_user_id",
                         column: x => x.created_user_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -377,9 +378,9 @@ namespace NATSInternal.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     fullname = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    normalized_full_name = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false)
+                    normalized_fullname = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    nickname = table.Column<string>(type: "varchar(35)", maxLength: 35, nullable: true)
+                    nick_name = table.Column<string>(type: "varchar(35)", maxLength: 35, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     gender = table.Column<int>(type: "int", nullable: false),
                     birthday = table.Column<DateOnly>(type: "date", nullable: true),
@@ -400,11 +401,11 @@ namespace NATSInternal.Migrations
                     is_deleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     introducer_id = table.Column<int>(type: "int", nullable: true),
                     created_user_id = table.Column<int>(type: "int", nullable: false),
-                    RowVersion = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
+                    row_version = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_customers", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
                         name: "FK__customers__customers__introducer_id",
                         column: x => x.introducer_id,
@@ -412,7 +413,7 @@ namespace NATSInternal.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK__customers__users__created_user_id",
+                        name: "FK__users__customers__created_user_id",
                         column: x => x.created_user_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -427,26 +428,27 @@ namespace NATSInternal.Migrations
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     amount = table.Column<long>(type: "bigint", nullable: false),
-                    paid_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    stats_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     category = table.Column<int>(type: "int", nullable: false),
                     note = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    is_deleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     created_user_id = table.Column<int>(type: "int", nullable: false),
                     payee_id = table.Column<int>(type: "int", nullable: false),
-                    RowVersion = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true),
+                    row_version = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true),
                     created_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_expenses", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__expenses__expense_payees__payee_id",
+                        name: "FK__expense_payees__expenses__payee_id",
                         column: x => x.payee_id,
-                        principalTable: "expenses_payees",
-                        principalColumn: "Id",
+                        principalTable: "expense_payees",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK__expenses__users__user_id",
+                        name: "FK__users__expenses__created_user_id",
                         column: x => x.created_user_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -460,17 +462,17 @@ namespace NATSInternal.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    notification_type = table.Column<int>(type: "int", nullable: false),
-                    datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    type = table.Column<int>(type: "int", nullable: false),
+                    created_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     resource_ids = table.Column<string>(type: "JSON", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     created_user_id = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_notifications", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__notifications__users__created_user_id",
+                        name: "FK__users__notifications__created_user_id",
                         column: x => x.created_user_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -484,7 +486,7 @@ namespace NATSInternal.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    paid_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    stats_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     shipment_fee = table.Column<long>(type: "bigint", nullable: false),
                     note = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -495,37 +497,13 @@ namespace NATSInternal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_supplies", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__supplies__users__user_id",
+                        name: "FK__users__supplies__created_user_id",
                         column: x => x.created_user_id,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "user_refresh_tokens",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    token = table.Column<string>(type: "varchar(2048)", maxLength: 2048, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    issued_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    expiring_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    user_id = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_user_refresh_tokens", x => x.id);
-                    table.ForeignKey(
-                        name: "FK__user_refresh_tokens__users__user_id",
-                        column: x => x.user_id,
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -538,15 +516,15 @@ namespace NATSInternal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_user_roles", x => new { x.user_id, x.role_id });
+                    table.PrimaryKey("user_id__role_id", x => new { x.user_id, x.role_id });
                     table.ForeignKey(
-                        name: "FK__user_roles__roles__role_id",
+                        name: "FK__roles__user_roles__role_id",
                         column: x => x.role_id,
                         principalTable: "roles",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK__user_roles__users__user_id",
+                        name: "FK__users__user_roles__user_id",
                         column: x => x.user_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -566,29 +544,30 @@ namespace NATSInternal.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     unit = table.Column<string>(type: "varchar(12)", maxLength: 12, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    price = table.Column<long>(type: "bigint", nullable: false),
-                    var_factor = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    default_price = table.Column<long>(type: "bigint", nullable: false),
+                    default_vat_percentage = table.Column<int>(type: "int", nullable: false),
                     is_for_retail = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     is_discontinued = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    created_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     updated_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     thumbnail_url = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     stocking_quantity = table.Column<int>(type: "int", nullable: false),
+                    is_deleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     brand_id = table.Column<int>(type: "int", nullable: true),
-                    category_id = table.Column<int>(type: "int", nullable: true)
+                    category_id = table.Column<int>(type: "int", nullable: true),
+                    created_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_products", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__products__brands__brand_id",
+                        name: "FK__brands__products__brand_id",
                         column: x => x.brand_id,
                         principalTable: "brands",
                         principalColumn: "id",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
-                        name: "FK__products__product_categories__category_id",
+                        name: "FK__product_categories__products__category_id",
                         column: x => x.category_id,
                         principalTable: "product_categories",
                         principalColumn: "id",
@@ -602,8 +581,9 @@ namespace NATSInternal.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    paid_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    amount = table.Column<long>(type: "bigint", nullable: false),
+                    stats_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    amount_before_vat = table.Column<long>(type: "bigint", nullable: false),
+                    vat_amount = table.Column<long>(type: "bigint", nullable: false),
                     note = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     is_deleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
@@ -613,15 +593,15 @@ namespace NATSInternal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_consultants", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__consultants__customers__customer_id",
+                        name: "FK__customers__consultants__customer_id",
                         column: x => x.customer_id,
                         principalTable: "customers",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK__consultants__users__user_id",
+                        name: "FK__users__consultants__created_user_id",
                         column: x => x.created_user_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -638,7 +618,7 @@ namespace NATSInternal.Migrations
                     amount = table.Column<long>(type: "bigint", nullable: false),
                     note = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    incurred_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    stats_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     is_deleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     customer_id = table.Column<int>(type: "int", nullable: false),
                     created_user_id = table.Column<int>(type: "int", nullable: false),
@@ -646,15 +626,15 @@ namespace NATSInternal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_debt_incurrences", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__debt_incurrences__customers__customer_id",
+                        name: "FK__customers__debt_incurrences__customer_id",
                         column: x => x.customer_id,
                         principalTable: "customers",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK__debt_incurrences__users__user_id",
+                        name: "FK__users__debt_incurrences__created_user_id",
                         column: x => x.created_user_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -671,7 +651,7 @@ namespace NATSInternal.Migrations
                     amount = table.Column<long>(type: "bigint", nullable: false),
                     note = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    paid_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    stats_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     is_deleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     customer_id = table.Column<int>(type: "int", nullable: false),
                     created_user_id = table.Column<int>(type: "int", nullable: false),
@@ -679,15 +659,15 @@ namespace NATSInternal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_debt_payments", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__debt_payments__customers__customer_id",
+                        name: "FK__customers__debt_payments__customer_id",
                         column: x => x.customer_id,
                         principalTable: "customers",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK__debt_payments__users__user_id",
+                        name: "FK__users__debt_payments__created_user_id",
                         column: x => x.created_user_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -701,26 +681,26 @@ namespace NATSInternal.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    paid_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    stats_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     note = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     is_deleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     customer_id = table.Column<int>(type: "int", nullable: false),
                     created_user_id = table.Column<int>(type: "int", nullable: false),
-                    RowVersion = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true),
+                    row_version = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true),
                     created_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_orders", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__orders__customers__customer_id",
+                        name: "FK__customers__orders__customer_id",
                         column: x => x.customer_id,
                         principalTable: "customers",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK__orders__users__user_id",
+                        name: "FK__users__orders__created_user_id",
                         column: x => x.created_user_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -734,35 +714,35 @@ namespace NATSInternal.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    paid_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    service_amount = table.Column<long>(type: "bigint", nullable: false),
-                    service_vat_factor = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    stats_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    service_amount_before_vat = table.Column<long>(type: "bigint", nullable: false),
+                    service_vat_amount = table.Column<long>(type: "bigint", nullable: false),
                     note = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     is_deleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     created_user_id = table.Column<int>(type: "int", nullable: false),
                     therapist_id = table.Column<int>(type: "int", nullable: false),
                     customer_id = table.Column<int>(type: "int", nullable: false),
-                    RowVersion = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true),
+                    row_version = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true),
                     created_datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_treatments", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__treatments__customers__customer_id",
+                        name: "FK__customers__treatments__customer_id",
                         column: x => x.customer_id,
                         principalTable: "customers",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK__treatments__users__created_user_id",
+                        name: "FK__users__treatments__created_user_id",
                         column: x => x.created_user_id,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK__treatments__users__therapist_id",
+                        name: "FK__users__treatments__therapist_id",
                         column: x => x.therapist_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -779,13 +759,13 @@ namespace NATSInternal.Migrations
                     url = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     expense_id = table.Column<int>(type: "int", nullable: false),
-                    RowVersion = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
+                    row_version = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_expense_photos", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__expense_photos__expenses__expense_id",
+                        name: "FK__expenses__expense_photos__expense_id",
                         column: x => x.expense_id,
                         principalTable: "expenses",
                         principalColumn: "id",
@@ -807,20 +787,20 @@ namespace NATSInternal.Migrations
                     new_data = table.Column<string>(type: "JSON", maxLength: 1000, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     expense_id = table.Column<int>(type: "int", nullable: false),
-                    user_id = table.Column<int>(type: "int", nullable: false)
+                    updated_user_id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_expense_update_histories", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__expense_update_histories__expenses__expense_id",
+                        name: "FK__expenses__expense_update_histories__expense_id",
                         column: x => x.expense_id,
                         principalTable: "expenses",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK__expense_update_histories__users__user_id",
-                        column: x => x.user_id,
+                        name: "FK__users__expense_update_histories__updated_user_id",
+                        column: x => x.updated_user_id,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
@@ -836,15 +816,15 @@ namespace NATSInternal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_notification_read_users", x => new { x.read_notification_id, x.read_user_id });
+                    table.PrimaryKey("read_notification_id__read_user_id", x => new { x.read_notification_id, x.read_user_id });
                     table.ForeignKey(
-                        name: "FK__notification_read_users__users__read_notification_id",
+                        name: "FK__notifications__notification_read_users__read_notification_id",
                         column: x => x.read_notification_id,
                         principalTable: "notifications",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK__notification_read_users__users__read_user_id",
+                        name: "FK__users__notification_read_users__read_user_id",
                         column: x => x.read_user_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -861,15 +841,15 @@ namespace NATSInternal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_notification_received_users", x => new { x.received_notification_id, x.received_user_id });
+                    table.PrimaryKey("received_notification_id__received_user_id", x => new { x.received_notification_id, x.received_user_id });
                     table.ForeignKey(
-                        name: "FK__notification_received_users__users__received_notification_id",
+                        name: "FK__notifications__notification_received_users__received_notification_id",
                         column: x => x.received_notification_id,
                         principalTable: "notifications",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK__notification_received_users__users__received_user_id",
+                        name: "FK__users__notification_received_users__received_user_id",
                         column: x => x.received_user_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -878,7 +858,7 @@ namespace NATSInternal.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "supply_photos",
+                name: "supply_photo",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
@@ -886,13 +866,13 @@ namespace NATSInternal.Migrations
                     url = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     supply_id = table.Column<int>(type: "int", nullable: false),
-                    RowVersion = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
+                    row_version = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_supply_photos", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__supply_photos__supplies__supply_id",
+                        name: "FK__supplies__supply_photo__supply_id",
                         column: x => x.supply_id,
                         principalTable: "supplies",
                         principalColumn: "id",
@@ -914,20 +894,20 @@ namespace NATSInternal.Migrations
                     new_data = table.Column<string>(type: "JSON", maxLength: 1000, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     supply_id = table.Column<int>(type: "int", nullable: false),
-                    user_id = table.Column<int>(type: "int", nullable: false)
+                    updated_user_id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_supply_update_histories", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__supply_update_histories__supplies__supply_id",
+                        name: "FK__supplies__supply_update_histories__supply_id",
                         column: x => x.supply_id,
                         principalTable: "supplies",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK__supply_update_histories__users__user_id",
-                        column: x => x.user_id,
+                        name: "FK__users__supply_update_histories__updated_user_id",
+                        column: x => x.updated_user_id,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
@@ -946,9 +926,9 @@ namespace NATSInternal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_product_photos", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__product_photos__products__product_id",
+                        name: "FK__products__product_photos__product_id",
                         column: x => x.product_id,
                         principalTable: "products",
                         principalColumn: "id",
@@ -962,23 +942,23 @@ namespace NATSInternal.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    amount = table.Column<long>(type: "bigint", nullable: false),
-                    supplied_quantities = table.Column<int>(type: "int", nullable: false),
+                    product_amount_per_unit = table.Column<long>(type: "bigint", nullable: false),
+                    quantity = table.Column<int>(type: "int", nullable: false),
                     supply_id = table.Column<int>(type: "int", nullable: false),
                     product_id = table.Column<int>(type: "int", nullable: false),
-                    RowVersion = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
+                    row_version = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_supply_items", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__supply_items__products__product_id",
+                        name: "FK__products__supply_items__product_id",
                         column: x => x.product_id,
                         principalTable: "products",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK__supply_items__supplies__supply_id",
+                        name: "FK__supplies__supply_items__supply_id",
                         column: x => x.supply_id,
                         principalTable: "supplies",
                         principalColumn: "id",
@@ -987,7 +967,7 @@ namespace NATSInternal.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "consultant_update_histories",
+                name: "update_histories",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
@@ -1000,20 +980,20 @@ namespace NATSInternal.Migrations
                     new_data = table.Column<string>(type: "JSON", maxLength: 1000, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     consultant_id = table.Column<int>(type: "int", nullable: false),
-                    user_id = table.Column<int>(type: "int", nullable: false)
+                    updated_user_id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_consultant_update_histories", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__consultant_update_histories__consultants__consultant_id",
+                        name: "FK__consultants__update_histories__consultant_id",
                         column: x => x.consultant_id,
                         principalTable: "consultants",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK__consultant_update_histories__users__user_id",
-                        column: x => x.user_id,
+                        name: "FK__users__update_histories__updated_user_id",
+                        column: x => x.updated_user_id,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
@@ -1034,20 +1014,20 @@ namespace NATSInternal.Migrations
                     new_data = table.Column<string>(type: "JSON", maxLength: 1000, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     debt_incurrence_id = table.Column<int>(type: "int", nullable: false),
-                    user_id = table.Column<int>(type: "int", nullable: false)
+                    updated_user_id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_debt_incurrence_update_histories", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__debt_incurrence_update_histories__debt_incurrences__debt_incurrence_id",
+                        name: "FK__debt_incurrences__debt_incurrence_update_histories__debt_incurrence_id",
                         column: x => x.debt_incurrence_id,
                         principalTable: "debt_incurrences",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK__debt_incurrence_update_histories__users__user_id",
-                        column: x => x.user_id,
+                        name: "FK__users__debt_incurrence_update_histories__updated_user_id",
+                        column: x => x.updated_user_id,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
@@ -1055,7 +1035,7 @@ namespace NATSInternal.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "debt_payment_update_history",
+                name: "debt_payment_update_histories",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
@@ -1068,20 +1048,20 @@ namespace NATSInternal.Migrations
                     new_data = table.Column<string>(type: "JSON", maxLength: 1000, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     debt_payment_id = table.Column<int>(type: "int", nullable: false),
-                    user_id = table.Column<int>(type: "int", nullable: false)
+                    updated_user_id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_debt_payment_update_history", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__debt_payment_update_histories__debt_payments__debt_payment_id",
+                        name: "FK__debt_payments__debt_payment_update_histories__debt_payment_id",
                         column: x => x.debt_payment_id,
                         principalTable: "debt_payments",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK__debt_paymetn_update_histories__users__user_id",
-                        column: x => x.user_id,
+                        name: "FK__users__debt_payment_update_histories__updated_user_id",
+                        column: x => x.updated_user_id,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
@@ -1089,7 +1069,7 @@ namespace NATSInternal.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "order_photos",
+                name: "order_photo",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
@@ -1097,13 +1077,13 @@ namespace NATSInternal.Migrations
                     url = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     order_id = table.Column<int>(type: "int", nullable: false),
-                    RowVersion = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
+                    row_version = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_order_photos", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__order_photos__orders__order_id",
+                        name: "FK__orders__order_photo__order_id",
                         column: x => x.order_id,
                         principalTable: "orders",
                         principalColumn: "id",
@@ -1125,20 +1105,20 @@ namespace NATSInternal.Migrations
                     new_data = table.Column<string>(type: "JSON", maxLength: 1000, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     order_id = table.Column<int>(type: "int", nullable: false),
-                    user_id = table.Column<int>(type: "int", nullable: false)
+                    updated_user_id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_order_update_histories", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__order_update_histories__orders__order_id",
+                        name: "FK__orders__order_update_histories__order_id",
                         column: x => x.order_id,
                         principalTable: "orders",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK__order_update_histories__users__user_id",
-                        column: x => x.user_id,
+                        name: "FK__users__order_update_histories__updated_user_id",
+                        column: x => x.updated_user_id,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
@@ -1151,24 +1131,24 @@ namespace NATSInternal.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    amount = table.Column<long>(type: "bigint", nullable: false),
-                    vat_factor = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    product_amount_per_unit = table.Column<long>(type: "bigint", nullable: false),
+                    vat_amount_per_unit = table.Column<long>(type: "bigint", nullable: false),
                     quantity = table.Column<int>(type: "int", nullable: false),
                     treatment_id = table.Column<int>(type: "int", nullable: false),
                     product_id = table.Column<int>(type: "int", nullable: false),
-                    RowVersion = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
+                    row_version = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_treatment_items", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__treatment_items__products__product_id",
+                        name: "FK__products__treatment_items__product_id",
                         column: x => x.product_id,
                         principalTable: "products",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK__treatment_items__treatments__treatment_id",
+                        name: "FK__treatments__treatment_items__treatment_id",
                         column: x => x.treatment_id,
                         principalTable: "treatments",
                         principalColumn: "id",
@@ -1184,15 +1164,15 @@ namespace NATSInternal.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     url = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    treatment_photo_type = table.Column<int>(type: "int", nullable: false),
+                    type = table.Column<int>(type: "int", nullable: false),
                     treatment_id = table.Column<int>(type: "int", nullable: false),
-                    RowVersion = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
+                    row_version = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_treatment_photos", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__treatment_photos__treatments__treatment_id",
+                        name: "FK__treatments__treatment_photos__treatment_id",
                         column: x => x.treatment_id,
                         principalTable: "treatments",
                         principalColumn: "id",
@@ -1214,20 +1194,20 @@ namespace NATSInternal.Migrations
                     new_data = table.Column<string>(type: "JSON", maxLength: 1000, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     treatment_id = table.Column<int>(type: "int", nullable: false),
-                    user_id = table.Column<int>(type: "int", nullable: false)
+                    updated_user_id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_treatment_update_histories", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__treatment_update_histories__treatment__treatment_id",
+                        name: "FK__treatments__treatment_update_histories__treatment_id",
                         column: x => x.treatment_id,
                         principalTable: "treatments",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK__treatment_update_histories__users__user_id",
-                        column: x => x.user_id,
+                        name: "FK__users__treatment_update_histories__updated_user_id",
+                        column: x => x.updated_user_id,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
@@ -1240,473 +1220,473 @@ namespace NATSInternal.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    amount = table.Column<long>(type: "bigint", nullable: false),
-                    vat_factor = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    product_amount_per_unit = table.Column<long>(type: "bigint", nullable: false),
+                    vat_amount_per_unit = table.Column<long>(type: "bigint", nullable: false),
                     quantity = table.Column<int>(type: "int", nullable: false),
                     order_id = table.Column<int>(type: "int", nullable: false),
                     product_id = table.Column<int>(type: "int", nullable: false),
-                    RowVersion = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true),
-                    SupplyItemId = table.Column<int>(type: "int", nullable: true)
+                    row_version = table.Column<DateTime>(type: "timestamp(6)", rowVersion: true, nullable: true),
+                    supply_item_id = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_order_items", x => x.id);
+                    table.PrimaryKey("id", x => x.id);
                     table.ForeignKey(
-                        name: "FK__order_items__orders__order_id",
+                        name: "FK__orders__order_items__order_id",
                         column: x => x.order_id,
                         principalTable: "orders",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK__order_items__products__product_id",
+                        name: "FK__products__order_items__product_id",
                         column: x => x.product_id,
                         principalTable: "products",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_order_items_supply_items_SupplyItemId",
-                        column: x => x.SupplyItemId,
+                        name: "FK__supply_items__order_items__supply_item_id",
+                        column: x => x.supply_item_id,
                         principalTable: "supply_items",
                         principalColumn: "id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_announcements_created_user_id",
+                name: "INDEX__announcementscreated_user_id",
                 table: "announcements",
                 column: "created_user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_brands_country_id",
+                name: "INDEX__brandscountry_id",
                 table: "brands",
                 column: "country_id");
 
             migrationBuilder.CreateIndex(
-                name: "UX__brands__name",
+                name: "UNIQUE__brandsname",
                 table: "brands",
                 column: "name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX__consultant_update_histories__updated_datetime",
-                table: "consultant_update_histories",
-                column: "updated_datetime");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_consultant_update_histories_consultant_id",
-                table: "consultant_update_histories",
-                column: "consultant_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_consultant_update_histories_user_id",
-                table: "consultant_update_histories",
-                column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX__consultants__is_deleted",
-                table: "consultants",
-                column: "is_deleted");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_consultants_created_user_id",
+                name: "INDEX__consultantscreated_user_id",
                 table: "consultants",
                 column: "created_user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_consultants_customer_id",
+                name: "INDEX__consultantscustomer_id",
                 table: "consultants",
                 column: "customer_id");
 
             migrationBuilder.CreateIndex(
-                name: "UX__countries__code",
+                name: "INDEX__consultantsis_deleted",
+                table: "consultants",
+                column: "is_deleted");
+
+            migrationBuilder.CreateIndex(
+                name: "INDEX__consultantsstats_datetime",
+                table: "consultants",
+                column: "stats_datetime");
+
+            migrationBuilder.CreateIndex(
+                name: "UNIQUE__countriescode",
                 table: "countries",
                 column: "code",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "UX__countries__name",
+                name: "UNIQUE__countriesname",
                 table: "countries",
                 column: "name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_customers_created_user_id",
+                name: "INDEX__customerscreated_user_id",
                 table: "customers",
                 column: "created_user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_customers_introducer_id",
+                name: "INDEX__customersintroducer_id",
                 table: "customers",
                 column: "introducer_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_daily_stats_monthly_stats_id",
+                name: "INDEX__daily_statsmonthly_stats_id",
                 table: "daily_stats",
                 column: "monthly_stats_id");
 
             migrationBuilder.CreateIndex(
-                name: "UX__daily_stats__recorded_date",
+                name: "UNIQUE__daily_statsrecorded_date",
                 table: "daily_stats",
                 column: "recorded_date",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX__debt_incurrence_update_histories__updated_datetime",
-                table: "debt_incurrence_update_histories",
-                column: "updated_datetime");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_debt_incurrence_update_histories_debt_incurrence_id",
+                name: "INDEX__debt_incurrence_update_historiesdebt_incurrence_id",
                 table: "debt_incurrence_update_histories",
                 column: "debt_incurrence_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_debt_incurrence_update_histories_user_id",
+                name: "INDEX__debt_incurrence_update_historiesupdated_datetime",
                 table: "debt_incurrence_update_histories",
-                column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX__debt_incurrences__incurred_datetime",
-                table: "debt_incurrences",
-                column: "created_datetime");
-
-            migrationBuilder.CreateIndex(
-                name: "IX__debt_incurrences__is_deleted",
-                table: "debt_incurrences",
-                column: "is_deleted");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_debt_incurrences_created_user_id",
-                table: "debt_incurrences",
-                column: "created_user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_debt_incurrences_customer_id",
-                table: "debt_incurrences",
-                column: "customer_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX__debt_payment_update_histories__updated_datetime",
-                table: "debt_payment_update_history",
                 column: "updated_datetime");
 
             migrationBuilder.CreateIndex(
-                name: "IX_debt_payment_update_history_debt_payment_id",
-                table: "debt_payment_update_history",
-                column: "debt_payment_id");
+                name: "INDEX__debt_incurrence_update_historiesupdated_user_id",
+                table: "debt_incurrence_update_histories",
+                column: "updated_user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_debt_payment_update_history_user_id",
-                table: "debt_payment_update_history",
-                column: "user_id");
+                name: "INDEX__debt_incurrencescreated_user_id",
+                table: "debt_incurrences",
+                column: "created_user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX__debt_payments__is_deleted",
-                table: "debt_payments",
+                name: "INDEX__debt_incurrencescustomer_id",
+                table: "debt_incurrences",
+                column: "customer_id");
+
+            migrationBuilder.CreateIndex(
+                name: "INDEX__debt_incurrencesis_deleted",
+                table: "debt_incurrences",
                 column: "is_deleted");
 
             migrationBuilder.CreateIndex(
-                name: "IX__debt_payments__paid_datetime",
-                table: "debt_payments",
-                column: "paid_datetime");
+                name: "INDEX__debt_incurrencesstats_datetime",
+                table: "debt_incurrences",
+                column: "stats_datetime");
 
             migrationBuilder.CreateIndex(
-                name: "IX_debt_payments_created_user_id",
+                name: "INDEX__debt_payment_update_historiesdebt_payment_id",
+                table: "debt_payment_update_histories",
+                column: "debt_payment_id");
+
+            migrationBuilder.CreateIndex(
+                name: "INDEX__debt_payment_update_historiesupdated_datetime",
+                table: "debt_payment_update_histories",
+                column: "updated_datetime");
+
+            migrationBuilder.CreateIndex(
+                name: "INDEX__debt_payment_update_historiesupdated_user_id",
+                table: "debt_payment_update_histories",
+                column: "updated_user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "INDEX__debt_paymentscreated_user_id",
                 table: "debt_payments",
                 column: "created_user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_debt_payments_customer_id",
+                name: "INDEX__debt_paymentscustomer_id",
                 table: "debt_payments",
                 column: "customer_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_expense_photos_expense_id",
+                name: "INDEX__debt_paymentsis_deleted",
+                table: "debt_payments",
+                column: "is_deleted");
+
+            migrationBuilder.CreateIndex(
+                name: "INDEX__debt_paymentsstats_datetime",
+                table: "debt_payments",
+                column: "stats_datetime");
+
+            migrationBuilder.CreateIndex(
+                name: "UNIQUE__expense_payeesname",
+                table: "expense_payees",
+                column: "name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "INDEX__expense_photosexpense_id",
                 table: "expense_photos",
                 column: "expense_id");
 
             migrationBuilder.CreateIndex(
-                name: "UX__expense_photos__url",
+                name: "UNIQUE__expense_photosurl",
                 table: "expense_photos",
                 column: "url",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX__expense_update_histories__updated_datetime",
-                table: "expense_update_histories",
-                column: "updated_datetime");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_expense_update_histories_expense_id",
+                name: "INDEX__expense_update_historiesexpense_id",
                 table: "expense_update_histories",
                 column: "expense_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_expense_update_histories_user_id",
+                name: "INDEX__expense_update_historiesupdated_datetime",
                 table: "expense_update_histories",
-                column: "user_id");
+                column: "updated_datetime");
 
             migrationBuilder.CreateIndex(
-                name: "IX_expenses_created_user_id",
+                name: "INDEX__expense_update_historiesupdated_user_id",
+                table: "expense_update_histories",
+                column: "updated_user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "INDEX__expensescreated_user_id",
                 table: "expenses",
                 column: "created_user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_expenses_payee_id",
+                name: "INDEX__expensespayee_id",
                 table: "expenses",
                 column: "payee_id");
 
             migrationBuilder.CreateIndex(
-                name: "UX__expense_payees__name",
-                table: "expenses_payees",
-                column: "Name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "UX_monthly_stats__recorded_month__recorded_year",
+                name: "UNIQUE__monthly_statsrecorded_month__recorded_year",
                 table: "monthly_stats",
-                columns: new[] { "recorded_month", "recoreded_year" },
+                columns: new[] { "recorded_month", "recorded_year" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_notification_read_users_read_user_id",
+                name: "INDEX__notification_read_usersread_user_id",
                 table: "notification_read_users",
                 column: "read_user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_notification_received_users_received_user_id",
+                name: "INDEX__notification_received_usersreceived_user_id",
                 table: "notification_received_users",
                 column: "received_user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_notifications_created_user_id",
+                name: "INDEX__notificationscreated_user_id",
                 table: "notifications",
                 column: "created_user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_order_items_order_id",
+                name: "INDEX__order_itemsorder_id",
                 table: "order_items",
                 column: "order_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_order_items_product_id",
+                name: "INDEX__order_itemsproduct_id",
                 table: "order_items",
                 column: "product_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_order_items_SupplyItemId",
+                name: "INDEX__order_itemssupply_item_id",
                 table: "order_items",
-                column: "SupplyItemId");
+                column: "supply_item_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_order_photos_order_id",
-                table: "order_photos",
+                name: "INDEX__order_photoorder_id",
+                table: "order_photo",
                 column: "order_id");
 
             migrationBuilder.CreateIndex(
-                name: "UX__order_photos__url",
-                table: "order_photos",
+                name: "UNIQUE__order_photourl",
+                table: "order_photo",
                 column: "url",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX__order_update_histories__updated_datetime",
-                table: "order_update_histories",
-                column: "updated_datetime");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_order_update_histories_order_id",
+                name: "INDEX__order_update_historiesorder_id",
                 table: "order_update_histories",
                 column: "order_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_order_update_histories_user_id",
+                name: "INDEX__order_update_historiesupdated_datetime",
                 table: "order_update_histories",
-                column: "user_id");
+                column: "updated_datetime");
 
             migrationBuilder.CreateIndex(
-                name: "IX__orders__is_deleted",
-                table: "orders",
-                column: "is_deleted");
+                name: "INDEX__order_update_historiesupdated_user_id",
+                table: "order_update_histories",
+                column: "updated_user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX__orders__paid_datetime",
-                table: "orders",
-                column: "paid_datetime");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_orders_created_user_id",
+                name: "INDEX__orderscreated_user_id",
                 table: "orders",
                 column: "created_user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_orders_customer_id",
+                name: "INDEX__orderscustomer_id",
                 table: "orders",
                 column: "customer_id");
 
             migrationBuilder.CreateIndex(
-                name: "UX__product_categories__name",
+                name: "INDEX__ordersis_deleted",
+                table: "orders",
+                column: "is_deleted");
+
+            migrationBuilder.CreateIndex(
+                name: "INDEX__ordersstats_datetime",
+                table: "orders",
+                column: "stats_datetime");
+
+            migrationBuilder.CreateIndex(
+                name: "UNIQUE__product_categoriesname",
                 table: "product_categories",
                 column: "name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_product_photos_product_id",
+                name: "INDEX__product_photosproduct_id",
                 table: "product_photos",
                 column: "product_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_products_brand_id",
+                name: "INDEX__productsbrand_id",
                 table: "products",
                 column: "brand_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_products_category_id",
+                name: "INDEX__productscategory_id",
                 table: "products",
                 column: "category_id");
 
             migrationBuilder.CreateIndex(
-                name: "UX__products__name",
+                name: "UNIQUE__productsname",
                 table: "products",
                 column: "name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_role_claims_role_id",
+                name: "INDEX__role_claimsrole_id",
                 table: "role_claims",
                 column: "role_id");
 
             migrationBuilder.CreateIndex(
-                name: "UX__roles__display_name",
+                name: "UNIQUE__rolesdisplay_name",
                 table: "roles",
                 column: "display_name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "UX__roles__name",
+                name: "UNIQUE__rolesname",
                 table: "roles",
                 column: "name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX__supplies__is_deleted",
-                table: "supplies",
-                column: "is_deleted");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_supplies_created_user_id",
+                name: "INDEX__suppliescreated_user_id",
                 table: "supplies",
                 column: "created_user_id");
 
             migrationBuilder.CreateIndex(
-                name: "UX__supply_paid_datetime",
+                name: "INDEX__suppliesis_deleted",
                 table: "supplies",
-                column: "paid_datetime",
+                column: "is_deleted");
+
+            migrationBuilder.CreateIndex(
+                name: "UNIQUE__suppliesstats_datetime",
+                table: "supplies",
+                column: "stats_datetime",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_supply_items_product_id",
+                name: "INDEX__supply_itemsproduct_id",
                 table: "supply_items",
                 column: "product_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_supply_items_supply_id",
+                name: "INDEX__supply_itemssupply_id",
                 table: "supply_items",
                 column: "supply_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_supply_photos_supply_id",
-                table: "supply_photos",
+                name: "INDEX__supply_photosupply_id",
+                table: "supply_photo",
                 column: "supply_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX__supply_update_histories__updated_datetime",
+                name: "INDEX__supply_update_historiessupply_id",
+                table: "supply_update_histories",
+                column: "supply_id");
+
+            migrationBuilder.CreateIndex(
+                name: "INDEX__supply_update_historiesupdated_datetime",
                 table: "supply_update_histories",
                 column: "updated_datetime");
 
             migrationBuilder.CreateIndex(
-                name: "IX_supply_update_histories_supply_id",
+                name: "INDEX__supply_update_historiesupdated_user_id",
                 table: "supply_update_histories",
-                column: "supply_id");
+                column: "updated_user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_supply_update_histories_user_id",
-                table: "supply_update_histories",
-                column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_treatment_items_product_id",
+                name: "INDEX__treatment_itemsproduct_id",
                 table: "treatment_items",
                 column: "product_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_treatment_items_treatment_id",
+                name: "INDEX__treatment_itemstreatment_id",
                 table: "treatment_items",
                 column: "treatment_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_treatment_photos_treatment_id",
+                name: "INDEX__treatment_photostreatment_id",
                 table: "treatment_photos",
                 column: "treatment_id");
 
             migrationBuilder.CreateIndex(
-                name: "UX__treatment_photos__url",
+                name: "UNIQUE__treatment_photosurl",
                 table: "treatment_photos",
                 column: "url",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX__treatment_update_histories__updated_datetime",
-                table: "treatment_update_histories",
-                column: "updated_datetime");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_treatment_update_histories_treatment_id",
+                name: "INDEX__treatment_update_historiestreatment_id",
                 table: "treatment_update_histories",
                 column: "treatment_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_treatment_update_histories_user_id",
+                name: "INDEX__treatment_update_historiesupdated_datetime",
                 table: "treatment_update_histories",
-                column: "user_id");
+                column: "updated_datetime");
 
             migrationBuilder.CreateIndex(
-                name: "IX__treatments__is_deleted",
-                table: "treatments",
-                column: "is_deleted");
+                name: "INDEX__treatment_update_historiesupdated_user_id",
+                table: "treatment_update_histories",
+                column: "updated_user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX__treatments__ordered_datetime",
-                table: "treatments",
-                column: "paid_datetime");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_treatments_created_user_id",
+                name: "INDEX__treatmentscreated_user_id",
                 table: "treatments",
                 column: "created_user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_treatments_customer_id",
+                name: "INDEX__treatmentscustomer_id",
                 table: "treatments",
                 column: "customer_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_treatments_therapist_id",
+                name: "INDEX__treatmentsis_deleted",
+                table: "treatments",
+                column: "is_deleted");
+
+            migrationBuilder.CreateIndex(
+                name: "INDEX__treatmentsstats_datetime",
+                table: "treatments",
+                column: "stats_datetime");
+
+            migrationBuilder.CreateIndex(
+                name: "INDEX__treatmentstherapist_id",
                 table: "treatments",
                 column: "therapist_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_user_refresh_tokens_user_id",
-                table: "user_refresh_tokens",
-                column: "user_id");
+                name: "INDEX__update_historiesconsultant_id",
+                table: "update_histories",
+                column: "consultant_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_user_roles_role_id",
+                name: "INDEX__update_historiesupdated_datetime",
+                table: "update_histories",
+                column: "updated_datetime");
+
+            migrationBuilder.CreateIndex(
+                name: "INDEX__update_historiesupdated_user_id",
+                table: "update_histories",
+                column: "updated_user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "INDEX__user_rolesrole_id",
                 table: "user_roles",
                 column: "role_id");
 
             migrationBuilder.CreateIndex(
-                name: "UX__users__username",
+                name: "UNIQUE__usersusername",
                 table: "users",
                 column: "username",
                 unique: true);
@@ -1719,16 +1699,13 @@ namespace NATSInternal.Migrations
                 name: "announcements");
 
             migrationBuilder.DropTable(
-                name: "consultant_update_histories");
-
-            migrationBuilder.DropTable(
                 name: "daily_stats");
 
             migrationBuilder.DropTable(
                 name: "debt_incurrence_update_histories");
 
             migrationBuilder.DropTable(
-                name: "debt_payment_update_history");
+                name: "debt_payment_update_histories");
 
             migrationBuilder.DropTable(
                 name: "expense_photos");
@@ -1746,7 +1723,7 @@ namespace NATSInternal.Migrations
                 name: "order_items");
 
             migrationBuilder.DropTable(
-                name: "order_photos");
+                name: "order_photo");
 
             migrationBuilder.DropTable(
                 name: "order_update_histories");
@@ -1758,7 +1735,7 @@ namespace NATSInternal.Migrations
                 name: "role_claims");
 
             migrationBuilder.DropTable(
-                name: "supply_photos");
+                name: "supply_photo");
 
             migrationBuilder.DropTable(
                 name: "supply_update_histories");
@@ -1773,22 +1750,19 @@ namespace NATSInternal.Migrations
                 name: "treatment_update_histories");
 
             migrationBuilder.DropTable(
+                name: "update_histories");
+
+            migrationBuilder.DropTable(
                 name: "user_claims");
 
             migrationBuilder.DropTable(
                 name: "user_logins");
 
             migrationBuilder.DropTable(
-                name: "user_refresh_tokens");
-
-            migrationBuilder.DropTable(
                 name: "user_roles");
 
             migrationBuilder.DropTable(
                 name: "user_tokens");
-
-            migrationBuilder.DropTable(
-                name: "consultants");
 
             migrationBuilder.DropTable(
                 name: "monthly_stats");
@@ -1815,10 +1789,13 @@ namespace NATSInternal.Migrations
                 name: "treatments");
 
             migrationBuilder.DropTable(
+                name: "consultants");
+
+            migrationBuilder.DropTable(
                 name: "roles");
 
             migrationBuilder.DropTable(
-                name: "expenses_payees");
+                name: "expense_payees");
 
             migrationBuilder.DropTable(
                 name: "products");

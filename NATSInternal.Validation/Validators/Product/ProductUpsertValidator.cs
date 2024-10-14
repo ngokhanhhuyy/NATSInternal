@@ -15,12 +15,13 @@ public class ProductUpsertValidator : Validator<ProductUpsertRequestDto>
             .NotEmpty()
             .MaximumLength(12)
             .WithName(DisplayNames.Unit);
-        RuleFor(dto => dto.Price)
+        RuleFor(dto => dto.DefaultPrice)
             .GreaterThanOrEqualTo(0)
-            .WithName(DisplayNames.Price);
-        RuleFor(dto => dto.VatFactor)
-            .GreaterThanOrEqualTo(0.0m)
-            .WithName(DisplayNames.VatFactor);
+            .WithName(DisplayNames.DefaultPrice);
+        RuleFor(dto => dto.DefaultVatPercentage)
+            .GreaterThanOrEqualTo(0)
+            .LessThanOrEqualTo(100)
+            .WithName(DisplayNames.DefaultVatPercentage);
         RuleFor(dto => dto.ThumbnailFile)
             .Must(IsValidImage)
             .When(dto => dto.ThumbnailFile != null)

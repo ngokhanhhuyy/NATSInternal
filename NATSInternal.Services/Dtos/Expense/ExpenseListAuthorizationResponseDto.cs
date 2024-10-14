@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class ExpenseListAuthorizationResponseDto
+public class ExpenseListAuthorizationResponseDto : IUpsertableListAuthorizationResponseDto
 {
     public bool CanCreate { get; set; }
 }

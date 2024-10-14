@@ -1,7 +1,10 @@
 namespace NATSInternal.Services;
 
 /// <inheritdoc />
-internal class AnnouncementService : IAnnouncementService
+internal class AnnouncementService
+    :
+        UpsertableAbstractService<Announcement, AnnouncementListRequestDto>,
+        IAnnouncementService
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
@@ -25,26 +28,14 @@ internal class AnnouncementService : IAnnouncementService
                 .ThenByDescending(a => a.EndingDateTime)
                 .ThenByDescending(a => a.CreatedDateTime);
 
-        // Initialize response dto.
-        AnnouncementListResponseDto responseDto = new AnnouncementListResponseDto();
+        EntityListDto<Announcement> entityListDto;
+        entityListDto = await GetListOfEntitiesAsync(query, requestDto);
 
-        // Fetch the result count.
-        int resultCount = await query.CountAsync();
-        if (resultCount == 0)
+        return new AnnouncementListResponseDto
         {
-            responseDto.PageCount = 0;
-            return responseDto;
-        }
-
-        responseDto.PageCount = (int)Math.Ceiling((double)resultCount / requestDto.ResultsPerPage);
-        responseDto.Items = await query
-            .Select(a => new AnnouncementResponseDto(a))
-            .Skip(requestDto.ResultsPerPage * (requestDto.Page - 1))
-            .Take(requestDto.ResultsPerPage)
-            .AsSplitQuery()
-            .ToListAsync();
-
-        return responseDto;
+            PageCount = entityListDto.PageCount,
+            Items = entityListDto.Items.Select(a => new AnnouncementResponseDto(a)).ToList()
+        };
     }
 
     /// <inheritdoc />
@@ -140,8 +131,8 @@ internal class AnnouncementService : IAnnouncementService
     }
 
     /// <summary>
-    /// Handle the exception thrown from the database during the creating
-    /// or updating operation and convert it into the appropriate exception.
+    /// Handle the exception thrown from the database during the creating or updating operation
+    /// and convert it into the appropriate exception.
     /// </summary>
     /// <param name="exception">
     /// The exception thrown by the database.
@@ -149,10 +140,9 @@ internal class AnnouncementService : IAnnouncementService
     /// <exception cref="ConcurrencyException">
     /// Thrown when there is some concurrent conflict during the operation.
     /// </exception>
-    private void HandleCreateOrUpdateException(MySqlException exception)
+    private static void HandleCreateOrUpdateException(MySqlException exception)
     {
-        SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
-        exceptionHandler.Handle(exception);
+        SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(exception);
         if (exceptionHandler.IsForeignKeyNotFound)
         {
             throw new ConcurrencyException();

@@ -6,24 +6,43 @@
 public class BrandController : ControllerBase
 {
     private readonly IBrandService _service;
-    private readonly IValidator<BrandRequestDto> _validator;
+    private readonly IValidator<BrandListRequestDto> _listValidator;
+    private readonly IValidator<BrandRequestDto> _upsertValidator;
     private readonly INotifier _notifier;
 
     public BrandController(
             IBrandService service,
-            IValidator<BrandRequestDto> validator,
+            IValidator<BrandListRequestDto> listValidator,
+            IValidator<BrandRequestDto> upsertValidator,
             INotifier notifier)
     {
         _service = service;
-        _validator = validator;
+        _listValidator = listValidator;
+        _upsertValidator = upsertValidator;
         _notifier = notifier;
     }
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> BrandList()
+    public async Task<IActionResult> BrandList([FromQuery] BrandListRequestDto requestDto)
     {
-        return Ok(await _service.GetListAsync());
+        // Validate data from the request.
+        requestDto.TransformValues();
+        ValidationResult validationResult = _listValidator.Validate(requestDto);
+        if (!validationResult.IsValid)
+        {
+            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
+            return BadRequest(ModelState);
+        }
+
+        return Ok(await _service.GetListAsync(requestDto));
+    }
+
+    [HttpGet("All")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> BrandAll()
+    {
+        return Ok(await _service.GetAllAsync());
     }
 
     [HttpGet("{id:int}")]
@@ -49,8 +68,9 @@ public class BrandController : ControllerBase
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> BrandCreate([FromBody] BrandRequestDto requestDto)
     {
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _validator.Validate(requestDto.TransformValues());
+        validationResult = _upsertValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -92,8 +112,9 @@ public class BrandController : ControllerBase
             [FromBody] BrandRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _validator.Validate(requestDto.TransformValues());
+        validationResult = _upsertValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

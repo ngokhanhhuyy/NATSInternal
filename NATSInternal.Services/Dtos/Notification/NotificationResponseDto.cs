@@ -13,7 +13,7 @@ public class NotificationResponseDto
     {
         Id = notification.Id;
         Type = notification.Type;
-        DateTime = notification.DateTime;
+        DateTime = notification.CreatedDateTime;
         ResourceIds = notification.ResourceIds;
         IsRead = notification.ReadUsers.Select(u => u.Id).Contains(currentUserId);
         

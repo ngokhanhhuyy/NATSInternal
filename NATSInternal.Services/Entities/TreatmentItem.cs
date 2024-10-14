@@ -6,7 +6,7 @@ internal class TreatmentItem : IProductExportableItemEntity<TreatmentItem>
     public int Id { get; set; }
 
     [Required]
-    public long AmountBeforeVatPerUnit { get; set; }
+    public long ProductAmountPerUnit { get; set; }
 
     [Required]
     public long VatAmountPerUnit { get; set; }
@@ -31,10 +31,10 @@ internal class TreatmentItem : IProductExportableItemEntity<TreatmentItem>
 
     // Properties for convinience.
     [NotMapped]
-    public long AmountPerUnit
+    public long AmountBeforeVatPerUnit
     {
-        get => AmountBeforeVatPerUnit;
-        set => AmountBeforeVatPerUnit = value;
+        get => ProductAmountPerUnit;
+        set => ProductAmountPerUnit = value;
     }
 
     [NotMapped]

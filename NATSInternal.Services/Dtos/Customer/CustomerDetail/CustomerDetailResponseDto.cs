@@ -1,6 +1,7 @@
 namespace NATSInternal.Services.Dtos;
 
 public record CustomerDetailResponseDto
+    : IUpsertableDetailResponseDto<CustomerAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public string FirstName { get; set; }

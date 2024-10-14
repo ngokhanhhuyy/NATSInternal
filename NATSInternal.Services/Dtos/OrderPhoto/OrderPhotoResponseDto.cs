@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class OrderPhotoResponseDto
+public class OrderPhotoResponseDto : IPhotoResponseDto
 {
     public int Id { get; set; }
     public string Url { get; set; }

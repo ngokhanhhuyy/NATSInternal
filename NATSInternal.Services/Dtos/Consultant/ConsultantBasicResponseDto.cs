@@ -1,10 +1,11 @@
 namespace NATSInternal.Services.Dtos;
 
 public class ConsultantBasicResponseDto
+    : IFinancialEngageableBasicResponseDto<ConsultantAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public long Amount { get; set; }
-    public DateTime PaidDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
     public ConsultantAuthorizationResponseDto Authorization { get; set; }
@@ -26,7 +27,7 @@ public class ConsultantBasicResponseDto
     {
         Id = consultant.Id;
         Amount = consultant.AmountBeforeVat;
-        PaidDateTime = consultant.PaidDateTime;
+        StatsDateTime = consultant.StatsDateTime;
         IsLocked = consultant.IsLocked;
         Customer = new CustomerBasicResponseDto(consultant.Customer);
     }

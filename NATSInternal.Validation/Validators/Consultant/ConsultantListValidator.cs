@@ -6,8 +6,7 @@ public class ConsultantListValidator : Validator<ConsultantListRequestDto>
     {
         RuleFor(dto => dto.OrderByField)
             .NotEmpty()
-            .Must(IsEnumElementName<ConsultantListRequestDto.FieldOptions>)
-            .WithMessage(ErrorMessages.Invalid)
+            .IsOneOfFieldOptions(FieldOptions)
             .WithName(DisplayNames.OrderByField);
         RuleFor(dto => dto.Month)
             .IsValidQueryStatsMonth()
@@ -24,5 +23,14 @@ public class ConsultantListValidator : Validator<ConsultantListRequestDto>
             .GreaterThanOrEqualTo(5)
             .LessThanOrEqualTo(15)
             .WithName(DisplayNames.ResultsPerPage);
+    }
+
+    private static IEnumerable<OrderByFieldOptions> FieldOptions
+    {
+        get => new List<OrderByFieldOptions>
+        {
+            OrderByFieldOptions.StatsDateTime,
+            OrderByFieldOptions.Amount
+        };
     }
 }

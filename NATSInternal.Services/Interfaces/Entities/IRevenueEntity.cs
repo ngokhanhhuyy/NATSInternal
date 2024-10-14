@@ -7,4 +7,6 @@ internal interface IRevenueEntity<T, TUpdateHistory>
 {
     long AmountBeforeVat { get; }
     long VatAmount { get; }
+    int CustomerId { get; set; }
+    Customer Customer { get; set; }
 }

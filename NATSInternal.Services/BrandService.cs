@@ -1,7 +1,10 @@
 ﻿namespace NATSInternal.Services;
 
 /// <inheritdoc />
-internal class BrandService : IBrandService
+internal class BrandService
+    :
+        UpsertableAbstractService<Brand, BrandListRequestDto>,
+        IBrandService
 {
     private readonly DatabaseContext _context;
     private readonly IPhotoService<Brand> _photoService;
@@ -18,28 +21,43 @@ internal class BrandService : IBrandService
     }
 
     /// <inheritdoc />
-    public async Task<BrandListResponseDto> GetListAsync()
+    public async Task<BrandListResponseDto> GetListAsync(BrandListRequestDto requestDto)
     {
+        IQueryable<Brand> query = _context.Brands.OrderBy(b => b.Id);
+
+        EntityListDto<Brand> entityListDto = await GetListOfEntitiesAsync(query, requestDto);
+
         return new BrandListResponseDto
         {
-            Items = await _context.Brands
-                .OrderBy(b => b.Id)
+            PageCount = entityListDto.PageCount,
+            Items = entityListDto.Items
                 .Select(b => new BrandBasicResponseDto(
                     b,
                     _authorizationService.GetBrandAuthorization()))
-                .ToListAsync(),
+                .ToList(),
             Authorization = _authorizationService.GetBrandListAuthorization()
         };
+    }
+
+    /// <inheritdoc />
+    public async Task<List<BrandBasicResponseDto>> GetAllAsync()
+    {
+        return await _context.Brands
+            .OrderBy(brand => brand.Id)
+            .Select(brand => new BrandBasicResponseDto(
+                brand,
+                _authorizationService.GetBrandAuthorization()))
+            .ToListAsync();
     }
 
     /// <inheritdoc />
     public async Task<BrandDetailResponseDto> GetDetailAsync(int id)
     {
         return await _context.Brands
-            .Include(b => b.Country)
-            .Where(b => b.Id == id)
-            .Select(b => new BrandDetailResponseDto(
-                b,
+            .Include(brand => brand.Country)
+            .Where(brand => brand.Id == id)
+            .Select(brand => new BrandDetailResponseDto(
+                brand,
                 _authorizationService.GetBrandAuthorization()))
             .SingleOrDefaultAsync()
             ?? throw new ResourceNotFoundException(
@@ -89,7 +107,7 @@ internal class BrandService : IBrandService
     /// <inheritdoc />
     public async Task UpdateAsync(int id, BrandRequestDto requestDto)
     {
-        // Fetch the entity from the database and ensure it exists.
+        // Fetch the brand from the database and ensure it exists.
         Brand brand = await _context.Brands.SingleOrDefaultAsync(b => b.Id == id)
             ?? throw new ResourceNotFoundException(
                 nameof(Brand),
@@ -174,8 +192,7 @@ internal class BrandService : IBrandService
     /// </exception>
     private static void HandleDbUpdateException(MySqlException exception)
     {
-        SqlExceptionHandler exceptionHandler = new SqlExceptionHandler();
-        exceptionHandler.Handle(exception);
+        SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(exception);
         string errorMessage;
         
         if (exceptionHandler.IsForeignKeyNotFound)

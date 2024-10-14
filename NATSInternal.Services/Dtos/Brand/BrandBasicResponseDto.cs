@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class BrandBasicResponseDto
+public class BrandBasicResponseDto : IUpsertableBasicResponseDto<BrandAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public string Name { get; set; }

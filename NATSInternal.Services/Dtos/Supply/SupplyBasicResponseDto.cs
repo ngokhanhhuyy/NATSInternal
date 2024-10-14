@@ -4,7 +4,7 @@ public class SupplyBasicResponseDto
     : IFinancialEngageableBasicResponseDto<SupplyAuthorizationResponseDto>
 {
     public int Id { get; set; }
-    public DateTime PaidDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
     public long Amount { get; set; }
     public bool IsLocked { get; set; }
     public UserBasicResponseDto User { get; set; }
@@ -16,7 +16,9 @@ public class SupplyBasicResponseDto
         MapFromEntity(supply);
     }
 
-    internal SupplyBasicResponseDto(Supply supply, SupplyAuthorizationResponseDto authorization)
+    internal SupplyBasicResponseDto(
+            Supply supply,
+            SupplyAuthorizationResponseDto authorization)
     {
         MapFromEntity(supply);
         Authorization = authorization;
@@ -25,7 +27,7 @@ public class SupplyBasicResponseDto
     private void MapFromEntity(Supply supply)
     {
         Id = supply.Id;
-        PaidDateTime = supply.SuppliedDateTime;
+        StatsDateTime = supply.StatsDateTime;
         Amount = supply.Amount;
         IsLocked = supply.IsLocked;
         User = new UserBasicResponseDto(supply.CreatedUser);

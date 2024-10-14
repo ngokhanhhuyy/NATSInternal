@@ -49,6 +49,18 @@ internal static class RuleValidators
         return ruleBuilder.LessThanOrEqualTo(currentDateTime).WithMessage(errorMessage);
     }
 
+    public static IRuleBuilderOptions<T, string> IsOneOfFieldOptions<T>(
+            this IRuleBuilder<T, string> ruleBuilder,
+            IEnumerable<OrderByFieldOptions> fieldOptions)
+    {
+        return ruleBuilder
+            .Must(fieldName => fieldOptions
+                .Select(fieldOption => Enum.GetName(typeof(OrderByFieldOptions), fieldOption))
+                .Contains(fieldName))
+            .When(_ => fieldOptions != null && fieldOptions.Any())
+            .WithMessage(ErrorMessages.Invalid);
+    }
+
     public static IRuleBuilderOptions<T, byte[]> IsValidImage<T>(
             this IRuleBuilder<T, byte[]> ruleBuilder)
     {
@@ -102,7 +114,7 @@ internal static class RuleValidators
     }
 
     public static IRuleBuilderOptions<T, int> IsValidQueryStatsYear<T>(
-            this IRuleBuilder<T, int> ruleBuilder) where T : ILockableEntityListRequestDto
+            this IRuleBuilder<T, int> ruleBuilder) where T : IFinancialEngageableListRequestDto
     {
         return ruleBuilder
             .GreaterThanOrEqualTo(1)
@@ -110,7 +122,7 @@ internal static class RuleValidators
     }
 
     public static IRuleBuilderOptions<T, int> IsValidQueryStatsMonth<T>(
-            this IRuleBuilder<T, int> ruleBuilder) where T : ILockableEntityListRequestDto
+            this IRuleBuilder<T, int> ruleBuilder) where T : IFinancialEngageableListRequestDto
     {
         return ruleBuilder
             .GreaterThanOrEqualTo(1)

@@ -8,7 +8,7 @@ internal class Order
     public int Id { get; set; }
 
     [Required]
-    public DateTime PaidDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
 
     [StringLength(255)]
     public string Note { get; set; }
@@ -42,7 +42,7 @@ internal class Order
         .FirstOrDefault();
 
     [NotMapped]
-    public long ProductAmountBeforeVat => Items.Sum(i => i.AmountPerUnit * i.Quantity);
+    public long ProductAmountBeforeVat => Items.Sum(i => i.ProductAmountPerUnit * i.Quantity);
 
     [NotMapped]
     public long ProductVatAmount => Items.Sum(i => i.VatAmountPerUnit * i.Quantity);
@@ -69,16 +69,13 @@ internal class Order
         .LastOrDefault();
 
     [NotMapped]
-    public DateTime StatsDateTime
+    public static Expression<Func<Order, long>> AmountAfterVatExpression
     {
-        get => PaidDateTime;
-        set => PaidDateTime = value;
-    }
-
-    [NotMapped]
-    public static Expression<Func<Order, DateTime>> StatsDateTimeExpression
-    {
-        get => (order) => order.PaidDateTime;
+        get
+        {
+            return (Order o) => o.Items.Sum(
+                ti => (ti.ProductAmountPerUnit + ti.VatAmountPerUnit) * ti.Quantity);
+        }
     }
 
     // Model configurations.
@@ -93,7 +90,7 @@ internal class Order
             .WithMany(u => u.Orders)
             .HasForeignKey(o => o.CreatedUserId)
             .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder.HasIndex(o => o.PaidDateTime);
+        entityBuilder.HasIndex(o => o.StatsDateTime);
         entityBuilder.HasIndex(o => o.IsDeleted);
         entityBuilder.Property(c => c.RowVersion)
             .IsRowVersion();

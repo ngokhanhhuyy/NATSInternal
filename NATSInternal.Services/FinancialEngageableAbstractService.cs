@@ -1,42 +1,30 @@
 namespace NATSInternal.Services;
 
+/// <summary>
+/// An abstract service to handle financial engagement related operations.
+/// </summary>
+/// <typeparam name="T">
+/// The type of the entity.
+/// </typeparam>
+/// <typeparam name="TUpdateHistory">
+/// The type of the update history entity associated to the <see cref="T"/> entity.
+/// </typeparam>
+/// <typeparam name="TListRequestDto">
+/// The type of the request DTO used in the list retrieving operation.
+/// </typeparam>
+/// <typeparam name="TUpdateHistoryDataDto">
+/// The type of the update history data DTO, containing the data of a specific <see cref="T"/>
+/// entity instance after each modification, used in the updating operation.
+/// </typeparam>
 internal abstract class FinancialEngageableAbstractService<
         T,
         TUpdateHistory,
         TListRequestDto,
-        TListResponseDto,
-        TBasicResponseDto,
-        TDetailResponseDto,
-        TUpdateHistoryResponseDto,
-        TUpdateHistoryDataDto,
-        TListAuthorizationResponseDto,
-        TAuthorizationResponseDto>
-    : UpsertableAbstractService<
-        T,
-        TListRequestDto,
-        TListResponseDto,
-        TBasicResponseDto,
-        TDetailResponseDto,
-        TListAuthorizationResponseDto,
-        TAuthorizationResponseDto>
+        TUpdateHistoryDataDto>
+    : UpsertableAbstractService<T, TListRequestDto>
     where T : class, IFinancialEngageableEntity<T, TUpdateHistory>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
     where TListRequestDto : IFinancialEngageableListRequestDto
-    where TListResponseDto :
-        IFinancialEngageableListResponseDto<
-            TBasicResponseDto,
-            TAuthorizationResponseDto,
-            TListAuthorizationResponseDto>,
-        new()
-    where TBasicResponseDto :
-        class,
-        IFinancialEngageableBasicResponseDto<TAuthorizationResponseDto>
-    where TDetailResponseDto : IFinancialEngageableDetailResponseDto<
-        TUpdateHistoryResponseDto,
-        TAuthorizationResponseDto>
-    where TUpdateHistoryResponseDto : IUpdateHistoryResponseDto
-    where TListAuthorizationResponseDto : IUpsertableListAuthorizationResponseDto
-    where TAuthorizationResponseDto : IFinancialEngageableAuthorizationResponseDto
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
@@ -44,81 +32,83 @@ internal abstract class FinancialEngageableAbstractService<
     protected FinancialEngageableAbstractService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService)
-        : base(context, authorizationService)
     {
         _context = context;
         _authorizationService = authorizationService;
     }
 
-    /// <inheritdoc />
-    public override async Task<TListResponseDto> GetListAsync(TListRequestDto requestDto)
+    /// <summary>
+    /// Gets a list of entities and month-year options, based on the specified query and
+    /// paginating conditions.
+    /// </summary>
+    /// <param name="query">
+    /// An instance of query which can be translated into SQL.
+    /// </param>
+    /// <param name="requestDto">
+    /// A DTO containing conditions for the results.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> which representing the asynchronous operation, which result is
+    /// a DTO, containing a list of entities and the additional information for pagination.
+    /// </returns>
+    protected override async Task<EntityListDto<T>>
+            GetListOfEntitiesAsync(IQueryable<T> query, TListRequestDto requestDto)
     {
-        // Initialize month years options.
-        List<MonthYearResponseDto> monthYearOptions;
-        monthYearOptions = await GenerateMonthYearOptions();
-
-        TListResponseDto responseDto = await base.GetListAsync(requestDto);
-        responseDto.MonthYearOptions = monthYearOptions;
-
-        return responseDto;
-    }
-
-    /// <inheritdoc />
-    protected override IQueryable<T> InitializeListQuery(TListRequestDto requestDto)
-    {
-        IQueryable<T> query = GetRepository(_context);
-
-        // Sort by the specified direction and field.
-        query = SortListQuery(query, requestDto.OrderByAscending, requestDto.OrderByField);
+        IQueryable<T> monthYearFilteredQuery = query;
 
         // Filter by month and year if specified.
         if (!requestDto.IgnoreMonthYear)
         {
-            DateTime startingDateTime = new DateTime(requestDto.Year, requestDto.Month, 1);
-            DateTime endingDateTime = startingDateTime.AddMonths(1);
-            query = FilterByMonthYearListQuery(query, startingDateTime, endingDateTime);
+            DateTime startDateTime = new DateTime(requestDto.Year, requestDto.Month, 1);
+            DateTime endDateTime = startDateTime.AddMonths(1);
+            monthYearFilteredQuery = monthYearFilteredQuery.Where(di =>
+                di.StatsDateTime >= startDateTime && di.StatsDateTime < endDateTime);
         }
 
-        // Filter by user id if specified.
+        // Filter by created user id if specified.
         if (requestDto.CreatedUserId.HasValue)
         {
-            query = query.Where(o => o.CreatedUserId == requestDto.CreatedUserId);
+            query = query.Where(e => e.CreatedUserId == requestDto.CreatedUserId);
         }
 
-        // Filter by not being soft deleted.
-        query = query.Where(o => !o.IsDeleted);
-
-        return query;
+        EntityListDto<T> entityListDto = await GetListOfEntitiesAsync(query, requestDto);
+        return entityListDto;
     }
 
-    /// <inheritdoc />
-    protected override IQueryable<T> InitializeDetailQuery()
+    /// <summary>
+    /// Retrieves an entity based on the specified id.
+    /// </summary>
+    /// <remarks>
+    /// The related update history entities will be included if the requesting user has enough
+    /// permission to access them.
+    /// </remarks>
+    /// <param name="query">
+    /// An instance of the query that can be translated into SQL query.
+    /// </param>
+    /// <param name="id">
+    /// The id of the entity to retrieve.
+    /// </param>
+    /// <returns>
+    /// An instance of the <see cref="T"/> entity with the specified id.
+    /// </returns>
+    /// <exception cref="ResourceNotFoundException">
+    /// Throws when the entity with the specified id doesn't exist or has already been deleted.
+    /// </exception>
+    protected virtual async Task<T> GetEntityAsync(IQueryable<T> query, int id)
     {
-        IQueryable<T> query = base.InitializeDetailQuery()
-            .Include(e => e.CreatedUser).ThenInclude(u => u.Roles).ThenInclude(r => r.Claims);
-            
-        // Determine if the update histories should be fetched.
-        bool shouldIncludeUpdateHistories = CanAccessUpdateHistories(_authorizationService);
-        if (shouldIncludeUpdateHistories)
+        IQueryable<T> includedQuery = query;
+        if (CanAccessUpdateHistories(_authorizationService))
         {
-            query = query.Include(d => d.UpdateHistories);
+            includedQuery = includedQuery.Include(e => e.UpdateHistories);
         }
 
-        return query;
+        return await includedQuery.SingleOrDefaultAsync(e => e.Id == id && !e.IsDeleted)
+            ?? throw new ResourceNotFoundException(
+                typeof(T).Name,
+                GetPropertyName<T>(e => e.Id),
+                id.ToString());
     }
 
-    /// <inheritdoc />
-    protected sealed override TBasicResponseDto InitializeBasicResponseDto(T entity)
-    {
-        return InitializeBasicResponseDto(entity, _authorizationService);
-    }
-
-    /// <inheritdoc />
-    protected sealed override TDetailResponseDto InitializeDetailResponseDto(T entity)
-    {
-        return InitializeDetailResponseDto(entity, _authorizationService, false);
-    }
-    
     /// <summary>
     /// Logs the old and new data to update history for the specified entity.
     /// </summary>
@@ -136,7 +126,7 @@ internal abstract class FinancialEngageableAbstractService<
     /// <param name="reason">
     /// The reason of the modification.
     /// </param>
-    public void LogUpdateHistory(
+    protected void LogUpdateHistory(
             T entity,
             TUpdateHistoryDataDto oldData,
             TUpdateHistoryDataDto newData,
@@ -155,6 +145,43 @@ internal abstract class FinancialEngageableAbstractService<
     }
 
     /// <summary>
+    /// Validates if the specified <c>statsDateTime</c> argument is valid for an entity so that
+    /// its locking status won't change after the assignment.
+    /// </summary>
+    /// <param name="entity">
+    /// An instance of the entity class to which the <c>statsDateTime</c> argument is assigned.
+    /// </param>
+    /// <param name="statsDateTime">
+    /// A <see cref="DateTime"/> value specified in the request representing the date and time
+    /// for the field in the entity which is used to calculate the statistics.
+    /// </param>
+    /// <exception cref="ValidationException">
+    /// Throws when the value specified by the <c>statsDateTime</c> argument is invalid.
+    /// </exception>
+    protected static void ValidateStatsDateTime(T entity, DateTime statsDateTime)
+    {
+        string errorMessage;
+        if (statsDateTime > entity.CreatedDateTime)
+        {
+            errorMessage = ErrorMessages.EarlierThanOrEqual
+                .ReplaceComparisonValue(entity.CreatedDateTime.ToVietnameseString());
+            throw new ArgumentException(errorMessage);
+        }
+
+        DateTime minimumAssignableDateTime;
+        minimumAssignableDateTime = new DateTime(
+            entity.CreatedDateTime.AddMonths(-1).Year,
+            entity.CreatedDateTime.AddMonths(-1).Month,
+            1, 0, 0, 0);
+        if (statsDateTime < minimumAssignableDateTime)
+        {
+            errorMessage = ErrorMessages.GreaterThanOrEqual
+                .ReplaceComparisonValue(minimumAssignableDateTime.ToVietnameseString());
+            throw new ValidationException(errorMessage);
+        }
+    }
+
+    /// <summary>
     /// Generates a list of the <see cref="MonthYearResponseDto"/> instances, representing the
     /// options that users can select as filtering condition when fetching a list of
     /// <see cref="T"/> DTOs.
@@ -164,10 +191,10 @@ internal abstract class FinancialEngageableAbstractService<
     /// <see cref="List{T}"/> of <see cref="MonthYearResponseDto"/> instances, representing
     /// the options.
     /// </returns>
-    public async Task<List<MonthYearResponseDto>> GenerateMonthYearOptions()
+    protected async Task<List<MonthYearResponseDto>> GenerateMonthYearOptions()
     {
         EarliestRecordedMonthYear ??= await GetRepository(_context)
-            .OrderBy(T.StatsDateTimeExpression)
+            .OrderBy(e => e.StatsDateTime)
             .Select(entity => new MonthYearResponseDto
             {
                 Year = entity.StatsDateTime.Year,
@@ -215,68 +242,12 @@ internal abstract class FinancialEngageableAbstractService<
     }
 
     /// <summary>
-    /// Provides the filtering conditions by month and year, based on the specified conditions.
-    /// </summary>
-    /// <param name="query">
-    /// An initialized query instance.
+    /// Gets the entity repository in the <see cref="DatabaseContext"/> class.
+    /// <param name="context">
+    /// An instance of the injected <see cref="DatabaseContext"/>
     /// </param>
-    /// <param name="minimumDateTime">
-    /// The minimum <see cref="DateTime"/> value that the value of the <c>StatsDateTime</c>
-    /// in the entity has to be greater than to fulfill the condition.
-    /// </param>
-    /// <param name="maximumDateTime">
-    /// The maximum <see cref="DateTime"/> value that the value of the <c>StatsDateTime</c>
-    /// in the entity has to be greater than to fulfill the condition.</param>
-    /// <returns>
-    /// The query instance after adding the filtering conditions.
-    /// </returns>
-    protected abstract IQueryable<T> FilterByMonthYearListQuery(
-            IQueryable<T> query,
-            DateTime minimumDateTime,
-            DateTime maximumDateTime);
-
-    /// <summary>
-    /// Initializes a response DTO, contanining the basic information of the given entity.
-    /// </summary>
-    /// <param name="entity">
-    /// The entity to map to the DTO.
-    /// </param>
-    /// <param name="service">
-    /// The service providing the authorization information.
-    /// </param>
-    /// <returns>
-    /// The initialized DTO.
-    /// </returns>
-    protected abstract TBasicResponseDto InitializeBasicResponseDto(
-            T entity,
-            IAuthorizationInternalService service);
-
-    /// <summary>
-    /// Initializes a response DTO, contanining the details of the given entity.
-    /// </summary>
-    /// <param name="entity">
-    /// The entity to map to the DTO.
-    /// </param>
-    /// <param name="shouldIncludeUpdateHistories">
-    /// Indicates that the associated update history DTOs should also be included in the detail
-    /// response DTO.
-    /// </param>
-    /// <returns>
-    /// The initialized DTO.
-    /// </returns>
-    protected abstract TDetailResponseDto InitializeDetailResponseDto(
-            T entity,
-            IAuthorizationInternalService service,
-            bool shouldIncludeUpdateHistories);
-
-    /// <summary>
-    /// Initializes an update history data DTO, containing the data of the specified entity
-    /// at the called time, used for storing the data before and after modifications in the
-    /// updating operation.
-    /// </summary>
-    /// <param name="entity">The entity which data is to be stored.</param>
-    /// <returns>The intialized DTO.</returns>
-    protected abstract TUpdateHistoryDataDto InitializeUpdateHistoryDataDto(T entity);
+    /// <returns>The entity repository.</returns>
+    protected abstract DbSet<T> GetRepository(DatabaseContext context);
 
     /// <summary>
     /// Determines whether the current user has enough permissions to access the update history
@@ -289,43 +260,6 @@ internal abstract class FinancialEngageableAbstractService<
     /// A <see cref="bool"/> value representing the permission.
     /// </returns>
     protected abstract bool CanAccessUpdateHistories(IAuthorizationInternalService service);
-
-    /// <summary>
-    /// Determines whether the current user has enough permissions to set a value for the
-    /// <c>StatsDateTime</c> property in the entity, used in the creating or updating
-    /// operation.
-    /// </summary>
-    /// <param name="service">
-    /// The service providing the authorization information.
-    /// </param>
-    /// <returns>
-    /// A <see cref="bool"/> value representing the permission.
-    /// </returns>
-    protected abstract bool CanSetStatsDateTime(IAuthorizationInternalService service);
-
-    /// <summary>
-    /// Determines whether the current user has enough permissions to edit the specified
-    /// entity, used in the creating or updating operation.
-    /// </summary>
-    /// <param name="service">
-    /// The service providing the authorization information.
-    /// </param>
-    /// <returns>
-    /// A <see cref="bool"/> value representing the permission.
-    /// </returns>
-    protected abstract bool CanEdit(T entity, IAuthorizationInternalService service);
-
-    /// <summary>
-    /// Determines whether the current user has enough permissions to delete a specific entity,
-    /// used in the deleting operation.
-    /// </summary>
-    /// <param name="service">
-    /// The service providing the authorization information.
-    /// </param>
-    /// <returns>
-    /// A <see cref="bool"/> value representing the permission.
-    /// </returns>
-    protected abstract bool CanDelete(T entity, IAuthorizationInternalService service);
 
     /// <summary>
     /// Stores the month and year information of the entity instance which is created earliest

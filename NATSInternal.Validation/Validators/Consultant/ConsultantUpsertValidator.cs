@@ -4,9 +4,9 @@ public class ConsultantUpsertValidator : Validator<ConsultantUpsertRequestDto>
 {
     public ConsultantUpsertValidator()
     {
-        RuleFor(dto => dto.PaidDateTime)
+        RuleFor(dto => dto.StatsDateTime)
             .IsValidStatsDateTime()
-            .WithName(DisplayNames.PaidDateTime);
+            .WithName(DisplayNames.StatsDateTime);
         RuleFor(dto => dto.Amount)
             .GreaterThan(0)
             .WithName(DisplayNames.Amount);
@@ -21,7 +21,7 @@ public class ConsultantUpsertValidator : Validator<ConsultantUpsertRequestDto>
         RuleSet("Create", () => { });
         RuleSet("Update", () =>
         {
-            RuleFor(dto => dto.UpdateReason)
+            RuleFor(dto => dto.UpdatedReason)
                 .NotEmpty()
                 .MaximumLength(255)
                 .WithName(DisplayNames.Reason);

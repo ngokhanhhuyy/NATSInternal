@@ -8,7 +8,7 @@ using NATSInternal.Services;
 
 #nullable disable
 
-namespace NATSInternal.Migrations
+namespace NATSInternal.Services.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
     partial class DatabaseContextModelSnapshot : ModelSnapshot
@@ -17,7 +17,7 @@ namespace NATSInternal.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.5")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -43,11 +43,13 @@ namespace NATSInternal.Migrations
                         .HasColumnType("int")
                         .HasColumnName("role_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("RoleId")
+                        .HasDatabaseName("INDEX__role_claimsrole_id");
 
-                    b.ToTable("role_claims", (string)null);
+                    b.ToTable("role_claims");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
@@ -67,28 +69,29 @@ namespace NATSInternal.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("claim_value");
 
-                    b.Property<int>("UpdatedUserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int")
                         .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.ToTable("user_claims", (string)null);
+                    b.ToTable("user_claims");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
-                    b.Property<int>("UpdatedUserId")
+                    b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("user_id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("UpdatedUserId"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("UserId"));
 
                     b.Property<string>("LoginProvider")
                         .IsRequired()
                         .HasColumnType("longtext")
-                        .HasColumnName("login_providers");
+                        .HasColumnName("login_provider");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("longtext")
@@ -99,33 +102,39 @@ namespace NATSInternal.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("provider_key");
 
-                    b.HasKey("UpdatedUserId");
+                    b.HasKey("UserId")
+                        .HasName("user_id");
 
-                    b.ToTable("user_logins", (string)null);
+                    b.ToTable("user_logins");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
-                    b.Property<int>("UpdatedUserId")
+                    b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("UpdatedUserId"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("UserId"));
 
                     b.Property<string>("LoginProvider")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("login_provider");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("name");
 
                     b.Property<string>("Value")
-                        .HasColumnType("longtext");
+                        .HasColumnType("longtext")
+                        .HasColumnName("value");
 
-                    b.HasKey("UpdatedUserId");
+                    b.HasKey("UserId")
+                        .HasName("user_id");
 
-                    b.ToTable("user_tokens", (string)null);
+                    b.ToTable("user_tokens");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Announcement", b =>
@@ -162,7 +171,8 @@ namespace NATSInternal.Migrations
                     b.Property<DateTime?>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp(6)");
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("row_version");
 
                     b.Property<DateTime>("StartingDateTime")
                         .HasColumnType("datetime(6)")
@@ -174,11 +184,13 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(80)")
                         .HasColumnName("title");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("CreatedUserId");
+                    b.HasIndex("CreatedUserId")
+                        .HasDatabaseName("INDEX__announcementscreated_user_id");
 
-                    b.ToTable("announcements", (string)null);
+                    b.ToTable("announcements");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Brand", b =>
@@ -198,6 +210,10 @@ namespace NATSInternal.Migrations
                     b.Property<int?>("CountryId")
                         .HasColumnType("int")
                         .HasColumnName("country_id");
+
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_datetime");
 
                     b.Property<string>("Email")
                         .HasMaxLength(255)
@@ -230,15 +246,17 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("website");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("CountryId");
+                    b.HasIndex("CountryId")
+                        .HasDatabaseName("INDEX__brandscountry_id");
 
                     b.HasIndex("Name")
                         .IsUnique()
+                        .HasDatabaseName("UNIQUE__brandsname");
 
-
-                    b.ToTable("brands", (string)null);
+                    b.ToTable("brands");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Consultant", b =>
@@ -250,9 +268,9 @@ namespace NATSInternal.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long>("AmountPerUnit")
+                    b.Property<long>("AmountBeforeVat")
                         .HasColumnType("bigint")
-                        .HasColumnName("amount");
+                        .HasColumnName("amount_before_vat");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime(6)")
@@ -275,20 +293,30 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("note");
 
-                    b.Property<DateTime>("SupplyDateTime")
+                    b.Property<DateTime>("StatsDateTime")
                         .HasColumnType("datetime(6)")
-                        .HasColumnName("paid_datetime");
+                        .HasColumnName("stats_datetime");
 
-                    b.HasKey("Id");
+                    b.Property<long>("VatAmount")
+                        .HasColumnType("bigint")
+                        .HasColumnName("vat_amount");
 
-                    b.HasIndex("CreatedUserId");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("CreatedUserId")
+                        .HasDatabaseName("INDEX__consultantscreated_user_id");
+
+                    b.HasIndex("CustomerId")
+                        .HasDatabaseName("INDEX__consultantscustomer_id");
 
                     b.HasIndex("IsDeleted")
+                        .HasDatabaseName("INDEX__consultantsis_deleted");
 
+                    b.HasIndex("StatsDateTime")
+                        .HasDatabaseName("INDEX__consultantsstats_datetime");
 
-                    b.ToTable("consultants", (string)null);
+                    b.ToTable("consultants");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.ConsultantUpdateHistory", b =>
@@ -326,18 +354,21 @@ namespace NATSInternal.Migrations
 
                     b.Property<int>("UpdatedUserId")
                         .HasColumnType("int")
-                        .HasColumnName("user_id");
+                        .HasColumnName("updated_user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("ConsultantId");
+                    b.HasIndex("ConsultantId")
+                        .HasDatabaseName("INDEX__update_historiesconsultant_id");
 
                     b.HasIndex("UpdatedDateTime")
+                        .HasDatabaseName("INDEX__update_historiesupdated_datetime");
 
+                    b.HasIndex("UpdatedUserId")
+                        .HasDatabaseName("INDEX__update_historiesupdated_user_id");
 
-                    b.HasIndex("UpdatedUserId");
-
-                    b.ToTable("consultant_update_histories", (string)null);
+                    b.ToTable("update_histories");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Country", b =>
@@ -361,17 +392,18 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(40)")
                         .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
                     b.HasIndex("Code")
                         .IsUnique()
-
+                        .HasDatabaseName("UNIQUE__countriescode");
 
                     b.HasIndex("Name")
                         .IsUnique()
+                        .HasDatabaseName("UNIQUE__countriesname");
 
-
-                    b.ToTable("countries", (string)null);
+                    b.ToTable("countries");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Customer", b =>
@@ -448,7 +480,7 @@ namespace NATSInternal.Migrations
                     b.Property<string>("NickName")
                         .HasMaxLength(35)
                         .HasColumnType("varchar(35)")
-                        .HasColumnName("nickname");
+                        .HasColumnName("nick_name");
 
                     b.Property<string>("NormalizedFirstName")
                         .IsRequired()
@@ -460,7 +492,7 @@ namespace NATSInternal.Migrations
                         .IsRequired()
                         .HasMaxLength(45)
                         .HasColumnType("varchar(45)")
-                        .HasColumnName("normalized_full_name");
+                        .HasColumnName("normalized_fullname");
 
                     b.Property<string>("NormalizedLastName")
                         .IsRequired()
@@ -486,7 +518,8 @@ namespace NATSInternal.Migrations
                     b.Property<DateTime?>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp(6)");
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("row_version");
 
                     b.Property<DateTime?>("UpdatedDateTime")
                         .HasColumnType("datetime(6)")
@@ -497,13 +530,16 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(15)")
                         .HasColumnName("zalo_number");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("CreatedUserId");
+                    b.HasIndex("CreatedUserId")
+                        .HasDatabaseName("INDEX__customerscreated_user_id");
 
-                    b.HasIndex("IntroducerId");
+                    b.HasIndex("IntroducerId")
+                        .HasDatabaseName("INDEX__customersintroducer_id");
 
-                    b.ToTable("customers", (string)null);
+                    b.ToTable("customers");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.DailyStats", b =>
@@ -583,15 +619,17 @@ namespace NATSInternal.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("vat_collected_amount");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("MonthlyStatsId");
+                    b.HasIndex("MonthlyStatsId")
+                        .HasDatabaseName("INDEX__daily_statsmonthly_stats_id");
 
                     b.HasIndex("RecordedDate")
                         .IsUnique()
+                        .HasDatabaseName("UNIQUE__daily_statsrecorded_date");
 
-
-                    b.ToTable("daily_stats", (string)null);
+                    b.ToTable("daily_stats");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.DebtIncurrence", b =>
@@ -603,7 +641,7 @@ namespace NATSInternal.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long>("AmountPerUnit")
+                    b.Property<long>("Amount")
                         .HasColumnType("bigint")
                         .HasColumnName("amount");
 
@@ -619,10 +657,6 @@ namespace NATSInternal.Migrations
                         .HasColumnType("int")
                         .HasColumnName("customer_id");
 
-                    b.Property<DateTime>("IncurredDateTime")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("incurred_datetime");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)")
                         .HasColumnName("is_deleted");
@@ -632,19 +666,26 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("note");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("StatsDateTime")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("stats_datetime");
 
-                    b.HasIndex("CreatedDateTime")
+                    b.HasKey("Id")
+                        .HasName("id");
 
+                    b.HasIndex("CreatedUserId")
+                        .HasDatabaseName("INDEX__debt_incurrencescreated_user_id");
 
-                    b.HasIndex("CreatedUserId");
-
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("CustomerId")
+                        .HasDatabaseName("INDEX__debt_incurrencescustomer_id");
 
                     b.HasIndex("IsDeleted")
+                        .HasDatabaseName("INDEX__debt_incurrencesis_deleted");
 
+                    b.HasIndex("StatsDateTime")
+                        .HasDatabaseName("INDEX__debt_incurrencesstats_datetime");
 
-                    b.ToTable("debt_incurrences", (string)null);
+                    b.ToTable("debt_incurrences");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.DebtIncurrenceUpdateHistory", b =>
@@ -682,18 +723,21 @@ namespace NATSInternal.Migrations
 
                     b.Property<int>("UpdatedUserId")
                         .HasColumnType("int")
-                        .HasColumnName("user_id");
+                        .HasColumnName("updated_user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("DebtIncurrenceId");
+                    b.HasIndex("DebtIncurrenceId")
+                        .HasDatabaseName("INDEX__debt_incurrence_update_historiesdebt_incurrence_id");
 
                     b.HasIndex("UpdatedDateTime")
+                        .HasDatabaseName("INDEX__debt_incurrence_update_historiesupdated_datetime");
 
+                    b.HasIndex("UpdatedUserId")
+                        .HasDatabaseName("INDEX__debt_incurrence_update_historiesupdated_user_id");
 
-                    b.HasIndex("UpdatedUserId");
-
-                    b.ToTable("debt_incurrence_update_histories", (string)null);
+                    b.ToTable("debt_incurrence_update_histories");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.DebtPayment", b =>
@@ -705,7 +749,7 @@ namespace NATSInternal.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long>("AmountPerUnit")
+                    b.Property<long>("Amount")
                         .HasColumnType("bigint")
                         .HasColumnName("amount");
 
@@ -730,23 +774,26 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("note");
 
-                    b.Property<DateTime>("SupplyDateTime")
+                    b.Property<DateTime>("StatsDateTime")
                         .HasColumnType("datetime(6)")
-                        .HasColumnName("paid_datetime");
+                        .HasColumnName("stats_datetime");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("CreatedUserId");
+                    b.HasIndex("CreatedUserId")
+                        .HasDatabaseName("INDEX__debt_paymentscreated_user_id");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("CustomerId")
+                        .HasDatabaseName("INDEX__debt_paymentscustomer_id");
 
                     b.HasIndex("IsDeleted")
+                        .HasDatabaseName("INDEX__debt_paymentsis_deleted");
 
+                    b.HasIndex("StatsDateTime")
+                        .HasDatabaseName("INDEX__debt_paymentsstats_datetime");
 
-                    b.HasIndex("SupplyDateTime")
-
-
-                    b.ToTable("debt_payments", (string)null);
+                    b.ToTable("debt_payments");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.DebtPaymentUpdateHistory", b =>
@@ -784,18 +831,21 @@ namespace NATSInternal.Migrations
 
                     b.Property<int>("UpdatedUserId")
                         .HasColumnType("int")
-                        .HasColumnName("user_id");
+                        .HasColumnName("updated_user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("DebtPaymentId");
+                    b.HasIndex("DebtPaymentId")
+                        .HasDatabaseName("INDEX__debt_payment_update_historiesdebt_payment_id");
 
                     b.HasIndex("UpdatedDateTime")
+                        .HasDatabaseName("INDEX__debt_payment_update_historiesupdated_datetime");
 
+                    b.HasIndex("UpdatedUserId")
+                        .HasDatabaseName("INDEX__debt_payment_update_historiesupdated_user_id");
 
-                    b.HasIndex("UpdatedUserId");
-
-                    b.ToTable("debt_payment_update_history", (string)null);
+                    b.ToTable("debt_payment_update_histories");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Expense", b =>
@@ -807,7 +857,7 @@ namespace NATSInternal.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long>("AmountPerUnit")
+                    b.Property<long>("Amount")
                         .HasColumnType("bigint")
                         .HasColumnName("amount");
 
@@ -823,14 +873,14 @@ namespace NATSInternal.Migrations
                         .HasColumnType("int")
                         .HasColumnName("created_user_id");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_deleted");
+
                     b.Property<string>("Note")
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)")
                         .HasColumnName("note");
-
-                    b.Property<DateTime>("SupplyDateTime")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("paid_datetime");
 
                     b.Property<int>("PayeeId")
                         .HasColumnType("int")
@@ -839,42 +889,54 @@ namespace NATSInternal.Migrations
                     b.Property<DateTime?>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp(6)");
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("row_version");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("StatsDateTime")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("stats_datetime");
 
-                    b.HasIndex("CreatedUserId");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("PayeeId");
+                    b.HasIndex("CreatedUserId")
+                        .HasDatabaseName("INDEX__expensescreated_user_id");
 
-                    b.ToTable("expenses", (string)null);
+                    b.HasIndex("PayeeId")
+                        .HasDatabaseName("INDEX__expensespayee_id");
+
+                    b.ToTable("expenses");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.ExpensePayee", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("name");
 
                     b.Property<DateTime?>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp(6)");
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("row_version");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
                     b.HasIndex("Name")
                         .IsUnique()
+                        .HasDatabaseName("UNIQUE__expense_payeesname");
 
-
-                    b.ToTable("expenses_payees", (string)null);
+                    b.ToTable("expense_payees");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.ExpensePhoto", b =>
@@ -893,7 +955,8 @@ namespace NATSInternal.Migrations
                     b.Property<DateTime?>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp(6)");
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("row_version");
 
                     b.Property<string>("Url")
                         .IsRequired()
@@ -901,15 +964,17 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("url");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("ExpenseId");
+                    b.HasIndex("ExpenseId")
+                        .HasDatabaseName("INDEX__expense_photosexpense_id");
 
                     b.HasIndex("Url")
                         .IsUnique()
+                        .HasDatabaseName("UNIQUE__expense_photosurl");
 
-
-                    b.ToTable("expense_photos", (string)null);
+                    b.ToTable("expense_photos");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.ExpenseUpdateHistory", b =>
@@ -947,18 +1012,21 @@ namespace NATSInternal.Migrations
 
                     b.Property<int>("UpdatedUserId")
                         .HasColumnType("int")
-                        .HasColumnName("user_id");
+                        .HasColumnName("updated_user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("ExpenseId");
+                    b.HasIndex("ExpenseId")
+                        .HasDatabaseName("INDEX__expense_update_historiesexpense_id");
 
                     b.HasIndex("UpdatedDateTime")
+                        .HasDatabaseName("INDEX__expense_update_historiesupdated_datetime");
 
+                    b.HasIndex("UpdatedUserId")
+                        .HasDatabaseName("INDEX__expense_update_historiesupdated_user_id");
 
-                    b.HasIndex("UpdatedUserId");
-
-                    b.ToTable("expense_update_histories", (string)null);
+                    b.ToTable("expense_update_histories");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.MonthlyStats", b =>
@@ -1004,7 +1072,7 @@ namespace NATSInternal.Migrations
 
                     b.Property<int>("RecordedYear")
                         .HasColumnType("int")
-                        .HasColumnName("recoreded_year");
+                        .HasColumnName("recorded_year");
 
                     b.Property<long>("RetailGrossRevenue")
                         .HasColumnType("bigint")
@@ -1038,13 +1106,14 @@ namespace NATSInternal.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("vat_collected_amount");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
                     b.HasIndex("RecordedMonth", "RecordedYear")
                         .IsUnique()
+                        .HasDatabaseName("UNIQUE__monthly_statsrecorded_month__recorded_year");
 
-
-                    b.ToTable("monthly_stats", (string)null);
+                    b.ToTable("monthly_stats");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Notification", b =>
@@ -1056,13 +1125,13 @@ namespace NATSInternal.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedDateTime")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_datetime");
+
                     b.Property<int?>("CreatedUserId")
                         .HasColumnType("int")
                         .HasColumnName("created_user_id");
-
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("datetime");
 
                     b.Property<string>("ResourceIds")
                         .HasColumnType("JSON")
@@ -1070,13 +1139,15 @@ namespace NATSInternal.Migrations
 
                     b.Property<int>("Type")
                         .HasColumnType("int")
-                        .HasColumnName("notification_type");
+                        .HasColumnName("type");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("CreatedUserId");
+                    b.HasIndex("CreatedUserId")
+                        .HasDatabaseName("INDEX__notificationscreated_user_id");
 
-                    b.ToTable("notifications", (string)null);
+                    b.ToTable("notifications");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.NotificationReadUser", b =>
@@ -1089,11 +1160,13 @@ namespace NATSInternal.Migrations
                         .HasColumnType("int")
                         .HasColumnName("read_user_id");
 
-                    b.HasKey("ReadNotificationId", "ReadUserId");
+                    b.HasKey("ReadNotificationId", "ReadUserId")
+                        .HasName("read_notification_id__read_user_id");
 
-                    b.HasIndex("ReadUserId");
+                    b.HasIndex("ReadUserId")
+                        .HasDatabaseName("INDEX__notification_read_usersread_user_id");
 
-                    b.ToTable("notification_read_users", (string)null);
+                    b.ToTable("notification_read_users");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.NotificationReceivedUser", b =>
@@ -1106,11 +1179,13 @@ namespace NATSInternal.Migrations
                         .HasColumnType("int")
                         .HasColumnName("received_user_id");
 
-                    b.HasKey("ReceivedNotificationId", "ReceivedUserId");
+                    b.HasKey("ReceivedNotificationId", "ReceivedUserId")
+                        .HasName("received_notification_id__received_user_id");
 
-                    b.HasIndex("ReceivedUserId");
+                    b.HasIndex("ReceivedUserId")
+                        .HasDatabaseName("INDEX__notification_received_usersreceived_user_id");
 
-                    b.ToTable("notification_received_users", (string)null);
+                    b.ToTable("notification_received_users");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Order", b =>
@@ -1143,28 +1218,32 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("note");
 
-                    b.Property<DateTime>("SupplyDateTime")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("paid_datetime");
-
                     b.Property<DateTime?>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp(6)");
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("row_version");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("StatsDateTime")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("stats_datetime");
 
-                    b.HasIndex("CreatedUserId");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("CreatedUserId")
+                        .HasDatabaseName("INDEX__orderscreated_user_id");
+
+                    b.HasIndex("CustomerId")
+                        .HasDatabaseName("INDEX__orderscustomer_id");
 
                     b.HasIndex("IsDeleted")
+                        .HasDatabaseName("INDEX__ordersis_deleted");
 
+                    b.HasIndex("StatsDateTime")
+                        .HasDatabaseName("INDEX__ordersstats_datetime");
 
-                    b.HasIndex("SupplyDateTime")
-
-
-                    b.ToTable("orders", (string)null);
+                    b.ToTable("orders");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.OrderItem", b =>
@@ -1176,13 +1255,13 @@ namespace NATSInternal.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long>("AmountPerUnit")
-                        .HasColumnType("bigint")
-                        .HasColumnName("amount");
-
                     b.Property<int>("OrderId")
                         .HasColumnType("int")
                         .HasColumnName("order_id");
+
+                    b.Property<long>("ProductAmountPerUnit")
+                        .HasColumnType("bigint")
+                        .HasColumnName("product_amount_per_unit");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int")
@@ -1195,25 +1274,30 @@ namespace NATSInternal.Migrations
                     b.Property<DateTime?>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp(6)");
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("row_version");
 
                     b.Property<int?>("SupplyItemId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("supply_item_id");
 
-                    b.Property<decimal>("DefaultVatPercentage")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("vat_factor");
+                    b.Property<long>("VatAmountPerUnit")
+                        .HasColumnType("bigint")
+                        .HasColumnName("vat_amount_per_unit");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("INDEX__order_itemsorder_id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("INDEX__order_itemsproduct_id");
 
-                    b.HasIndex("SupplyItemId");
+                    b.HasIndex("SupplyItemId")
+                        .HasDatabaseName("INDEX__order_itemssupply_item_id");
 
-                    b.ToTable("order_items", (string)null);
+                    b.ToTable("order_items");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.OrderPhoto", b =>
@@ -1232,7 +1316,8 @@ namespace NATSInternal.Migrations
                     b.Property<DateTime?>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp(6)");
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("row_version");
 
                     b.Property<string>("Url")
                         .IsRequired()
@@ -1240,15 +1325,17 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("url");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("INDEX__order_photoorder_id");
 
                     b.HasIndex("Url")
                         .IsUnique()
+                        .HasDatabaseName("UNIQUE__order_photourl");
 
-
-                    b.ToTable("order_photos", (string)null);
+                    b.ToTable("order_photo");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.OrderUpdateHistory", b =>
@@ -1286,18 +1373,21 @@ namespace NATSInternal.Migrations
 
                     b.Property<int>("UpdatedUserId")
                         .HasColumnType("int")
-                        .HasColumnName("user_id");
+                        .HasColumnName("updated_user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("INDEX__order_update_historiesorder_id");
 
                     b.HasIndex("UpdatedDateTime")
+                        .HasDatabaseName("INDEX__order_update_historiesupdated_datetime");
 
+                    b.HasIndex("UpdatedUserId")
+                        .HasDatabaseName("INDEX__order_update_historiesupdated_user_id");
 
-                    b.HasIndex("UpdatedUserId");
-
-                    b.ToTable("order_update_histories", (string)null);
+                    b.ToTable("order_update_histories");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Product", b =>
@@ -1321,10 +1411,22 @@ namespace NATSInternal.Migrations
                         .HasColumnType("datetime(6)")
                         .HasColumnName("created_datetime");
 
+                    b.Property<long>("DefaultPrice")
+                        .HasColumnType("bigint")
+                        .HasColumnName("default_price");
+
+                    b.Property<int>("DefaultVatPercentage")
+                        .HasColumnType("int")
+                        .HasColumnName("default_vat_percentage");
+
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
                         .HasColumnType("varchar(1000)")
                         .HasColumnName("description");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_deleted");
 
                     b.Property<bool>("IsDiscontinued")
                         .HasColumnType("tinyint(1)")
@@ -1339,10 +1441,6 @@ namespace NATSInternal.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)")
                         .HasColumnName("name");
-
-                    b.Property<long>("DefaultPrice")
-                        .HasColumnType("bigint")
-                        .HasColumnName("price");
 
                     b.Property<int>("StockingQuantity")
                         .HasColumnType("int")
@@ -1363,22 +1461,20 @@ namespace NATSInternal.Migrations
                         .HasColumnType("datetime(6)")
                         .HasColumnName("updated_datetime");
 
-                    b.Property<decimal>("DefaultVatPercentage")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("var_factor");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasKey("Id");
+                    b.HasIndex("BrandId")
+                        .HasDatabaseName("INDEX__productsbrand_id");
 
-                    b.HasIndex("BrandId");
-
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("CategoryId")
+                        .HasDatabaseName("INDEX__productscategory_id");
 
                     b.HasIndex("Name")
                         .IsUnique()
+                        .HasDatabaseName("UNIQUE__productsname");
 
-
-                    b.ToTable("products", (string)null);
+                    b.ToTable("products");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.ProductCategory", b =>
@@ -1400,13 +1496,14 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(30)")
                         .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
                     b.HasIndex("Name")
                         .IsUnique()
+                        .HasDatabaseName("UNIQUE__product_categoriesname");
 
-
-                    b.ToTable("product_categories", (string)null);
+                    b.ToTable("product_categories");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.ProductPhoto", b =>
@@ -1428,11 +1525,13 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("url");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("INDEX__product_photosproduct_id");
 
-                    b.ToTable("product_photos", (string)null);
+                    b.ToTable("product_photos");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Role", b =>
@@ -1446,7 +1545,7 @@ namespace NATSInternal.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .HasColumnType("longtext")
-                        .HasColumnName("concurrent_stamp");
+                        .HasColumnName("concurrency_stamp");
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
@@ -1466,17 +1565,18 @@ namespace NATSInternal.Migrations
                         .HasColumnType("int")
                         .HasColumnName("power_level");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
                     b.HasIndex("DisplayName")
                         .IsUnique()
-
+                        .HasDatabaseName("UNIQUE__rolesdisplay_name");
 
                     b.HasIndex("Name")
                         .IsUnique()
+                        .HasDatabaseName("UNIQUE__rolesname");
 
-
-                    b.ToTable("roles", (string)null);
+                    b.ToTable("roles");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Supply", b =>
@@ -1505,10 +1605,6 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("note");
 
-                    b.Property<DateTime>("SupplyDateTime")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("paid_datetime");
-
                     b.Property<DateTime?>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
@@ -1519,18 +1615,24 @@ namespace NATSInternal.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("shipment_fee");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("StatsDateTime")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("stats_datetime");
 
-                    b.HasIndex("CreatedUserId");
+                    b.HasKey("Id")
+                        .HasName("id");
+
+                    b.HasIndex("CreatedUserId")
+                        .HasDatabaseName("INDEX__suppliescreated_user_id");
 
                     b.HasIndex("IsDeleted")
+                        .HasDatabaseName("INDEX__suppliesis_deleted");
 
-
-                    b.HasIndex("SupplyDateTime")
+                    b.HasIndex("StatsDateTime")
                         .IsUnique()
+                        .HasDatabaseName("UNIQUE__suppliesstats_datetime");
 
-
-                    b.ToTable("supplies", (string)null);
+                    b.ToTable("supplies");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.SupplyItem", b =>
@@ -1542,34 +1644,38 @@ namespace NATSInternal.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long>("AmountPerUnit")
+                    b.Property<long>("ProductAmountPerUnit")
                         .HasColumnType("bigint")
-                        .HasColumnName("amount");
+                        .HasColumnName("product_amount_per_unit");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int")
                         .HasColumnName("product_id");
 
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int")
+                        .HasColumnName("quantity");
+
                     b.Property<DateTime?>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp(6)");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int")
-                        .HasColumnName("supplied_quantities");
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("row_version");
 
                     b.Property<int>("SupplyId")
                         .HasColumnType("int")
                         .HasColumnName("supply_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("INDEX__supply_itemsproduct_id");
 
-                    b.HasIndex("SupplyId");
+                    b.HasIndex("SupplyId")
+                        .HasDatabaseName("INDEX__supply_itemssupply_id");
 
-                    b.ToTable("supply_items", (string)null);
+                    b.ToTable("supply_items");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.SupplyPhoto", b =>
@@ -1584,7 +1690,8 @@ namespace NATSInternal.Migrations
                     b.Property<DateTime?>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp(6)");
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("row_version");
 
                     b.Property<int>("SupplyId")
                         .HasColumnType("int")
@@ -1596,11 +1703,13 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("url");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("SupplyId");
+                    b.HasIndex("SupplyId")
+                        .HasDatabaseName("INDEX__supply_photosupply_id");
 
-                    b.ToTable("supply_photos", (string)null);
+                    b.ToTable("supply_photo");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.SupplyUpdateHistory", b =>
@@ -1638,18 +1747,21 @@ namespace NATSInternal.Migrations
 
                     b.Property<int>("UpdatedUserId")
                         .HasColumnType("int")
-                        .HasColumnName("user_id");
+                        .HasColumnName("updated_user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("SupplyId");
+                    b.HasIndex("SupplyId")
+                        .HasDatabaseName("INDEX__supply_update_historiessupply_id");
 
                     b.HasIndex("UpdatedDateTime")
+                        .HasDatabaseName("INDEX__supply_update_historiesupdated_datetime");
 
+                    b.HasIndex("UpdatedUserId")
+                        .HasDatabaseName("INDEX__supply_update_historiesupdated_user_id");
 
-                    b.HasIndex("UpdatedUserId");
-
-                    b.ToTable("supply_update_histories", (string)null);
+                    b.ToTable("supply_update_histories");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Treatment", b =>
@@ -1682,43 +1794,47 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("note");
 
-                    b.Property<DateTime>("SupplyDateTime")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("paid_datetime");
-
                     b.Property<DateTime?>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp(6)");
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("row_version");
 
-                    b.Property<long>("ServiceAmount")
+                    b.Property<long>("ServiceAmountBeforeVat")
                         .HasColumnType("bigint")
-                        .HasColumnName("service_amount");
+                        .HasColumnName("service_amount_before_vat");
 
-                    b.Property<decimal>("ServiceVatFactor")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("service_vat_factor");
+                    b.Property<long>("ServiceVatAmount")
+                        .HasColumnType("bigint")
+                        .HasColumnName("service_vat_amount");
+
+                    b.Property<DateTime>("StatsDateTime")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("stats_datetime");
 
                     b.Property<int>("TherapistId")
                         .HasColumnType("int")
                         .HasColumnName("therapist_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("CreatedUserId");
+                    b.HasIndex("CreatedUserId")
+                        .HasDatabaseName("INDEX__treatmentscreated_user_id");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("CustomerId")
+                        .HasDatabaseName("INDEX__treatmentscustomer_id");
 
                     b.HasIndex("IsDeleted")
+                        .HasDatabaseName("INDEX__treatmentsis_deleted");
 
+                    b.HasIndex("StatsDateTime")
+                        .HasDatabaseName("INDEX__treatmentsstats_datetime");
 
-                    b.HasIndex("SupplyDateTime")
+                    b.HasIndex("TherapistId")
+                        .HasDatabaseName("INDEX__treatmentstherapist_id");
 
-
-                    b.HasIndex("TherapistId");
-
-                    b.ToTable("treatments", (string)null);
+                    b.ToTable("treatments");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.TreatmentItem", b =>
@@ -1730,9 +1846,9 @@ namespace NATSInternal.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long>("AmountPerUnit")
+                    b.Property<long>("ProductAmountPerUnit")
                         .HasColumnType("bigint")
-                        .HasColumnName("amount");
+                        .HasColumnName("product_amount_per_unit");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int")
@@ -1745,24 +1861,27 @@ namespace NATSInternal.Migrations
                     b.Property<DateTime?>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp(6)");
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("row_version");
 
                     b.Property<int>("TreatmentId")
                         .HasColumnType("int")
                         .HasColumnName("treatment_id");
 
-                    b.Property<decimal>("DefaultVatPercentage")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("vat_factor");
+                    b.Property<long>("VatAmountPerUnit")
+                        .HasColumnType("bigint")
+                        .HasColumnName("vat_amount_per_unit");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("INDEX__treatment_itemsproduct_id");
 
-                    b.HasIndex("TreatmentId");
+                    b.HasIndex("TreatmentId")
+                        .HasDatabaseName("INDEX__treatment_itemstreatment_id");
 
-                    b.ToTable("treatment_items", (string)null);
+                    b.ToTable("treatment_items");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.TreatmentPhoto", b =>
@@ -1777,7 +1896,8 @@ namespace NATSInternal.Migrations
                     b.Property<DateTime?>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp(6)");
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("row_version");
 
                     b.Property<int>("TreatmentId")
                         .HasColumnType("int")
@@ -1785,7 +1905,7 @@ namespace NATSInternal.Migrations
 
                     b.Property<int>("Type")
                         .HasColumnType("int")
-                        .HasColumnName("treatment_photo_type");
+                        .HasColumnName("type");
 
                     b.Property<string>("Url")
                         .IsRequired()
@@ -1793,15 +1913,17 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("url");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("TreatmentId");
+                    b.HasIndex("TreatmentId")
+                        .HasDatabaseName("INDEX__treatment_photostreatment_id");
 
                     b.HasIndex("Url")
                         .IsUnique()
+                        .HasDatabaseName("UNIQUE__treatment_photosurl");
 
-
-                    b.ToTable("treatment_photos", (string)null);
+                    b.ToTable("treatment_photos");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.TreatmentUpdateHistory", b =>
@@ -1839,21 +1961,24 @@ namespace NATSInternal.Migrations
 
                     b.Property<int>("UpdatedUserId")
                         .HasColumnType("int")
-                        .HasColumnName("user_id");
+                        .HasColumnName("updated_user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
-                    b.HasIndex("TreatmentId");
+                    b.HasIndex("TreatmentId")
+                        .HasDatabaseName("INDEX__treatment_update_historiestreatment_id");
 
                     b.HasIndex("UpdatedDateTime")
+                        .HasDatabaseName("INDEX__treatment_update_historiesupdated_datetime");
 
+                    b.HasIndex("UpdatedUserId")
+                        .HasDatabaseName("INDEX__treatment_update_historiesupdated_user_id");
 
-                    b.HasIndex("UpdatedUserId");
-
-                    b.ToTable("treatment_update_histories", (string)null);
+                    b.ToTable("treatment_update_histories");
                 });
 
-            modelBuilder.Entity("NATSInternal.Services.Entities.UpdatedUser", b =>
+            modelBuilder.Entity("NATSInternal.Services.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1877,7 +2002,7 @@ namespace NATSInternal.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .HasColumnType("longtext")
-                        .HasColumnName("concurrent_stamp");
+                        .HasColumnName("concurrency_stamp");
 
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime(6)")
@@ -1901,7 +2026,7 @@ namespace NATSInternal.Migrations
                         .IsRequired()
                         .HasMaxLength(45)
                         .HasColumnType("varchar(45)")
-                        .HasColumnName("full_name");
+                        .HasColumnName("fullname");
 
                     b.Property<int>("Gender")
                         .HasColumnType("int")
@@ -1948,7 +2073,7 @@ namespace NATSInternal.Migrations
                         .IsRequired()
                         .HasMaxLength(45)
                         .HasColumnType("varchar(45)")
-                        .HasColumnName("normalized_full_name");
+                        .HasColumnName("normalized_fullname");
 
                     b.Property<string>("NormalizedLastName")
                         .IsRequired()
@@ -1985,7 +2110,8 @@ namespace NATSInternal.Migrations
                     b.Property<DateTime?>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp(6)");
+                        .HasColumnType("timestamp(6)")
+                        .HasColumnName("row_version");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext")
@@ -2003,52 +2129,19 @@ namespace NATSInternal.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("username");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("id");
 
                     b.HasIndex("UserName")
                         .IsUnique()
+                        .HasDatabaseName("UNIQUE__usersusername");
 
-
-                    b.ToTable("users", (string)null);
-                });
-
-            modelBuilder.Entity("NATSInternal.Services.Entities.UserRefreshToken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("ExpiringDateTime")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("expiring_datetime");
-
-                    b.Property<DateTime>("IssuedDateTime")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("issued_datetime");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(2048)
-                        .HasColumnType("varchar(2048)")
-                        .HasColumnName("token");
-
-                    b.Property<int>("UpdatedUserId")
-                        .HasColumnType("int")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UpdatedUserId");
-
-                    b.ToTable("user_refresh_tokens", (string)null);
+                    b.ToTable("users");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.UserRole", b =>
                 {
-                    b.Property<int>("UpdatedUserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int")
                         .HasColumnName("user_id");
 
@@ -2056,11 +2149,13 @@ namespace NATSInternal.Migrations
                         .HasColumnType("int")
                         .HasColumnName("role_id");
 
-                    b.HasKey("UpdatedUserId", "RoleId");
+                    b.HasKey("UserId", "RoleId")
+                        .HasName("user_id__role_id");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("RoleId")
+                        .HasDatabaseName("INDEX__user_rolesrole_id");
 
-                    b.ToTable("user_roles", (string)null);
+                    b.ToTable("user_roles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -2069,17 +2164,18 @@ namespace NATSInternal.Migrations
                         .WithMany("Claims")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__roles__role_claims__role_id");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Announcement", b =>
                 {
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "CreatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "CreatedUser")
                         .WithMany("CreatedAnnouncements")
                         .HasForeignKey("CreatedUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__announcements__created_users__created_user_id");
+                        .HasConstraintName("FK__users__announcements__created_user_id");
 
                     b.Navigation("CreatedUser");
                 });
@@ -2090,26 +2186,26 @@ namespace NATSInternal.Migrations
                         .WithMany("Brands")
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("FK__brands__countries__country_id");
+                        .HasConstraintName("FK__countries__brands__country_id");
 
                     b.Navigation("Country");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Consultant", b =>
                 {
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "CreatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "CreatedUser")
                         .WithMany("Consultants")
                         .HasForeignKey("CreatedUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__consultants__users__user_id");
+                        .HasConstraintName("FK__users__consultants__created_user_id");
 
                     b.HasOne("NATSInternal.Services.Entities.Customer", "Customer")
                         .WithMany("Consultants")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__consultants__customers__customer_id");
+                        .HasConstraintName("FK__customers__consultants__customer_id");
 
                     b.Navigation("CreatedUser");
 
@@ -2123,14 +2219,14 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("ConsultantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__consultant_update_histories__consultants__consultant_id");
+                        .HasConstraintName("FK__consultants__update_histories__consultant_id");
 
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "UpdatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "UpdatedUser")
                         .WithMany("ConsultantUpdateHistories")
                         .HasForeignKey("UpdatedUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__consultant_update_histories__users__user_id");
+                        .HasConstraintName("FK__users__update_histories__updated_user_id");
 
                     b.Navigation("Consultant");
 
@@ -2139,12 +2235,12 @@ namespace NATSInternal.Migrations
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Customer", b =>
                 {
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "CreatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "CreatedUser")
                         .WithMany("CreatedCustomers")
                         .HasForeignKey("CreatedUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__customers__users__created_user_id");
+                        .HasConstraintName("FK__users__customers__created_user_id");
 
                     b.HasOne("NATSInternal.Services.Entities.Customer", "Introducer")
                         .WithMany("IntroducedCustomers")
@@ -2164,26 +2260,26 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("MonthlyStatsId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__daily_stats__monthly_stats__monthly_id");
+                        .HasConstraintName("FK__monthly_stats__daily_stats__monthly_stats_id");
 
                     b.Navigation("Monthly");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.DebtIncurrence", b =>
                 {
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "CreatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "CreatedUser")
                         .WithMany("Debts")
                         .HasForeignKey("CreatedUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__debt_incurrences__users__user_id");
+                        .HasConstraintName("FK__users__debt_incurrences__created_user_id");
 
                     b.HasOne("NATSInternal.Services.Entities.Customer", "Customer")
                         .WithMany("DebtIncurrences")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__debt_incurrences__customers__customer_id");
+                        .HasConstraintName("FK__customers__debt_incurrences__customer_id");
 
                     b.Navigation("CreatedUser");
 
@@ -2197,14 +2293,14 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("DebtIncurrenceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__debt_incurrence_update_histories__debt_incurrences__debt_incurrence_id");
+                        .HasConstraintName("FK__debt_incurrences__debt_incurrence_update_histories__debt_incurrence_id");
 
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "UpdatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "UpdatedUser")
                         .WithMany("DebtUpdateHistories")
                         .HasForeignKey("UpdatedUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__debt_incurrence_update_histories__users__user_id");
+                        .HasConstraintName("FK__users__debt_incurrence_update_histories__updated_user_id");
 
                     b.Navigation("DebtIncurrence");
 
@@ -2213,19 +2309,19 @@ namespace NATSInternal.Migrations
 
             modelBuilder.Entity("NATSInternal.Services.Entities.DebtPayment", b =>
                 {
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "CreatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "CreatedUser")
                         .WithMany("DebtPayments")
                         .HasForeignKey("CreatedUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__debt_payments__users__user_id");
+                        .HasConstraintName("FK__users__debt_payments__created_user_id");
 
                     b.HasOne("NATSInternal.Services.Entities.Customer", "Customer")
                         .WithMany("DebtPayments")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__debt_payments__customers__customer_id");
+                        .HasConstraintName("FK__customers__debt_payments__customer_id");
 
                     b.Navigation("CreatedUser");
 
@@ -2239,14 +2335,14 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("DebtPaymentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__debt_payment_update_histories__debt_payments__debt_payment_id");
+                        .HasConstraintName("FK__debt_payments__debt_payment_update_histories__debt_payment_id");
 
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "UpdatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "UpdatedUser")
                         .WithMany("DebtPaymentUpdateHistories")
                         .HasForeignKey("UpdatedUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__debt_paymetn_update_histories__users__user_id");
+                        .HasConstraintName("FK__users__debt_payment_update_histories__updated_user_id");
 
                     b.Navigation("DebtPayment");
 
@@ -2255,19 +2351,19 @@ namespace NATSInternal.Migrations
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Expense", b =>
                 {
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "CreatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "CreatedUser")
                         .WithMany("Expenses")
                         .HasForeignKey("CreatedUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__expenses__users__user_id");
+                        .HasConstraintName("FK__users__expenses__created_user_id");
 
                     b.HasOne("NATSInternal.Services.Entities.ExpensePayee", "Payee")
                         .WithMany("Expenses")
                         .HasForeignKey("PayeeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__expenses__expense_payees__payee_id");
+                        .HasConstraintName("FK__expense_payees__expenses__payee_id");
 
                     b.Navigation("CreatedUser");
 
@@ -2281,7 +2377,7 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("ExpenseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__expense_photos__expenses__expense_id");
+                        .HasConstraintName("FK__expenses__expense_photos__expense_id");
 
                     b.Navigation("Expense");
                 });
@@ -2293,14 +2389,14 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("ExpenseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__expense_update_histories__expenses__expense_id");
+                        .HasConstraintName("FK__expenses__expense_update_histories__expense_id");
 
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "UpdatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "UpdatedUser")
                         .WithMany("ExpenseUpdateHistories")
                         .HasForeignKey("UpdatedUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__expense_update_histories__users__user_id");
+                        .HasConstraintName("FK__users__expense_update_histories__updated_user_id");
 
                     b.Navigation("Expense");
 
@@ -2309,11 +2405,11 @@ namespace NATSInternal.Migrations
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Notification", b =>
                 {
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "CreatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "CreatedUser")
                         .WithMany("CreatedNotifications")
                         .HasForeignKey("CreatedUserId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("FK__notifications__users__created_user_id");
+                        .HasConstraintName("FK__users__notifications__created_user_id");
 
                     b.Navigation("CreatedUser");
                 });
@@ -2325,14 +2421,14 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("ReadNotificationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__notification_read_users__users__read_notification_id");
+                        .HasConstraintName("FK__notifications__notification_read_users__read_notification_id");
 
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "ReadUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "ReadUser")
                         .WithMany()
                         .HasForeignKey("ReadUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__notification_read_users__users__read_user_id");
+                        .HasConstraintName("FK__users__notification_read_users__read_user_id");
 
                     b.Navigation("ReadNotification");
 
@@ -2346,14 +2442,14 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("ReceivedNotificationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__notification_received_users__users__received_notification_id");
+                        .HasConstraintName("FK__notifications__notification_received_users__received_notification_id");
 
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "ReceivedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "ReceivedUser")
                         .WithMany()
                         .HasForeignKey("ReceivedUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__notification_received_users__users__received_user_id");
+                        .HasConstraintName("FK__users__notification_received_users__received_user_id");
 
                     b.Navigation("ReceivedNotification");
 
@@ -2362,19 +2458,19 @@ namespace NATSInternal.Migrations
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Order", b =>
                 {
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "CreatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "CreatedUser")
                         .WithMany("Orders")
                         .HasForeignKey("CreatedUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__orders__users__user_id");
+                        .HasConstraintName("FK__users__orders__created_user_id");
 
                     b.HasOne("NATSInternal.Services.Entities.Customer", "Customer")
                         .WithMany("Orders")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__orders__customers__customer_id");
+                        .HasConstraintName("FK__customers__orders__customer_id");
 
                     b.Navigation("CreatedUser");
 
@@ -2388,18 +2484,19 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__order_items__orders__order_id");
+                        .HasConstraintName("FK__orders__order_items__order_id");
 
                     b.HasOne("NATSInternal.Services.Entities.Product", "Product")
                         .WithMany("OrderItems")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__order_items__products__product_id");
+                        .HasConstraintName("FK__products__order_items__product_id");
 
                     b.HasOne("NATSInternal.Services.Entities.SupplyItem", null)
                         .WithMany("OrderItems")
-                        .HasForeignKey("SupplyItemId");
+                        .HasForeignKey("SupplyItemId")
+                        .HasConstraintName("FK__supply_items__order_items__supply_item_id");
 
                     b.Navigation("Order");
 
@@ -2413,7 +2510,7 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__order_photos__orders__order_id");
+                        .HasConstraintName("FK__orders__order_photo__order_id");
 
                     b.Navigation("Order");
                 });
@@ -2425,14 +2522,14 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__order_update_histories__orders__order_id");
+                        .HasConstraintName("FK__orders__order_update_histories__order_id");
 
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "UpdatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "UpdatedUser")
                         .WithMany("OrderUpdateHistories")
                         .HasForeignKey("UpdatedUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__order_update_histories__users__user_id");
+                        .HasConstraintName("FK__users__order_update_histories__updated_user_id");
 
                     b.Navigation("Order");
 
@@ -2445,13 +2542,13 @@ namespace NATSInternal.Migrations
                         .WithMany("Products")
                         .HasForeignKey("BrandId")
                         .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("FK__products__brands__brand_id");
+                        .HasConstraintName("FK__brands__products__brand_id");
 
                     b.HasOne("NATSInternal.Services.Entities.ProductCategory", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("FK__products__product_categories__category_id");
+                        .HasConstraintName("FK__product_categories__products__category_id");
 
                     b.Navigation("Brand");
 
@@ -2465,19 +2562,19 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__product_photos__products__product_id");
+                        .HasConstraintName("FK__products__product_photos__product_id");
 
                     b.Navigation("Product");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Supply", b =>
                 {
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "CreatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "CreatedUser")
                         .WithMany("Supplies")
                         .HasForeignKey("CreatedUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__supplies__users__user_id");
+                        .HasConstraintName("FK__users__supplies__created_user_id");
 
                     b.Navigation("CreatedUser");
                 });
@@ -2489,14 +2586,14 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__supply_items__products__product_id");
+                        .HasConstraintName("FK__products__supply_items__product_id");
 
                     b.HasOne("NATSInternal.Services.Entities.Supply", "Supply")
                         .WithMany("Items")
                         .HasForeignKey("SupplyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__supply_items__supplies__supply_id");
+                        .HasConstraintName("FK__supplies__supply_items__supply_id");
 
                     b.Navigation("Product");
 
@@ -2510,7 +2607,7 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("SupplyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__supply_photos__supplies__supply_id");
+                        .HasConstraintName("FK__supplies__supply_photo__supply_id");
 
                     b.Navigation("Supply");
                 });
@@ -2522,14 +2619,14 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("SupplyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__supply_update_histories__supplies__supply_id");
+                        .HasConstraintName("FK__supplies__supply_update_histories__supply_id");
 
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "UpdatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "UpdatedUser")
                         .WithMany("SupplyUpdateHistories")
                         .HasForeignKey("UpdatedUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__supply_update_histories__users__user_id");
+                        .HasConstraintName("FK__users__supply_update_histories__updated_user_id");
 
                     b.Navigation("Supply");
 
@@ -2538,26 +2635,26 @@ namespace NATSInternal.Migrations
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Treatment", b =>
                 {
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "CreatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "CreatedUser")
                         .WithMany("CreatedTreatments")
                         .HasForeignKey("CreatedUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__treatments__users__created_user_id");
+                        .HasConstraintName("FK__users__treatments__created_user_id");
 
                     b.HasOne("NATSInternal.Services.Entities.Customer", "Customer")
                         .WithMany("Treatments")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__treatments__customers__customer_id");
+                        .HasConstraintName("FK__customers__treatments__customer_id");
 
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "Therapist")
+                    b.HasOne("NATSInternal.Services.Entities.User", "Therapist")
                         .WithMany("TreatmentsInCharge")
                         .HasForeignKey("TherapistId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__treatments__users__therapist_id");
+                        .HasConstraintName("FK__users__treatments__therapist_id");
 
                     b.Navigation("CreatedUser");
 
@@ -2573,14 +2670,14 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__treatment_items__products__product_id");
+                        .HasConstraintName("FK__products__treatment_items__product_id");
 
                     b.HasOne("NATSInternal.Services.Entities.Treatment", "Treatment")
                         .WithMany("Items")
                         .HasForeignKey("TreatmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__treatment_items__treatments__treatment_id");
+                        .HasConstraintName("FK__treatments__treatment_items__treatment_id");
 
                     b.Navigation("Product");
 
@@ -2594,7 +2691,7 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("TreatmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__treatment_photos__treatments__treatment_id");
+                        .HasConstraintName("FK__treatments__treatment_photos__treatment_id");
 
                     b.Navigation("Treatment");
                 });
@@ -2606,28 +2703,16 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("TreatmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__treatment_update_histories__treatment__treatment_id");
+                        .HasConstraintName("FK__treatments__treatment_update_histories__treatment_id");
 
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "UpdatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "UpdatedUser")
                         .WithMany("TreatmentUpdateHistories")
                         .HasForeignKey("UpdatedUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK__treatment_update_histories__users__user_id");
+                        .HasConstraintName("FK__users__treatment_update_histories__updated_user_id");
 
                     b.Navigation("Treatment");
-
-                    b.Navigation("UpdatedUser");
-                });
-
-            modelBuilder.Entity("NATSInternal.Services.Entities.UserRefreshToken", b =>
-                {
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "UpdatedUser")
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("UpdatedUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK__user_refresh_tokens__users__user_id");
 
                     b.Navigation("UpdatedUser");
                 });
@@ -2639,18 +2724,18 @@ namespace NATSInternal.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__user_roles__roles__role_id");
+                        .HasConstraintName("FK__roles__user_roles__role_id");
 
-                    b.HasOne("NATSInternal.Services.Entities.UpdatedUser", "UpdatedUser")
+                    b.HasOne("NATSInternal.Services.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UpdatedUserId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK__user_roles__users__user_id");
+                        .HasConstraintName("FK__users__user_roles__user_id");
 
                     b.Navigation("Role");
 
-                    b.Navigation("UpdatedUser");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("NATSInternal.Services.Entities.Brand", b =>
@@ -2763,7 +2848,7 @@ namespace NATSInternal.Migrations
                     b.Navigation("UpdateHistories");
                 });
 
-            modelBuilder.Entity("NATSInternal.Services.Entities.UpdatedUser", b =>
+            modelBuilder.Entity("NATSInternal.Services.Entities.User", b =>
                 {
                     b.Navigation("ConsultantUpdateHistories");
 
@@ -2792,8 +2877,6 @@ namespace NATSInternal.Migrations
                     b.Navigation("OrderUpdateHistories");
 
                     b.Navigation("Orders");
-
-                    b.Navigation("RefreshTokens");
 
                     b.Navigation("Supplies");
 

@@ -2,7 +2,7 @@
 
 namespace NATSInternal.Services.Entities;
 
-internal class Notification : IIdentifiableEntity<Notification>
+internal class Notification : IUpsertableEntity<Notification>
 {
     [Key]
     public int Id { get; set; }
@@ -11,7 +11,7 @@ internal class Notification : IIdentifiableEntity<Notification>
     public NotificationType Type { get; set; }
 
     [Required]
-    public DateTime DateTime { get; set; }
+    public DateTime CreatedDateTime { get; set; }
     
     public List<int> ResourceIds { get; set; }
     

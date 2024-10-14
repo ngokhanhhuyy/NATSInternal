@@ -4,7 +4,7 @@ public class TreatmentBasicResponseDto
     : IRevuenueBasicResponseDto<TreatmentAuthorizationResponseDto>
 {
     public int Id { get; set; }
-    public DateTime PaidDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
     public long Amount { get; set; }
     public long AmountAfterVat { get; set; }
     public bool IsLocked { get; set; }
@@ -27,7 +27,7 @@ public class TreatmentBasicResponseDto
     private void MapFromEntity(Treatment treatment)
     {
         Id = treatment.Id;
-        PaidDateTime = treatment.PaidDateTime;
+        StatsDateTime = treatment.StatsDateTime;
         Amount = treatment.AmountAfterVat;
         AmountAfterVat = treatment.AmountAfterVat;
         IsLocked = treatment.IsLocked;

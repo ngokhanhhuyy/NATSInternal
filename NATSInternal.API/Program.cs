@@ -203,9 +203,6 @@ builder.Services.AddScoped<INotifier, Notifier>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Background tasks.
-builder.Services.AddHostedService<RefreshTokenCleanerTask>();
-
 // Add CORS.
 builder.Services.AddCors(options =>
 {

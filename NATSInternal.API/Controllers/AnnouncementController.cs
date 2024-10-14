@@ -29,8 +29,9 @@ public class AnnouncementController : ControllerBase
             [FromQuery] AnnouncementListRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _listValidator.Validate(requestDto.TransformValues());
+        validationResult = _listValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -65,8 +66,9 @@ public class AnnouncementController : ControllerBase
             [FromBody] AnnouncementUpsertRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult = _upsertValidator
-            .Validate(requestDto.TransformValues(), options => options
+            .Validate(requestDto, options => options
                 .IncludeRuleSets("Create")
                 .IncludeRulesNotInRuleSet());
         if (!validationResult.IsValid)
@@ -107,8 +109,9 @@ public class AnnouncementController : ControllerBase
             [FromBody] AnnouncementUpsertRequestDto requestDto)
     {
         // Validate data from the request.
+        requestDto.TransformValues();
         ValidationResult validationResult = _upsertValidator
-            .Validate(requestDto.TransformValues(), options => options
+            .Validate(requestDto, options => options
                 .IncludeRuleSets("Update")
                 .IncludeRulesNotInRuleSet());
         if (!validationResult.IsValid)

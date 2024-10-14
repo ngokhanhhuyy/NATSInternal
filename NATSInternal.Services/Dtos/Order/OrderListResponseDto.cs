@@ -1,6 +1,9 @@
 namespace NATSInternal.Services.Dtos;
 
-public class OrderListResponseDto
+public class OrderListResponseDto : IFinancialEngageableListResponseDto<
+        OrderBasicResponseDto,
+        OrderAuthorizationResponseDto,
+        OrderListAuthorizationResponseDto>
 {
     public int PageCount { get; set; }
     public List<OrderBasicResponseDto> Items { get; set; }

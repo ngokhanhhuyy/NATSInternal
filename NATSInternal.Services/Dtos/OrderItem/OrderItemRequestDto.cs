@@ -1,9 +1,9 @@
 namespace NATSInternal.Services.Dtos;
 
-public class OrderItemRequestDto : IProductEngageableItemRequestDto
+public class OrderItemRequestDto : IProductExportableItemRequestDto
 {
     public int? Id { get; set; }
-    public long AmountPerUnit { get; set; }
+    public long ProductAmountPerUnit { get; set; }
     public long VatAmountPerUnit { get; set; }
     public int Quantity { get; set; }
     public int ProductId { get; set; }

@@ -6,13 +6,24 @@
 public interface IBrandService
 {
     /// <summary>
-    /// Retrives a list which contains the basic information of brands based on the filtering
+    /// Retrives a list which contains the basic information of brands based on the sorting
     /// and paginating conditions.
     /// </summary>
+    /// <param name="requestDto">
+    /// (Optional) A DTO containing the conditions for the results.
+    /// </param>
     /// <returns>
     /// An instance of the <see cref="BrandListResponseDto"/> class, containing the results.
     /// </returns>
-    Task<BrandListResponseDto> GetListAsync();
+    Task<BrandListResponseDto> GetListAsync(BrandListRequestDto requestDto);
+
+    /// <summary>
+    /// Retrives a list of all brands.
+    /// </summary>
+    /// <returns>
+    /// A list of DTO, containing the basic information of the all brands.
+    /// </returns>
+    Task<List<BrandBasicResponseDto>> GetAllAsync();
 
     /// <summary>
     /// Retrives the details of a specific brand.

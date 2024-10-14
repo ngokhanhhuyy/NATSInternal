@@ -60,8 +60,8 @@ public static class DisplayNames
     public const string Introducer = "Người giới thiệu";
     public const string Description = "Mô tả";
     public const string Unit = "Đơn vị";
-    public const string Price = "Giá tiền";
-    public const string VatFactor = "Thuế VAT";
+    public const string DefaultPrice = "Giá tiền mặc định";
+    public const string DefaultVatPercentage = "Thuế VAT mặc định";
     public const string IsForRetail = "Sản phẩm bán lẻ";
     public const string IsDiscontinued = "Ngừng kinh doanh";
     public const string SuppliedDateTime = "Ngày nhập hàng";
@@ -69,6 +69,8 @@ public static class DisplayNames
     public const string StockingQuatity = "Số lượng trong kho";
     public const string ShipmentFee = "Phí vận chuyển";
     public const string Amount = "Số tiền";
+    public const string ProductAmount = "Giá tiền sản phẩm";
+    public const string VatAmount = "Thuế VAT";
     public const string Quatity = "Số lượng";
     public const string ServiceAmount = "Tiền công";
     public const string PayeeName = "Tên người nhận thanh toán";
@@ -116,6 +118,7 @@ public static class DisplayNames
     public const string RecordedMonthAndYear = "Tháng và năm thông kê";
     public const string IncurredDateTime = "Thời gian chịu";
     public const string IntervalInMinutes = "Số phút hiệu lực";
+    public const string StatsDateTime = "Ngày thống kê";
 
     private static readonly Dictionary<string, string> names;
 
