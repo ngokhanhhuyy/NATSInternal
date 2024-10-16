@@ -84,7 +84,7 @@ internal class BrandService
             Email = requestDto.Email,
             Address = requestDto.Address,
             ThumbnailUrl = thumbnailUrl,
-            CountryId = requestDto.Country?.Id
+            CountryId = requestDto.CountryId
         };
         
         try
@@ -141,6 +141,7 @@ internal class BrandService
         brand.PhoneNumber = requestDto.PhoneNumber;
         brand.Email = requestDto.Email;
         brand.Address = requestDto.Address;
+        brand.CountryId = requestDto.CountryId;
 
         try
         {

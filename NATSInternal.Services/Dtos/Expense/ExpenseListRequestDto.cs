@@ -2,7 +2,7 @@ namespace NATSInternal.Services.Dtos;
 
 public class ExpenseListRequestDto : IFinancialEngageableListRequestDto
 {
-    public bool OrderByAscending { get; set; } = false;
+    public bool OrderByAscending { get; set; }
     public string OrderByField { get; set; } = nameof(OrderByFieldOptions.StatsDateTime);
     public int Month { get; set; }
     public int Year { get; set; }

@@ -595,9 +595,7 @@ internal abstract class ProductExportableAbstractService<
             requestDtos,
             ProductEngagementType.Export,
             (TItem item, TItemRequestDto itemRequestDto) =>
-            {
-                item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit;
-            });
+                item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit);
     }
 
     /// <summary>
@@ -623,13 +621,9 @@ internal abstract class ProductExportableAbstractService<
             requestDtos,
             ProductEngagementType.Export,
             (TItem item, TItemRequestDto itemRequestDto) =>
-            {
-                item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit;
-            },
+                item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit,
             (TItem item, TItemRequestDto itemRequestDto) =>
-            {
-                item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit;
-            });
+                item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit);
     }
 
     /// <summary>

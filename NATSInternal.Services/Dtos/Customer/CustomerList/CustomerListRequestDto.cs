@@ -1,7 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class CustomerListRequestDto
-    : IOrderableListRequestDto, ICreatorTrackableListRequestDto
+public class CustomerListRequestDto : ICreatorTrackableListRequestDto
 {
     public bool OrderByAscending { get; set; } = true;
     public string OrderByField { get; set; } = nameof(OrderByFieldOptions.LastName);

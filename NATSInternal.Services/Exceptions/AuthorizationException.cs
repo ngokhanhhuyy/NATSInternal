@@ -1,5 +1,3 @@
 ﻿namespace NATSInternal.Services.Exceptions;
 
-public class AuthorizationException : Exception
-{
-}
+public class AuthorizationException : Exception;

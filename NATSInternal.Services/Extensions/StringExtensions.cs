@@ -41,10 +41,11 @@ public static class StringExtensions
             }
             pascalCaseSegment = pascalCaseSegment
                 .Replace("Username", "UserName")
+                .Replace("Fullname", "FullName")
                 .Replace("Datetime", "CreatedDateTime");
             pascalCaseSegments.Add(pascalCaseSegment);
         }
-        return string.Concat();
+        return string.Concat(pascalCaseSegments);
     }
 
     public static string SnakeCaseToCamelCase(this string snakeCaseString)

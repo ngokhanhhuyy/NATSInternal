@@ -1,7 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class ProductUpsertRequestDto
-        : IRequestDto
+public class ProductUpsertRequestDto : IRequestDto
 {
     public string Name { get; set; }
     public string Description { get; set; }

@@ -87,9 +87,9 @@ internal class CustomerService
         {
             query = query.Where(c => c.DebtIncurrences
                 .Where(d => !d.IsDeleted)
-                .Sum(d => d.Amount) - c.DebtPayments
+                .Sum(d => d.Amount) > c.DebtPayments
                 .Where(dp => !dp.IsDeleted)
-                .Sum(dp => dp.Amount) > 0);
+                .Sum(dp => dp.Amount));
         }
 
         // Fetch the list of the entities.

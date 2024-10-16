@@ -5,10 +5,10 @@ public class ExpenseUpdateHistoryResponseDto : IUpdateHistoryResponseDto
     private readonly ExpenseUpdateHistoryDataDto _oldData;
     private readonly ExpenseUpdateHistoryDataDto _newData;
 
-    public DateTime UpdatedDateTime { get; private set; }
-    public UserBasicResponseDto UpdatedUser { get; private set; }
-    public string UpdatedReason { get; private set; }
-    
+    public DateTime UpdatedDateTime { get; }
+    public UserBasicResponseDto UpdatedUser { get; }
+    public string UpdatedReason { get; }
+
     public DateTime OldPaidDateTime => _oldData.StatsDateTime;
     public DateTime NewPaidDateTime => _newData.StatsDateTime;
     

@@ -5,6 +5,4 @@ public interface IProductExportableUpsertRequestDto<TItem, TPhoto>
         IProductEngageableUpsertRequestDto<TItem, TPhoto>,
         ICustomerEngageableUpsertRequestDto
     where TItem : IProductEngageableItemRequestDto
-    where TPhoto : IPhotoRequestDto
-{
-}
+    where TPhoto : IPhotoRequestDto;

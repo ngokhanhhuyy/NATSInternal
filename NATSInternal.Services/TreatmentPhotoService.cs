@@ -16,10 +16,10 @@ internal class TreatmentPhotoService
             List<TRequestDto> requestDtos)
         where TRequestDto : TreatmentPhotoRequestDto
     {
-        await CreateMultipleAsync(treatment, requestDtos, (photo, requestDto) =>
-        {
-            photo.Type = requestDto.Type;
-        });
+        await CreateMultipleAsync(
+            treatment,
+            requestDtos,
+            (photo, requestDto) => photo.Type = requestDto.Type);
     }
 
     /// <inheritdoc />

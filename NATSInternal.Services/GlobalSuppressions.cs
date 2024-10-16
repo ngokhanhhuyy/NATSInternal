@@ -11,6 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE0028", Justification = "<Pending>", Scope = "module")]
 [assembly: SuppressMessage("Style", "IDE0066", Justification = "<Pending>", Scope = "module")]
 [assembly: SuppressMessage("Style", "IDE0305", Justification = "<Pending>", Scope = "module")]
+[assembly: SuppressMessage("Style", "IDE0300", Justification = "<Pending>", Scope = "module")]
 [assembly: SuppressMessage("Style", "RCS1077", Justification = "<Pending>", Scope = "module")]
 [assembly: SuppressMessage("Style", "RCS1037", Justification = "<Pending>", Scope = "module")]
 [assembly: SuppressMessage("Style", "RCS1194", Justification = "<Pending>", Scope = "module")]

@@ -72,9 +72,6 @@ internal abstract class ProductEngageableAbstractService<
     /// Creates new product engagement items, based on the specified items' collection, items
     /// data and engagement type.
     /// </summary>
-    /// <typeparam name="TItemRequestDto">
-    /// The type of the item request DTOs that contains the data for the engagement operation.
-    /// </typeparam>
     /// <param name="itemEntities">
     /// A collection of item entities that act as the connection with the products.
     /// </param>
@@ -155,9 +152,6 @@ internal abstract class ProductEngageableAbstractService<
     /// (if specified), based on the specified items' collection, items data and engagement
     /// type.
     /// </summary>
-    /// <typeparam name="TItemRequestDto">
-    /// The type of the item request DTOs that contains the data for the engagement operation.
-    /// </typeparam>
     /// <param name="itemEntities">
     /// A collection of item entities that act as the connection with the products.
     /// </param>

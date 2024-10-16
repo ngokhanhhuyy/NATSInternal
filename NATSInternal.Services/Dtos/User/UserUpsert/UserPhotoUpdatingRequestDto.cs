@@ -16,5 +16,4 @@ public class UserPhotoUpdatingRequestDto : IRequestDto
         Replace,
         Delete
     }
-
 }

@@ -6,9 +6,6 @@ namespace NATSInternal.Services;
 /// <typeparam name="T">
 /// The type of the entity.
 /// </typeparam>
-/// <typeparam name="TListDto">
-/// The type of the DTO which contains a list of entities in list retrieving operation.
-/// </typeparam>
 /// <typeparam name="TListRequestDto">
 /// The type of the request DTO used in the list retrieving operation.
 /// </typeparam>

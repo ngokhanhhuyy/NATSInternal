@@ -11,7 +11,7 @@ public class BrandRequestDto : IRequestDto
     public string Address { get; set; }
     public byte[] ThumbnailFile { get; set; }
     public bool ThumbnailChanged { get; set; }
-    public CountryRequestDto Country { get; set; }
+    public int? CountryId { get; set; }
 
     public void TransformValues()
     {
@@ -21,6 +21,10 @@ public class BrandRequestDto : IRequestDto
         PhoneNumber = PhoneNumber?.ToNullIfEmpty();
         Email = Email?.ToNullIfEmpty();
         Address = Address?.ToNullIfEmpty();
-        Country?.TransformValues();
+        
+        if (CountryId == 0)
+        {
+            CountryId = null;
+        }
     }
 }

@@ -7,7 +7,6 @@ namespace NATSInternal.Services;
 /// </summary>
 internal partial class SqlExceptionHandler
 {
-
     private string _violatedTableName;
     private string _violatedFieldName;
     private string _violatedConstraintName;

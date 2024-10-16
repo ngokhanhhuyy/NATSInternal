@@ -738,11 +738,8 @@ public sealed class DataInitializer
                 do
                 {
                     name = faker.Company.CompanyName();
-                    if (!_context.Brands.Any(b => b.Name == name))
-                    {
-                        break;
-                    }
-                } while (true);
+                }
+                while (_context.Brands.Any(b => b.Name == name));
 
                 Brand brand = new Brand
                 {
@@ -753,7 +750,7 @@ public sealed class DataInitializer
                     Email = ValueOrNull(faker.Internet.Email()),
                     Address = ValueOrNull(faker.Address.StreetAddress()),
                     CountryId = countryIds
-                        .Skip(random.Next(countryIds.Count()))
+                        .Skip(random.Next(countryIds.Count))
                         .Take(1)
                         .Single()
                 };
@@ -777,14 +774,8 @@ public sealed class DataInitializer
                 {
                     string randomName = faker.Commerce.Categories(1).Single();
                     name = CapitalizeFirstLetterEachWord(randomName);
-
-
-                    // Ensure the name is unique.
-                    if (!_context.ProductCategories.Any(pc => pc.Name == name))
-                    {
-                        break;
-                    }
-                } while (true);
+                }
+                while (_context.ProductCategories.Any(pc => pc.Name == name));
 
                 ProductCategory category = new ProductCategory
                 {
@@ -803,7 +794,7 @@ public sealed class DataInitializer
     {
         if (!_context.Products.Any())
         {
-            string[] units = { "Cái", "Chai", "Lọ", "Hộp", "Vĩ" };
+            string[] units = ["Cái", "Chai", "Lọ", "Hộp", "Vĩ"];
             Console.WriteLine("Initializing products");
             Faker enFaker = new Faker();
             Faker viFaker = new Faker("vi");
@@ -823,12 +814,8 @@ public sealed class DataInitializer
                         .Sentence(2, 2)
                         .Replace(".", "");
                     name = CapitalizeFirstLetterEachWord(randomName);
-
-                    if (!_context.Products.Any(p => p.Name == name))
-                    {
-                        break;
-                    }
-                } while (true);
+                }
+                while (_context.Products.Any(p => p.Name == name));
 
                 string description = SliceIfTooLong(viFaker.Lorem.Paragraphs(5), 1000);
                 Product product = new Product
@@ -1184,7 +1171,7 @@ public sealed class DataInitializer
         _context.SaveChanges();
     }
 
-    private async void GenerateLockableEntitiesData(bool logResult = false)
+    private void GenerateLockableEntitiesData(bool logResult = false)
     {
         List<bool> conditions = new List<bool>
         {

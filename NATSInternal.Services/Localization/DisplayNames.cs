@@ -134,10 +134,7 @@ public static class DisplayNames
 
     public static string Get(string objectName)
     {
-        if (objectName == null)
-        {
-            throw new ArgumentNullException(nameof(objectName));
-        }
+        ArgumentNullException.ThrowIfNull(objectName);
         return names
             .Where(pair => pair.Key == objectName.CapitalizeFirstLetter())
             .Select(pair => pair.Value)
@@ -148,8 +145,8 @@ public static class DisplayNames
     {
         if (objectName == null || objectName.Length == 0)
         {
-            string errorMessage = $"{nameof(objectName)} must be non-null and contain at" +
-                "least 1 element.";
+            const string errorMessage = $"{nameof(objectName)} must be non-null and contain " +
+                "at least 1 element.";
             throw new ArgumentException(errorMessage);
         }
         return Get(objectName

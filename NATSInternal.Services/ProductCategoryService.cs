@@ -19,7 +19,7 @@ internal class ProductCategoryService
 
     /// <inheritdoc />
     public async Task<ProductCategoryListResponseDto> GetListAsync(
-            ProductCategoryListRequestDto requestDto = null)
+            ProductCategoryListRequestDto requestDto)
     {
         // Initialize query.
         IQueryable<ProductCategory> query = _context.ProductCategories

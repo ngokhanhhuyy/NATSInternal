@@ -2,7 +2,6 @@
 
 public class OperationException : Exception
 {
-
     public OperationException(string message) : base(message) { }
 
     public OperationException(string propertyName, string message) : base(message)
