@@ -26,7 +26,7 @@ internal class OrderService
     public OrderService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IPhotoService<Order, OrderPhoto> photoService,
+            IMultiplePhotosService<Order, OrderPhoto> photoService,
             IStatsInternalService<Order, OrderUpdateHistory> statsService)
         : base(context, authorizationService, photoService, statsService)
     {

@@ -36,6 +36,12 @@ internal class Order
 
     // Property for convinience.
     [NotMapped]
+    public string ThumbnailUrl => Photos?
+        .OrderBy(p => p.Id)
+        .Select(p => p.Url)
+        .FirstOrDefault();
+
+    [NotMapped]
     public long ProductAmountBeforeVat => Items.Sum(i => i.ProductAmountPerUnit * i.Quantity);
 
     [NotMapped]

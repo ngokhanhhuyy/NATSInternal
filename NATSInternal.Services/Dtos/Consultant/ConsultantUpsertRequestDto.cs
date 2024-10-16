@@ -2,7 +2,8 @@ namespace NATSInternal.Services.Dtos;
 
 public class ConsultantUpsertRequestDto : IFinancialEngageableUpsertRequestDto
 {
-    public long Amount { get; set; }
+    public long AmountBeforeVat { get; set; }
+    public long VatAmount { get; set; }
     public string Note { get; set; }
     public DateTime? StatsDateTime { get; set; }
     public int CustomerId { get; set; }

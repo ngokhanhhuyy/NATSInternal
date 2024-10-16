@@ -52,16 +52,16 @@ public static class ConfigurationExtensions
         services.AddScoped<IRoleService, RoleService>();
 
         // Photo services.
-        services.AddScoped<IPhotoService<Brand>, PhotoService<Brand>>();
+        services.AddScoped<ISinglePhotoService<Brand>, SinglePhotoService<Brand>>();
         services.AddScoped<
-            IPhotoService<Supply, SupplyPhoto>,
-            PhotoService<Supply, SupplyPhoto>>();
+            IMultiplePhotosService<Supply, SupplyPhoto>,
+            MultiplePhotosService<Supply, SupplyPhoto>>();
         services.AddScoped<
-            IPhotoService<Expense, ExpensePhoto>,
-            PhotoService<Expense, ExpensePhoto>>();
+            IMultiplePhotosService<Expense, ExpensePhoto>,
+            MultiplePhotosService<Expense, ExpensePhoto>>();
         services.AddScoped<
-            IPhotoService<Order, OrderPhoto>,
-            PhotoService<Order, OrderPhoto>>();
+            IMultiplePhotosService<Order, OrderPhoto>,
+            MultiplePhotosService<Order, OrderPhoto>>();
 
         services.AddScoped<ITreatmentPhotoService, TreatmentPhotoService>();
         services.AddScoped<ICustomerService, CustomerService>();
@@ -87,23 +87,23 @@ public static class ConfigurationExtensions
             .GetRequiredService<AuthorizationService>());
 
         // Photo services.
-        services.AddScoped<IPhotoService<User>, PhotoService<User>>();
-        services.AddScoped<IPhotoService<Brand>, PhotoService<Brand>>();
+        services.AddScoped<ISinglePhotoService<User>, SinglePhotoService<User>>();
+        services.AddScoped<ISinglePhotoService<Brand>, SinglePhotoService<Brand>>();
         services.AddScoped<
-            IPhotoService<Product, ProductPhoto>,
-            PhotoService<Product, ProductPhoto>>();
+            IMultiplePhotosService<Product, ProductPhoto>,
+            MultiplePhotosService<Product, ProductPhoto>>();
         services.AddScoped<
-            IPhotoService<Expense, ExpensePhoto>,
-            PhotoService<Expense, ExpensePhoto>>();
+            IMultiplePhotosService<Expense, ExpensePhoto>,
+            MultiplePhotosService<Expense, ExpensePhoto>>();
         services.AddScoped<
-            IPhotoService<Supply, SupplyPhoto>,
-            PhotoService<Supply, SupplyPhoto>>();
+            IMultiplePhotosService<Supply, SupplyPhoto>,
+            MultiplePhotosService<Supply, SupplyPhoto>>();
         services.AddScoped<
-            IPhotoService<Order, OrderPhoto>,
-            PhotoService<Order, OrderPhoto>>();
+            IMultiplePhotosService<Order, OrderPhoto>,
+            MultiplePhotosService<Order, OrderPhoto>>();
         services.AddScoped<
-            IPhotoService<Treatment, TreatmentPhoto>,
-            PhotoService<Treatment, TreatmentPhoto>>();
+            IMultiplePhotosService<Treatment, TreatmentPhoto>,
+            MultiplePhotosService<Treatment, TreatmentPhoto>>();
 
         // Stats services.
         services.AddScoped<StatsService>();

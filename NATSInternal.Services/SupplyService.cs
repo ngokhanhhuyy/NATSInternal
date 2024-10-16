@@ -13,13 +13,13 @@ internal class SupplyService
     ISupplyService
 {
     private readonly DatabaseContext _context;
-    private readonly IPhotoService<Supply, SupplyPhoto> _photoService;
+    private readonly IMultiplePhotosService<Supply, SupplyPhoto> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IStatsInternalService<Supply, SupplyUpdateHistory> _statsService;
 
     public SupplyService(
             DatabaseContext context,
-            IPhotoService<Supply, SupplyPhoto> photoservice,
+            IMultiplePhotosService<Supply, SupplyPhoto> photoservice,
             IAuthorizationInternalService authorizationService,
             IStatsInternalService<Supply, SupplyUpdateHistory> statsService)
         : base(context, authorizationService)

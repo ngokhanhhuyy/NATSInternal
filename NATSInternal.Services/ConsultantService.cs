@@ -100,7 +100,7 @@ internal class ConsultantService
         if (requestDto.StatsDateTime.HasValue)
         {
             // Check if the current user has permission to specify a value for StatsDateTime.
-            if (!_authorizationService.CanSetExpenseStatsDateTime())
+            if (!_authorizationService.CanSetConsultantStatsDateTime())
             {
                 throw new AuthorizationException();
             }
@@ -111,7 +111,8 @@ internal class ConsultantService
         // Initialize consultant.
         Consultant consultant = new Consultant
         {
-            AmountBeforeVat = requestDto.Amount,
+            AmountBeforeVat = requestDto.AmountBeforeVat,
+            VatAmount = requestDto.VatAmount,
             StatsDateTime = paidDateTime,
             Note = requestDto.Note,
             CustomerId = requestDto.CustomerId,
@@ -222,7 +223,8 @@ internal class ConsultantService
         }
 
         // Update fields.
-        consultant.AmountBeforeVat = requestDto.Amount;
+        consultant.AmountBeforeVat = requestDto.AmountBeforeVat;
+        consultant.VatAmount = requestDto.VatAmount;
         consultant.Note = requestDto.Note;
 
         // Storing new data for update history logging.

@@ -4,7 +4,7 @@ public class OrderBasicResponseDto : IRevuenueBasicResponseDto<OrderAuthorizatio
 {
     public int Id { get; set; }
     public DateTime StatsDateTime { get; set; }
-    public long Amount { get; set; }
+    public long AmountBeforeVat { get; set; }
     public bool IsLocked { get; set; }  
     public CustomerBasicResponseDto Customer { get; set; }
     public OrderAuthorizationResponseDto Authorization { get; set; }
@@ -26,7 +26,7 @@ public class OrderBasicResponseDto : IRevuenueBasicResponseDto<OrderAuthorizatio
     {
         Id = order.Id;
         StatsDateTime = order.StatsDateTime;
-        Amount = order.AmountBeforeVat + order.VatAmount;
+        AmountBeforeVat = order.AmountBeforeVat + order.VatAmount;
         IsLocked = order.IsLocked;
         Customer = new CustomerBasicResponseDto(order.Customer);
     }

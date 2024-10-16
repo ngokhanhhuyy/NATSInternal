@@ -14,7 +14,6 @@ public class TreatmentDetailResponseDto
     public long ServiceVatAmount { get; set; }
     public long ProductAmount { get; set; }
     public long ProductVatAmount { get; set; }
-    public long TotalAmountAfterVAT { get; set; }
     public string Note { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
@@ -25,7 +24,7 @@ public class TreatmentDetailResponseDto
     public TreatmentAuthorizationResponseDto Authorization { get; set; }
     public List<TreatmentUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
-    public long Amount => ServiceAmount + ProductAmount;
+    public long AmountBeforeVat => ServiceAmount + ProductAmount;
     public string ThumbnailUrl => Photos
         .OrderBy(p => p.Id)
         .Select(p => p.Url)
@@ -40,7 +39,6 @@ public class TreatmentDetailResponseDto
         ServiceAmount = treatment.ServiceAmountBeforeVat;
         ServiceVatAmount = treatment.ServiceVatAmount;
         ProductAmount = treatment.ProductAmountBeforeVat;
-        TotalAmountAfterVAT = treatment.AmountAfterVat;
         Note = treatment.Note;
         IsLocked = treatment.IsLocked;
         Customer = new CustomerBasicResponseDto(treatment.Customer);

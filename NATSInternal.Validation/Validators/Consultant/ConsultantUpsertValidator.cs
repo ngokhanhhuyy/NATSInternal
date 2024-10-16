@@ -7,9 +7,12 @@ public class ConsultantUpsertValidator : Validator<ConsultantUpsertRequestDto>
         RuleFor(dto => dto.StatsDateTime)
             .IsValidStatsDateTime()
             .WithName(DisplayNames.StatsDateTime);
-        RuleFor(dto => dto.Amount)
+        RuleFor(dto => dto.AmountBeforeVat)
+            .GreaterThanOrEqualTo(0)
+            .WithName(DisplayNames.AmountBeforeVat);
+        RuleFor(dto => dto.VatAmount)
             .GreaterThan(0)
-            .WithName(DisplayNames.Amount);
+            .WithName(DisplayNames.VatAmount);
         RuleFor(dto => dto.Note)
             .MaximumLength(255)
             .WithName(DisplayNames.Note);

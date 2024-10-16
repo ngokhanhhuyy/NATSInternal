@@ -4,7 +4,7 @@ public class ConsultantBasicResponseDto
     : IFinancialEngageableBasicResponseDto<ConsultantAuthorizationResponseDto>
 {
     public int Id { get; set; }
-    public long Amount { get; set; }
+    public long AmountBeforeVat { get; set; }
     public DateTime StatsDateTime { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
@@ -26,7 +26,7 @@ public class ConsultantBasicResponseDto
     private void MapFromEntity(Consultant consultant)
     {
         Id = consultant.Id;
-        Amount = consultant.AmountBeforeVat;
+        AmountBeforeVat = consultant.AmountBeforeVat;
         StatsDateTime = consultant.StatsDateTime;
         IsLocked = consultant.IsLocked;
         Customer = new CustomerBasicResponseDto(consultant.Customer);

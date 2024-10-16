@@ -9,14 +9,14 @@ public class TreatmentUpdateHistoryResponseDto : IUpdateHistoryResponseDto
     public UserBasicResponseDto UpdatedUser { get; internal set; }
     public string UpdatedReason { get; internal set; }
 
-    public DateTime OldPaidDateTime => _oldData.StatsDateTime;
-    public DateTime NewPaidDateTime => _newData.StatsDateTime;
+    public DateTime OldStatsDateTime => _oldData.StatsDateTime;
+    public DateTime NewStatsDateTime => _newData.StatsDateTime;
 
     public long OldServiceAmount => _oldData.ServiceAmount;
     public long NewServiceAmount => _newData.ServiceAmount;
 
-    public decimal OldServiceVatFactor => _oldData.ServiceVatFactor;
-    public decimal NewServiceVatFactor => _newData.ServiceVatFactor;
+    public decimal OldServiceVatAmount => _oldData.ServiceVatAmount;
+    public decimal NewServiceVatAmount => _newData.ServiceVatAmount;
 
     public string OldNote => _oldData.Note;
     public string NewNote => _newData.Note;

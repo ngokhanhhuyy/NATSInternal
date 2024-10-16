@@ -26,7 +26,7 @@ internal class TreatmentService
     public TreatmentService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IPhotoService<Treatment, TreatmentPhoto> photoService,
+            IMultiplePhotosService<Treatment, TreatmentPhoto> photoService,
             IStatsInternalService<Treatment, TreatmentUpdateHistory> statsService)
         : base(context, authorizationService, photoService, statsService)
     {

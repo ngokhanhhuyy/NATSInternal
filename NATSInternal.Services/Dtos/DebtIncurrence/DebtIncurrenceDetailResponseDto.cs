@@ -6,7 +6,7 @@ public class DebtIncurrenceDetailResponseDto
         DebtIncurrenceAuthorizationResponseDto>
 {
     public int Id { get; set; }
-    public long Amount { get; set; }
+    public long AmountBeforeVat { get; set; }
     public string Note { get; set; }
     public DateTime StatsDateTime { get; set; }
     public DateTime CreatedDateTime { get; set; }
@@ -21,7 +21,7 @@ public class DebtIncurrenceDetailResponseDto
             DebtIncurrenceAuthorizationResponseDto authorization)
     {
         Id = debtIncurrence.Id;
-        Amount = debtIncurrence.Amount;
+        AmountBeforeVat = debtIncurrence.Amount;
         Note = debtIncurrence.Note;
         CreatedDateTime = debtIncurrence.CreatedDateTime;
         IsLocked = debtIncurrence.IsLocked;

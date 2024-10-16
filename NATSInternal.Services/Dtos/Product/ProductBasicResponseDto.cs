@@ -6,6 +6,7 @@ public class ProductBasicResponseDto
     public string Name { get; set; }
     public string Unit { get; set; }
     public long DefaultPrice { get; set; }
+    public int DefaultVatPercentage { get; set; }
     public int StockingQuantity { get; set; }
     public string ThumbnailUrl { get; set; }
     public ProductAuthorizationResponseDto Authorization { get; set; }
@@ -29,6 +30,7 @@ public class ProductBasicResponseDto
         Name = product.Name;
         Unit = product.Unit;
         DefaultPrice = product.DefaultPrice;
+        DefaultVatPercentage = product.DefaultVatPercentage;
         StockingQuantity = product.StockingQuantity;
         ThumbnailUrl = product.ThumbnailUrl;
     }

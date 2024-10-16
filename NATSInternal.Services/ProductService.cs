@@ -1,18 +1,15 @@
 ﻿namespace NATSInternal.Services;
 
 /// <inheritdoc />
-internal class ProductService
-    :
-        UpsertableAbstractService<Product, ProductListRequestDto>,
-        IProductService
+internal class ProductService : IProductService
 {
     private readonly DatabaseContext _context;
-    private readonly IPhotoService<Product, ProductPhoto> _photoService;
+    private readonly IMultiplePhotosService<Product, ProductPhoto> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
 
     public ProductService(
             DatabaseContext context,
-            IPhotoService<Product, ProductPhoto> photoService,
+            IMultiplePhotosService<Product, ProductPhoto> photoService,
             IAuthorizationInternalService authorizationService)
     {
         _context = context;

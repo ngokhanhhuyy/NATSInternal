@@ -4,7 +4,7 @@ public class ExpenseBasicResponseDto
     : IFinancialEngageableBasicResponseDto<ExpenseAuthorizationResponseDto>
 {
     public int Id { get; set; }
-    public long Amount { get; set; }
+    public long AmountBeforeVat { get; set; }
     public DateTime StatsDateTime { get; set; }
     public ExpenseCategory Category { get; set; }
     public bool IsLocked { get; set; }
@@ -26,7 +26,7 @@ public class ExpenseBasicResponseDto
     private void MapFromEntity(Expense expense)
     {
         Id = expense.Id;
-        Amount = expense.Amount;
+        AmountBeforeVat = expense.Amount;
         StatsDateTime = expense.StatsDateTime;
         Category = expense.Category;
         IsLocked = expense.IsLocked;

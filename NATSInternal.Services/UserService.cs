@@ -7,14 +7,14 @@ internal class UserService : IUserService
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<Role> _roleManager;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IPhotoService<User> _photoService;
+    private readonly ISinglePhotoService<User> _photoService;
 
     public UserService(
             DatabaseContext context,
             UserManager<User> userManager,
             RoleManager<Role> roleManager,
             IAuthorizationInternalService authorizationService,
-            IPhotoService<User> photoService)
+            ISinglePhotoService<User> photoService)
     {
         _context = context;
         _userManager = userManager;
@@ -63,8 +63,8 @@ internal class UserService : IUserService
                 break;
             case nameof(OrderByFieldOptions.Role):
                 query = requestDto.OrderByAscending
-                    ? query.OrderBy(u => u.Roles[0].Id)
-                    : query.OrderByDescending(u => u.Roles[0].Id);
+                    ? query.OrderBy(u => u.Roles.First().Id)
+                    : query.OrderByDescending(u => u.Roles.First().Id);
                 break;
             case nameof(OrderByFieldOptions.LastName):
             default:
@@ -78,7 +78,7 @@ internal class UserService : IUserService
         if (requestDto.RoleId.HasValue)
         {
             query = query
-                .Where(u => u.Roles[0].Id == requestDto.RoleId.Value);
+                .Where(u => u.Roles.First().Id == requestDto.RoleId.Value);
         }
 
         // Filter by joined recently.
@@ -115,7 +115,7 @@ internal class UserService : IUserService
         }
 
         // Filter by search content.
-        if (requestDto.Content?.Length >= 3)
+        if (requestDto.Content != null && requestDto.Content.Length >= 3)
         {
             query = query
                 .Where(u =>

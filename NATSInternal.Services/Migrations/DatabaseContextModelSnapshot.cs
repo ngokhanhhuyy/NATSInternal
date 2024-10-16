@@ -641,7 +641,7 @@ namespace NATSInternal.Services.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long>("Amount")
+                    b.Property<long>("AmountBeforeVat")
                         .HasColumnType("bigint")
                         .HasColumnName("amount");
 
@@ -749,7 +749,7 @@ namespace NATSInternal.Services.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long>("Amount")
+                    b.Property<long>("AmountBeforeVat")
                         .HasColumnType("bigint")
                         .HasColumnName("amount");
 
@@ -857,7 +857,7 @@ namespace NATSInternal.Services.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long>("Amount")
+                    b.Property<long>("AmountBeforeVat")
                         .HasColumnType("bigint")
                         .HasColumnName("amount");
 

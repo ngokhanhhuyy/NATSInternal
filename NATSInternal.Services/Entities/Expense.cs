@@ -43,6 +43,12 @@ internal class Expense
 
     // Properties for convinience.
     [NotMapped]
+    public string ThumbnailUrl => Photos?
+        .OrderBy(p => p.Id)
+        .Select(p => p.Url)
+        .FirstOrDefault();
+
+    [NotMapped]
     public DateTime? LastUpdatedDateTime => UpdateHistories
         .OrderBy(uh => uh.UpdatedDateTime)
         .Select(uh => (DateTime?)uh.UpdatedDateTime)

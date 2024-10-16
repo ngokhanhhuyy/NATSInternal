@@ -11,13 +11,13 @@ internal class ExpenseService
         IExpenseService
 {
     private readonly DatabaseContext _context;
-    private readonly IPhotoService<Expense, ExpensePhoto> _photoService;
+    private readonly IMultiplePhotosService<Expense, ExpensePhoto> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IStatsInternalService<Expense, ExpenseUpdateHistory> _statsService;
 
     public ExpenseService(
             DatabaseContext context,
-            IPhotoService<Expense, ExpensePhoto> photoService,
+            IMultiplePhotosService<Expense, ExpensePhoto> photoService,
             IAuthorizationInternalService authorizationService,
             IStatsInternalService<Expense, ExpenseUpdateHistory> statsService)
         : base(context, authorizationService)

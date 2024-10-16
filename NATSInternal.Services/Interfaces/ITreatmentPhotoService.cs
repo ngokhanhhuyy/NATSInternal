@@ -3,7 +3,7 @@ namespace NATSInternal.Services.Interfaces;
 /// <summary>
 /// A service to handle treatment-photo-related operations.
 /// </summary>
-internal interface ITreatmentPhotoService : IPhotoService<Treatment, TreatmentPhoto>
+internal interface ITreatmentPhotoService : IMultiplePhotosService<Treatment, TreatmentPhoto>
 {
     /// <summary>
     /// Create photos which are associated to the specified treatment with the data provided

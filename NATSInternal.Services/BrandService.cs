@@ -7,12 +7,12 @@ internal class BrandService
         IBrandService
 {
     private readonly DatabaseContext _context;
-    private readonly IPhotoService<Brand> _photoService;
+    private readonly ISinglePhotoService<Brand> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
 
     public BrandService(
             DatabaseContext context,
-            IPhotoService<Brand> photoService,
+            ISinglePhotoService<Brand> photoService,
             IAuthorizationInternalService authorizationService)
     {
         _context = context;
@@ -141,7 +141,6 @@ internal class BrandService
         brand.PhoneNumber = requestDto.PhoneNumber;
         brand.Email = requestDto.Email;
         brand.Address = requestDto.Address;
-        brand.CountryId = requestDto.CountryId;
 
         try
         {

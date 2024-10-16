@@ -98,13 +98,13 @@ internal abstract class ProductExportableAbstractService<
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IPhotoService<T, TPhoto> _photoService;
+    private readonly IMultiplePhotosService<T, TPhoto> _photoService;
     private readonly IStatsInternalService<T, TUpdateHistory> _statsService;
 
     protected ProductExportableAbstractService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IPhotoService<T, TPhoto> photoService,
+            IMultiplePhotosService<T, TPhoto> photoService,
             IStatsInternalService<T, TUpdateHistory> statsService)
         : base(context, authorizationService)
     {
@@ -595,7 +595,9 @@ internal abstract class ProductExportableAbstractService<
             requestDtos,
             ProductEngagementType.Export,
             (TItem item, TItemRequestDto itemRequestDto) =>
-                item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit);
+            {
+                item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit;
+            });
     }
 
     /// <summary>
@@ -621,9 +623,13 @@ internal abstract class ProductExportableAbstractService<
             requestDtos,
             ProductEngagementType.Export,
             (TItem item, TItemRequestDto itemRequestDto) =>
-                item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit,
+            {
+                item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit;
+            },
             (TItem item, TItemRequestDto itemRequestDto) =>
-                item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit);
+            {
+                item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit;
+            });
     }
 
     /// <summary>

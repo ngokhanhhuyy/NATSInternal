@@ -12,8 +12,11 @@ public class ConsultantUpdateHistoryResponseDto : IUpdateHistoryResponseDto
     public DateTime OldStatsDateTime => _oldData.StatsDateTime;
     public DateTime NewStatsDateTime => _newData.StatsDateTime;
     
-    public long OldAmount => _oldData.Amount;
-    public long NewAmount => _newData.Amount;
+    public long OldAmountBeforeVat => _oldData.AmountBeforeVat;
+    public long NewAmountBeforeVat => _newData.AmountBeforeVat;
+
+    public long OldVatAmount => _oldData.VatAmount;
+    public long NewVatAmount => _newData.VatAmount;
     
     public string OldNote => _oldData.Note;
     public string NewNote => _newData.Note;

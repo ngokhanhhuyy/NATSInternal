@@ -5,7 +5,8 @@ public class ConsultantDetailResponseDto : IFinancialEngageableDetailResponseDto
     ConsultantAuthorizationResponseDto>
 {
     public int Id { get; set; }
-    public long Amount { get; set; }
+    public long AmountBeforeVat { get; set; }
+    public long VatAmount { get; set; }
     public string Note { get; set; }
     public DateTime StatsDateTime { get; set; }
     public DateTime CreatedDateTime { get; set; }
@@ -20,7 +21,7 @@ public class ConsultantDetailResponseDto : IFinancialEngageableDetailResponseDto
             ConsultantAuthorizationResponseDto authorization)
     {
         Id = consultant.Id;
-        Amount = consultant.AmountBeforeVat;
+        AmountBeforeVat = consultant.AmountBeforeVat;
         Note = consultant.Note;
         StatsDateTime = consultant.StatsDateTime;
         CreatedDateTime = consultant.CreatedDateTime;

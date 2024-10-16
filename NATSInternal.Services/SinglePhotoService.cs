@@ -8,13 +8,13 @@ namespace NATSInternal.Services;
 /// <typeparam name="T">
 /// The type of the entity with which the photos are associate.
 /// </typeparam>
-internal class PhotoService<T> : IPhotoService<T>
-    where T : class, IHasPhotoEntity<T>, new()
+internal class SinglePhotoService<T> : ISinglePhotoService<T>
+    where T : class, IHasSinglePhotoEntity<T>, new()
 {
     private readonly IWebHostEnvironment _environment;
     protected readonly string _folderName = typeof(T).Name.PascalCaseToSnakeCase();
 
-    public PhotoService(IWebHostEnvironment environment)
+    public SinglePhotoService(IWebHostEnvironment environment)
     {
         _environment = environment;
     }
@@ -206,11 +206,14 @@ internal class PhotoService<T> : IPhotoService<T>
 /// The type of the photo entity, ass
 /// <typeparam name="TPhoto">ociated to the <see cref="T"/> entity.
 /// </typeparam>
-internal class PhotoService<T, TPhoto> : PhotoService<T>, IPhotoService<T, TPhoto>
+internal class MultiplePhotosService<T, TPhoto>
+    :
+        SinglePhotoService<T>,
+        IMultiplePhotosService<T, TPhoto>
     where T : class, IHasMultiplePhotosEntity<T, TPhoto>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
 {
-    public PhotoService(IWebHostEnvironment environment) : base(environment)
+    public MultiplePhotosService(IWebHostEnvironment environment) : base(environment)
     {
     }
 

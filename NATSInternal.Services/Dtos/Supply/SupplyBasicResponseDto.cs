@@ -5,7 +5,7 @@ public class SupplyBasicResponseDto
 {
     public int Id { get; set; }
     public DateTime StatsDateTime { get; set; }
-    public long Amount { get; set; }
+    public long AmountBeforeVat { get; set; }
     public bool IsLocked { get; set; }
     public UserBasicResponseDto CreatedUser { get; set; }
     public string ThumbnailUrl { get; set; }
@@ -28,7 +28,7 @@ public class SupplyBasicResponseDto
     {
         Id = supply.Id;
         StatsDateTime = supply.StatsDateTime;
-        Amount = supply.Amount;
+        AmountBeforeVat = supply.Amount;
         IsLocked = supply.IsLocked;
         CreatedUser = new UserBasicResponseDto(supply.CreatedUser);
         ThumbnailUrl = supply.ThumbnailUrl;

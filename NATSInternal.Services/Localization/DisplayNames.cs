@@ -69,6 +69,7 @@ public static class DisplayNames
     public const string StockingQuatity = "Số lượng trong kho";
     public const string ShipmentFee = "Phí vận chuyển";
     public const string Amount = "Số tiền";
+    public const string AmountBeforeVat = "Số tiền trước thuế";
     public const string ProductAmount = "Giá tiền sản phẩm";
     public const string VatAmount = "Thuế VAT";
     public const string Quatity = "Số lượng";

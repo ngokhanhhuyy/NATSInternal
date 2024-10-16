@@ -7,13 +7,13 @@ public class BrandController : ControllerBase
 {
     private readonly IBrandService _service;
     private readonly IValidator<BrandListRequestDto> _listValidator;
-    private readonly IValidator<BrandRequestDto> _upsertValidator;
+    private readonly IValidator<BrandUpsertRequestDto> _upsertValidator;
     private readonly INotifier _notifier;
 
     public BrandController(
             IBrandService service,
             IValidator<BrandListRequestDto> listValidator,
-            IValidator<BrandRequestDto> upsertValidator,
+            IValidator<BrandUpsertRequestDto> upsertValidator,
             INotifier notifier)
     {
         _service = service;
@@ -66,7 +66,7 @@ public class BrandController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> BrandCreate([FromBody] BrandRequestDto requestDto)
+    public async Task<IActionResult> BrandCreate([FromBody] BrandUpsertRequestDto requestDto)
     {
         requestDto.TransformValues();
         ValidationResult validationResult;
@@ -109,7 +109,7 @@ public class BrandController : ControllerBase
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> BrandUpdate(
             int id,
-            [FromBody] BrandRequestDto requestDto)
+            [FromBody] BrandUpsertRequestDto requestDto)
     {
         // Validate data from the request.
         requestDto.TransformValues();

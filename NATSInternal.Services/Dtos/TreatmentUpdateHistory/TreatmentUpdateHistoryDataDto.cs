@@ -4,7 +4,7 @@ public class TreatmentUpdateHistoryDataDto
 {
     public DateTime StatsDateTime { get; set; }
     public long ServiceAmount { get; set; }
-    public decimal ServiceVatFactor { get; set; }
+    public decimal ServiceVatAmount { get; set; }
     public string Note { get; set; }
     public TreatmentTherapistUpdateHistoryDataDto Therapist { get; set; }
     public List<TreatmentItemUpdateHistoryDataDto> Items { get; set; }
@@ -13,7 +13,7 @@ public class TreatmentUpdateHistoryDataDto
     {
         StatsDateTime = treatment.StatsDateTime;
         ServiceAmount = treatment.ServiceAmountBeforeVat;
-        ServiceVatFactor = treatment.ServiceVatAmount;
+        ServiceVatAmount = treatment.ServiceVatAmount;
         Note = treatment.Note;
         Therapist = new TreatmentTherapistUpdateHistoryDataDto(treatment.Therapist);
         Items = treatment.Items

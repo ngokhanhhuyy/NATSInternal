@@ -4,6 +4,6 @@ internal interface IFinancialEngageableBasicResponseDto<TAuthorization>
     : IUpsertableBasicResponseDto<TAuthorization>
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
 {
-    long Amount { get; }
+    long AmountBeforeVat { get; }
     bool IsLocked { get; }
 }

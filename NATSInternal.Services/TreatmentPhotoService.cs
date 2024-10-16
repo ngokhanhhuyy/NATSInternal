@@ -5,7 +5,7 @@ namespace NATSInternal.Services;
 /// <inheritdoc cref="ITreatmentPhotoService" />
 internal class TreatmentPhotoService
     :
-        PhotoService<Treatment, TreatmentPhoto>,
+        MultiplePhotosService<Treatment, TreatmentPhoto>,
         ITreatmentPhotoService
 {
     public TreatmentPhotoService(IWebHostEnvironment environment) : base(environment) { }
@@ -16,10 +16,10 @@ internal class TreatmentPhotoService
             List<TRequestDto> requestDtos)
         where TRequestDto : TreatmentPhotoRequestDto
     {
-        await CreateMultipleAsync(
-            treatment,
-            requestDtos,
-            (photo, requestDto) => photo.Type = requestDto.Type);
+        await CreateMultipleAsync(treatment, requestDtos, (photo, requestDto) =>
+        {
+            photo.Type = requestDto.Type;
+        });
     }
 
     /// <inheritdoc />
