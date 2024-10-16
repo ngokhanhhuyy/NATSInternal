@@ -5,8 +5,8 @@ public class DebtIncurrenceListResponseDto : IFinancialEngageableListResponseDto
         DebtIncurrenceAuthorizationResponseDto,
         DebtIncurrenceListAuthorizationResponseDto>
 {
-    public List<DebtIncurrenceBasicResponseDto> Items { get; set; }
     public int PageCount { get; set; }
+    public List<DebtIncurrenceBasicResponseDto> Items { get; set; }
     public List<MonthYearResponseDto> MonthYearOptions { get; set; }
     public DebtIncurrenceListAuthorizationResponseDto Authorization { get; set; }
 }

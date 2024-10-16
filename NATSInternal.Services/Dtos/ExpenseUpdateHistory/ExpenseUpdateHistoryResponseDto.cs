@@ -9,8 +9,8 @@ public class ExpenseUpdateHistoryResponseDto : IUpdateHistoryResponseDto
     public UserBasicResponseDto UpdatedUser { get; }
     public string UpdatedReason { get; }
 
-    public DateTime OldPaidDateTime => _oldData.StatsDateTime;
-    public DateTime NewPaidDateTime => _newData.StatsDateTime;
+    public DateTime OldStatsDateTime => _oldData.StatsDateTime;
+    public DateTime NewStatsDateTime => _newData.StatsDateTime;
     
     public long OldAmount => _oldData.Amount;
     public long NewAmount => _newData.Amount;

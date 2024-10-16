@@ -1,7 +1,9 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class ProductListRequestDto : IRequestDto
+public class ProductListRequestDto : IOrderableListRequestDto
 {
+    public bool OrderByAscending { get; set; }
+    public string OrderByField { get; set; }
     public string CategoryName { get; set; }
     public int? BrandId { get; set; }
     public string ProductName { get; set; }
@@ -10,6 +12,7 @@ public class ProductListRequestDto : IRequestDto
 
     public void TransformValues()
     {
+        OrderByField = OrderByField?.ToNullIfEmpty();
         CategoryName = CategoryName?.ToNullIfEmpty();
         ProductName = ProductName?.ToNullIfEmpty();
     }

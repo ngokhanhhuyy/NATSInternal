@@ -42,7 +42,7 @@ public static class PermissionConstants
     public const string EditSupply = "EditSupply";
     public const string EditLockedSupply = "EditLockedSupply";
     public const string DeleteSupply = "DeleteSupply";
-    public const string SetSupplyPaidDateTime = "SetSupplyPaidDateTime";
+    public const string SetSupplyStatsDateTime = "SetSupplyStatsDateTime";
     public const string AccessSupplyUpdateHistories = "AccessSupplyUpdateHistories";
     
     // Permissions to interact with expenses.
@@ -50,14 +50,14 @@ public static class PermissionConstants
     public const string EditExpense = "EditExpense";
     public const string EditLockedExpense = "EditLockedExpense";
     public const string DeleteExpense = "DeleteExpense";
-    public const string SetExpensePaidDateTime = "SetExpensePaidDateTime";
+    public const string SetExpenseStatsDateTime = "SetExpenseStatsDateTime";
     public const string AccessExpenseUpdateHistories = "AccessExpenseUpdateHistories";
     
     // Permissions to interact with orders.
     public const string CreateOrder = "CreateOrder";
     public const string EditOrder = "EditOrder";
     public const string EditLockedOrder = "EditLockedOrder";
-    public const string SetOrderPaidDateTime = "SetOrderPaidDateTime";
+    public const string SetOrderStatsDateTime = "SetOrderStatsDateTime";
     public const string DeleteOrder = "DeleteOrder";
     public const string AccessOrderUpdateHistories = "AccessOrderUpdateHistories";
     
@@ -66,14 +66,14 @@ public static class PermissionConstants
     public const string EditTreatment = "EditTreatment";
     public const string EditLockedTreatment = "EditLockedTreatment";
     public const string DeleteTreatment = "DeleteTreatment";
-    public const string SetTreatmentPaidDateTime = "SetTreatmentPaidDateTime";
+    public const string SetTreatmentStatsDateTime = "SetTreatmentStatsDateTime";
     public const string AccessTreatmentUpdateHistories = "AccessTreatmentUpdateHistories";
 
     // Permissions to interact with debt incurrence.
     public const string CreateDebtIncurrence = "CreateDebtIncurrence";
     public const string EditDebtIncurrence = "EditDebtIncurrence";
     public const string EditLockedDebtIncurrence = "EditLockedDebtIncurrence";
-    public const string SetDebtIncurrenceIncurredDateTime = "SetDebtIncurrenceIncurredDateTime";
+    public const string SetDebtIncurrenceStatsDateTime = "SetDebtIncurrenceIncurredDateTime";
     public const string DeleteDebtIncurrence = "DeleteDebtIncurrence";
     public const string AccessDebtIncurrenceUpdateHistories = "AccessDebtIncurrenceUpdateHistories";
 
@@ -81,7 +81,7 @@ public static class PermissionConstants
     public const string CreateDebtPayment = "CreateDebtPayment";
     public const string EditDebtPayment = "EditDebtPayment";
     public const string EditLockedDebtPayment = "EditLockedDebtPayment";
-    public const string SetDebtPaymentPaidDateTime = "SetDebtPaymentPaidDateTime";
+    public const string SetDebtPaymentStatsDateTime = "SetDebtPaymentStatsDateTime";
     public const string DeleteDebtPayment = "DeleteDebtPayment";
     public const string AccessDebtPaymentUpdateHistories = "AccessDebtPaymentUpdateHistories";
 
@@ -90,7 +90,7 @@ public static class PermissionConstants
     public const string EditConsultant = "EditConsultant";
     public const string EditLockedConsultant = "EditLockedConsultant";
     public const string DeleteConsultant = "DeleteConsultant";
-    public const string SetConsultantPaidDateTime = "SetConsultantPaidDateTime";
+    public const string SetConsultantStatsDateTime = "SetConsultantStatsDateTime";
     public const string AccessConsultantUpdateHistories = "AccessConsultantUpdateHistories";
     
     // Permissions to interact with announcements.

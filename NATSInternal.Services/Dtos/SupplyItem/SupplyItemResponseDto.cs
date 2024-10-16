@@ -4,7 +4,6 @@ public class SupplyItemResponseDto : IProductEngageableItemResponseDto
 {
     public int Id { get; set; }
     public long ProductAmountPerUnit { get; set; }
-    public long VatAmountPerUnit { get; set; }
     public int Quantity { get; set; }
     public ProductBasicResponseDto Product { get; set; }
 

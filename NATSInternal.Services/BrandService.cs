@@ -67,7 +67,7 @@ internal class BrandService
     }
 
     /// <inheritdoc />
-    public async Task<int> CreateAsync(BrandRequestDto requestDto)
+    public async Task<int> CreateAsync(BrandUpsertRequestDto requestDto)
     {
         string thumbnailUrl = null;
         if (requestDto.ThumbnailFile != null)
@@ -105,7 +105,7 @@ internal class BrandService
     }
 
     /// <inheritdoc />
-    public async Task UpdateAsync(int id, BrandRequestDto requestDto)
+    public async Task UpdateAsync(int id, BrandUpsertRequestDto requestDto)
     {
         // Fetch the brand from the database and ensure it exists.
         Brand brand = await _context.Brands.SingleOrDefaultAsync(b => b.Id == id)

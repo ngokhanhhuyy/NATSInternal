@@ -2,7 +2,7 @@
 
 public class ProductListResponseDto
 {
-    public List<ProductBasicResponseDto> Items { get; set; }
     public int PageCount { get; set; }
+    public List<ProductBasicResponseDto> Items { get; set; }
     public ProductListAuthorizationResponseDto Authorization { get; set; }
 }

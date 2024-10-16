@@ -4,7 +4,7 @@ internal class Expense
     :
         FinancialEngageableAbstractEntity,
         ICostEntity<Expense, ExpenseUpdateHistory>,
-        IHasPhotoEntity<Expense, ExpensePhoto>
+        IHasMultiplePhotosEntity<Expense, ExpensePhoto>
 {
     [Key]
     public int Id { get; set; }
@@ -42,12 +42,6 @@ internal class Expense
     public virtual List<ExpenseUpdateHistory> UpdateHistories { get; set; }
 
     // Properties for convinience.
-    [NotMapped]
-    public string ThumbnailUrl => Photos
-        .OrderBy(p => p.Id)
-        .Select(p => p.Url)
-        .FirstOrDefault();
-
     [NotMapped]
     public DateTime? LastUpdatedDateTime => UpdateHistories
         .OrderBy(uh => uh.UpdatedDateTime)

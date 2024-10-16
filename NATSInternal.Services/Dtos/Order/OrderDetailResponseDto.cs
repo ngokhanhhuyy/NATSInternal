@@ -9,7 +9,7 @@ public class OrderDetailResponseDto : IProductExportableDetailResponseDto<
     public int Id { get; set; }
     public DateTime StatsDateTime { get; set; }
     public DateTime CreatedDateTime { get; set; }
-    public long BeforeVatAmount { get; set; }
+    public long AmountBeforeVat { get; set; }
     public long VatAmount { get; set; }
     public long Amount { get; set; }
     public string Note { get; set; }
@@ -31,8 +31,8 @@ public class OrderDetailResponseDto : IProductExportableDetailResponseDto<
         Id = order.Id;
         StatsDateTime = order.StatsDateTime;
         CreatedDateTime = order.CreatedDateTime;
-        BeforeVatAmount = order.ProductAmountBeforeVat;
-        Amount = order.AfterVatAmount;
+        AmountBeforeVat = order.ProductAmountBeforeVat;
+        VatAmount = order.ProductVatAmount;
         Note = order.Note;
         IsLocked = order.IsLocked;
         Items = order.Items?.Select(i => new OrderItemResponseDto(i)).ToList();

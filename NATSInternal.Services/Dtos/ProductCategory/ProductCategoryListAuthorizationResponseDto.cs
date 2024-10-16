@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-internal class ProductCategoryListAuthorizationResponseDto
+public class ProductCategoryListAuthorizationResponseDto
     : IUpsertableListAuthorizationResponseDto
 {
     public bool CanCreate { get; set; }

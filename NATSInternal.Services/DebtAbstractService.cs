@@ -323,7 +323,7 @@ internal abstract class DebtAbstractService<
         if (requestDto.StatsDateTime.HasValue)
         {
             // Check if the current user has permission to change the created datetime.
-            if (!_authorizationService.CanSetDebtIncurrenceIncurredDateTime())
+            if (!_authorizationService.CanSetDebtIncurrenceStatsDateTime())
             {
                 throw new AuthorizationException();
             }

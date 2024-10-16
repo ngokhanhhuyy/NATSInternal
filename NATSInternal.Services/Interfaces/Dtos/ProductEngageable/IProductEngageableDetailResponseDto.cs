@@ -25,7 +25,7 @@ internal interface IProductEngageableDetailResponseDto<
         TAuthorization>
     :
         IFinancialEngageableDetailResponseDto<TUpdateHistory, TAuthorization>,
-        IHasPhotoDetailResponseDto<TPhoto>
+        IHasMultiplePhotosDetailResponseDto<TPhoto>
     where TItem : IProductEngageableItemResponseDto
     where TPhoto : IPhotoResponseDto
     where TUpdateHistory : IUpdateHistoryResponseDto

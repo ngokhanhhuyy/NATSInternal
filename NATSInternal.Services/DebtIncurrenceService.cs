@@ -77,7 +77,7 @@ internal class DebtIncurrenceService
     /// <inheritdoc />
     protected override bool CanSetStatsDateTime(IAuthorizationInternalService service)
     {
-        return service.CanSetDebtIncurrenceIncurredDateTime();
+        return service.CanSetDebtIncurrenceStatsDateTime();
     }
 
     /// <inheritdoc />

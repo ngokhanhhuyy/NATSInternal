@@ -207,7 +207,7 @@ internal class PhotoService<T> : IPhotoService<T>
 /// <typeparam name="TPhoto">ociated to the <see cref="T"/> entity.
 /// </typeparam>
 internal class PhotoService<T, TPhoto> : PhotoService<T>, IPhotoService<T, TPhoto>
-    where T : class, IHasPhotoEntity<T, TPhoto>, new()
+    where T : class, IHasMultiplePhotosEntity<T, TPhoto>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
 {
     public PhotoService(IWebHostEnvironment environment) : base(environment)

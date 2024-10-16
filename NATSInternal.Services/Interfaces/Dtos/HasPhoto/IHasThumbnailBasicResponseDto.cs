@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface IHasPhotoBasicResponseDto
+public interface IHasThumbnailBasicResponseDto
 {
     string ThumbnailUrl { get; }
 }

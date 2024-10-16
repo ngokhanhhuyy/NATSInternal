@@ -36,12 +36,6 @@ internal class Supply
 
     // Properties for convinience.
     [NotMapped]
-    public string ThumbnailUrl => Photos
-        .OrderBy(p => p.Id)
-        .Select(p => p.Url)
-        .FirstOrDefault();
-    
-    [NotMapped]
     public long ItemAmount => Items.Sum(i => i.ProductAmountPerUnit * i.Quantity);
 
     [NotMapped]
@@ -52,12 +46,6 @@ internal class Supply
         .OrderByDescending(uh => uh.UpdatedDateTime)
         .Select(uh => uh.UpdatedDateTime)
         .Cast<DateTime?>()
-        .FirstOrDefault();
-
-    [NotMapped]
-    public string FirstPhotoUrl => Photos
-        .OrderBy(p => p.Id)
-        .Select(p => p.Url)
         .FirstOrDefault();
 
     [NotMapped]

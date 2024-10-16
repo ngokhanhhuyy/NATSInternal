@@ -83,7 +83,7 @@ internal class DebtPaymentService
     /// <inheritdoc />
     protected override bool CanSetStatsDateTime(IAuthorizationInternalService service)
     {
-        return service.CanSetDebtPaymentPaidDateTime();
+        return service.CanSetDebtPaymentStatsDateTime();
     }
 
     /// <inheritdoc />

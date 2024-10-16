@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Entities;
 
-internal class Brand : IHasPhotoEntity<Brand>
+internal class Brand : IHasSinglePhotoEntity<Brand>
 {
     [Key]
     public int Id { get; set; }

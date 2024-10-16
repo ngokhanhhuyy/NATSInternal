@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class BrandRequestDto : IRequestDto
+public class BrandUpsertRequestDto : IRequestDto
 {
     public int Id { get; set; }
     public string Name { get; set; }

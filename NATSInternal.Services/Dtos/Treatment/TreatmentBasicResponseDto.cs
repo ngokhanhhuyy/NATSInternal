@@ -6,7 +6,6 @@ public class TreatmentBasicResponseDto
     public int Id { get; set; }
     public DateTime StatsDateTime { get; set; }
     public long Amount { get; set; }
-    public long AmountAfterVat { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
     public TreatmentAuthorizationResponseDto Authorization { get; set; }
@@ -29,7 +28,6 @@ public class TreatmentBasicResponseDto
         Id = treatment.Id;
         StatsDateTime = treatment.StatsDateTime;
         Amount = treatment.AmountAfterVat;
-        AmountAfterVat = treatment.AmountAfterVat;
         IsLocked = treatment.IsLocked;
         Customer = new CustomerBasicResponseDto(treatment.Customer);
     }

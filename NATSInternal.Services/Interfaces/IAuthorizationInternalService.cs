@@ -66,48 +66,48 @@ internal interface IAuthorizationInternalService : IAuthorizationService
     bool CanCreateSupply(); 
     bool CanEditSupply(Supply supply);
     bool CanDeleteSupply(Supply supply);
-    bool CanSetSupplyPaidDateTime();
+    bool CanSetSupplyStatsDateTime();
     bool CanAccessSupplyUpdateHistories();
 
     // Permissions to interact with expenses.
     bool CanCreateExpense();
     bool CanEditExpense(Expense expense);
     bool CanDeleteExpense(Expense expense);
-    bool CanSetExpensePaidDateTime();
+    bool CanSetExpenseStatsDateTime();
     bool CanAccessExpenseUpdateHistories();
 
     // Permissions to interact with orders.
     bool CanCreateOrder();
     bool CanEditOrder(Order order);
     bool CanDeleteOrder(Order order);
-    bool CanSetOrderPaidDateTime();
+    bool CanSetOrderStatsDateTime();
     bool CanAccessOrderUpdateHistories();
 
     // Permissions to interact with treatments.
     bool CanCreateTreatment();
     bool CanEditTreatment(Treatment treatment);
     bool CanDeleteTreatment(Treatment treatment);
-    bool CanSetTreatmentPaidDateTime();
+    bool CanSetTreatmentStatsDateTime();
     bool CanAccessTreatmentUpdateHistories();
 
     // Permisisons to interact with debt incurrences.
     bool CanCreateDebtIncurrence();
     bool CanEditDebtIncurrence(DebtIncurrence debtIncurrence);
     bool CanDeleteDebtIncurrence(DebtIncurrence debtIncurrence);
-    bool CanSetDebtIncurrenceIncurredDateTime();
+    bool CanSetDebtIncurrenceStatsDateTime();
     bool CanAccessDebtIncurrenceUpdateHistories();
 
     // Permissions to interact with debt payments.
     bool CanCreateDebtPayment();
     bool CanEditDebtPayment(DebtPayment debtPayment);
     bool CanDeleteDebtPayment(DebtPayment debtPayment);
-    bool CanSetDebtPaymentPaidDateTime();
+    bool CanSetDebtPaymentStatsDateTime();
     bool CanAccessDebtPaymentUpdateHistories();
 
     // Permissions to interact with consultant.
     bool CanCreateConsultant();
     bool CanEditConsultant(Consultant consultant);
     bool CanDeleteConsultant(Consultant consultant);
-    bool CanSetConsultantPaidDateTime();
+    bool CanSetConsultantStatsDateTime();
     bool CanAccessConsultantUpdateHistories();
 }

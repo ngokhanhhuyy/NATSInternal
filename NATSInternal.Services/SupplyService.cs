@@ -107,7 +107,7 @@ internal class SupplyService
         if (requestDto.StatsDateTime.HasValue)
         {
             // Check if the current user has permission to specify the SupplyDateTime.
-            if (!_authorizationService.CanSetSupplyPaidDateTime())
+            if (!_authorizationService.CanSetSupplyStatsDateTime())
             {
                 throw new AuthorizationException();
             }

@@ -6,7 +6,7 @@ public class DebtIncurrenceBasicResponseDto
     public int Id { get; set; }
     public long Amount { get; set; }
     public string Note { get; set; }
-    public DateTime IncurredDateTime { get; set; }
+    public DateTime StatsDateTime { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
     public DebtIncurrenceAuthorizationResponseDto Authorization { get; set; }
@@ -29,7 +29,7 @@ public class DebtIncurrenceBasicResponseDto
         Id = debt.Id;
         Amount = debt.Amount;
         Note = debt.Note;
-        IncurredDateTime = debt.CreatedDateTime;
+        StatsDateTime = debt.StatsDateTime;
         IsLocked = debt.IsLocked;
         Customer = new CustomerBasicResponseDto(debt.Customer);
     }

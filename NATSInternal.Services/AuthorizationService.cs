@@ -147,7 +147,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         {
             CanEdit = CanEditSupply(supply),
             CanDelete = CanEditSupply(supply),
-            CanSetSuppliedDateTime = CanSetSupplyPaidDateTime()
+            CanSetStatsDateTime = CanSetSupplyStatsDateTime()
         };
     }
     
@@ -166,7 +166,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         {
             CanEdit = CanEditExpense(expense),
             CanDelete = CanDeleteExpense(expense),
-            CanSetPaidDateTime = CanSetExpensePaidDateTime()
+            CanSetStatsDateTime = CanSetExpenseStatsDateTime()
         };
     }
 
@@ -185,7 +185,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         {
             CanEdit = CanEditOrder(order),
             CanDelete = CanDeleteOrder(order),
-            CanSetPaidDateTime = CanSetOrderPaidDateTime()
+            CanSetStatsDateTime = CanSetOrderStatsDateTime()
         };
     }
     
@@ -204,7 +204,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         {
             CanEdit = CanEditTreatment(treatment),
             CanDelete = CanDeleteTreatment(treatment),
-            CanSetPaidDateTime = CanSetTreatmentPaidDateTime()
+            CanSetPaidDateTime = CanSetTreatmentStatsDateTime()
         };
     }
 
@@ -224,7 +224,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         {
             CanEdit = CanEditDebtIncurrence(debtIncurrence),
             CanDelete = CanDeleteDebtIncurrence(debtIncurrence),
-            CanSetIncurredDateTime = CanSetDebtIncurrenceIncurredDateTime()
+            CanSetIncurredDateTime = CanSetDebtIncurrenceStatsDateTime()
         };
     }
 
@@ -244,7 +244,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         {
             CanEdit = CanEditDebtPayment(debtPayment),
             CanDelete = CanDeleteDebtPayment(debtPayment),
-            CanSetPaidDateTime = CanSetDebtPaymentPaidDateTime()
+            CanSetStatsDateTime = CanSetDebtPaymentStatsDateTime()
         };
     }
 
@@ -263,7 +263,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         {
             CanEdit = CanEditConsultant(consultant),
             CanDelete = CanDeleteConsultant(consultant),
-            CanSetPaidDateTime = CanSetConsultantPaidDateTime(),
+            CanSetStatsDateTime = CanSetConsultantStatsDateTime(),
             CanAccessUpdateHistories = CanAccessConsultantUpdateHistories()
         };
     }
@@ -378,9 +378,9 @@ internal class AuthorizationService : IAuthorizationInternalService
         return !supply.IsLocked && _user.HasPermission(PermissionConstants.DeleteSupply);
     }
 
-    public bool CanSetSupplyPaidDateTime()
+    public bool CanSetSupplyStatsDateTime()
     {
-        return _user.HasPermission(PermissionConstants.SetSupplyPaidDateTime);
+        return _user.HasPermission(PermissionConstants.SetSupplyStatsDateTime);
     }
     
     public bool CanAccessSupplyUpdateHistories()
@@ -414,9 +414,9 @@ internal class AuthorizationService : IAuthorizationInternalService
         return !expense.IsLocked && _user.HasPermission(PermissionConstants.DeleteExpense);
     }
 
-    public bool CanSetExpensePaidDateTime()
+    public bool CanSetExpenseStatsDateTime()
     {
-        return _user.HasPermission(PermissionConstants.SetExpensePaidDateTime);
+        return _user.HasPermission(PermissionConstants.SetExpenseStatsDateTime);
     }
     
     public bool CanAccessExpenseUpdateHistories()
@@ -450,9 +450,9 @@ internal class AuthorizationService : IAuthorizationInternalService
         return !order.IsLocked && _user.HasPermission(PermissionConstants.DeleteOrder);
     }
 
-    public bool CanSetOrderPaidDateTime()
+    public bool CanSetOrderStatsDateTime()
     {
-        return _user.HasPermission(PermissionConstants.SetOrderPaidDateTime);
+        return _user.HasPermission(PermissionConstants.SetOrderStatsDateTime);
     }
     
     public bool CanAccessOrderUpdateHistories()
@@ -486,9 +486,9 @@ internal class AuthorizationService : IAuthorizationInternalService
         return !treatment.IsLocked && _user.HasPermission(PermissionConstants.DeleteTreatment);
     }
 
-    public bool CanSetTreatmentPaidDateTime()
+    public bool CanSetTreatmentStatsDateTime()
     {
-        return _user.HasPermission(PermissionConstants.SetTreatmentPaidDateTime);
+        return _user.HasPermission(PermissionConstants.SetTreatmentStatsDateTime);
     }
     
     public bool CanAccessTreatmentUpdateHistories()
@@ -523,9 +523,9 @@ internal class AuthorizationService : IAuthorizationInternalService
             _user.HasPermission(PermissionConstants.DeleteDebtIncurrence);
     }
     
-    public bool CanSetDebtIncurrenceIncurredDateTime()
+    public bool CanSetDebtIncurrenceStatsDateTime()
     {
-        return _user.HasPermission(PermissionConstants.SetDebtIncurrenceIncurredDateTime);
+        return _user.HasPermission(PermissionConstants.SetDebtIncurrenceStatsDateTime);
     }
     
     public bool CanAccessDebtIncurrenceUpdateHistories()
@@ -560,9 +560,9 @@ internal class AuthorizationService : IAuthorizationInternalService
             _user.HasPermission(PermissionConstants.DeleteDebtPayment);
     }
 
-    public bool CanSetDebtPaymentPaidDateTime()
+    public bool CanSetDebtPaymentStatsDateTime()
     {
-        return _user.HasPermission(PermissionConstants.SetDebtPaymentPaidDateTime);
+        return _user.HasPermission(PermissionConstants.SetDebtPaymentStatsDateTime);
     }
     
     public bool CanAccessDebtPaymentUpdateHistories()
@@ -598,9 +598,9 @@ internal class AuthorizationService : IAuthorizationInternalService
             _user.HasPermission(PermissionConstants.DeleteConsultant);
     }
     
-    public bool CanSetConsultantPaidDateTime()
+    public bool CanSetConsultantStatsDateTime()
     {
-        return _user.HasPermission(PermissionConstants.SetConsultantPaidDateTime);
+        return _user.HasPermission(PermissionConstants.SetConsultantStatsDateTime);
     }
     
     public bool CanAccessConsultantUpdateHistories()

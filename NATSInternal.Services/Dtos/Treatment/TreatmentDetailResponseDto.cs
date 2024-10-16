@@ -11,9 +11,9 @@ public class TreatmentDetailResponseDto
     public DateTime StatsDateTime { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public long ServiceAmount { get; set; }
-    public int ServiceVat { get; set; }
-    public decimal ServiceVatAmount { get; set; }
+    public long ServiceVatAmount { get; set; }
     public long ProductAmount { get; set; }
+    public long ProductVatAmount { get; set; }
     public long TotalAmountAfterVAT { get; set; }
     public string Note { get; set; }
     public bool IsLocked { get; set; }

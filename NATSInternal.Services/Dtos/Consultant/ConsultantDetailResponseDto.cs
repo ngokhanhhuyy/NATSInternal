@@ -9,7 +9,6 @@ public class ConsultantDetailResponseDto : IFinancialEngageableDetailResponseDto
     public string Note { get; set; }
     public DateTime StatsDateTime { get; set; }
     public DateTime CreatedDateTime { get; set; }
-    public DateTime? LastUpdatedDateTime { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
     public UserBasicResponseDto CreatedUser { get; set; }
@@ -25,7 +24,6 @@ public class ConsultantDetailResponseDto : IFinancialEngageableDetailResponseDto
         Note = consultant.Note;
         StatsDateTime = consultant.StatsDateTime;
         CreatedDateTime = consultant.CreatedDateTime;
-        LastUpdatedDateTime = consultant.LastUpdatedDateTime;
         IsLocked = consultant.IsLocked;
         Customer = new CustomerBasicResponseDto(consultant.Customer);
         CreatedUser = new UserBasicResponseDto(consultant.CreatedUser);

@@ -3,7 +3,8 @@ namespace NATSInternal.Services.Entities;
 internal class Product
     :
         FinancialEngageableAbstractEntity,
-        IHasPhotoEntity<Product, ProductPhoto>
+        IHasSinglePhotoEntity<Product>,
+        IHasMultiplePhotosEntity<Product, ProductPhoto>
 {
     [Key]
     public int Id { get; set; }

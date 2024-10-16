@@ -115,7 +115,7 @@ internal class ExpenseService
         if (requestDto.StatsDateTime.HasValue)
         {
             // Check if the current user has permission to specify a value for StatsDateTime.
-            if (!_authorizationService.CanSetExpensePaidDateTime())
+            if (!_authorizationService.CanSetExpenseStatsDateTime())
             {
                 throw new AuthorizationException();
             }
@@ -224,7 +224,7 @@ internal class ExpenseService
         if (requestDto.StatsDateTime.HasValue)
         {
             // Check if the current user has permission to specify the paid datetime.
-            if (!_authorizationService.CanSetExpensePaidDateTime())
+            if (!_authorizationService.CanSetExpenseStatsDateTime())
             {
                 throw new AuthorizationException();
             }

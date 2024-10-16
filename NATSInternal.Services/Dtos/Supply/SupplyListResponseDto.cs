@@ -5,8 +5,8 @@ public class SupplyListResponseDto : IFinancialEngageableListResponseDto<
         SupplyAuthorizationResponseDto,
         SupplyListAuthorizationResponseDto>
 {
-    public List<SupplyBasicResponseDto> Items { get; set; }
     public int PageCount { get; set; }
+    public List<SupplyBasicResponseDto> Items { get; set; }
     public List<MonthYearResponseDto> MonthYearOptions { get; set; }
     public SupplyListAuthorizationResponseDto Authorization { get; set; }
 }

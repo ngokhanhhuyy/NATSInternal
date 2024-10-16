@@ -90,7 +90,7 @@ internal class TreatmentService
     /// <inheritdoc />
     protected override bool CanSetStatsDateTime(IAuthorizationInternalService service)
     {
-        return service.CanSetTreatmentPaidDateTime();
+        return service.CanSetTreatmentStatsDateTime();
     }
 
     /// <inheritdoc />

@@ -45,7 +45,7 @@ public interface IBrandService
     /// Create a new brand with the data provided in the request.
     /// </summary>
     /// <param name="requestDto">
-    /// An instance of the <see cref="BrandRequestDto"/>, containing the data for the new
+    /// An instance of the <see cref="BrandUpsertRequestDto"/>, containing the data for the new
     /// brand.
     /// </param>
     /// <returns>
@@ -58,7 +58,7 @@ public interface IBrandService
     /// when the name specified by the value of the property <c>Name</c> in the argument for
     /// the <c>requestDto</c> parameter already exists.
     /// </exception>
-    Task<int> CreateAsync(BrandRequestDto requestDto);
+    Task<int> CreateAsync(BrandUpsertRequestDto requestDto);
 
     /// <summary>
     /// Update an existing brand.
@@ -67,7 +67,7 @@ public interface IBrandService
     /// A <see cref="int"/> representing the id of the brand to be updated.
     /// </param>
     /// <param name="requestDto">
-    /// An instance of the <see cref="BrandRequestDto"/>, containing the data for the brand
+    /// An instance of the <see cref="BrandUpsertRequestDto"/>, containing the data for the brand
     /// to be updated.
     /// </param>
     /// <returns>
@@ -81,7 +81,7 @@ public interface IBrandService
     /// <c>Country.Id</c> doesn't exist or when the specified name by the property <c>Name</c>
     /// in the argument for the <c>requestDto</c> parameter already exists.
     /// </exception>
-    Task UpdateAsync(int id, BrandRequestDto requestDto);
+    Task UpdateAsync(int id, BrandUpsertRequestDto requestDto);
 
     /// <summary>
     /// Delete an existing brand.

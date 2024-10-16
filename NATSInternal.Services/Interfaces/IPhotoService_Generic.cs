@@ -8,7 +8,7 @@ namespace NATSInternal.Services.Interfaces;
 /// The type of the photo entity.
 /// </typeparam>
 internal interface IPhotoService<T, out TPhoto> : IPhotoService<T>
-    where T : class, IHasPhotoEntity<T, TPhoto>, new()
+    where T : class, IHasMultiplePhotosEntity<T, TPhoto>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
 {
     /// <summary>

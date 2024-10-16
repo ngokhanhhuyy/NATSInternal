@@ -4,12 +4,5 @@ public class ExpenseAuthorizationResponseDto : IFinancialEngageableAuthorization
 {
     public bool CanEdit { get; set; }
     public bool CanDelete { get; set; }
-    public bool CanSetPaidDateTime { get; set; }
-
-    [JsonIgnore]
-    public bool CanSetStatsDateTime
-    {
-        get => CanSetPaidDateTime;
-        set => CanSetPaidDateTime = value;
-    }
+    public bool CanSetStatsDateTime { get; set; }
 }

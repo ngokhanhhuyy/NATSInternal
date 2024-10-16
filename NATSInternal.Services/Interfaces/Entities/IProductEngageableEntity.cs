@@ -3,7 +3,7 @@ namespace NATSInternal.Services.Interfaces.Entities;
 internal interface IProductEngageableEntity<T, TItem, TPhoto, TUpdateHistory>
     :
         IFinancialEngageableEntity<T, TUpdateHistory>,
-        IHasPhotoEntity<T, TPhoto>
+        IHasMultiplePhotosEntity<T, TPhoto>
     where T : class, IUpsertableEntity<T>, new()
     where TItem : class, IProductEngageableItemEntity<TItem>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()

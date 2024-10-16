@@ -89,7 +89,7 @@ internal class OrderService
     /// <inheritdoc />
     protected override bool CanSetStatsDateTime(IAuthorizationInternalService service)
     {
-        return service.CanSetOrderPaidDateTime();
+        return service.CanSetOrderStatsDateTime();
     }
 
     /// <inheritdoc />
