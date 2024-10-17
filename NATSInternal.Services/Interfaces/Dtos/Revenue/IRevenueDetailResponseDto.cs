@@ -22,11 +22,6 @@ internal interface IRevenueDetailResponseDto<TUpdateHistory, TAuthorization>
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
 {
     /// <summary>
-    /// Represents the amount before VAT of the revenue.
-    /// </summary>
-    long AmountBeforeVat { get; }
-    
-    /// <summary>
     /// Represents the VAT amount of the revenue.
     /// </summary>
     long VatAmount { get; }
