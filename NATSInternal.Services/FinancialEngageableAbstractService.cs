@@ -68,10 +68,13 @@ internal abstract class FinancialEngageableAbstractService<
         // Filter by created user id if specified.
         if (requestDto.CreatedUserId.HasValue)
         {
-            query = query.Where(e => e.CreatedUserId == requestDto.CreatedUserId);
+            monthYearFilteredQuery = monthYearFilteredQuery
+                .Where(e => e.CreatedUserId == requestDto.CreatedUserId);
         }
 
-        EntityListDto<T> entityListDto = await GetListOfEntitiesAsync(query, requestDto);
+        EntityListDto<T> entityListDto;
+        entityListDto = await base.GetListOfEntitiesAsync(monthYearFilteredQuery, requestDto);
+        
         return entityListDto;
     }
 
@@ -243,6 +246,7 @@ internal abstract class FinancialEngageableAbstractService<
 
     /// <summary>
     /// Gets the entity repository in the <see cref="DatabaseContext"/> class.
+    /// </summary>
     /// <param name="context">
     /// An instance of the injected <see cref="DatabaseContext"/>
     /// </param>
