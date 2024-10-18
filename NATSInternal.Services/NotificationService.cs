@@ -44,7 +44,7 @@ internal class NotificationService
         return new NotificationListResponseDto
         {
             PageCount = listDto.PageCount,
-            Items = listDto.Items
+            Items = listDto.Items?
                 .Select(notification => new NotificationResponseDto(
                     notification,
                     currentUserId))

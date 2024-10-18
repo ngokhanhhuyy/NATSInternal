@@ -57,7 +57,7 @@ internal static class RuleValidators
             .Must(fieldName => fieldOptions
                 .Select(fieldOption => Enum.GetName(typeof(OrderByFieldOptions), fieldOption))
                 .Contains(fieldName))
-            .When(_ => fieldOptions != null && fieldOptions.Any())
+            .When(_ => fieldOptions?.Any() == true)
             .WithMessage(ErrorMessages.Invalid);
     }
 

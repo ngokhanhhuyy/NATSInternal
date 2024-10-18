@@ -30,8 +30,7 @@ public class OrderController : ControllerBase
     {
         // Validate data from request.
         requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _listValidator.Validate(requestDto);
+        ValidationResult validationResult = _listValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

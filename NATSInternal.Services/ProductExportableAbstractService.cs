@@ -473,7 +473,7 @@ internal abstract class ProductExportableAbstractService<
         // Initialize query.
         IQueryable<T> query = GetRepository(_context)
             .Include(t => t.Customer)
-            .Include(t => t.Items)
+            .Include(t => t.Items).ThenInclude(i => i.Product)
             .Include(t => t.Photos);
 
         // Order the results.

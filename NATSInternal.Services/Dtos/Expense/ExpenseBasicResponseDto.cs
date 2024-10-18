@@ -1,13 +1,16 @@
 namespace NATSInternal.Services.Dtos;
 
 public class ExpenseBasicResponseDto
-    : IFinancialEngageableBasicResponseDto<ExpenseAuthorizationResponseDto>
+    :
+        IFinancialEngageableBasicResponseDto<ExpenseAuthorizationResponseDto>,
+        IHasThumbnailBasicResponseDto
 {
     public int Id { get; set; }
     public long AmountBeforeVat { get; set; }
     public DateTime StatsDateTime { get; set; }
     public ExpenseCategory Category { get; set; }
     public bool IsLocked { get; set; }
+    public string ThumbnailUrl { get; set; }
     public ExpenseAuthorizationResponseDto Authorization { get; set; }
 
     internal ExpenseBasicResponseDto(Expense expense)
@@ -30,5 +33,6 @@ public class ExpenseBasicResponseDto
         StatsDateTime = expense.StatsDateTime;
         Category = expense.Category;
         IsLocked = expense.IsLocked;
+        ThumbnailUrl = expense.Photos?.Select(p => p.Url).FirstOrDefault();
     }
 }
