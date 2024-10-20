@@ -53,6 +53,7 @@ internal class OrderService
         };
     }
 
+    /// <inheritdoc />
     public async Task<OrderDetailResponseDto> GetDetailAsync(int id)
     {
         Order order = await GetEntityAsync(id);

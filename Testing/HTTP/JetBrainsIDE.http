@@ -57,6 +57,20 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 ###
+# @name ProductList
+// @no-log
+GET {{host}}/product?page=1&resultsPerPage=10
+Content-Type: application/json
+Authorization: Bearer {{accessCookie}}
+
+###
+# @name SupplyList
+// @no-log
+GET {{host}}/supply?page=1&ignoreMonthYear=True
+Content-Type: application/json
+Authorization: Bearer {{accessCookie}}
+
+###
 # @name ConsultantCreate
 // @no-log
 POST {{host}}/consultant

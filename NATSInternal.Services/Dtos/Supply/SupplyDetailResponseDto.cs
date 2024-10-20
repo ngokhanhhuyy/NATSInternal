@@ -18,7 +18,6 @@ public class SupplyDetailResponseDto : IProductEngageableDetailResponseDto<
     public bool IsLocked { get; internal set; }
     public List<SupplyItemResponseDto> Items { get; internal set; }
     public List<SupplyPhotoResponseDto> Photos { get; internal set; }
-    public UserBasicResponseDto User { get; internal set; }
     public SupplyAuthorizationResponseDto Authorization { get; internal set; }
     public List<SupplyUpdateHistoryResponseDto> UpdateHistories { get; internal set; }
 
@@ -46,7 +45,7 @@ public class SupplyDetailResponseDto : IProductEngageableDetailResponseDto<
         Photos = supply.Photos?
             .OrderBy(p => p.Id)
             .Select(p => new SupplyPhotoResponseDto(p)).ToList();
-        User = new UserBasicResponseDto(supply.CreatedUser);
+        CreatedUser = new UserBasicResponseDto(supply.CreatedUser);
         Authorization = authorization;
         UpdateHistories = supply.UpdateHistories
             .Select(uh => new SupplyUpdateHistoryResponseDto(uh))

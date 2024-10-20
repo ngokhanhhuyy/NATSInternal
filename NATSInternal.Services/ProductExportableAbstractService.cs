@@ -6,11 +6,26 @@
 /// <typeparam name="T">
 /// The type of the entity.
 /// </typeparam>
+/// <typeparam name="TItem">
+/// The type of the item entity associated to the <see cref="T"/> entity.
+/// </typeparam>
+/// <typeparam name="TPhoto">
+/// The type of the photo entity associated to the <see cref="T"/> entity.
+/// </typeparam>
 /// <typeparam name="TUpdateHistory">
 /// The type of the update history entity associated to the <see cref="T"/> entity.
 /// </typeparam>
 /// <typeparam name="TListRequestDto">
 /// The type of the request DTO used in the list retrieving operation.
+/// </typeparam>
+/// <typeparam name="TUpsertRequestDto">
+/// The type of the request DTO used in the upserting (create or update) operations.
+/// </typeparam>
+/// <typeparam name="TItemRequestDto">
+/// The type of the item request DTO, associated to the <see cref="TUpsertRequestDto"/> DTO.
+/// </typeparam>
+/// <typeparam name="TPhotoRequestDto">
+/// The type of the photo request DTO, associated to the <see cref="TUpsertRequestDto"/> DTO.
 /// </typeparam>
 /// <typeparam name="TListResponseDto">
 /// The type of the response DTO used in the list retrieving operation.
@@ -22,6 +37,14 @@
 /// <typeparam name="TDetailResponseDto">
 /// The type of the response DTO, containing the details of the <see cref="T"/> entity in the
 /// detail retriving operation.
+/// </typeparam>
+/// <typeparam name="TItemResponseDto">
+/// The type of the item response DTO, associated to the <see cref="TItemResponseDto"/> DTO in
+/// the detail retrieving operation.
+/// </typeparam>
+/// <typeparam name="TPhotoResponseDto">
+/// The type of the photo response DTO, associated to the <see cref="TItemResponseDto"/> DTO in
+/// the detail retrieving operation.
 /// </typeparam>
 /// <typeparam name="TUpdateHistoryResponseDto">
 /// The type of the update history response dto, containing the data of the updating history
@@ -236,6 +259,7 @@ internal abstract class ProductExportableAbstractService<
     /// Throws when the customer with the id specified by the property <c>CustomerId</c> in
     /// the argument for the <c>requestDto</c> parameter doesn't exist or has already been
     /// deleted.
+    /// </exception>
     public async Task UpdateAsync(int id, TUpsertRequestDto requestDto)
     {
         // Fetch the entity from the database and ensure it exists.
@@ -473,7 +497,7 @@ internal abstract class ProductExportableAbstractService<
         // Initialize query.
         IQueryable<T> query = GetRepository(_context)
             .Include(t => t.Customer)
-            .Include(t => t.Items)
+            .Include(t => t.Items).ThenInclude(i => i.Product)
             .Include(t => t.Photos);
 
         // Order the results.
@@ -532,15 +556,10 @@ internal abstract class ProductExportableAbstractService<
         // Initialize query.
         IQueryable<T> query = GetRepository(_context)
             .Include(e => e.Customer)
-            .Include(e => e.Items)
-            .Include(e => e.Photos);
+            .Include(e => e.Items).ThenInclude(i => i.Product)
+            .Include(e => e.Photos)
+            .Include(e => e.CreatedUser).ThenInclude(u => u.Roles);
 
-        return await base.GetEntityAsync(query, id);
-    }
-
-    /// <inheritdoc />
-    protected override async Task<T> GetEntityAsync(IQueryable<T> query, int id)
-    {
         return await base.GetEntityAsync(query, id);
     }
 
@@ -594,10 +613,7 @@ internal abstract class ProductExportableAbstractService<
             itemEntities,
             requestDtos,
             ProductEngagementType.Export,
-            (TItem item, TItemRequestDto itemRequestDto) =>
-            {
-                item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit;
-            });
+            (item, itemRequestDto) => item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit);
     }
 
     /// <summary>
@@ -622,14 +638,8 @@ internal abstract class ProductExportableAbstractService<
             itemEntities,
             requestDtos,
             ProductEngagementType.Export,
-            (TItem item, TItemRequestDto itemRequestDto) =>
-            {
-                item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit;
-            },
-            (TItem item, TItemRequestDto itemRequestDto) =>
-            {
-                item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit;
-            });
+            (item, itemRequestDto) => item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit,
+            (item, itemRequestDto) => item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit);
     }
 
     /// <summary>
@@ -725,6 +735,9 @@ internal abstract class ProductExportableAbstractService<
     /// Determines whether the current user has enough permissions to edit the specified
     /// entity, used in the creating or updating operation.
     /// </summary>
+    /// <param name="entity">
+    /// The instance of the entity to check the authorization.
+    /// </param>
     /// <param name="service">
     /// The service providing the authorization information.
     /// </param>
@@ -737,6 +750,9 @@ internal abstract class ProductExportableAbstractService<
     /// Determines whether the current user has enough permissions to delete a specific entity,
     /// used in the deleting operation.
     /// </summary>
+    /// <param name="entity">
+    /// The instance of the entity to check the authorization.
+    /// </param>
     /// <param name="service">
     /// The service providing the authorization information.
     /// </param>

@@ -47,7 +47,8 @@ internal abstract class UpsertableAbstractService<T, TListRequestDto>
             .Skip(requestDto.ResultsPerPage * (requestDto.Page - 1))
             .Take(requestDto.ResultsPerPage)
             .AsSplitQuery()
-            .ToListAsync();
+            .ToListAsync()
+            ?? new List<T>();
 
         return entitiesDto;
     }

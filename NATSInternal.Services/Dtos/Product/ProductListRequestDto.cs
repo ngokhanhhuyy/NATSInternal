@@ -7,7 +7,7 @@ public class ProductListRequestDto : IOrderableListRequestDto
     public string CategoryName { get; set; }
     public int? BrandId { get; set; }
     public string ProductName { get; set; }
-    public int Page { get; set; } = 0;
+    public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
 
     public void TransformValues()
