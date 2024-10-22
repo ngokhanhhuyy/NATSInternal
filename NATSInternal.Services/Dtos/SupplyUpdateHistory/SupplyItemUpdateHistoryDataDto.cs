@@ -1,16 +1,16 @@
 namespace NATSInternal.Services.Dtos;
 
-public class SupplyItemUpdateHistoryDataDto
+public class SupplyItemUpdateHistoryDataDto : IProductEngageableItemUpdateHistoryDataDto
 {
     public int Id { get; set; }
-    public long ProdutAmountPerUnit { get; set; }
+    public long ProductAmountPerUnit { get; set; }
     public int Quantity { get; set; }
     public string ProductName { get; set; }
     
     internal SupplyItemUpdateHistoryDataDto(SupplyItem item)
     {
         Id = item.Id;
-        ProdutAmountPerUnit = item.ProductAmountPerUnit;
+        ProductAmountPerUnit = item.ProductAmountPerUnit;
         Quantity = item.Quantity;
         ProductName = item.Product.Name;
     }

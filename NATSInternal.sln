@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal", "NATSInterna
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal.API", "NATSInternal.API\NATSInternal.API.csproj", "{154C3173-5E85-462D-86FA-A0DE6D56B3E3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal.Blazor", "NATSInternal.Blazor\NATSInternal.Blazor.csproj", "{A1B7872C-63F2-41C2-AC5D-4D79AACEEA45}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,5 +42,9 @@ Global
 		{154C3173-5E85-462D-86FA-A0DE6D56B3E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{154C3173-5E85-462D-86FA-A0DE6D56B3E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{154C3173-5E85-462D-86FA-A0DE6D56B3E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1B7872C-63F2-41C2-AC5D-4D79AACEEA45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B7872C-63F2-41C2-AC5D-4D79AACEEA45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B7872C-63F2-41C2-AC5D-4D79AACEEA45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B7872C-63F2-41C2-AC5D-4D79AACEEA45}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -4,15 +4,22 @@ internal interface IProductExportableDetailResponseDto<
         TItem,
         TPhoto,
         TUpdateHistory,
+        TItemUpdateHistoryData,
         TAuthorization>
     :
         IProductEngageableDetailResponseDto<
             TItem,
             TPhoto,
             TUpdateHistory,
+            TItemUpdateHistoryData,
             TAuthorization>,
-        IRevuenueBasicResponseDto<TAuthorization>
+        ICustomerEngageableBasicResponseDto<TAuthorization>
     where TItem : IProductEngageableItemResponseDto
     where TPhoto : IPhotoResponseDto
-    where TUpdateHistory : IUpdateHistoryResponseDto
-    where TAuthorization : IFinancialEngageableAuthorizationResponseDto;
+    where TUpdateHistory : IProductExportableUpdateHistoryResponseDto<TItemUpdateHistoryData>
+    where TItemUpdateHistoryData : IProductExportableItemUpdateHistoryDataDto
+    where TAuthorization : IFinancialEngageableAuthorizationResponseDto
+{
+    long AmountBeforeVat { get; }
+    long VatAmount { get; }
+}

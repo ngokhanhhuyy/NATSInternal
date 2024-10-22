@@ -30,8 +30,7 @@ public class CustomerController : ControllerBase
     {
         // Validate data from the request.
         requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _listValidator.Validate(requestDto);
+        ValidationResult validationResult = _listValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -39,8 +38,7 @@ public class CustomerController : ControllerBase
         }
 
         // Call service for data fetching.
-        CustomerListResponseDto responseDto;
-        responseDto = await _service.GetListAsync(requestDto);
+        CustomerListResponseDto responseDto = await _service.GetListAsync(requestDto);
         return Ok(responseDto);
     }
 
@@ -89,8 +87,7 @@ public class CustomerController : ControllerBase
     {
         // Validate data from the request.
         requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto);
+        ValidationResult validationResult = _upsertValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

@@ -78,7 +78,7 @@ internal abstract class DebtAbstractService<
     where TDetailResponseDto : IDebtDetailResponseDto<
         TUpdateHistoryResponseDto,
         TAuthorizationResponseDto>
-    where TUpdateHistoryResponseDto : IUpdateHistoryResponseDto
+    where TUpdateHistoryResponseDto : IDebtUpdateHistoryResponseDto
     where TListAuthorizationResponseDto : IUpsertableListAuthorizationResponseDto
     where TAuthorizationResponseDto : IFinancialEngageableAuthorizationResponseDto
 {

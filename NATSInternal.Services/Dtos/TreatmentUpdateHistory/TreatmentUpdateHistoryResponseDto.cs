@@ -1,6 +1,7 @@
 namespace NATSInternal.Services.Dtos;
 
-public class TreatmentUpdateHistoryResponseDto : IUpdateHistoryResponseDto
+public class TreatmentUpdateHistoryResponseDto
+        : IProductExportableUpdateHistoryResponseDto<TreatmentItemUpdateHistoryDataDto>
 {
     private readonly TreatmentUpdateHistoryDataDto _oldData;
     private readonly TreatmentUpdateHistoryDataDto _newData;

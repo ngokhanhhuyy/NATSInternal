@@ -6,7 +6,7 @@ public class DebtPaymentDetailResponseDto
         DebtPaymentAuthorizationResponseDto>
 {
     public int Id { get; set; }
-    public long AmountBeforeVat { get; set; }
+    public long AmountAfterVat { get; set; }
     public string Note { get; set; }
     public DateTime StatsDateTime { get; set; }
     public DateTime CreatedDateTime { get; set; }
@@ -22,7 +22,7 @@ public class DebtPaymentDetailResponseDto
             bool mapUpdateHistories = false)
     {
         Id = payment.Id;
-        AmountBeforeVat = payment.Amount;
+        AmountAfterVat = payment.Amount;
         Note = payment.Note;
         StatsDateTime = payment.StatsDateTime;
         CreatedDateTime = payment.CreatedDateTime;

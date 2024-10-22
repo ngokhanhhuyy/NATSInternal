@@ -1578,7 +1578,7 @@ public sealed class DataInitializer
 
                 TreatmentItem item = new TreatmentItem
                 {
-                    AmountBeforeVatPerUnit = product.DefaultPrice,
+                    ProductAmountPerUnit = product.DefaultPrice,
                     VatAmountPerUnit = 0,
                     Quantity = Math.Min(random.Next(1, 5), product.StockingQuantity),
                     ProductId = product.Id

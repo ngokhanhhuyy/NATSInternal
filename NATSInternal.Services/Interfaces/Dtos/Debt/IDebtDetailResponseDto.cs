@@ -6,5 +6,5 @@ internal interface IDebtDetailResponseDto<TUpdateHistory, TAuthorization>
         IFinancialEngageableDetailResponseDto<
             TUpdateHistory,
             TAuthorization>
-    where TUpdateHistory : IUpdateHistoryResponseDto
+    where TUpdateHistory : IDebtUpdateHistoryResponseDto
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto;

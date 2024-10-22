@@ -26,7 +26,7 @@ public class UserListModel : IListModel<UserBasicModel>
             RoleListResponseDto roleOptionsResponseDto)
     {
         PageCount = userListResponseDto.PageCount;
-        Items = userListResponseDto.Results
+        Items = userListResponseDto.Results?
             .Select(u => new UserBasicModel(u))
             .ToList();
         JoinedRecentlyUsers = joinedRecentlyUsersResponseDto.Results?
@@ -35,7 +35,7 @@ public class UserListModel : IListModel<UserBasicModel>
         UpcomingBirthdayUsers = incomingBirthdayUsersResponseDto.Results?
             .Select(u => new UserBasicModel(u))
             .ToList();
-        RoleOptions = roleOptionsResponseDto.Items
+        RoleOptions = roleOptionsResponseDto.Items?
             .Select(RoleBasicModel.FromResponseDto)
             .ToList();
         Authorization = new UserListAuthorizationModel(userListResponseDto.Authorization);
@@ -55,6 +55,7 @@ public class UserListModel : IListModel<UserBasicModel>
             Page = Page,
         };
 
-        return requestDto.TransformValues();
+        requestDto.TransformValues();
+        return requestDto;
     }
 }

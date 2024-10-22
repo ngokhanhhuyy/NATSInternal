@@ -1,6 +1,7 @@
 namespace NATSInternal.Services.Dtos;
 
-public class OrderUpdateHistoryResponseDto : IUpdateHistoryResponseDto
+public class OrderUpdateHistoryResponseDto 
+        : IProductExportableUpdateHistoryResponseDto<OrderItemUpdateHistoryDataDto>
 {
     private readonly OrderUpdateHistoryDataDto _oldData;
     private readonly OrderUpdateHistoryDataDto _newData;

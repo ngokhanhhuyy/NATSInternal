@@ -24,8 +24,7 @@ public class AuthenticationController : ControllerBase
     {
         // Validate data from request.
         requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _signInValidator.Validate(requestDto);
+        ValidationResult validationResult = _signInValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

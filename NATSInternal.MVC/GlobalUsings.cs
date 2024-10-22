@@ -14,7 +14,6 @@ global using NATSInternal.Hubs;
 global using NATSInternal.Hubs.Notifier;
 global using NATSInternal.Hubs.ResourceAccess;
 global using NATSInternal.Models;
-global using NATSInternal.Tasks;
 global using NATSInternal.Services;
 global using NATSInternal.Services.Constants;
 global using NATSInternal.Services.Dtos;

@@ -66,7 +66,7 @@ internal class SupplyService
         return new SupplyListResponseDto
         {
             PageCount = entityListDto.PageCount,
-            Items = entityListDto.Items
+            Items = entityListDto.Items?
                 .Select(supply => new SupplyBasicResponseDto(
                     supply,
                     _authorizationService.GetSupplyAuthorization(supply)))

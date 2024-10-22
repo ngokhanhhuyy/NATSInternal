@@ -10,10 +10,12 @@ public class SignInModel
 
     public SignInRequestDto ToRequestDto()
     {
-        return new SignInRequestDto
+        SignInRequestDto requestDto = new SignInRequestDto
         {
             UserName = UserName,
             Password = Password
         };
+        requestDto.TransformValues();
+        return requestDto;
     }
 }

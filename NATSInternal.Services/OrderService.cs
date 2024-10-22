@@ -16,6 +16,7 @@ internal class OrderService
         OrderItemResponseDto,
         OrderPhotoResponseDto,
         OrderUpdateHistoryResponseDto,
+        OrderItemUpdateHistoryDataDto,
         OrderUpdateHistoryDataDto,
         OrderListAuthorizationResponseDto,
         OrderAuthorizationResponseDto>,

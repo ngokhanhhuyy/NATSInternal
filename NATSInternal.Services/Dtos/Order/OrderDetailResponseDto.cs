@@ -4,6 +4,7 @@ public class OrderDetailResponseDto : IProductExportableDetailResponseDto<
         OrderItemResponseDto,
         OrderPhotoResponseDto,
         OrderUpdateHistoryResponseDto,
+        OrderItemUpdateHistoryDataDto,
         OrderAuthorizationResponseDto>
 {
     public int Id { get; set; }
@@ -20,6 +21,9 @@ public class OrderDetailResponseDto : IProductExportableDetailResponseDto<
     public OrderAuthorizationResponseDto Authorization { get; set; }
     public List<OrderUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
+    [JsonIgnore]
+    public long AmountAfterVat => AmountBeforeVat + VatAmount;
+
     public string ThumbnailUrl => Photos?
         .OrderBy(op => op.Id)
         .Select(op => op.Url)
@@ -30,7 +34,8 @@ public class OrderDetailResponseDto : IProductExportableDetailResponseDto<
         Id = order.Id;
         StatsDateTime = order.StatsDateTime;
         CreatedDateTime = order.CreatedDateTime;
-        AmountBeforeVat = order.AfterVatAmount;
+        AmountBeforeVat = order.AmountBeforeVat;
+        VatAmount = order.VatAmount;
         Note = order.Note;
         IsLocked = order.IsLocked;
         Items = order.Items?.Select(i => new OrderItemResponseDto(i)).ToList();

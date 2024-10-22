@@ -6,7 +6,7 @@ public class ExpenseBasicResponseDto
         IHasThumbnailBasicResponseDto
 {
     public int Id { get; set; }
-    public long AmountBeforeVat { get; set; }
+    public long AmountAfterVat { get; set; }
     public DateTime StatsDateTime { get; set; }
     public ExpenseCategory Category { get; set; }
     public bool IsLocked { get; set; }
@@ -29,7 +29,7 @@ public class ExpenseBasicResponseDto
     private void MapFromEntity(Expense expense)
     {
         Id = expense.Id;
-        AmountBeforeVat = expense.Amount;
+        AmountAfterVat = expense.Amount;
         StatsDateTime = expense.StatsDateTime;
         Category = expense.Category;
         IsLocked = expense.IsLocked;

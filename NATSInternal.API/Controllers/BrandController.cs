@@ -69,8 +69,7 @@ public class BrandController : ControllerBase
     public async Task<IActionResult> BrandCreate([FromBody] BrandUpsertRequestDto requestDto)
     {
         requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto);
+        ValidationResult validationResult = _upsertValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -113,8 +112,7 @@ public class BrandController : ControllerBase
     {
         // Validate data from the request.
         requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto);
+        ValidationResult validationResult = _upsertValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

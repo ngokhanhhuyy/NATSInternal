@@ -78,6 +78,7 @@ internal abstract class ProductExportableAbstractService<
         TItemResponseDto,
         TPhotoResponseDto,
         TUpdateHistoryResponseDto,
+        TItemUpdateHistoryDataDto,
         TUpdateHistoryDataDto,
         TListAuthorizationResponseDto,
         TAuthorizationResponseDto>
@@ -112,10 +113,13 @@ internal abstract class ProductExportableAbstractService<
         TItemResponseDto,
         TPhotoResponseDto,
         TUpdateHistoryResponseDto,
+        TItemUpdateHistoryDataDto,
         TAuthorizationResponseDto>
     where TItemResponseDto : IProductEngageableItemResponseDto
     where TPhotoResponseDto : IPhotoResponseDto
-    where TUpdateHistoryResponseDto : IUpdateHistoryResponseDto
+    where TUpdateHistoryResponseDto : IProductExportableUpdateHistoryResponseDto<
+        TItemUpdateHistoryDataDto>
+    where TItemUpdateHistoryDataDto : IProductExportableItemUpdateHistoryDataDto
     where TListAuthorizationResponseDto : IUpsertableListAuthorizationResponseDto
     where TAuthorizationResponseDto : IFinancialEngageableAuthorizationResponseDto
 {
@@ -497,7 +501,7 @@ internal abstract class ProductExportableAbstractService<
         // Initialize query.
         IQueryable<T> query = GetRepository(_context)
             .Include(t => t.Customer)
-            .Include(t => t.Items).ThenInclude(i => i.Product)
+            .Include(t => t.Items)
             .Include(t => t.Photos);
 
         // Order the results.

@@ -38,10 +38,8 @@ public class AuthenticationController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        SignInRequestDto requestDto = model.ToRequestDto().TransformValues();
-
-        ValidationResult validationResult;
-        validationResult = _signInValidator.Validate(requestDto);
+        SignInRequestDto requestDto = model.ToRequestDto();
+        ValidationResult validationResult = _signInValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

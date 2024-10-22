@@ -4,13 +4,14 @@ public class SupplyDetailResponseDto : IProductEngageableDetailResponseDto<
         SupplyItemResponseDto,
         SupplyPhotoResponseDto,
         SupplyUpdateHistoryResponseDto, 
+        SupplyItemUpdateHistoryDataDto,
         SupplyAuthorizationResponseDto>
 {
     public int Id { get; internal set; }
     public DateTime StatsDateTime { get; internal set; }
     public long ShipmentFee { get; internal set; }
     public long ItemAmount { get; internal set; }
-    public long AmountBeforeVat { get; internal set; }
+    public long AmountAfterVat { get; internal set; }
     public string Note { get; internal set; }
     public DateTime CreatedDateTime { get; internal set; }
     public UserBasicResponseDto CreatedUser { get; internal set; }
@@ -34,7 +35,7 @@ public class SupplyDetailResponseDto : IProductEngageableDetailResponseDto<
         StatsDateTime = supply.StatsDateTime;
         ShipmentFee = supply.ShipmentFee;
         ItemAmount = supply.ItemAmount;
-        AmountBeforeVat = supply.Amount;
+        AmountAfterVat = supply.Amount;
         Note = supply.Note;
         IsLocked = supply.IsLocked;
         CreatedDateTime = supply.CreatedDateTime;

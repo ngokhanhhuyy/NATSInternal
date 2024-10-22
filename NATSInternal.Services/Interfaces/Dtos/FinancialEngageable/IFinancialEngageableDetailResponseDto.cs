@@ -5,9 +5,8 @@ internal interface IFinancialEngageableDetailResponseDto<TUpdateHistory, TAuthor
         IFinancialEngageableBasicResponseDto<TAuthorization>,
         ICreatorTrackableDetailResponseDto<TAuthorization>,
         IUpdaterTrackableDetailResponseDto<TUpdateHistory, TAuthorization>
-    where TUpdateHistory : IUpdateHistoryResponseDto
+    where TUpdateHistory : IFinancialEngageableUpdateHistoryResponseDto
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
 {
-    DateTime StatsDateTime { get; }
     string Note { get; }
 }

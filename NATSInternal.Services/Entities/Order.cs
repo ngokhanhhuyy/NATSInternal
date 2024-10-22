@@ -74,7 +74,7 @@ internal class Order
         get
         {
             return (Order o) => o.Items.Sum(
-                ti => (ti.ProductAmountPerUnit + ti.VatAmountPerUnit) * ti.Quantity);
+                oi => (oi.ProductAmountPerUnit + oi.VatAmountPerUnit) * oi.Quantity);
         }
     }
 

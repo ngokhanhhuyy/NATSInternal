@@ -14,6 +14,10 @@ namespace NATSInternal.Services.Interfaces.Dtos;
 /// The type of the <c>UpdateHistory</c> DTOs, containing the update histories' information
 /// and the data of the entity before and after each modification.
 /// </typeparam>
+/// <typeparam name="TItemUpdateHistoryData">
+/// The type of the item DTO, containing the update histories' information
+/// and the data of the items entity before and after each modification.
+/// </typeparam>
 /// <typeparam name="TAuthorization">
 /// The type of the authorization DTO, containing the information of the permissions to
 /// interact with the entity.
@@ -22,13 +26,15 @@ internal interface IProductEngageableDetailResponseDto<
         TItem,
         TPhoto,
         TUpdateHistory,
+        TItemUpdateHistoryData,
         TAuthorization>
     :
         IFinancialEngageableDetailResponseDto<TUpdateHistory, TAuthorization>,
         IHasMultiplePhotosDetailResponseDto<TPhoto>
     where TItem : IProductEngageableItemResponseDto
     where TPhoto : IPhotoResponseDto
-    where TUpdateHistory : IUpdateHistoryResponseDto
+    where TUpdateHistory : IProductEngageableUpdateHistoryResponseDto<TItemUpdateHistoryData>
+    where TItemUpdateHistoryData : IProductEngageableItemUpdateHistoryDataDto
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
 {
     /// <summary>

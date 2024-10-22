@@ -30,8 +30,7 @@ public class ConsultantController : ControllerBase
     {
         // Validate data from the request.
         requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _listValidator.Validate(requestDto);
+        ValidationResult validationResult = _listValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -70,8 +69,7 @@ public class ConsultantController : ControllerBase
     {
         // Validate data from the request.
         requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto, options => options
+        ValidationResult validationResult = _upsertValidator.Validate(requestDto, options => options
             .IncludeRuleSets("Create")
             .IncludeRulesNotInRuleSet());
         if (!validationResult.IsValid)
@@ -126,8 +124,7 @@ public class ConsultantController : ControllerBase
     {
         // Validate data from the request.
         requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto, options => options
+        ValidationResult validationResult = _upsertValidator.Validate(requestDto, options => options
             .IncludeRuleSets("Update")
             .IncludeRulesNotInRuleSet());
         if (!validationResult.IsValid)

@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class DebtIncurrenceUpdateHistoryResponseDto : IUpdateHistoryResponseDto
+public class DebtIncurrenceUpdateHistoryResponseDto : IDebtUpdateHistoryResponseDto
 {
     private readonly DebtIncurrenceUpdateHistoryDataDto _oldData;
     private readonly DebtIncurrenceUpdateHistoryDataDto _newData;

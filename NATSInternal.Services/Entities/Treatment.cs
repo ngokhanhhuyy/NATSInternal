@@ -25,7 +25,7 @@ internal class Treatment
     public string Note { get; set; }
 
     [Required]
-    public bool IsDeleted { get; set; } = false;
+    public bool IsDeleted { get; set; }
 
     // Foreign keys
     [Required]
@@ -98,9 +98,12 @@ internal class Treatment
     [NotMapped]
     public static Expression<Func<Treatment, long>> AmountAfterVatExpression
     {
-        get => (Treatment t) =>
-            t.Items.Sum(ti => (ti.AmountBeforeVatPerUnit + ti.VatAmountPerUnit) * ti.Quantity)
-            + t.ServiceAmountBeforeVat + t.ServiceVatAmount;
+        get
+        {
+            return (Treatment t) => t.Items.Sum(
+                    ti => (ti.ProductAmountPerUnit + ti.VatAmountPerUnit) * ti.Quantity)
+                + t.ServiceAmountBeforeVat + t.ServiceVatAmount;
+        }
     }
 
     // Model configurations.

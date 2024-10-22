@@ -31,14 +31,7 @@ internal class TreatmentItem : IProductExportableItemEntity<TreatmentItem>
 
     // Properties for convinience.
     [NotMapped]
-    public long AmountBeforeVatPerUnit
-    {
-        get => ProductAmountPerUnit;
-        set => ProductAmountPerUnit = value;
-    }
-
-    [NotMapped]
-    public long AmountBeforeVat => AmountBeforeVatPerUnit * Quantity;
+    public long AmountBeforeVat => ProductAmountPerUnit * Quantity;
 
     [NotMapped]
     public long VatAmount => VatAmountPerUnit * Quantity;

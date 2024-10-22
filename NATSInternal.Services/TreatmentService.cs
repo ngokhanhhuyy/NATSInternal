@@ -16,6 +16,7 @@ internal class TreatmentService
         TreatmentItemResponseDto,
         TreatmentPhotoResponseDto,
         TreatmentUpdateHistoryResponseDto,
+        TreatmentItemUpdateHistoryDataDto,
         TreatmentUpdateHistoryDataDto,
         TreatmentListAuthorizationResponseDto,
         TreatmentAuthorizationResponseDto>,

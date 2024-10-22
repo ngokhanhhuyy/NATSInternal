@@ -5,15 +5,14 @@ public class TreatmentDetailResponseDto
         TreatmentItemResponseDto,
         TreatmentPhotoResponseDto,
         TreatmentUpdateHistoryResponseDto,
+        TreatmentItemUpdateHistoryDataDto,
         TreatmentAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public DateTime StatsDateTime { get; set; }
     public DateTime CreatedDateTime { get; set; }
-    public long ServiceAmount { get; set; }
+    public long ServiceAmountBeforeVat { get; set; }
     public long ServiceVatAmount { get; set; }
-    public long ProductAmount { get; set; }
-    public long ProductVatAmount { get; set; }
     public string Note { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
@@ -24,7 +23,21 @@ public class TreatmentDetailResponseDto
     public TreatmentAuthorizationResponseDto Authorization { get; set; }
     public List<TreatmentUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
-    public long AmountBeforeVat => ServiceAmount + ProductAmount;
+    [JsonIgnore]
+    public long ProductAmount => Items.Sum(i => i.ProductAmountPerUnit * i.Quantity);
+
+    [JsonIgnore]
+    public long ProductVatAmount => Items.Sum(i => i.VatAmountPerUnit * i.Quantity);
+
+    [JsonIgnore]
+    public long AmountBeforeVat => ProductAmount + ServiceAmountBeforeVat;
+
+    [JsonIgnore]
+    public long VatAmount => ProductVatAmount + ServiceVatAmount;
+
+    [JsonIgnore]
+    public long AmountAfterVat => ServiceAmountBeforeVat + ProductAmount;
+
     public string ThumbnailUrl => Photos
         .OrderBy(p => p.Id)
         .Select(p => p.Url)
@@ -36,9 +49,8 @@ public class TreatmentDetailResponseDto
     {
         Id = treatment.Id;
         StatsDateTime = treatment.StatsDateTime;
-        ServiceAmount = treatment.ServiceAmountBeforeVat;
+        ServiceAmountBeforeVat = treatment.ServiceAmountBeforeVat;
         ServiceVatAmount = treatment.ServiceVatAmount;
-        ProductAmount = treatment.ProductAmountBeforeVat;
         Note = treatment.Note;
         IsLocked = treatment.IsLocked;
         Customer = new CustomerBasicResponseDto(treatment.Customer);

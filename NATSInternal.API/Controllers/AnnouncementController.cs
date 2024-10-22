@@ -30,8 +30,7 @@ public class AnnouncementController : ControllerBase
     {
         // Validate data from the request.
         requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _listValidator.Validate(requestDto);
+        ValidationResult validationResult = _listValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

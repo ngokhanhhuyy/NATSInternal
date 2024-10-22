@@ -185,9 +185,6 @@ builder.Services
 // Dependancy injections.
 builder.Services.AddScoped<INotifier, Notifier>();
 
-// Background tasks.
-builder.Services.AddHostedService<RefreshTokenCleanerTask>();
-
 // Add CORS.
 builder.Services.AddCors(options =>
 {
