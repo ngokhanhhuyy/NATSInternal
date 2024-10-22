@@ -1,7 +1,21 @@
 ﻿@page "/"
+@attribute [AllowAnonymous]
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@code {
+    private bool IsAuthenticated { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState authenticationState;
+        authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+        IsAuthenticated = user.Identity is not null && user.Identity.IsAuthenticated;
+    }
+}
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
+@(IsAuthenticated ? "True" : "False")
 
 Welcome to your new app.

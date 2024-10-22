@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Models;
 
-public class SignInModel
+public class SignInModel : IValidatableModel
 {
     [Display(Name = DisplayNames.UserName)]
     public string UserName { get; set; }

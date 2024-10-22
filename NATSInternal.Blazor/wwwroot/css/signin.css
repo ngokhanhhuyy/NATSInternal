@@ -1,0 +1,14 @@
+.form-group .form-floating .form-label {
+    font-weight: normal;
+    background: transparent !important;
+}
+
+.container-fluid {
+    width: 100vw;
+    max-width: 100%;
+    min-height: 100%;
+}
+
+.block {
+    border-radius: 0.5rem;
+}
