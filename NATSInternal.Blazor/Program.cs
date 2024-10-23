@@ -190,10 +190,10 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UsePathBase("/absproxy/5000");
 app.UseAntiforgery();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.MapRazorPages();
 app.Run();

@@ -6,7 +6,7 @@ public class NotificationListModel
 
     public NotificationListModel(NotificationListResponseDto responseDto)
     {
-        Items = responseDto.Items
+        Items = responseDto.Items?
             .Select(n => new NotificationModel(n))
             .ToList()
             ?? new List<NotificationModel>();
