@@ -1,0 +1,96 @@
+@inject NavigationManager NavigationManager
+
+<ul id="navbar" class='@(NavigationBarClassName + " w-100")'>
+    <li class='@ItemClass("Home")'>
+        <a href="/home">
+            <i class="bi bi-house"></i>
+            <span>Trang chủ</span>
+        </a>
+    </li>
+    <li class='@ItemClass("Customer")'>
+        <a href="/CustomerList">
+            <i class="bi bi-person-circle"></i>
+            <span>@DisplayNames.Customer</span>
+        </a>
+    </li>
+    <li class='@ItemClass("Product")'>
+        <a href="/home">
+            <i class="bi bi-box-seam"></i>
+            <span>@DisplayNames.Product</span>
+        </a>
+    </li>
+    <li class='@ItemClass("Supply")'>
+        <a href="/home">
+            <i class="bi bi-truck"></i>
+            <span>@DisplayNames.Supply</span>
+        </a>
+    </li>
+    <li class='@ItemClass("Order")'>
+        <a href="/orders">
+            <i class="bi bi-cart4"></i>
+            <span>@DisplayNames.Order</span>
+        </a>
+    </li>
+    <li class='@ItemClass("Treatment")'>
+        <a href="/home">
+            <i class="bi bi-magic"></i>
+            <span>@DisplayNames.Treatment</span>
+        </a>
+    </li>
+    <li class='@ItemClass("Consultant")'>
+        <a href="/Consultant">
+            <i class="bi bi-patch-question"></i>
+            <span>Tư vấn</span>
+        </a>
+    </li>
+    <li class='@ItemClass("Stock")'>
+        <a href="/home">
+            <i class="bi bi-archive"></i>
+            <span>Kho hàng</span>
+        </a>
+    </li>
+    <li class='@ItemClass("Debt")'>
+        <a href="/Debt">
+            <i class="bi bi-hourglass-bottom"></i>
+            <span>Khoản nợ</span>
+        </a>
+    </li>
+    <li class='@ItemClass("Expense")'>
+        <a href="/Expense">
+            <i class="bi bi-cash-coin"></i>
+            <span>@DisplayNames.Expense</span>
+        </a>
+    </li>
+    <li class='@ItemClass("User")'>
+        <a asp-action="UserList" asp-controller="User">
+            <i class="bi bi-person-badge"></i>
+            <span>@DisplayNames.User</span>
+        </a>
+    </li>
+</ul>
+
+@code {
+    [Parameter]
+    public bool KeepExpanded { get; set; }
+
+    private string CurrentRouteName { get; set; }
+    private string NavigationBarClassName => KeepExpanded ? "keep-expanded" : null;
+
+    protected override void OnInitialized()
+    {
+        CurrentRouteName = NavigationManager
+            .ToBaseRelativePath(NavigationManager.Uri)
+            .Split("/")
+            .First();
+    }
+
+    private string ItemClass(string itemName)
+    {
+        if (CurrentRouteName == itemName)
+        {
+            return "selected";
+        }
+        
+        return null;
+    }
+}

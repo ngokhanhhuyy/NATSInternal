@@ -7,22 +7,19 @@ public class RoleBasicModel
     public string DisplayName { get; set; }
     public int PowerLevel { get; set; }
 
+    public RoleBasicModel(RoleBasicResponseDto responseDto)
+    {
+        Id = responseDto.Id;
+        Name = responseDto.Name;
+        DisplayName = responseDto.DisplayName;
+        PowerLevel = responseDto.PowerLevel;
+    }
+
     public RoleRequestDto ToRequestDto()
     {
         return new RoleRequestDto
         {
             Name = Name
-        };
-    }
-
-    public static RoleBasicModel FromResponseDto(RoleBasicResponseDto responseDto)
-    {
-        return new RoleBasicModel
-        {
-            Id = responseDto.Id,
-            Name = responseDto.Name,
-            DisplayName = responseDto.DisplayName,
-            PowerLevel = responseDto.PowerLevel
         };
     }
 }

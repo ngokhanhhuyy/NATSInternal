@@ -8,8 +8,8 @@ public class UserListModel : IListModel<UserBasicModel>
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
     public RoleBasicModel Role { get; set; }
-    public bool JoinedRencentlyOnly { get; set; } = false;
-    public bool UpcomingBirthdayOnly { get; set; } = false;
+    public bool JoinedRencentlyOnly { get; set; }
+    public bool UpcomingBirthdayOnly { get; set; }
     public string Content { get; set; }
     public int PageCount { get; set; }
     public List<UserBasicModel> Items { get; set; }
@@ -30,13 +30,13 @@ public class UserListModel : IListModel<UserBasicModel>
             .Select(u => new UserBasicModel(u))
             .ToList();
         JoinedRecentlyUsers = joinedRecentlyUsersResponseDto.Results?
-            .Select(u => new UserBasicModel(u))
+            .Select(responseDto => new UserBasicModel(responseDto))
             .ToList();
         UpcomingBirthdayUsers = incomingBirthdayUsersResponseDto.Results?
-            .Select(u => new UserBasicModel(u))
+            .Select(responseDto => new UserBasicModel(responseDto))
             .ToList();
         RoleOptions = roleOptionsResponseDto.Items?
-            .Select(RoleBasicModel.FromResponseDto)
+            .Select(responseDto => new RoleBasicModel(responseDto))
             .ToList();
         Authorization = new UserListAuthorizationModel(userListResponseDto.Authorization);
     }

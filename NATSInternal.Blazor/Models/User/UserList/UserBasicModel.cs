@@ -26,9 +26,9 @@ public class UserBasicModel
         Birthday = responseDto.Birthday;
         JoiningDate = responseDto.JoiningDate;
 
-        AvatarUrl = responseDto.AvatarUrl;
-        AvatarUrl ??= $"https://ui-avatars.com/api/?name={FullName.Replace(" ", "+")}" +
-            "&background=random&size=256";;
-        Role = RoleBasicModel.FromResponseDto(responseDto.Role);
+        AvatarUrl = responseDto.AvatarUrl ??
+            $"https://ui-avatars.com/api/?name={FullName.Replace(" ", "+")}" +
+            "&background=random&size=256";
+        Role = new RoleBasicModel(responseDto.Role);
     }
 }

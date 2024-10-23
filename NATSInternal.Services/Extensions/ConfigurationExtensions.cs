@@ -46,7 +46,7 @@ public static class ConfigurationExtensions
 
         services.AddScoped<SignInManager<User>>();
         services.AddScoped<RoleManager<Role>>();
-        services.AddScoped<DatabaseContext>();
+        services.AddTransient<DatabaseContext>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRoleService, RoleService>();

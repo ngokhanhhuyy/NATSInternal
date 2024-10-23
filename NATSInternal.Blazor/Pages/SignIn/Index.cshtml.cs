@@ -1,16 +1,22 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace NATSInternal.Blazor.Pages.SignIn;
+namespace NATSInternal.Blazor.Pages;
 
-public class SignIn : PageModel
+[BindProperties]
+public class SignInPageModel : PageModel
 {
     private readonly IAuthenticationService _service;
     private readonly IValidator<SignInRequestDto> _validator;
 
-    [BindProperty]
-    public SignInModel Model { get; set; } = new SignInModel();
+    [Display(Name = DisplayNames.UserName)]
+    public string UserName { get; set; }
 
-    public SignIn(IAuthenticationService service, IValidator<SignInRequestDto> validator)
+    [Display(Name = DisplayNames.Password)]
+    public string Password { get; set; }
+
+    public SignInPageModel(
+            IAuthenticationService service,
+            IValidator<SignInRequestDto> validator)
     {
         _service = service;
         _validator = validator;
@@ -18,7 +24,8 @@ public class SignIn : PageModel
 
     public IActionResult OnGet()
     {
-        if (User.Identity!.IsAuthenticated)
+        Console.WriteLine("Get");
+        if (User.Identity.IsAuthenticated)
         {
             return Redirect("/");
         }
@@ -28,7 +35,7 @@ public class SignIn : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        SignInRequestDto requestDto = Model.ToRequestDto();
+        SignInRequestDto requestDto = ToRequestDto();
         ValidationResult validationResult = _validator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
@@ -46,5 +53,16 @@ public class SignIn : PageModel
             ModelState.AddModelErrorsFromServiceException(exception);
             return Page();
         }
+    }
+
+    public SignInRequestDto ToRequestDto()
+    {
+        SignInRequestDto requestDto = new SignInRequestDto
+        {
+            UserName = UserName,
+            Password = Password
+        };
+        requestDto.TransformValues();
+        return requestDto;
     }
 }

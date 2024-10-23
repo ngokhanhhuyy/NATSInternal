@@ -1,0 +1,10 @@
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas-navbar">
+    <div class="offcanvas-body">
+        <NavigationBarComponent KeepExpanded="@KeepExpanded" />
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public bool KeepExpanded { get; set; }
+}

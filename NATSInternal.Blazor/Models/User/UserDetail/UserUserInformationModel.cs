@@ -8,15 +8,12 @@ public class UserUserInformationModel
     public string Note { get; set; }
     public RoleDetailModel Role { get; set; }
 
-    public static UserUserInformationModel FromResponseDto(UserUserInformationResponseDto responseDto)
+    public UserUserInformationModel(UserUserInformationResponseDto responseDto)
     {
-        return new UserUserInformationModel
-        {
-            JoiningDate = responseDto.JoiningDate,
-            CreatedDateTime = responseDto.CreatedDateTime,
-            UpdatedDateTime = responseDto.UpdatedDateTime,
-            Note = responseDto.Note,
-            Role = RoleDetailModel.FromResponseDto(responseDto.Role)
-        };
+        JoiningDate = responseDto.JoiningDate;
+        CreatedDateTime = responseDto.CreatedDateTime;
+        UpdatedDateTime = responseDto.UpdatedDateTime;
+        Note = responseDto.Note;
+        Role = new RoleDetailModel(responseDto.Role);
     }
 }

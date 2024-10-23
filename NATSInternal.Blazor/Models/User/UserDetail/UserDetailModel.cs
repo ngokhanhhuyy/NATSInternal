@@ -7,16 +7,12 @@ public class UserDetailModel
     public UserPersonalInformationModel PersonalInformation { get; set; }
     public UserUserInformationModel UserInformation { get; set; }
 
-    public static UserDetailModel FromResponseDto(UserDetailResponseDto responseDto)
+    public UserDetailModel(UserDetailResponseDto responseDto)
     {
-        return new UserDetailModel
-        {
-            Id = responseDto.Id,
-            UserName = responseDto.UserName,
-            PersonalInformation = UserPersonalInformationModel
-                .FromResponseDto(responseDto.PersonalInformation),
-            UserInformation = UserUserInformationModel
-                .FromResponseDto(responseDto.UserInformation)
-        };
+        Id = responseDto.Id;
+        UserName = responseDto.UserName;
+        PersonalInformation = new UserPersonalInformationModel(
+            responseDto.PersonalInformation);
+        UserInformation = new UserUserInformationModel(responseDto.UserInformation);
     }
 }

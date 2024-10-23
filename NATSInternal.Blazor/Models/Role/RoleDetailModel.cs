@@ -8,15 +8,12 @@ public class RoleDetailModel
     public int PowerLevel { get; set; }
     public List<string> Permissions { get; set; }
 
-    public static RoleDetailModel FromResponseDto(RoleDetailResponseDto responseDto)
+    public RoleDetailModel(RoleDetailResponseDto responseDto)
     {
-        return new RoleDetailModel
-        {
-            Id = responseDto.Id,
-            Name = responseDto.Name,
-            DisplayName = responseDto.DisplayName,
-            PowerLevel = responseDto.PowerLevel,
-            Permissions = responseDto.Permissions
-        };
+        Id = responseDto.Id;
+        Name = responseDto.Name;
+        DisplayName = responseDto.DisplayName;
+        PowerLevel = responseDto.PowerLevel;
+        Permissions = responseDto.Permissions;
     }
 }
