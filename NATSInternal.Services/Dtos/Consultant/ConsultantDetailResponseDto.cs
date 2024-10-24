@@ -5,7 +5,7 @@ public class ConsultantDetailResponseDto : IFinancialEngageableDetailResponseDto
     ConsultantAuthorizationResponseDto>
 {
     public int Id { get; set; }
-    public long AmountAfterVat { get; set; }
+    public long AmountBeforeVat { get; set; }
     public long VatAmount { get; set; }
     public string Note { get; set; }
     public DateTime StatsDateTime { get; set; }
@@ -16,12 +16,15 @@ public class ConsultantDetailResponseDto : IFinancialEngageableDetailResponseDto
     public ConsultantAuthorizationResponseDto Authorization { get; set; }
     public List<ConsultantUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
+    [JsonIgnore]
+    public long AmountAfterVat => AmountBeforeVat + VatAmount;
+
     internal ConsultantDetailResponseDto(
             Consultant consultant,
             ConsultantAuthorizationResponseDto authorization)
     {
         Id = consultant.Id;
-        AmountAfterVat = consultant.AmountBeforeVat;
+        AmountBeforeVat = consultant.AmountBeforeVat;
         Note = consultant.Note;
         StatsDateTime = consultant.StatsDateTime;
         CreatedDateTime = consultant.CreatedDateTime;

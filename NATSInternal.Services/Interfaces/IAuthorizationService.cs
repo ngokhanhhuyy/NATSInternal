@@ -13,7 +13,7 @@ public interface IAuthorizationService
     /// representing the id of the requesting user.
     /// </param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    Task SetUserId(int id);
+    void SetUserId(int id);
 
     /// <summary>
     /// Gets the id of the requesting user.

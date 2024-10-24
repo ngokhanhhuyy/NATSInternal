@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using NATSInternal.Blazor.Components;
 using NATSInternal.Validation.Extensions;
@@ -6,14 +7,14 @@ using System.Security.Claims;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+builder.Services.AddServerSideBlazor().AddInteractiveServerComponents();
 builder.Services.AddRazorPages();
 
 // Connection string - EF Core.
 string connectionString = builder.Configuration.GetConnectionString("Mysql");
 
 // Configure services from Services package/library.
-builder.Services.ConfigureServices(connectionString);
+builder.Services.ConfigureServices(connectionString, true);
 
 // Cookie.
 builder.Services.ConfigureApplicationCookie(options =>
@@ -26,31 +27,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/SignIn";
     options.LogoutPath = "/SignOut";
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-
-    options.Events.OnValidatePrincipal = async (context) =>
-    {
-        IAuthorizationService authorizationService = context.HttpContext
-            .RequestServices
-            .GetRequiredService<IAuthorizationService>();
-        string userIdAsString = context.Principal?
-            .FindFirst(ClaimTypes.NameIdentifier)?
-            .Value;
-
-        // Validate user id in the token.
-        try
-        {
-            if (userIdAsString == null)
-            {
-                throw new Exception();
-            }
-            int userId = int.Parse(userIdAsString);
-            await authorizationService.SetUserId(userId);
-        }
-        catch (Exception)
-        {
-            context.RejectPrincipal();
-        }
-    };
 });
 
 // Authentication by cookie strategies.
@@ -178,6 +154,9 @@ dataInitializer = new DataInitializer();
 dataInitializer.InitializeData(app);
 
 // Configure the HTTP request pipeline.
+app.UseForwardedHeaders(new ForwardedHeadersOptions {
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
@@ -190,10 +169,20 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UsePathBase("/absproxy/5000");
 app.UseAntiforgery();
 app.UseAuthentication();
 app.UseAuthorization();
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next.Invoke();
+    }
+    catch (AuthenticationException)
+    {
+        context.Response.Redirect("/SignIn");
+    }
+});
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.MapRazorPages();
 app.Run();

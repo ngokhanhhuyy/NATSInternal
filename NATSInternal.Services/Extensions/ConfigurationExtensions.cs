@@ -21,7 +21,8 @@ public static class ConfigurationExtensions
     /// </returns>
     public static IServiceCollection ConfigureServices(
             this IServiceCollection services,
-            string connectionString)
+            string connectionString,
+            bool isForBlazor = false)
     {
         services.AddDbContext<DatabaseContext>(options => options
             .UseMySql(
@@ -44,9 +45,19 @@ public static class ConfigurationExtensions
             options.Password.RequiredLength = 0;
         });
 
+        services.AddHttpContextAccessor();
+
         services.AddScoped<SignInManager<User>>();
         services.AddScoped<RoleManager<Role>>();
-        services.AddTransient<DatabaseContext>();
+
+        if (isForBlazor)
+        {
+            services.AddTransient<DatabaseContext>();
+        }
+        else
+        {
+            services.AddScoped<DatabaseContext>();
+        }
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRoleService, RoleService>();

@@ -1,21 +1,37 @@
-﻿namespace NATSInternal.Services;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Http;
+
+namespace NATSInternal.Services;
 
 internal class AuthorizationService : IAuthorizationInternalService
 {
     private readonly DatabaseContext _context;
     private User _user;
 
-    public AuthorizationService(DatabaseContext context)
+    public AuthorizationService(
+            DatabaseContext context,
+            IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
+        ClaimsPrincipal user = httpContextAccessor.HttpContext?.User;
+        
+        string userIdAsString = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        bool parsable = int.TryParse(userIdAsString, out int userId);
+        if (!parsable)
+        {
+            throw new AuthenticationException();
+        }
+        
+        SetUserId(userId);
     }
 
-    public async Task SetUserId(int id)
+    public void SetUserId(int id)
     {
-        _user = await _context.Users
+        _user = _context.Users
             .Include(u => u.Roles).ThenInclude(r => r.Claims)
             .Where(u => u.Id == id)
-            .SingleAsync();
+            .Single();
     }
     
     public int GetUserId()

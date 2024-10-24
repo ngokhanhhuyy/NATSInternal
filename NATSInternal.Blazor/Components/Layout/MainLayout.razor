@@ -7,7 +7,7 @@
             <div class="col col-auto d-flex flex-row bg-white border-end border-bottom
                         border-default overflow-hidden ps-3 p-2 align-items-center"
                     id="main-logo">
-                <img src="/images/main-logo.png">
+                <img src="images/main-logo.png">
                 <div class="flex-fill d-lg-block d-md-none d-sm-none d-none">
                     <span class="text-primary fs-5 ms-2">NATSInternal</span>
                 </div>
@@ -75,7 +75,9 @@
                     <div class="container-fluid d-flex flex-column justify-content-center
                                 pb-5"
                             id="user-list">
-                        @Body
+                        <ApplicationErrorBoundary>
+                            @Body
+                        </ApplicationErrorBoundary>
                     </div>
                 </div>
             </div>

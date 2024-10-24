@@ -11,7 +11,7 @@ public class ConsultantUpsertValidator : Validator<ConsultantUpsertRequestDto>
             .GreaterThanOrEqualTo(0)
             .WithName(DisplayNames.AmountBeforeVat);
         RuleFor(dto => dto.VatAmount)
-            .GreaterThan(0)
+            .GreaterThanOrEqualTo(0)
             .WithName(DisplayNames.VatAmount);
         RuleFor(dto => dto.Note)
             .MaximumLength(255)

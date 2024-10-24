@@ -33,31 +33,6 @@ builder.Services.ConfigureApplicationCookie(options =>
         context.Response.StatusCode = StatusCodes.Status200OK;
         return Task.CompletedTask;
     };
-
-    options.Events.OnValidatePrincipal = async (context) =>
-    {
-        IAuthorizationService authorizationService = context.HttpContext
-            .RequestServices
-            .GetRequiredService<IAuthorizationService>();
-        string userIdAsString = context.Principal?
-            .FindFirst(ClaimTypes.NameIdentifier)?
-            .Value;
-
-        // Validate user id in the token.
-        try
-        {
-            if (userIdAsString == null)
-            {
-                throw new Exception();
-            }
-            int userId = int.Parse(userIdAsString);
-            await authorizationService.SetUserId(userId);
-        }
-        catch (Exception)
-        {
-            context.RejectPrincipal();
-        }
-    };
 });
 
 // Authentication by cookie strategies.

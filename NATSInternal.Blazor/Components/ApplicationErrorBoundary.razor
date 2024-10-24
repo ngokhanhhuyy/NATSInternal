@@ -1,0 +1,24 @@
+@inherits ErrorBoundary
+@inject NavigationManager _navigationManager
+
+@if (CurrentException is null)
+{
+    @ChildContent
+}
+
+else if (ErrorContent is not null)
+{
+    @ErrorContent(CurrentException)
+}
+
+@code {
+    protected override Task OnErrorAsync(Exception exception)
+    {
+        if (exception is AuthenticationException)
+        {
+            _navigationManager.NavigateTo("SignIn");
+        }
+
+        return base.OnErrorAsync(exception);
+    }
+}
