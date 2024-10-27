@@ -8,5 +8,4 @@ public interface IListModel<TModel>
     int ResultsPerPage { get; set; }
     int PageCount { get; set; }
     List<TModel> Items { get; set; }
-    PaginationRangeModel PaginationRanges { get; }
 }

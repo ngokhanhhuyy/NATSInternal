@@ -147,11 +147,18 @@ internal class BrandService
             await _context.SaveChangesAsync();
             
             // The brand has been updated successfully, delete the old photos.
-            _photoService.Delete(urlToBeDeletedWhenSucceeded);
+            if (urlToBeDeletedWhenSucceeded != null)
+            {
+                _photoService.Delete(urlToBeDeletedWhenSucceeded);
+            }
         }
         catch (DbUpdateException exception)
         {
-            _photoService.Delete(urlToBeDeletedWhenFailed);
+            if (urlToBeDeletedWhenFailed != null)
+            {
+                _photoService.Delete(urlToBeDeletedWhenFailed);
+            }
+            
             if (exception.InnerException is MySqlException sqlException)
             {
                 HandleDbUpdateException(sqlException);

@@ -1,0 +1,25 @@
+﻿@namespace NATSInternal.Blazor.Components
+
+<label class="@Class">@Name</label>
+
+@code {
+    [Parameter]
+    public string Name { get; set; }
+
+    [Parameter]
+    public bool Required { get; set; }
+
+    private string Class
+    {
+        get
+        {
+            string className = "form-label small fw-bold";
+            if (Required)
+            {
+                className += " required";
+            }
+
+            return className;
+        }
+    }
+}

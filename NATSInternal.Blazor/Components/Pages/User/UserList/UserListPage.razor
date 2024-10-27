@@ -1,0 +1,84 @@
+﻿@namespace NATSInternal.Blazor.Components
+@inject IUserService UserService
+@rendermode InteractiveServer
+
+<MainContainer>
+    <div class="row g-0">
+        <div class="col col-xl-8 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="row g-3">
+                <!-- List filters -->
+                <div class="col col-12">
+                    <UserListFilters Model="Model" OnSearchButtonClicked="ReloadAsync"/>
+                </div>
+            </div>
+
+            <!-- List items -->
+            <div class="row g-3 justify-content-start"
+                    v-show="!loadingState.isLoading">
+                @if (Model.Items.Any())
+                {
+                    @foreach (UserBasicModel user in Model.Items)
+                    {
+                        <div class="col col-xl-4 col-lg-4 col-md-4 col-sm-6 col-6">
+                            <UserListItem Model="user"/>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col col-12">
+                        <div class="block border rounded-3 py-4 bg-white d-flex
+                                    justify-content-center align-items-center">
+                            <span class="opacity-50">Không tìm thấy kết quả nào</span>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @if (Model.PageCount > 1)
+            {
+
+            }
+            <div class="col col-12 d-flex flex-row justify-content-center mb-5">
+                <MainPaginator Page="Model.Page" PageCount="Model.PageCount"
+                        OnPageClicked="OnPaginationPageButtonClicked" />
+            </div>
+        </div>
+
+        <!-- Secondary lists -->
+        <div class="col col-xl-4 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="row g-3">
+                <div class="col col-xl-12 col-lg-6 col-md-6 col-12">
+                    <UserSecondaryList mode="JoinedRecently" />
+                </div>
+                <div class="col col-xl-12 col-lg-6 col-md-6 col-12">
+                    <UserSecondaryList mode="UpcomingBirthday" />
+                </div>
+            </div>
+        </div>
+    </div>
+</MainContainer>
+
+@code {
+    private UserListModel Model { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Model = new UserListModel();
+        UserListResponseDto responseDto = await UserService.GetListAsync(Model.ToRequestDto());
+        Model.MapFromResponseDto(responseDto);
+    }
+
+    private async Task ReloadAsync()
+    {
+        UserListResponseDto responseDto = await UserService.GetListAsync(Model.ToRequestDto());
+        Model.MapFromResponseDto(responseDto);
+    }
+
+    private async Task OnPaginationPageButtonClicked(int page)
+    {
+        Model.Page = page;
+        await ReloadAsync();
+    }
+
+}

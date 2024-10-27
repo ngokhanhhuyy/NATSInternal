@@ -1,23 +1,12 @@
 ﻿@page
-@using Microsoft.AspNetCore.Http.Extensions
 @model SignInPageModel
 @{
     Layout = null;
 }
 
-@functions {
-    private bool IsAuthenticated
-    {
-        get
-        {
-            return User.Identity.IsAuthenticated;
-        }
-    }
-}
-
 <!DOCTYPE html>
 <html lang="vi">
-    <head>`
+    <head>
         <title>Đăng nhập - NATSAdmin</title>
         <link rel="stylesheet" href="css/style.css" />
         <link rel="stylesheet" href="css/signin.css" />
@@ -30,7 +19,7 @@
     <body>
         <div id="app">
             <div class="container-fluid d-flex flex-column flex-fill justify-content-center
-                                w-100">
+                        w-100">
                 <div class="row py-3 g-3 justify-content-center">
                     <div class="col col-xxl-3 col-xl-4 col-lg-5 col-md-8 col-sm-10 col-12
                                 d-flex align-items-center">
@@ -57,7 +46,6 @@
                                         </label>
                                     </div>
                                     <span asp-validation-for="Password"></span>
-                                    @IsAuthenticated
                                 </div>
                                 <div class="form-group">
                                     <button type="submit" class="btn btn-primary w-100">

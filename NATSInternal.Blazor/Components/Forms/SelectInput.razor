@@ -1,0 +1,30 @@
+﻿@namespace NATSInternal.Blazor.Components
+@typeparam T
+
+<select class="form-select">
+    @Body
+</select>
+
+@code {
+    [Parameter]
+    public T Value { get; set; }
+
+    [Parameter]
+    public EventCallback<T> ValueChanged { get; set; }
+
+    [Parameter]
+    public RenderFragment Body { get; set; }
+
+    private T CurrentValue
+    {
+        get => Value;
+        set
+        {
+            if (!EqualityComparer<T>.Default.Equals(Value, value))
+            {
+                Value = value;
+                ValueChanged.InvokeAsync(value);
+            }
+        }
+    }
+}

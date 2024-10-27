@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NATSInternal.Services", "NA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NATSInternal.Validation", "NATSInternal.Validation\NATSInternal.Validation.csproj", "{A8566B46-AC7D-494D-922E-0E6D476C98CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal.Blazor", "NATSInternal.Blazor\NATSInternal.Blazor.csproj", "{A1B7872C-63F2-41C2-AC5D-4D79AACEEA45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NATSInternal.Blazor", "NATSInternal.Blazor\NATSInternal.Blazor.csproj", "{A1B7872C-63F2-41C2-AC5D-4D79AACEEA45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal.API", "NATSInternal.API\NATSInternal.API.csproj", "{1FF86FBA-A18C-4A7D-8917-E7135359BCD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NATSInternal.API", "NATSInternal.API\NATSInternal.API.csproj", "{1FF86FBA-A18C-4A7D-8917-E7135359BCD7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +36,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FE300DA0-E695-42CD-88E4-5A0FEF1E4784}
 	EndGlobalSection
 EndGlobal

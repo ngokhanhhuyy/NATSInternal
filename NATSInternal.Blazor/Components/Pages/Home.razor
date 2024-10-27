@@ -1,21 +1,21 @@
 ﻿@page "/"
-@attribute [AllowAnonymous]
-@inject AuthenticationStateProvider AuthenticationStateProvider
-@code {
-    private bool IsAuthenticated { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        AuthenticationState authenticationState;
-        authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authenticationState.User;
-        IsAuthenticated = user.Identity is not null && user.Identity.IsAuthenticated;
-    }
-}
+@page "/Home"
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
-@(IsAuthenticated ? "True" : "False")
+
+<button class="btn btn-primary" @onclick="IncrementCount">
+    @Count
+</button>
 
 Welcome to your new app.
+@code {
+    private int Count { get; set; }
+
+    private void IncrementCount()
+    {
+        Count++;
+    }
+}

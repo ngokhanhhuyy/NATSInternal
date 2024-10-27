@@ -1,0 +1,151 @@
+﻿@namespace NATSInternal.Blazor.Components
+@inject IRoleService RoleService
+
+<MainBlock title="Danh sách nhân viên" body-padding="2">
+    <!-- Header -->
+    <Header>
+        @if (Model.Authorization.CanCreate)
+        {
+            <NavLink to="/User/Create" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-lg"></i>
+                <span>Tạo mới</span>
+            </NavLink>
+        }
+    </Header>
+
+    <!-- Body -->
+    <Body>
+        <div class="row g-3">
+            <!-- Search content -->
+            <div class="col @SearchContentColumnClass">
+                <div class="input-group">
+                    <InputText class="flex-fill border-end-0" type="text"
+                            maxlength="255" placeholder="Họ và tên, số điện thoại ..."
+                            @bind-Value="Model.Content" @onchange="OnSearchContentChanged" />
+
+                    <!-- Advance filters / collapse button -->        
+                    <button class="btn btn-outline-primary" data-bs-toggle="collapse"
+                            href="#advanced-filters-container" aria-expanded="false"
+                            role="button" aria-controls="advanced-filters-container">
+                        <i class="bi bi-sliders"></i>
+                    </button>
+                </div>
+                <span class="small opacity-50 @SearchContentValidationClass">
+                    * Nội dung tìm kiếm phải chứa ít nhất 3 ký tự.
+                </span>
+            </div>
+
+            <!-- Search button -->
+            <div class="col col-auto">
+                <button class="btn btn-primary" @onclick="OnSearchButtonClicked"
+                        disabled="@IsSearchContentValid">
+                    <i class="bi bi-search"></i>
+                    <span class="d-sm-inline d-none ms-2">Tìm kiếm</span>
+                </button>
+            </div>
+        </div>
+        <div class="row g-3 collapse" id="advanced-filters-container">
+            <!-- Order by field -->
+            <div class="col col-sm-6 col-12">
+                <InputLabel Name="Trường sắp xếp" />
+                <SelectInput @bind-Value="Model.OrderByField">
+                    <option value="@OrderByFieldOptions.LastName">
+                        @DisplayNames.LastName
+                    </option>
+                    <option value="@OrderByFieldOptions.FirstName">
+                        @DisplayNames.FirstName
+                    </option>
+                    <option value="@OrderByFieldOptions.UserName">
+                        @DisplayNames.UserName
+                    </option>
+                    <option value="@OrderByFieldOptions.Birthday">
+                        @DisplayNames.Birthday
+                    </option>
+                    <option value="@OrderByFieldOptions.Age">
+                        @DisplayNames.Age
+                    </option>
+                    <option value="@OrderByFieldOptions.CreatedDateTime">
+                        @DisplayNames.CreatedDateTime
+                    </option>
+                    <option value="@OrderByFieldOptions.Role">
+                        @DisplayNames.Role
+                    </option>
+                </SelectInput>
+            </div>
+
+            <!-- Order by direction -->
+            <div class="col col-sm-6 col-12">
+                <InputLabel name="Thứ tự sắp xếp" />
+                <SelectInput @bind-Value="Model.OrderByAscending">
+                    <option value="@true">Từ nhỏ đến lớn</option>
+                    <option value="@false">Từ lớn đến nhỏ</option>
+                </SelectInput>
+            </div>
+
+            <!-- Role options -->
+            <div class="col col-12 pb-0">
+                <InputLabel name="Vị trí" />
+                <div class="d-flex flex-row flex-wrap">
+                    <!-- Specific role button -->
+                    @foreach (RoleBasicModel role in RoleOptions)
+                    {
+                        <div class="btn btn-sm me-2 mb-2 @RoleButtonClassName(role.Name)"
+                                @onclick="@(e => OnRoleButtonClicked(role))">
+                            @if (role.Id == 1)
+                            {
+                                <i class="bi bi-wrench"></i>
+                            }
+                            else if (role.Id == 2)
+                            {  
+                                <i class="bi bi-wrench"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-star"></i>
+                            }
+                            <span class="ms-1">@role.DisplayName</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </Body>
+</MainBlock>
+
+@code {
+    [Parameter]
+    public UserListModel Model { get; set; }
+
+    [Parameter]
+    public EventCallback OnSearchButtonClicked { get; set; }
+
+    private List<RoleBasicModel> RoleOptions { get; set; }
+
+    private bool IsSearchContentValid => Model.Content.Length == 0 ||
+        Model.Content.Length >= 3;
+
+    private string SearchContentColumnClass => !IsSearchContentValid ? "pb-0" : null;
+
+    private string SearchContentValidationClass => !IsSearchContentValid ? "d-none" : null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        RoleListResponseDto responseDto = await RoleService.GetListAsync();
+        RoleOptions = responseDto.Items.Select(role => new RoleBasicModel(role)).ToList();
+    }
+
+    private string RoleButtonClassName(string roleName) {
+        string color = RoleHelper.GetRoleBootstrapColor(roleName);
+        return $"bg-{color} bg-opacity-10 border-{color}-subtle text-{color}";
+    }
+
+    private void OnSearchContentChanged(ChangeEventArgs _)
+    {
+        Model.Page = 1;
+    }
+
+    private void OnRoleButtonClicked(RoleBasicModel role)
+    {
+        Model.Role = role;
+    }
+}

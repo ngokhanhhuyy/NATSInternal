@@ -3,6 +3,10 @@
     background: transparent !important;
 }
 
+#app {
+    max-width: unset !important;
+}
+
 .container-fluid {
     width: 100vw;
     max-width: 100%;

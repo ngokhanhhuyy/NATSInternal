@@ -1,0 +1,10 @@
+﻿@namespace NATSInternal.Blazor.Components
+
+<div class="container-fluid d-flex flex-column px-2 pb-1">
+    @Body
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment Body { get; set; }
+}

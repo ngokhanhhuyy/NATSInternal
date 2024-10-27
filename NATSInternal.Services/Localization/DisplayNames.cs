@@ -30,6 +30,7 @@ public static class DisplayNames
     public const string Id = "Mã số";
     public const string Name = "Tên";
     public const string Account = "Tài khoản";
+    public const string Age = "Tuổi";
     public const string Profile = "Hồ sơ";
     public const string UserName = "Tên đăng nhập";
     public const string Password = "Mật khẩu";

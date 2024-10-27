@@ -19,7 +19,7 @@ public class BrandValidator : Validator<BrandUpsertRequestDto>
             .Matches(PhoneNumberRegex).WithMessage(ErrorMessages.Invalid)
             .WithName(DisplayNames.PhoneNumber);
         RuleFor(dto => dto.Email)
-            .MaximumLength(15)
+            .MaximumLength(255)
             .Matches(EmailRegex).WithMessage(ErrorMessages.Invalid)
             .WithName(DisplayNames.Email);
         RuleFor(dto => dto.Address)

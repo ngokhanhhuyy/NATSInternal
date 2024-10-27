@@ -95,6 +95,10 @@
     border: none;
 }
 
+#topbar #current-user a {
+    color: unset;
+}
+
 #topbar #current-user .avatar-container img.avatar {
     height: 100%;
     aspect-ratio: 1;

@@ -10,8 +10,6 @@ public class SupplyDetailResponseDto : IProductEngageableDetailResponseDto<
     public int Id { get; internal set; }
     public DateTime StatsDateTime { get; internal set; }
     public long ShipmentFee { get; internal set; }
-    public long ItemAmount { get; internal set; }
-    public long AmountAfterVat { get; internal set; }
     public string Note { get; internal set; }
     public DateTime CreatedDateTime { get; internal set; }
     public UserBasicResponseDto CreatedUser { get; internal set; }
@@ -21,6 +19,9 @@ public class SupplyDetailResponseDto : IProductEngageableDetailResponseDto<
     public List<SupplyPhotoResponseDto> Photos { get; internal set; }
     public SupplyAuthorizationResponseDto Authorization { get; internal set; }
     public List<SupplyUpdateHistoryResponseDto> UpdateHistories { get; internal set; }
+
+    [JsonIgnore]
+    public long AmountAfterVat => Items.Sum(i => i.ProductAmountPerUnit * i.Quantity);
 
     public string ThumbnailUrl => Photos?
         .OrderBy(p => p.Id)
@@ -34,8 +35,6 @@ public class SupplyDetailResponseDto : IProductEngageableDetailResponseDto<
         Id = supply.Id;
         StatsDateTime = supply.StatsDateTime;
         ShipmentFee = supply.ShipmentFee;
-        ItemAmount = supply.ItemAmount;
-        AmountAfterVat = supply.Amount;
         Note = supply.Note;
         IsLocked = supply.IsLocked;
         CreatedDateTime = supply.CreatedDateTime;

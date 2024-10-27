@@ -1,0 +1,30 @@
+.block-body {
+    max-height: 400px;
+    height: auto;
+    overflow-y: auto;
+}
+
+img {
+    height: 40px;
+    width: 40px;
+}
+
+.name {
+    overflow: hidden;
+}
+
+.name a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.name a:hover {
+    text-decoration: underline;
+}
+
+.name span {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}

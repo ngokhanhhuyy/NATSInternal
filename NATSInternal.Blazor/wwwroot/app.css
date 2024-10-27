@@ -36,7 +36,6 @@ body {
     overflow: auto;
     transition: color 0.5s, background-color 0.5s;
     line-height: 1.6;
-    font-size: 14px;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -210,6 +209,14 @@ select.is-invalid {
 
 span.valid-feedback:after {
     content: "Hợp lệ";
+}
+
+a {
+    text-decoration: none !important;
+}
+
+a.hover-underline:hover {
+    text-decoration: underline;
 }
 
 .btn-outline-primary:not(:hover),

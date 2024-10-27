@@ -1,0 +1,94 @@
+@namespace NATSInternal.Blazor.Components
+@inject IUserService UserService
+@rendermode InteractiveServer
+
+<MainBlock Title="blockTitle" BodyPadding="0">
+    <!-- Header -->
+    <Header>
+        <button class="btn btn-primary btn-sm" @click="reloadAsync"
+                :disabled="loadingState.isLoading">
+            <i class="bi bi-arrow-counterclockwise"></i>
+        </button>
+    </Header>
+
+    <!-- Body -->
+    <Body>
+        <ul class="list-group list-group-flush top-effective-users-list"
+                v-show="!loadingState.isLoading">
+            @if (Model.Items.Any())
+            {
+                @foreach (UserBasicModel user in Model.Items)
+                {
+                    <li class="list-group-item d-flex flex-row align-items-center
+                                bg-transparent px-3 py-2">
+                        <NavLink href="/User/">
+                            <img src="@user.AvatarUrl" class="rounded-circle me-2">
+                        </NavLink>
+                        <div class="d-flex flex-column flex-fill align-items-start name">
+                            <NavLink href="/User/">
+                                <span class="fw-bold">@user.FullName</span>
+                            </NavLink>
+                            <span class="badge bg-success-subtle border
+                                        border-success-subtle text-success my-1
+                                        rounded small handled-orders fw-bold">
+                                {{ getDetailText(user) }}
+                            </span>
+                        </div>
+                    </li>
+                }
+            }
+            <li class="d-flex align-items-center justify-content-center p-3
+                    opacity-50" v-else>
+                @ResultNotFoundText
+            </li>
+        </ul>
+    </Body>
+</MainBlock>
+
+@code {
+    public UserSecondaryListMode Mode { get; set; }
+
+    private UserListModel Model { get; set; }
+
+    private strong BlockTitle => Mode === UserSecondaryListMode.JoinedRecently
+        ? "Mới gia nhập"
+        : "Sinh nhật tháng này";
+
+    private string ResultNotFoundText
+    {
+        get
+        {
+            if (Mode == UserSecondaryListMode.JoinedRecently) {
+                return "Không có nhân viên nào vừa gia nhập";
+            }
+
+            return "Không có nhân viên nào có sinh nhật sắp tới";
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Mode == UserSecondaryListMode.JoinedRecently)
+        {
+            Model = new UserListModel
+            {
+                JoinedRencentlyOnly = true
+            };
+        }
+        else
+        {
+            Model = new UserListModel
+            {
+                UpcomingBirthdayOnly = true
+            };
+        }
+
+        UserListResponseDto responseDto = await UserService.GetListAsync(Model.ToRequestDto());
+        Model.MapFromResponseDto(responseDto);
+    }
+
+    private string GetDetailText(UserBasicModel user) {
+        string result = Mode = UserSecondaryListMode.JoinedRecently ? user.joiningDate! : user.birthday!;
+        return result.split(", ")[0];
+    }
+}

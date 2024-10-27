@@ -81,12 +81,19 @@
         CurrentRouteName = NavigationManager
             .ToBaseRelativePath(NavigationManager.Uri)
             .Split("/")
-            .First();
+            .First()
+            .ToLower();
+        Console.WriteLine(CurrentRouteName);
     }
 
     private string ItemClass(string itemName)
     {
-        if (CurrentRouteName == itemName)
+        if (itemName == "Home" && CurrentRouteName == string.Empty)
+        {
+            return "selected";
+        }
+        
+        if (CurrentRouteName == itemName.ToLower())
         {
             return "selected";
         }

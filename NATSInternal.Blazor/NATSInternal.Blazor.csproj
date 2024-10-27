@@ -8,6 +8,12 @@
     <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Components\Layout\MainBlock.razor.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Components\Layout\MainBlock.razor.css" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.10.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

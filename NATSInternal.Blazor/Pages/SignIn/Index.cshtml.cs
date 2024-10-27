@@ -24,7 +24,7 @@ public class SignInPageModel : PageModel
 
     public IActionResult OnGet()
     {
-        if (User.Identity.IsAuthenticated)
+        if (User.Identity?.IsAuthenticated ?? false)
         {
             return Redirect("/");
         }

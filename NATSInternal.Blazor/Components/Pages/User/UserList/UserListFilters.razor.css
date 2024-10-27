@@ -1,0 +1,6 @@
+.all-role-button {
+    --color: 111, 66, 193;
+    color: rgb(var(--color)) !important;
+    background-color: rgba(var(--color), 0.1) !important;
+    border-color: rgba(var(--color), 0.4);
+}

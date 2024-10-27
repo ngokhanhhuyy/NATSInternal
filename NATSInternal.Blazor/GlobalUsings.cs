@@ -7,6 +7,7 @@ global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.SignalR;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.AspNetCore.Components.Forms;
+global using NATSInternal.Blazor.Enums;
 global using NATSInternal.Blazor.Extensions;
 global using NATSInternal.Blazor.Helpers;
 global using NATSInternal.Blazor.Models;

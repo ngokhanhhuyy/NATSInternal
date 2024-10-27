@@ -223,6 +223,14 @@ header {
     margin: 0 auto 2rem;
 }
 
+a {
+    text-decoration: none !important;
+}
+
+.hover-underline:hover {
+    text-decoration: underline !important;
+}
+
 @media (max-width: 1420px) {
     html {
         scrollbar-gutter: auto;
