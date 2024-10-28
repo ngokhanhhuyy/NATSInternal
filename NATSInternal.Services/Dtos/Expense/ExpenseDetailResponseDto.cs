@@ -23,6 +23,7 @@ public class ExpenseDetailResponseDto : IFinancialEngageableDetailResponseDto<
     {
         Id = expense.Id;
         AmountAfterVat = expense.Amount;
+        CreatedDateTime = expense.CreatedDateTime;
         StatsDateTime = expense.StatsDateTime;
         Category = expense.Category;
         Note = expense.Note;
