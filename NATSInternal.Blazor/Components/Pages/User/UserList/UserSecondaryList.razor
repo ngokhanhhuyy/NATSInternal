@@ -2,7 +2,7 @@
 @inject IUserService UserService
 @rendermode InteractiveServer
 
-<MainBlock Title="blockTitle" BodyPadding="0">
+<MainBlock Title="blockTitle" BodyPadding="@((0, 0, 0, 0))">
     <!-- Header -->
     <Header>
         <button class="btn btn-primary btn-sm" @click="reloadAsync"
@@ -50,7 +50,7 @@
 
     private UserListModel Model { get; set; }
 
-    private strong BlockTitle => Mode === UserSecondaryListMode.JoinedRecently
+    private string BlockTitle => Mode == UserSecondaryListMode.JoinedRecently
         ? "Mới gia nhập"
         : "Sinh nhật tháng này";
 
@@ -88,7 +88,9 @@
     }
 
     private string GetDetailText(UserBasicModel user) {
-        string result = Mode = UserSecondaryListMode.JoinedRecently ? user.joiningDate! : user.birthday!;
-        return result.split(", ")[0];
+        string result = Mode == UserSecondaryListMode.JoinedRecently
+            ? user.JoiningDate?.ToVietnameseString()
+            : user.Birthday?.ToVietnameseString();
+        return result.Split(", ")[0];
     }
 }
