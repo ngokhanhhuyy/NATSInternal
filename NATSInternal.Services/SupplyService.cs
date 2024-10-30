@@ -102,23 +102,23 @@ internal class SupplyService
         await using IDbContextTransaction transaction = await _context.Database
             .BeginTransactionAsync();
 
-        // Determine the SupplyDateTime.
-        DateTime paidDateTime = DateTime.UtcNow.ToApplicationTime();
+        // Determine the StatsDateTime.
+        DateTime statsDateTime = DateTime.UtcNow.ToApplicationTime();
         if (requestDto.StatsDateTime.HasValue)
         {
-            // Check if the current user has permission to specify the SupplyDateTime.
+            // Check if the current user has permission to specify the StatsDateTime.
             if (!_authorizationService.CanSetSupplyStatsDateTime())
             {
                 throw new AuthorizationException();
             }
 
-            paidDateTime = requestDto.StatsDateTime.Value;
+            statsDateTime = requestDto.StatsDateTime.Value;
         }
 
         // Initialize entity.
         Supply supply = new Supply
         {
-            StatsDateTime = paidDateTime,
+            StatsDateTime = statsDateTime,
             ShipmentFee = requestDto.ShipmentFee,
             Note = requestDto.Note,
             CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),
@@ -198,21 +198,21 @@ internal class SupplyService
         long oldShipmentFee = supply.ShipmentFee;
         DateOnly oldPaidDate = DateOnly.FromDateTime(supply.StatsDateTime);
 
-        // Determining SupplyDateTime.
+        // Determining StatsDateTime.
         if (requestDto.StatsDateTime.HasValue)
         {
-            // Restrict the SupplyDateTime to be modified after being locked.
+            // Restrict the StatsDateTime to be modified after being locked.
             if (supply.IsLocked)
             {
                 string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
                     .ReplaceResourceName(DisplayNames.Supply)
-                    .ReplacePropertyName(DisplayNames.PaidDateTime);
+                    .ReplacePropertyName(DisplayNames.StatsDateTime);
                 throw new OperationException(
                     nameof(requestDto.StatsDateTime),
                     errorMessage);
             }
 
-            // Validate SupplyDateTime.
+            // Validate StatsDateTime.
             try
             {
                 supply.StatsDateTime = requestDto.StatsDateTime.Value;
@@ -220,7 +220,7 @@ internal class SupplyService
             catch (ArgumentException exception)
             {
                 string errorMessage = exception.Message
-                    .ReplacePropertyName(DisplayNames.PaidDateTime);
+                    .ReplacePropertyName(DisplayNames.StatsDateTime);
                 throw new OperationException(
                     nameof(requestDto.StatsDateTime),
                     errorMessage);

@@ -303,7 +303,7 @@ internal abstract class ProductExportableAbstractService<
                 throw new AuthorizationException();
             }
 
-            // Prevent the entity's SupplyDateTime to be modified when the entity is locked.
+            // Prevent the entity's StatsDateTime to be modified when the entity is locked.
             if (entity.IsLocked)
             {
                 string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
@@ -317,7 +317,7 @@ internal abstract class ProductExportableAbstractService<
             // Assign the new StatsDateTime value only if it's different from the old one.
             if (requestDto.StatsDateTime.Value != entity.StatsDateTime)
             {
-                // Validate the specified SupplyDateTime value from the request.
+                // Validate the specified StatsDateTime value from the request.
                 try
                 {
                     _statsService

@@ -4,11 +4,5 @@ public class TreatmentAuthorizationResponseDto : IFinancialEngageableAuthorizati
 {
     public bool CanEdit { get; set; }
     public bool CanDelete { get; set; }
-    public bool CanSetPaidDateTime { get; set; }
-
-    public bool CanSetStatsDateTime
-    {
-        get => CanSetPaidDateTime;
-        set => CanSetPaidDateTime = value;
-    }
+    public bool CanSetStatsDateTime { get; set; }
 }

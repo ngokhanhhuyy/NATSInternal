@@ -96,7 +96,7 @@ internal class ConsultantService
             .BeginTransactionAsync();
 
         // Determine StatsDateTime.
-        DateTime paidDateTime = DateTime.UtcNow.ToApplicationTime();
+        DateTime statsDateTime = DateTime.UtcNow.ToApplicationTime();
         if (requestDto.StatsDateTime.HasValue)
         {
             // Check if the current user has permission to specify a value for StatsDateTime.
@@ -105,7 +105,7 @@ internal class ConsultantService
                 throw new AuthorizationException();
             }
 
-            paidDateTime = requestDto.StatsDateTime.Value;
+            statsDateTime = requestDto.StatsDateTime.Value;
         }
 
         // Initialize consultant.
@@ -113,7 +113,7 @@ internal class ConsultantService
         {
             AmountBeforeVat = requestDto.AmountBeforeVat,
             VatAmount = requestDto.VatAmount,
-            StatsDateTime = paidDateTime,
+            StatsDateTime = statsDateTime,
             Note = requestDto.Note,
             CustomerId = requestDto.CustomerId,
             CreatedUserId = _authorizationService.GetUserId()
@@ -126,7 +126,7 @@ internal class ConsultantService
             await _context.SaveChangesAsync();
 
             // Consultant can be created successfully, adjust the stats.
-            DateOnly paidDate = DateOnly.FromDateTime(paidDateTime);
+            DateOnly paidDate = DateOnly.FromDateTime(statsDateTime);
             await _statsService
                 .IncrementConsultantGrossRevenueAsync(consultant.AmountBeforeVat, paidDate);
 
@@ -195,7 +195,7 @@ internal class ConsultantService
             {
                 string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
                     .ReplaceResourceName(DisplayNames.Consultant)
-                    .ReplacePropertyName(DisplayNames.PaidDateTime);
+                    .ReplacePropertyName(DisplayNames.StatsDateTime);
                 throw new OperationException(
                     nameof(requestDto.StatsDateTime),
                     errorMessage);
@@ -212,7 +212,7 @@ internal class ConsultantService
                 catch (ValidationException exception)
                 {
                     string errorMessage = exception.Message
-                        .ReplacePropertyName(DisplayNames.PaidDateTime);
+                        .ReplacePropertyName(DisplayNames.StatsDateTime);
                     throw new OperationException(
                         nameof(requestDto.StatsDateTime),
                         errorMessage);

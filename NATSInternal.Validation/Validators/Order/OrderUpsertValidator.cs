@@ -6,7 +6,7 @@ public class OrderUpsertValidator : Validator<OrderUpsertRequestDto>
     {
         RuleFor(dto => dto.StatsDateTime)
             .IsValidStatsDateTime()
-            .WithName(DisplayNames.PaidDateTime);
+            .WithName(DisplayNames.StatsDateTime);
         RuleFor(dto => dto.Note)
             .MaximumLength(255)
             .WithName(DisplayNames.Note);

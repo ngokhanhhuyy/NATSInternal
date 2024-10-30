@@ -65,7 +65,6 @@ public static class DisplayNames
     public const string DefaultVatPercentage = "Thuế VAT mặc định";
     public const string IsForRetail = "Sản phẩm bán lẻ";
     public const string IsDiscontinued = "Ngừng kinh doanh";
-    public const string SuppliedDateTime = "Ngày nhập hàng";
     public const string SuppliedQuatity = "Số lượng nhập hàng";
     public const string StockingQuatity = "Số lượng trong kho";
     public const string ShipmentFee = "Phí vận chuyển";
@@ -77,7 +76,6 @@ public static class DisplayNames
     public const string ServiceAmount = "Tiền công";
     public const string PayeeName = "Tên người nhận thanh toán";
     public const string PaidAmount = "Số tiền đã thanh toán";
-    public const string PaidDateTime = "Ngày giờ đã thanh toán";
     public const string StartingDateTime = "Ngày giờ bắt đầu";
     public const string EndingDateTime = "Ngày giờ kết thúc";
     public const string Category = "Phân loại";
@@ -118,7 +116,6 @@ public static class DisplayNames
     public const string RecordedMonth = "Tháng thống kê";
     public const string RecordedYear = "Năm thống kê";
     public const string RecordedMonthAndYear = "Tháng và năm thông kê";
-    public const string IncurredDateTime = "Thời gian chịu";
     public const string IntervalInMinutes = "Số phút hiệu lực";
     public const string StatsDateTime = "Ngày thống kê";
 

@@ -6,7 +6,7 @@ public class TreatmentUpsertValidator : Validator<TreatmentUpsertRequestDto>
     {
         RuleFor(dto => dto.StatsDateTime)
             .IsValidStatsDateTime()
-            .WithName(DisplayNames.PaidDateTime);
+            .WithName(DisplayNames.StatsDateTime);
         RuleFor(dto => dto.ServiceAmountBeforeVat)
             .GreaterThanOrEqualTo(0)
             .WithName(DisplayNames.ServiceAmount);

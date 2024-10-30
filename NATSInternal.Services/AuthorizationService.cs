@@ -220,7 +220,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         {
             CanEdit = CanEditTreatment(treatment),
             CanDelete = CanDeleteTreatment(treatment),
-            CanSetPaidDateTime = CanSetTreatmentStatsDateTime()
+            CanSetStatsDateTime = CanSetTreatmentStatsDateTime()
         };
     }
 
@@ -240,7 +240,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         {
             CanEdit = CanEditDebtIncurrence(debtIncurrence),
             CanDelete = CanDeleteDebtIncurrence(debtIncurrence),
-            CanSetIncurredDateTime = CanSetDebtIncurrenceStatsDateTime()
+            CanSetStatsDateTime = CanSetDebtIncurrenceStatsDateTime()
         };
     }
 
@@ -541,7 +541,7 @@ internal class AuthorizationService : IAuthorizationInternalService
     
     public bool CanSetDebtIncurrenceStatsDateTime()
     {
-        return _user.HasPermission(PermissionConstants.SetDebtIncurrenceStatsDateTime);
+        return _user.HasPermission(PermissionConstants.SetDebtStatsDateTime);
     }
     
     public bool CanAccessDebtIncurrenceUpdateHistories()

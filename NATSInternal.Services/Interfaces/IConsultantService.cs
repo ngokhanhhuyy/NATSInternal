@@ -48,7 +48,7 @@ public interface IConsultantService
     /// </returns>
     /// <exception cref="AuthorizationException">
     /// Thrown when the user doens't have enough permissions to update the consultant or
-    /// to specify a value for the property <c>SupplyDateTime</c> in the <c>requestDto</c>
+    /// to specify a value for the property <c>StatsDateTime</c> in the <c>requestDto</c>
     /// argument.
     /// </exception>
     /// <exception cref="ConcurrencyException">
@@ -80,14 +80,15 @@ public interface IConsultantService
     /// </exception>
     /// <exception cref="AuthorizationException">
     /// Thrown when the user doens't have enough permissions to update the consultant or
-    /// to specify a value for the property `paidDateTime` in the `requestDto` argument.
+    /// to specify a value for the property <c>StatsDateTime</c> in the <c>requestDto</c>
+    /// argument.
     /// </exception>
     /// <exception cref="ConcurrencyException">
     /// Throws the operation faces concurrency conflict.
     /// </exception>
     /// <exception cref="OperationException">
     /// Throws under the following circumstances:<br/>
-    /// - When the value for <c>SupplyDateTime</c> property in the <c>requestDto</c>
+    /// - When the value for <c>StatsDateTime</c> property in the <c>requestDto</c>
     /// argument is specified when the consultant has already been locked.<br/>
     /// - When the requesting user has been deleted before the operation.<br/>
     /// - When the customer with id specified by the value of the property

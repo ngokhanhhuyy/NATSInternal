@@ -73,7 +73,7 @@ public static class PermissionConstants
     public const string CreateDebtIncurrence = "CreateDebtIncurrence";
     public const string EditDebtIncurrence = "EditDebtIncurrence";
     public const string EditLockedDebtIncurrence = "EditLockedDebtIncurrence";
-    public const string SetDebtIncurrenceStatsDateTime = "SetDebtIncurrenceIncurredDateTime";
+    public const string SetDebtStatsDateTime = "SetDebtIncurrenceStatsDateTimeDateTime";
     public const string DeleteDebtIncurrence = "DeleteDebtIncurrence";
     public const string AccessDebtIncurrenceUpdateHistories = "AccessDebtIncurrenceUpdateHistories";
 

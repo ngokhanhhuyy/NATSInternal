@@ -139,7 +139,7 @@ public sealed class DataInitializer
                         PermissionConstants.EditDebtIncurrence,
                         PermissionConstants.EditLockedDebtIncurrence,
                         PermissionConstants.DeleteDebtIncurrence,
-                        PermissionConstants.SetDebtIncurrenceStatsDateTime,
+                        PermissionConstants.SetDebtStatsDateTime,
                         PermissionConstants.AccessDebtIncurrenceUpdateHistories,
                         PermissionConstants.CreateDebtPayment,
                         PermissionConstants.EditDebtPayment,
@@ -206,7 +206,7 @@ public sealed class DataInitializer
                         PermissionConstants.CreateDebtIncurrence,
                         PermissionConstants.EditDebtIncurrence,
                         PermissionConstants.DeleteDebtIncurrence,
-                        PermissionConstants.SetDebtIncurrenceStatsDateTime,
+                        PermissionConstants.SetDebtStatsDateTime,
                         PermissionConstants.AccessDebtIncurrenceUpdateHistories,
                         PermissionConstants.CreateDebtPayment,
                         PermissionConstants.EditDebtPayment,
@@ -976,8 +976,8 @@ public sealed class DataInitializer
         {
             Console.WriteLine("Initializing orders.");
             Random random = new Random();
-            DateTime maxPaidDateTime = DateTime.UtcNow.ToApplicationTime();
-            DateTime currentDateTime = maxPaidDateTime
+            DateTime maxStatsDateTime = DateTime.UtcNow.ToApplicationTime();
+            DateTime currentDateTime = maxStatsDateTime
                 .AddMonths(-6);
             List<int> customerIds = _context.Customers.Select(c => c.Id).ToList();
             List<Product> products = _context.Products.ToList();
@@ -990,7 +990,7 @@ public sealed class DataInitializer
                     .Contains(PermissionConstants.CreateOrder))
                 .Select(u => u.Id)
                 .ToList();
-            while (currentDateTime < maxPaidDateTime)
+            while (currentDateTime < maxStatsDateTime)
             {
                 // Determine datetime
                 do
@@ -1045,8 +1045,8 @@ public sealed class DataInitializer
         {
             Console.WriteLine("Initializing treatments");
             Random random = new Random();
-            DateTime maxPaidDateTime = DateTime.UtcNow.ToApplicationTime();
-            DateTime currentDateTime = maxPaidDateTime
+            DateTime maxStatsDateTime = DateTime.UtcNow.ToApplicationTime();
+            DateTime currentDateTime = maxStatsDateTime
                 .AddMonths(-6);
 
             // Fetch all necessary data for foreign keys.
@@ -1063,7 +1063,7 @@ public sealed class DataInitializer
                 .ToList();
 
             // Perform the loop for initialization.
-            while (currentDateTime < maxPaidDateTime)
+            while (currentDateTime < maxStatsDateTime)
             {
                 // Determine datetime.
                 do
@@ -1469,7 +1469,9 @@ public sealed class DataInitializer
             {
                 StatsDateTime = statsDateTime,
                 CreatedDateTime = statsDateTime,
-                Note = random.Next(0, 2) == 0 ? null : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
+                Note = random.Next(0, 2) == 0
+                    ? null
+                    : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
                 CustomerId = customerIds.MinBy(_ => Guid.NewGuid()),
                 CreatedUserId = userIds.MinBy(_ => Guid.NewGuid()),
                 Items = new List<OrderItem>()
@@ -1495,7 +1497,7 @@ public sealed class DataInitializer
                 OrderItem item = new OrderItem
                 {
                     ProductAmountPerUnit = product.DefaultPrice,
-                    VatAmountPerUnit = 0,
+                    VatAmountPerUnit = (int)Math.Round(product.DefaultPrice * 0.1),
                     Quantity = Math.Min(random.Next(1, 5), product.StockingQuantity),
                     ProductId = product.Id
                 };
@@ -1550,12 +1552,13 @@ public sealed class DataInitializer
                 .First();
 
             // Initialize treatment entity.
+            long serviceAmountBeforeVat = random.Next(1_000, 2_000) * 1000;
             Treatment treatment = new Treatment
             {
                 StatsDateTime = statsDateTime,
                 CreatedDateTime = statsDateTime,
-                ServiceAmountBeforeVat = random.Next(1_000, 2_000) * 1000,
-                ServiceVatAmount = random.Next(0, 20),
+                ServiceAmountBeforeVat = serviceAmountBeforeVat,
+                ServiceVatAmount = (int)Math.Round(serviceAmountBeforeVat * 0.1),
                 Note = random.Next(0, 2) == 0 ? null : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
                 CustomerId = customerIds.MinBy(_ => Guid.NewGuid()),
                 CreatedUserId = userIds.MinBy(_ => Guid.NewGuid()),
@@ -1629,7 +1632,9 @@ public sealed class DataInitializer
             StatsDateTime = statsDateTime,
             CreatedDateTime = statsDateTime,
             AmountBeforeVat = random.Next(500, 2_500) * 1000,
-            Note = random.Next(0, 2) == 0 ? null : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
+            Note = random.Next(0, 2) == 0
+                ? null
+                : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
             CustomerId = customerIds.MinBy(_ => Guid.NewGuid()),
             CreatedUserId = userIds.MinBy(_ => Guid.NewGuid())
         };
@@ -1648,7 +1653,8 @@ public sealed class DataInitializer
 
         if (logResult)
         {
-            Console.WriteLine($"Initialized consultant with id {consultant.Id} at {statsDateTime}");
+            Console.WriteLine($"Initialized consultant with id {consultant.Id}" +
+                $"at {statsDateTime}");
         }
     }
 

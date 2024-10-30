@@ -6,7 +6,7 @@ public class DebtPaymentListRequestDto
         ICustomerEngageableListRequestDto
 {
     public bool OrderByAscending { get; set; }
-    public string OrderByField { get; set; } = nameof(FieldOptions.PaidDateTime);
+    public string OrderByField { get; set; } = nameof(OrderByFieldOptions.StatsDateTime);
     public int Month { get; set; }
     public int Year { get; set; }
     public bool IgnoreMonthYear { get; set; }
@@ -45,11 +45,5 @@ public class DebtPaymentListRequestDto
         {
             CreatedUserId = null;
         }
-    }
-
-    public enum FieldOptions
-    {
-        PaidDateTime,
-        Amount
     }
 }

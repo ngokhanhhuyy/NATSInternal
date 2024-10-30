@@ -220,7 +220,7 @@ internal class ExpenseService
         // Store the current data as the old data for update history logging.
         ExpenseUpdateHistoryDataDto oldData = new ExpenseUpdateHistoryDataDto(expense);
 
-        // Determine the SupplyDateTime if the request has specified a value.
+        // Determine the StatsDateTime if the request has specified a value.
         if (requestDto.StatsDateTime.HasValue)
         {
             // Check if the current user has permission to specify the paid datetime.
@@ -234,16 +234,16 @@ internal class ExpenseService
             {
                 string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
                     .ReplaceResourceName(DisplayNames.Consultant)
-                    .ReplacePropertyName(DisplayNames.PaidDateTime);
+                    .ReplacePropertyName(DisplayNames.StatsDateTime);
                 throw new OperationException(
                     nameof(requestDto.StatsDateTime),
                     errorMessage);
             }
 
-            // Assign the new SupplyDateTime value only if it's different from the old one.
+            // Assign the new StatsDateTime value only if it's different from the old one.
             if (requestDto.StatsDateTime.Value != expense.StatsDateTime)
             {
-                // Validate and assign the specified SupplyDateTime value from the request.
+                // Validate and assign the specified StatsDateTime value from the request.
                 try
                 {
                     ValidateStatsDateTime(expense, requestDto.StatsDateTime.Value);
@@ -252,7 +252,7 @@ internal class ExpenseService
                 catch (ValidationException exception)
                 {
                     string errorMessage = exception.Message
-                        .ReplacePropertyName(DisplayNames.PaidDateTime);
+                        .ReplacePropertyName(DisplayNames.StatsDateTime);
                     throw new OperationException(
                         nameof(requestDto.StatsDateTime),
                         errorMessage);
