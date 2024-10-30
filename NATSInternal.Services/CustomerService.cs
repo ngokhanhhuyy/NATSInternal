@@ -75,9 +75,9 @@ internal class CustomerService
                 requestDto.SearchByContent,
                 out DateOnly birthday);
             query = query.Where(c =>
-                c.NormalizedFullName.Contains(
-                    requestDto.SearchByContent,
-                    StringComparison.CurrentCultureIgnoreCase) ||
+                c.NormalizedFullName
+                    .ToLower()
+                    .Contains(requestDto.SearchByContent.ToLower()) ||
                 c.PhoneNumber.Contains(requestDto.SearchByContent) ||
                 (isValidBirthday && c.Birthday.HasValue && c.Birthday.Value == birthday));
         }

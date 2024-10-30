@@ -48,6 +48,7 @@ public class TreatmentDetailResponseDto
             TreatmentAuthorizationResponseDto authorization)
     {
         Id = treatment.Id;
+        CreatedDateTime = treatment.CreatedDateTime;
         StatsDateTime = treatment.StatsDateTime;
         ServiceAmountBeforeVat = treatment.ServiceAmountBeforeVat;
         ServiceVatAmount = treatment.ServiceVatAmount;

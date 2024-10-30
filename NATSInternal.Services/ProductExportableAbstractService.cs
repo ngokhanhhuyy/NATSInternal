@@ -558,13 +558,22 @@ internal abstract class ProductExportableAbstractService<
     protected async Task<T> GetEntityAsync(int id)
     {
         // Initialize query.
-        IQueryable<T> query = GetRepository(_context)
+        IQueryable<T> query = InitializeDetailQuery();
+
+        return await base.GetEntityAsync(query, id);
+    }
+
+    /// <summary>
+    /// Initialize query which includes all related entities for details retrieving operation.
+    /// </summary>
+    /// <returns>An instance of the query to retrieve the details.</returns>
+    protected virtual IQueryable<T> InitializeDetailQuery()
+    {
+        return GetRepository(_context)
             .Include(e => e.Customer)
             .Include(e => e.Items).ThenInclude(i => i.Product)
             .Include(e => e.Photos)
             .Include(e => e.CreatedUser).ThenInclude(u => u.Roles);
-
-        return await base.GetEntityAsync(query, id);
     }
 
     /// <summary>
@@ -591,7 +600,7 @@ internal abstract class ProductExportableAbstractService<
     /// <param name="requestDto">
     /// A DTO containing the data for the updating operation.
     /// </param>
-    protected virtual void AssignExstingEntityProperty(T entity, TUpsertRequestDto requestDto)
+    protected virtual void AssignExistingEntityProperty(T entity, TUpsertRequestDto requestDto)
     {
     }
 

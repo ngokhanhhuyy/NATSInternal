@@ -42,7 +42,7 @@ internal class OrderService
         return new OrderListResponseDto
         {
             PageCount = entityListDto.PageCount,
-            Items = entityListDto.Items
+            Items = entityListDto.Items?
                 .Select(o =>
                 {
                     OrderAuthorizationResponseDto authorization;

@@ -43,7 +43,7 @@ internal class TreatmentService
         return new TreatmentListResponseDto
         {
             PageCount = listDto.PageCount,
-            Items = listDto.Items
+            Items = listDto.Items?
                 .Select(treatment => new TreatmentBasicResponseDto(
                     treatment,
                     _authorizationService.GetTreatmentAuthorization(treatment)))
@@ -73,6 +73,13 @@ internal class TreatmentService
     protected override DbSet<TreatmentItem> GetItemRepository(DatabaseContext context)
     {
         return context.TreatmentItems;
+    }
+
+    /// <inheritdoc />
+    protected override IQueryable<Treatment> InitializeDetailQuery()
+    {
+        return base.InitializeDetailQuery()
+            .Include(t => t.Therapist).ThenInclude(u => u.Roles);
     }
 
     /// <inheritdoc />
@@ -133,11 +140,11 @@ internal class TreatmentService
     }
 
     /// <inheritdoc />
-    protected override void AssignExstingEntityProperty(
+    protected override void AssignExistingEntityProperty(
             Treatment entity,
             TreatmentUpsertRequestDto requestDto)
     {
-        base.AssignExstingEntityProperty(entity, requestDto);
+        base.AssignExistingEntityProperty(entity, requestDto);
         entity.ServiceAmountBeforeVat = requestDto.ServiceAmountBeforeVat;
         entity.ServiceVatAmount = requestDto.ServiceVatAmount;
         entity.TherapistId = requestDto.TherapistId;
