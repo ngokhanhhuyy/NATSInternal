@@ -2,7 +2,7 @@ namespace NATSInternal.Services.Dtos;
 
 public class UserListRequestDto : IRequestDto
 {
-    public string OrderByField { get; set; } = nameof(OrderByFieldOptions.LastName);
+    public string OrderByField { get; set; } = nameof(OrderByFieldOption.LastName);
     public bool OrderByAscending { get; set; } = true;
     public int? RoleId { get; set; }
     public bool JoinedRencentlyOnly { get; set; } = false;

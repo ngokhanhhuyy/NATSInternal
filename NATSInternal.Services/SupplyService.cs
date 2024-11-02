@@ -44,13 +44,13 @@ internal class SupplyService
             supply.Items.Sum(s => s.ProductAmountPerUnit * s.Quantity) + supply.ShipmentFee;
         switch (requestDto.OrderByField)
         {
-            case nameof(OrderByFieldOptions.Amount):
+            case nameof(OrderByFieldOption.Amount):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(amountExpression).ThenBy(s => s.StatsDateTime)
                     : query.OrderByDescending(amountExpression)
                         .ThenByDescending(s => s.StatsDateTime);
                 break;
-            case nameof(OrderByFieldOptions.StatsDateTime):
+            case nameof(OrderByFieldOption.StatsDateTime):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(s => s.StatsDateTime).ThenBy(amountExpression)
                     : query.OrderByDescending(s => s.StatsDateTime)

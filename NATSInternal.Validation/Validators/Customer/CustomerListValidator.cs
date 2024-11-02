@@ -17,15 +17,15 @@ public class CustomerListValidator : Validator<CustomerListRequestDto>
             .WithName(dto => DisplayNames.Get(nameof(dto.ResultsPerPage)));
     }
 
-    private static IEnumerable<OrderByFieldOptions> FieldOptions
+    private static IEnumerable<OrderByFieldOption> FieldOptions
     {
-        get => new List<OrderByFieldOptions>
+        get => new List<OrderByFieldOption>
         {
-            OrderByFieldOptions.LastName,
-            OrderByFieldOptions.FullName,
-            OrderByFieldOptions.Birthday,
-            OrderByFieldOptions.CreatedDateTime,
-            OrderByFieldOptions.DebtRemainingAmount
+            OrderByFieldOption.LastName,
+            OrderByFieldOption.FullName,
+            OrderByFieldOption.Birthday,
+            OrderByFieldOption.CreatedDateTime,
+            OrderByFieldOption.DebtRemainingAmount
         };
     }
 }

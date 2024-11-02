@@ -29,17 +29,17 @@ public class UserListValidator : Validator<UserListRequestDto>
         public const int ResultsPerPageMaximumValue = 50;
     }
 
-    private static IEnumerable<OrderByFieldOptions> FieldOptions
+    private static IEnumerable<OrderByFieldOption> FieldOptions
     {
-        get => new List<OrderByFieldOptions>
+        get => new List<OrderByFieldOption>
         {
-            OrderByFieldOptions.LastName,
-            OrderByFieldOptions.FirstName,
-            OrderByFieldOptions.UserName,
-            OrderByFieldOptions.Birthday,
-            OrderByFieldOptions.Age,
-            OrderByFieldOptions.CreatedDateTime,
-            OrderByFieldOptions.Role,
+            OrderByFieldOption.LastName,
+            OrderByFieldOption.FirstName,
+            OrderByFieldOption.UserName,
+            OrderByFieldOption.Birthday,
+            OrderByFieldOption.Age,
+            OrderByFieldOption.CreatedDateTime,
+            OrderByFieldOption.Role,
         };
     }
 }

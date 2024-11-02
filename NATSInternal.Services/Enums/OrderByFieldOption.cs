@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Enums;
 
-public enum OrderByFieldOptions
+public enum OrderByFieldOption
 {
     Name,
     FullName,

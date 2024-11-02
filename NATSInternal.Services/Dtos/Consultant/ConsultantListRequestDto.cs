@@ -6,7 +6,7 @@ public class ConsultantListRequestDto
         ICustomerEngageableListRequestDto
 {
     public bool OrderByAscending { get; set; }
-    public string OrderByField { get; set; } = nameof(OrderByFieldOptions.StatsDateTime);
+    public string OrderByField { get; set; } = nameof(OrderByFieldOption.StatsDateTime);
     public int Month { get; set; }
     public int Year { get; set; }
     public bool IgnoreMonthYear { get; set; }

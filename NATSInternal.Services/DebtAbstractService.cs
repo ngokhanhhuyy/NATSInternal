@@ -115,13 +115,13 @@ internal abstract class DebtAbstractService<
 
         switch (requestDto.OrderByField)
         {
-            case nameof(OrderByFieldOptions.Amount):
+            case nameof(OrderByFieldOption.Amount):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(dp => dp.Amount).ThenBy(dp => dp.StatsDateTime)
                     : query.OrderByDescending(dp => dp.Amount)
                         .ThenByDescending(dp => dp.StatsDateTime);
                 break;
-            case nameof(OrderByFieldOptions.StatsDateTime):
+            case nameof(OrderByFieldOption.StatsDateTime):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(dp => dp.StatsDateTime).ThenBy(dp => dp.Amount)
                     : query.OrderByDescending(dp => dp.StatsDateTime)

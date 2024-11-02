@@ -25,12 +25,12 @@ public class ConsultantListValidator : Validator<ConsultantListRequestDto>
             .WithName(DisplayNames.ResultsPerPage);
     }
 
-    private static IEnumerable<OrderByFieldOptions> FieldOptions
+    private static IEnumerable<OrderByFieldOption> FieldOptions
     {
-        get => new List<OrderByFieldOptions>
+        get => new List<OrderByFieldOption>
         {
-            OrderByFieldOptions.StatsDateTime,
-            OrderByFieldOptions.Amount
+            OrderByFieldOption.StatsDateTime,
+            OrderByFieldOption.Amount
         };
     }
 }

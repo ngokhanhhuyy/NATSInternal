@@ -5,6 +5,5 @@ internal interface IFinancialEngageableBasicResponseDto<TAuthorization>
     where TAuthorization : IFinancialEngageableAuthorizationResponseDto
 {
     DateTime StatsDateTime { get; }
-    long AmountAfterVat { get; }
     bool IsLocked { get; }
 }

@@ -51,11 +51,11 @@ internal static class RuleValidators
 
     public static IRuleBuilderOptions<T, string> IsOneOfFieldOptions<T>(
             this IRuleBuilder<T, string> ruleBuilder,
-            IEnumerable<OrderByFieldOptions> fieldOptions)
+            IEnumerable<OrderByFieldOption> fieldOptions)
     {
         return ruleBuilder
             .Must(fieldName => fieldOptions
-                .Select(fieldOption => Enum.GetName(typeof(OrderByFieldOptions), fieldOption))
+                .Select(fieldOption => Enum.GetName(typeof(OrderByFieldOption), fieldOption))
                 .Contains(fieldName))
             .When(_ => fieldOptions?.Any() == true)
             .WithMessage(ErrorMessages.Invalid);

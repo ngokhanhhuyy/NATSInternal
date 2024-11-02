@@ -20,9 +20,6 @@ public class SupplyDetailResponseDto : IProductEngageableDetailResponseDto<
     public SupplyAuthorizationResponseDto Authorization { get; internal set; }
     public List<SupplyUpdateHistoryResponseDto> UpdateHistories { get; internal set; }
 
-    [JsonIgnore]
-    public long AmountAfterVat => Items.Sum(i => i.ProductAmountPerUnit * i.Quantity);
-
     public string ThumbnailUrl => Photos?
         .OrderBy(p => p.Id)
         .Select(p => p.Url)

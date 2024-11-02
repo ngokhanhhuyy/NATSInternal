@@ -25,12 +25,12 @@ public class DebtPaymentListValidator : Validator<DebtPaymentListRequestDto>
             .WithName(DisplayNames.ResultsPerPage);
     }
 
-    private static IEnumerable<OrderByFieldOptions> FieldOptions
+    private static IEnumerable<OrderByFieldOption> FieldOptions
     {
-        get => new List<OrderByFieldOptions>
+        get => new List<OrderByFieldOption>
         {
-            OrderByFieldOptions.Amount,
-            OrderByFieldOptions.StatsDateTime
+            OrderByFieldOption.Amount,
+            OrderByFieldOption.StatsDateTime
         };
     }
 }

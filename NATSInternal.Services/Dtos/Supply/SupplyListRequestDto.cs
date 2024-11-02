@@ -3,7 +3,7 @@
 public class SupplyListRequestDto : IProductEngageableListRequestDto
 {
     public bool OrderByAscending { get; set; }
-    public string OrderByField { get; set; } = nameof(OrderByFieldOptions.StatsDateTime);
+    public string OrderByField { get; set; } = nameof(OrderByFieldOption.StatsDateTime);
     public int Year { get; set; }
     public int Month { get; set; }
     public bool IgnoreMonthYear { get; set; }

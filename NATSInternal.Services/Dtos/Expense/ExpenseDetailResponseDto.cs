@@ -5,7 +5,7 @@ public class ExpenseDetailResponseDto : IFinancialEngageableDetailResponseDto<
     ExpenseAuthorizationResponseDto>
 {
     public int Id { get; set; }
-    public long AmountAfterVat { get; set; }
+    public long Amount { get; set; }
     public DateTime StatsDateTime { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public ExpenseCategory Category { get; set; }
@@ -22,7 +22,7 @@ public class ExpenseDetailResponseDto : IFinancialEngageableDetailResponseDto<
             ExpenseAuthorizationResponseDto authorization)
     {
         Id = expense.Id;
-        AmountAfterVat = expense.Amount;
+        Amount = expense.Amount;
         CreatedDateTime = expense.CreatedDateTime;
         StatsDateTime = expense.StatsDateTime;
         Category = expense.Category;

@@ -31,7 +31,7 @@ internal class DebtIncurrenceService
         return new DebtIncurrenceListResponseDto
         {
             PageCount = entityListDto.PageCount,
-            Items = entityListDto.Items
+            Items = entityListDto.Items?
                 .Select(di =>
                 {
                     DebtIncurrenceAuthorizationResponseDto authorization;

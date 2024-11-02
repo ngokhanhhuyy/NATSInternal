@@ -27,22 +27,22 @@ internal class CustomerService
         // Determine the field and the direction the sort.
         switch (requestDto.OrderByField)
         {
-            case nameof(OrderByFieldOptions.FirstName):
+            case nameof(OrderByFieldOption.FirstName):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(c => c.FirstName)
                     : query.OrderByDescending(c => c.FirstName);
                 break;
-            case nameof(OrderByFieldOptions.Birthday):
+            case nameof(OrderByFieldOption.Birthday):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(c => c.Birthday)
                     : query.OrderByDescending(c => c.Birthday);
                 break;
-            case nameof(OrderByFieldOptions.CreatedDateTime):
+            case nameof(OrderByFieldOption.CreatedDateTime):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(c => c.CreatedDateTime)
                     : query.OrderByDescending(c => c.CreatedDateTime);
                 break;
-            case nameof(OrderByFieldOptions.DebtRemainingAmount):
+            case nameof(OrderByFieldOption.DebtRemainingAmount):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(c => c.DebtIncurrences
                             .Where(d => !d.IsDeleted)
@@ -57,7 +57,7 @@ internal class CustomerService
                             .Sum(dp => dp.Amount))
                         .ThenByDescending(c => c.Id);
                 break;
-            case nameof(OrderByFieldOptions.LastName):
+            case nameof(OrderByFieldOption.LastName):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(c => c.LastName).ThenBy(c => c.FirstName)
                     : query.OrderByDescending(c => c.LastName)
@@ -98,7 +98,7 @@ internal class CustomerService
         return new CustomerListResponseDto
         {
             PageCount = listDto.PageCount,
-            Items = listDto.Items
+            Items = listDto.Items?
                 .Select(customer => new CustomerBasicResponseDto(
                     customer,
                     _authorizationService.GetCustomerAuthorization(customer)))

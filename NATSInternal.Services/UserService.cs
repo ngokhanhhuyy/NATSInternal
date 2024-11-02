@@ -34,39 +34,39 @@ internal class UserService : IUserService
         // Determine the field and the direction to sort.
         switch (requestDto.OrderByField)
         {
-            case nameof(OrderByFieldOptions.FirstName):
+            case nameof(OrderByFieldOption.FirstName):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(u => u.FirstName)
                     : query.OrderByDescending(u => u.FirstName);
                 break;
-            case nameof(OrderByFieldOptions.UserName):
+            case nameof(OrderByFieldOption.UserName):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(u => u.UserName)
                     : query.OrderByDescending(u => u.UserName);
                 break;
-            case nameof(OrderByFieldOptions.Birthday):
+            case nameof(OrderByFieldOption.Birthday):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(u => u.Birthday.Value.Month)
                         .ThenBy(u => u.Birthday.Value.Day)
                     : query.OrderByDescending(u => u.Birthday.Value.Month)
                         .ThenByDescending(u => u.Birthday.Value.Day);
                 break;
-            case nameof(OrderByFieldOptions.Age):
+            case nameof(OrderByFieldOption.Age):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(u => u.Birthday)
                     : query.OrderByDescending(u => u.Birthday);
                 break;
-            case nameof(OrderByFieldOptions.CreatedDateTime):
+            case nameof(OrderByFieldOption.CreatedDateTime):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(u => u.CreatedDateTime)
                     : query.OrderByDescending(u => u.CreatedDateTime);
                 break;
-            case nameof(OrderByFieldOptions.Role):
+            case nameof(OrderByFieldOption.Role):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(u => u.Roles.First().Id)
                     : query.OrderByDescending(u => u.Roles.First().Id);
                 break;
-            case nameof(OrderByFieldOptions.LastName):
+            case nameof(OrderByFieldOption.LastName):
             default:
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(u => u.LastName)

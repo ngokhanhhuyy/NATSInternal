@@ -4,7 +4,7 @@ public class DebtIncurrenceBasicResponseDto
     : ICustomerEngageableBasicResponseDto<DebtIncurrenceAuthorizationResponseDto>
 {
     public int Id { get; set; }
-    public long AmountAfterVat { get; set; }
+    public long Amount { get; set; }
     public string Note { get; set; }
     public DateTime StatsDateTime { get; set; }
     public bool IsLocked { get; set; }
@@ -27,7 +27,7 @@ public class DebtIncurrenceBasicResponseDto
     private void MapFromEntity(DebtIncurrence debt)
     {
         Id = debt.Id;
-        AmountAfterVat = debt.Amount;
+        Amount = debt.Amount;
         Note = debt.Note;
         StatsDateTime = debt.StatsDateTime;
         IsLocked = debt.IsLocked;

@@ -507,13 +507,13 @@ internal abstract class ProductExportableAbstractService<
         // Order the results.
         switch (requestDto.OrderByField)
         {
-            case nameof(OrderByFieldOptions.Amount):
+            case nameof(OrderByFieldOption.Amount):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(T.AmountAfterVatExpression).ThenBy(t => t.StatsDateTime)
                     : query.OrderByDescending(T.AmountAfterVatExpression)
                         .ThenByDescending(t => t.StatsDateTime);
                 break;
-            case nameof(OrderByFieldOptions.StatsDateTime):
+            case nameof(OrderByFieldOption.StatsDateTime):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(t => t.StatsDateTime)
                         .ThenBy(T.AmountAfterVatExpression)

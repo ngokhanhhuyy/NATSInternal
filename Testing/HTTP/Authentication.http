@@ -1,20 +1,5 @@
 @host = http://localhost:5000/api
 
-# @name GetAccessToken
-// @no-log
-POST {{host}}/authentication/getAccessToken?includeExchangeToken=False
-Content-Type: application/json
-
-{
-    "userName": "ngokhanhhuyy",
-    "password": "Huyy47b1"
-}
-
-###
-
-@accessToken = {{GetAccessToken.response.body.$.accessToken}}
-
-###
 # @name GetAccessCookie
 // @no-log
 POST {{host}}/authentication/getAccessCookie
@@ -41,6 +26,16 @@ Cookie: {{accessCookie}}
 GET {{host}}/supply?month=7&year=2024&productId=1
 Content-Type: application/json
 Cookie: {{accessCookie}}
+
+###
+# @name TreatmentList
+GET {{host}}/treatment
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+{
+    "ignoreMonthYear": true
+}
 
 ###
 # @name DebtIncurrenceList

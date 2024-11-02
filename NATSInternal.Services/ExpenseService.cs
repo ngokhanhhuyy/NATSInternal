@@ -38,14 +38,14 @@ internal class ExpenseService
         // Sort the results.
         switch (requestDto.OrderByField)
         {
-            case nameof(OrderByFieldOptions.Amount):
+            case nameof(OrderByFieldOption.Amount):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(e => e.Amount)
                         .ThenBy(e => e.StatsDateTime)
                     : query.OrderByDescending(e => e.Amount)
                         .ThenByDescending(e => e.StatsDateTime);
                 break;
-            case nameof(OrderByFieldOptions.StatsDateTime):
+            case nameof(OrderByFieldOption.StatsDateTime):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(e => e.StatsDateTime)
                         .ThenBy(e => e.Amount)

@@ -41,13 +41,13 @@ internal class ConsultantService
             consultant.AmountBeforeVat + consultant.VatAmount;
         switch (requestDto.OrderByField)
         {
-            case nameof(OrderByFieldOptions.Amount):
+            case nameof(OrderByFieldOption.Amount):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(amountExpression).ThenBy(e => e.StatsDateTime)
                     : query.OrderByDescending(amountExpression)
                         .ThenByDescending(e => e.StatsDateTime);
                 break;
-            case nameof(OrderByFieldOptions.StatsDateTime):
+            case nameof(OrderByFieldOption.StatsDateTime):
                 query = requestDto.OrderByAscending
                     ? query.OrderBy(e => e.StatsDateTime).ThenBy(amountExpression)
                     : query.OrderByDescending(e => e.StatsDateTime)
@@ -62,7 +62,7 @@ internal class ConsultantService
         return new ConsultantListResponseDto
         {
             PageCount = listDto.PageCount,
-            Items = listDto.Items
+            Items = listDto.Items?
                 .Select(consultant => new ConsultantBasicResponseDto(
                     consultant,
                     _authorizationService.GetConsultantAuthorization(consultant)))

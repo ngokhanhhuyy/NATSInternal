@@ -12,7 +12,7 @@ global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Storage;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.Extensions.DependencyInjection;
-global using Microsoft.Extensions.Hosting;
+// global using Microsoft.Extensions.Hosting;
 global using MySqlConnector;
 global using NATSInternal.Services.Constants;
 global using NATSInternal.Services.Dtos;
@@ -28,7 +28,7 @@ global using NATSInternal.Services.Localization;
 global using NATSInternal.Services.Utilities;
 
 global using FluentValidation;
-global using FluentValidation.Results;
+// global using FluentValidation.Results;
 global using ValidationException = System.ComponentModel.DataAnnotations.ValidationException;
 global using ImageMagick;
 global using Bogus;

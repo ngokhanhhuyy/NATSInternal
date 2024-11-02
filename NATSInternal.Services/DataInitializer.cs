@@ -8,6 +8,7 @@ public sealed class DataInitializer
     private DatabaseContext _context;
     private UserManager<User> _userManager;
     private RoleManager<Role> _roleManager;
+    private Queue<DebtPayment> _queueingDebtPayments = new Queue<DebtPayment>();
 
     public void InitializeData(IApplicationBuilder builder)
     {
@@ -1268,6 +1269,9 @@ public sealed class DataInitializer
                     break;
                 }
 
+                // Generate queueing DebtPayments.
+                GenerateDebtPayment(statsDateTime, logResult);
+
                 // Determine type of entity that is to be created.
                 int randomNumber = random.Next(1, 101);
                 if (randomNumber < 20)
@@ -1446,7 +1450,7 @@ public sealed class DataInitializer
     }
 
     private void GenerateOrder(DateTime statsDateTime, List<int> customerIds,
-            List<Product> products, Random random, Faker faker, bool logResult = false)
+            List<Product> products, Random random, Faker faker, bool logResult)
     {
         // Calculate the count of the products which are still in stock.
         int productsInStockCount = _context.Products.Count(p => p.StockingQuantity > 0);
@@ -1520,7 +1524,21 @@ public sealed class DataInitializer
 
             if (logResult)
             {
-                Console.WriteLine($"Initialized order with id {order.Id} at {statsDateTime}");
+                Console.WriteLine($"Initialized Order with id {order.Id} at {statsDateTime}");
+            }
+
+            // Generate debt incurrence.
+            long orderAmount = order.AmountBeforeVat + order.VatAmount;
+            if (orderAmount > 1_000_000 && random.Next(0, 5) == 4)
+            {
+                GenerateDebtIncurrence(
+                    order.StatsDateTime.AddMinutes(5),
+                    order.CustomerId,
+                    order.CreatedUserId,
+                    order.AmountBeforeVat + order.VatAmount,
+                    random,
+                    faker,
+                    logResult);
             }
         }
 
@@ -1602,9 +1620,23 @@ public sealed class DataInitializer
 
             _context.SaveChanges();
 
+            // Generate debt incurrence.
+            if (treatment.AmountAfterVat > 1_000_000 && random.Next(0, 4) == 3)
+            {
+                GenerateDebtIncurrence(
+                    treatment.StatsDateTime.AddMinutes(5),
+                    treatment.CustomerId,
+                    treatment.CreatedUserId,
+                    treatment.AmountAfterVat,
+                    random,
+                    faker,
+                    logResult);
+            }
+
             if (logResult)
             {
-                Console.WriteLine($"Initialized treatment with id {treatment.Id} at {statsDateTime}");
+                Console.WriteLine($"Initialized Treatment with id {treatment.Id} at" +
+                    $" {treatment.StatsDateTime}");
             }
         }
 
@@ -1651,13 +1683,170 @@ public sealed class DataInitializer
 
         _context.SaveChanges();
 
+        // Generate debt incurrence.
+        long consultantAmount = consultant.AmountBeforeVat + consultant.VatAmount;
+        if (consultantAmount > 1_000_000 && random.Next(0, 5) == 4)
+        {
+            GenerateDebtIncurrence(
+                consultant.StatsDateTime.AddMinutes(5),
+                consultant.CustomerId,
+                consultant.CreatedUserId,
+                consultant.AmountBeforeVat + consultant.VatAmount,
+                random,
+                faker,
+                logResult);
+        }
+
         if (logResult)
         {
-            Console.WriteLine($"Initialized consultant with id {consultant.Id}" +
+            Console.WriteLine($"Initialized Consultant with id {consultant.Id}" +
                 $"at {statsDateTime}");
         }
     }
 
+    private void GenerateDebtIncurrence(DateTime statsDateTime, int customerId, int userId,
+            long revenueAmount, Random random, Faker faker, bool logResult = false)
+    {
+        // Fetch a list of users who have permission to create debt payment.
+        List<int> userIds = _context.Users
+            .Include(u => u.Roles).ThenInclude(r => r.Claims)
+            .Where(u => u.Roles
+                .Single()
+                .Claims
+                .Select(c => c.ClaimValue)
+                .Contains(PermissionConstants.CreateDebtPayment))
+                .Select(u => u.Id)
+                .ToList();
+
+        // Determine the count of payments.
+        int paymentCount = random.Next(1, 3);
+
+        // Determine the amount of the incurrence.
+        decimal ratio = (decimal)1 / (paymentCount + 1);
+        long amount = (long)Math.Ceiling((decimal)revenueAmount / 1000 * ratio) * 1000;
+
+        // Prepare the payment StatsDateTime adjuster.
+        static DateTime GeneratePaymentStatsDateTime(DateTime lastDateTime, Random random)
+        {
+            DateTime dateTime = new DateTime(
+                DateOnly.FromDateTime(lastDateTime.AddDays(random.Next(7, 31))),
+                new TimeOnly(random.Next(9, 17), random.Next(0, 60), random.Next(0, 60)));
+
+
+            if (dateTime.DayOfWeek == DayOfWeek.Saturday)
+            {
+                return dateTime.AddDays(2);
+            }
+
+            if (dateTime.DayOfWeek == DayOfWeek.Sunday)
+            {
+                return dateTime.AddDays(1);
+            };
+
+            return dateTime;
+        }
+
+        if (paymentCount == 1)
+        {
+            DateTime paymentStatsDateTime;
+            paymentStatsDateTime = GeneratePaymentStatsDateTime(statsDateTime, random);
+            _queueingDebtPayments.Enqueue(new DebtPayment
+            {
+                Amount = amount,
+                Note = random.Next(0, 2) == 0
+                    ? null
+                    : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
+                StatsDateTime = paymentStatsDateTime,
+                CreatedDateTime = paymentStatsDateTime,
+                CustomerId = customerId,
+                CreatedUserId = userIds.MinBy(_ => Guid.NewGuid())
+            });
+        }
+        else
+        {
+            List<(DateTime DateTime, long Amount)> dateTimesAndAmounts = new();
+            dateTimesAndAmounts.Add((
+                GeneratePaymentStatsDateTime(statsDateTime, random),
+                (long)Math.Ceiling((double)amount / 2 / 1000) * 1000));
+            dateTimesAndAmounts.Add((
+                GeneratePaymentStatsDateTime(dateTimesAndAmounts[0].DateTime, random),
+                amount - dateTimesAndAmounts[0].Amount));
+            
+            foreach ((DateTime DateTime, long Amount) dateTimeAndAmount in dateTimesAndAmounts)
+            {
+                _queueingDebtPayments.Enqueue(new DebtPayment
+                {
+                    Amount = dateTimeAndAmount.Amount > 0
+                        ? dateTimeAndAmount.Amount
+                        : throw new Exception(),
+                    Note = random.Next(0, 2) == 0
+                        ? null
+                        : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
+                    StatsDateTime = dateTimeAndAmount.DateTime,
+                    CreatedDateTime = dateTimeAndAmount.DateTime,
+                    CustomerId = customerId,
+                    CreatedUserId = userIds.MinBy(_ => Guid.NewGuid())
+                });
+            }
+        }
+
+        // Initialize entity.
+        DebtIncurrence debtIncurrence = new DebtIncurrence
+        {
+            Amount = amount > 0 ? amount : throw new Exception(),
+            Note = random.Next(0, 2) == 0
+                ? null
+                : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
+            StatsDateTime = statsDateTime.AddMinutes(5),
+            CustomerId = customerId,
+            CreatedUserId = userId
+        };
+        _context.DebtIncurrences.Add(debtIncurrence);
+
+        // Generating stats data.
+        DateOnly statsDate = DateOnly.FromDateTime(debtIncurrence.StatsDateTime);
+        DailyStats dailyStats = _context.DailyStats
+            .Include(ds => ds.Monthly)
+            .Where(ds => ds.RecordedDate == statsDate)
+            .Single();
+        dailyStats.DebtIncurredAmount += debtIncurrence.Amount;
+        dailyStats.Monthly.DebtIncurredAmount += debtIncurrence.Amount;
+
+        _context.SaveChanges();
+
+        if (logResult)
+        {
+            Console.WriteLine($"Initialized DebtIncurrence with id {debtIncurrence.Id} at" +
+                $" {debtIncurrence.StatsDateTime}");
+        }
+    }
+
+    private void GenerateDebtPayment(DateTime statsDateTime, bool logResult)
+    {
+        while (_queueingDebtPayments.Any(dp => dp.StatsDateTime < statsDateTime))
+        {
+            DebtPayment debtPayment = _queueingDebtPayments.Dequeue();
+            _context.Add(debtPayment);
+
+            // Generating stats data.
+            DateOnly statsDate = DateOnly.FromDateTime(debtPayment.StatsDateTime);
+            DailyStats dailyStats = _context.DailyStats
+                .Include(ds => ds.Monthly)
+                .Where(ds => ds.RecordedDate == statsDate)
+                .Single();
+            dailyStats.DebtPaidAmount += debtPayment.Amount;
+            dailyStats.Monthly.DebtPaidAmount += debtPayment.Amount;
+
+            _context.SaveChanges();
+
+            if (logResult)
+            {
+                Console.WriteLine($"Initialized DebtPayment with id {debtPayment.Id} at" +
+                    $" {debtPayment.StatsDateTime}");
+            }
+        }
+    }
+   
     private static T ValueOrNull<T>(T value)
     {
         Random random = new Random();
