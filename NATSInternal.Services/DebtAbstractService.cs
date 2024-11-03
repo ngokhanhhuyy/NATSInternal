@@ -7,7 +7,7 @@ namespace NATSInternal.Services;
 /// The type of the debt entity.
 /// </typeparam>
 /// <typeparam name="TUpdateHistory">
-/// The type of the update history entity associated to the <see cref="T"/> entity.
+/// The type of the update history entity associated to the <typeparamref name="T"/> entity.
 /// </typeparam>
 /// <typeparam name="TListRequestDto">
 /// The type of the request DTO used in the list retrieving operation.
@@ -19,29 +19,30 @@ namespace NATSInternal.Services;
 /// The type of the response DTO used in the list retrieving operation.
 /// </typeparam>
 /// <typeparam name="TBasicResponseDto">
-/// The type of the response DTO, containing the basic information of the <see cref="T"/>
-/// entity in the list retriving operation as individual items.
+/// The type of the response DTO, containing the basic information of the
+/// <typeparamref name="T"/> entity in the list retriving operation as individual items.
 /// </typeparam>
 /// <typeparam name="TDetailResponseDto">
-/// The type of the response DTO, containing the details of the <see cref="T"/> entity in the
-/// detail retriving operation.
+/// The type of the response DTO, containing the details of the <typeparamref name="T"/> entity
+/// in the detail retriving operation.
 /// </typeparam>
 /// <typeparam name="TUpdateHistoryResponseDto">
 /// The type of the update history response dto, containing the data of the updating history
-/// entity associated to the <see cref="T"/> entity.
+/// entity associated to the <typeparamref name="T"/> entity.
 /// </typeparam>
 /// <typeparam name="TUpdateHistoryDataDto">
-/// The type of the update history data DTO, containing the data of a specific <see cref="T"/>
-/// entity instance after each modification, used in the updating operation.
+/// The type of the update history data DTO, containing the data of a specific
+/// <typeparamref name="T"/> entity instance after each modification, used in the updating
+/// operation.
 /// </typeparam>
-/// <typeparam name="TListAuthorizationResponseDto">
+/// <typeparam name="TNewAuthorizationResponseDto">
 /// The type of the response DTO, containing the authorization information for the
-/// <see cref="TListResponseDto"/> DTO in the list retrieving operation.
+/// <typeparamref name="TListResponseDto"/> DTO in the list retrieving operation.
 /// </typeparam>
-/// <typeparam name="TAuthorizationResponseDto">
+/// <typeparam name="TExistingAuthorizationResponseDto">
 /// The type of the response DTO, containing the authorization information for the
-/// <see cref="TBasicResponseDto"/> and <see cref="TDetailResponseDto"/> DTOs, used in the
-/// list retrieving and detail retrieving operations.
+/// <typeparamref name="TBasicResponseDto"/> and <see cref="TDetailResponseDto"/> DTOs, used in
+/// the list retrieving and detail retrieving operations.
 /// </typeparam>
 internal abstract class DebtAbstractService<
         T,
@@ -53,13 +54,15 @@ internal abstract class DebtAbstractService<
         TDetailResponseDto,
         TUpdateHistoryResponseDto,
         TUpdateHistoryDataDto,
-        TListAuthorizationResponseDto,
-        TAuthorizationResponseDto>
+        TNewAuthorizationResponseDto,
+        TExistingAuthorizationResponseDto>
     : FinancialEngageableAbstractService<
         T,
         TUpdateHistory,
         TListRequestDto,
-        TUpdateHistoryDataDto>
+        TUpdateHistoryDataDto,
+        TNewAuthorizationResponseDto,
+        TExistingAuthorizationResponseDto>
     where T : class, IDebtEntity<T, TUpdateHistory>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
     where TListRequestDto :
@@ -69,18 +72,17 @@ internal abstract class DebtAbstractService<
     where TListResponseDto :
         IFinancialEngageableListResponseDto<
             TBasicResponseDto,
-            TAuthorizationResponseDto,
-            TListAuthorizationResponseDto>,
+            TExistingAuthorizationResponseDto>,
         new()
     where TBasicResponseDto :
         class,
-        ICustomerEngageableBasicResponseDto<TAuthorizationResponseDto>
+        ICustomerEngageableBasicResponseDto<TExistingAuthorizationResponseDto>
     where TDetailResponseDto : IDebtDetailResponseDto<
         TUpdateHistoryResponseDto,
-        TAuthorizationResponseDto>
+        TExistingAuthorizationResponseDto>
     where TUpdateHistoryResponseDto : IDebtUpdateHistoryResponseDto
-    where TListAuthorizationResponseDto : IUpsertableListAuthorizationResponseDto
-    where TAuthorizationResponseDto : IFinancialEngageableAuthorizationResponseDto
+    where TNewAuthorizationResponseDto : class, IFinancialEngageableNewAuthorizationResponseDto, new()
+    where TExistingAuthorizationResponseDto : IFinancialEngageableExistingAuthorizationResponseDto, new()
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
@@ -95,6 +97,34 @@ internal abstract class DebtAbstractService<
         _context = context;
         _authorizationService = authorizationService;
         _statsService = statsService;
+    }
+
+    /// <inheritdoc />
+    public override ListSortingOptionsResponseDto GetListSortingOptions()
+    {
+        List<ListSortingByFieldResponseDto> fieldOptions;
+        fieldOptions = new List<ListSortingByFieldResponseDto>
+        {
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.Amount),
+                DisplayName = DisplayNames.Amount
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.StatsDateTime),
+                DisplayName = DisplayNames.StatsDateTime
+            }
+        };
+
+        return new ListSortingOptionsResponseDto
+        {
+            FieldOptions = fieldOptions,
+            DefaultFieldName = fieldOptions
+                .Single(i => i.Name == nameof(OrderByFieldOption.StatsDateTime))
+                .Name,
+            DefaultAscending = true
+        };
     }
 
     /// <summary>
@@ -113,20 +143,28 @@ internal abstract class DebtAbstractService<
         IQueryable<T> query = GetRepository(_context)
             .Include(e => e.Customer);
 
-        switch (requestDto.OrderByField)
+
+        // Determine the field and the direction the sort.
+        string sortingByField = requestDto.SortingByField
+                                ?? GetListSortingOptions().DefaultFieldName;
+        bool sortingByAscending = requestDto.SortingByAscending
+                                  ?? GetListSortingOptions().DefaultAscending;
+        switch (sortingByField)
         {
             case nameof(OrderByFieldOption.Amount):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(dp => dp.Amount).ThenBy(dp => dp.StatsDateTime)
                     : query.OrderByDescending(dp => dp.Amount)
                         .ThenByDescending(dp => dp.StatsDateTime);
                 break;
             case nameof(OrderByFieldOption.StatsDateTime):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(dp => dp.StatsDateTime).ThenBy(dp => dp.Amount)
                     : query.OrderByDescending(dp => dp.StatsDateTime)
                         .ThenByDescending(dp => dp.Amount);
                 break;
+            default:
+                throw new NotImplementedException();
         }
 
         return await GetListOfEntitiesAsync(query, requestDto);
@@ -143,7 +181,7 @@ internal abstract class DebtAbstractService<
     /// The id of the entity to retrieve.
     /// </param>
     /// <returns>
-    /// An instance of the <see cref="T"/> entity with the specified id.
+    /// An instance of the <typeparamref name="T"/> entity with the specified id.
     /// </returns>
     /// <exception cref="ResourceNotFoundException">
     /// Throws when the entity with the specified id doesn't exist or has already been deleted.
@@ -155,12 +193,6 @@ internal abstract class DebtAbstractService<
             .Include(d => d.Customer)
             .Include(d => d.CreatedUser).ThenInclude(u => u.Roles);
 
-        return await base.GetEntityAsync(query, id);
-    }
-
-    /// <inheritdoc />
-    protected override async Task<T> GetEntityAsync(IQueryable<T> query, int id)
-    {
         return await base.GetEntityAsync(query, id);
     }
 
@@ -176,7 +208,7 @@ internal abstract class DebtAbstractService<
     /// </returns>
     /// <exception cref="AuthorizationException">
     /// Throws when the requesting user doesn't have enough permissions to specify a value
-    /// for the <c>StatsDateTime</c> property in the <c>requestDto</c> argument.
+    /// for the <c>StatsDateTime</c> property in the <paramref name="requestDto"/> argument.
     /// </exception>
     /// <exception cref="ConcurrencyException">
     /// Throws when the information of the requesting user has already been deleted before the
@@ -184,8 +216,8 @@ internal abstract class DebtAbstractService<
     /// </exception>
     /// <exception cref="OperationException">
     /// Throws under the following circumstances:<br/>
-    /// - The customer specified by the <c>CustomerId</c> in the <c>requestDto</c> argument
-    /// doesn't exist or has already been deleted.
+    /// - The customer specified by the <c>CustomerId</c> in the <paramref name="requestDto"/>
+    /// argument doesn't exist or has already been deleted.
     /// - The remaining debt amount of the specified customer becomes negative after the
     /// operation.
     /// </exception>
@@ -199,8 +231,8 @@ internal abstract class DebtAbstractService<
         DateTime statsDateTime = DateTime.UtcNow.ToApplicationTime();
         if (requestDto.StatsDateTime.HasValue)
         {
-            // Ensure the current user has permission to specify a value for StatsDateTime.
-            if (CanSetStatsDateTime(_authorizationService))
+            // Ensure the requesting user has permission to specify a value for StatsDateTime.
+            if (!CanSetStatsDateTimeWhenCreating())
             {
                 throw new AuthorizationException();
             }
@@ -258,15 +290,15 @@ internal abstract class DebtAbstractService<
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
     /// <exception cref="ResourceNotFoundException">
-    /// Throws when the debt payment specified by the <c>id</c> argument doesn't exist or has
-    /// already been deleted.
+    /// Throws when the debt payment specified by the <paramref name="id"/> argument doesn't
+    /// exist or has already been deleted.
     /// </exception>
     /// <exception cref="AuthorizationException">
     /// Throws under the following circumstances:<br/>
     /// - When the requesting user doesn't have enough permissions to update the debt payment.
     /// - When the requesting user can update the debt payment, but doesn't have enough
     /// permissions to specify a value for the <c>StatsDateTime</c> property in the
-    /// <c>requestDto</c> argument.
+    /// <paramref name="requestDto"/>.
     /// </exception>
     /// <exception cref="ValidationException">
     /// Throws when the value of the <c>StatsDateTime</c> property in the <c>requestDto</c>
@@ -274,7 +306,7 @@ internal abstract class DebtAbstractService<
     /// </exception>
     /// <exception cref="OperationException">
     /// Throws under the following circumstances:<br/>
-    /// - When the <c>StatsDateTime</c> property in the <c>requestDto</c> argument is
+    /// - When the <c>StatsDateTime</c> property in the <paramref name="requestDto"/> is
     /// specified a value while the debt payment has already been locked.
     /// - When the remaining debt amount of the associated customer becomes negative after the
     /// operation.
@@ -284,10 +316,6 @@ internal abstract class DebtAbstractService<
     /// - When the debt payment has been modified by another process before the operation.<br/>
     /// - When the information of the requesting user has been deleted by another process
     /// before the operation.
-    /// </exception>
-    /// <exception cref="NotImplementedException">
-    /// Throws the <c>_debtType</c> field has a value which handling logic hasn't been
-    /// implemented yet.
     /// </exception>
     public virtual async Task UpdateAsync(int id, TUpsertRequestDto requestDto)
     {
@@ -305,7 +333,7 @@ internal abstract class DebtAbstractService<
             ?? throw new ResourceNotFoundException();
         
         // Check if the current user has permission to edit the debt payment.
-        if (!CanEdit(entity, _authorizationService))
+        if (!CanEdit(entity))
         {
             throw new AuthorizationException();
         }
@@ -315,26 +343,16 @@ internal abstract class DebtAbstractService<
             .BeginTransactionAsync();
 
         // Decrement the old stats and store the old data for update history logging.
-        DateOnly oldDate = DateOnly.FromDateTime(entity.StatsDateTime);
         await AdjustStatsAsync(entity, _statsService, false);
         TUpdateHistoryDataDto oldData = InitializeUpdateHistoryDataDto(entity);
 
         // Update the paid datetime if specified.
         if (requestDto.StatsDateTime.HasValue)
         {
-            // Check if the current user has permission to change the created datetime.
-            if (!_authorizationService.CanSetDebtIncurrenceStatsDateTime())
+            // Ensure the requesting user has permission to specify a value for StatsDateTime.
+            if (!CanSetStatsDateTimeWhenEditing(entity))
             {
                 throw new AuthorizationException();
-            }
-
-            // Prevent StatsDateTime to be modified when the entity is already locked.
-            if (entity.IsLocked)
-            {
-                string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
-                    .ReplaceResourceName(DisplayNames.Get(typeof(T).Name))
-                    .ReplacePropertyName(DisplayNames.StatsDateTime);
-                throw new OperationException(nameof(entity.StatsDateTime), errorMessage);
             }
             
             // Assign the new StatsDateTime value only if it's different from the old one.
@@ -451,7 +469,7 @@ internal abstract class DebtAbstractService<
             ?? throw new ResourceNotFoundException();
         
         // Ensure the user has permission to delete this debt entity.
-        if (!CanDelete(entity, _authorizationService))
+        if (!CanDelete(entity))
         {
             throw new AuthorizationException();
         }
@@ -562,7 +580,7 @@ internal abstract class DebtAbstractService<
     protected abstract TUpdateHistoryDataDto InitializeUpdateHistoryDataDto(T entity);
 
     /// <summary>
-    /// Increments the statistics amounts with the <see cref="T"/> entity's amounts.
+    /// Increments the statistics amounts with the <typeparamref name="T"/> entity's amounts.
     /// </summary>
     /// <param name="entity">
     /// The instance of the entity with which the associated statistics is to be incremented.
@@ -582,41 +600,4 @@ internal abstract class DebtAbstractService<
             T entity,
             IStatsInternalService<T, TUpdateHistory> service,
             bool isIncrementing);
-
-    /// <summary>
-    /// Determines whether the current user has enough permissions to set a value for the
-    /// <c>StatsDateTime</c> property in the entity, used in the creating or updating
-    /// operation.
-    /// </summary>
-    /// <param name="service">
-    /// The service providing the authorization information.
-    /// </param>
-    /// <returns>
-    /// A <see cref="bool"/> value representing the permission.
-    /// </returns>
-    protected abstract bool CanSetStatsDateTime(IAuthorizationInternalService service);
-
-    /// <summary>
-    /// Determines whether the current user has enough permissions to edit the specified
-    /// entity, used in the creating or updating operation.
-    /// </summary>
-    /// <param name="service">
-    /// The service providing the authorization information.
-    /// </param>
-    /// <returns>
-    /// A <see cref="bool"/> value representing the permission.
-    /// </returns>
-    protected abstract bool CanEdit(T entity, IAuthorizationInternalService service);
-
-    /// <summary>
-    /// Determines whether the current user has enough permissions to delete a specific entity,
-    /// used in the deleting operation.
-    /// </summary>
-    /// <param name="service">
-    /// The service providing the authorization information.
-    /// </param>
-    /// <returns>
-    /// A <see cref="bool"/> value representing the permission.
-    /// </returns>
-    protected abstract bool CanDelete(T entity, IAuthorizationInternalService service);
 }

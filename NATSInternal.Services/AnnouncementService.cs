@@ -1,9 +1,12 @@
 namespace NATSInternal.Services;
 
-/// <inheritdoc />
+/// <inheritdoc cref="IAnnouncementService" />
 internal class AnnouncementService
     :
-        UpsertableAbstractService<Announcement, AnnouncementListRequestDto>,
+        UpsertableAbstractService<
+            Announcement,
+            AnnouncementListRequestDto,
+            AnnouncementExistingAuthorizationResponseDto>,
         IAnnouncementService
 {
     private readonly DatabaseContext _context;
@@ -11,7 +14,7 @@ internal class AnnouncementService
 
     public AnnouncementService(
             DatabaseContext context,
-            IAuthorizationInternalService authorizationService)
+            IAuthorizationInternalService authorizationService) : base(authorizationService)
     {
         _context = context;
         _authorizationService = authorizationService;
@@ -34,7 +37,10 @@ internal class AnnouncementService
         return new AnnouncementListResponseDto
         {
             PageCount = entityListDto.PageCount,
-            Items = entityListDto.Items.Select(a => new AnnouncementResponseDto(a)).ToList()
+            Items = entityListDto.Items?
+                .Select(a => new AnnouncementResponseDto(a, GetExistingAuthorization(a)))
+                .ToList()
+                ?? new List<AnnouncementResponseDto>()
         };
     }
 
@@ -44,7 +50,7 @@ internal class AnnouncementService
         return await _context.Announcements
             .Include(a => a.CreatedUser)
             .Where(a => a.Id == id)
-            .Select(a => new AnnouncementResponseDto(a))
+            .Select(a => new AnnouncementResponseDto(a, GetExistingAuthorization(a)))
             .SingleOrDefaultAsync()
             ?? throw new ResourceNotFoundException();
     }
@@ -128,6 +134,27 @@ internal class AnnouncementService
         {
             throw new ResourceNotFoundException();
         }
+    }
+    
+    /// <inheritdoc cref="IAnnouncementService.GetListSortingOptions" />
+    public override ListSortingOptionsResponseDto GetListSortingOptions()
+    {
+        List<ListSortingByFieldResponseDto> fieldOptions;
+        fieldOptions = new List<ListSortingByFieldResponseDto>
+        {
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.StartingDateTime),
+                DisplayName = DisplayNames.StartingDateTime
+            }
+        };
+
+        return new ListSortingOptionsResponseDto
+        {
+            FieldOptions = fieldOptions,
+            DefaultFieldName = fieldOptions.Single().Name,
+            DefaultAscending = false
+        };
     }
 
     /// <summary>

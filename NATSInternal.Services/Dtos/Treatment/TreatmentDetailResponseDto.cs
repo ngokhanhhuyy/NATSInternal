@@ -6,7 +6,7 @@ public class TreatmentDetailResponseDto
         TreatmentPhotoResponseDto,
         TreatmentUpdateHistoryResponseDto,
         TreatmentItemUpdateHistoryDataDto,
-        TreatmentAuthorizationResponseDto>
+        TreatmentExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public DateTime StatsDateTime { get; set; }
@@ -20,7 +20,7 @@ public class TreatmentDetailResponseDto
     public UserBasicResponseDto Therapist { get; set; }
     public List<TreatmentItemResponseDto> Items { get; set; }
     public List<TreatmentPhotoResponseDto> Photos { get; set; }
-    public TreatmentAuthorizationResponseDto Authorization { get; set; }
+    public TreatmentExistingAuthorizationResponseDto Authorization { get; set; }
     public List<TreatmentUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
     [JsonIgnore]
@@ -45,10 +45,9 @@ public class TreatmentDetailResponseDto
 
     internal TreatmentDetailResponseDto(
             Treatment treatment,
-            TreatmentAuthorizationResponseDto authorization)
+            TreatmentExistingAuthorizationResponseDto authorization)
     {
         Id = treatment.Id;
-        CreatedDateTime = treatment.CreatedDateTime;
         StatsDateTime = treatment.StatsDateTime;
         ServiceAmountBeforeVat = treatment.ServiceAmountBeforeVat;
         ServiceVatAmount = treatment.ServiceVatAmount;

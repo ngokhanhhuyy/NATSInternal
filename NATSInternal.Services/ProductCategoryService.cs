@@ -1,20 +1,21 @@
 ﻿namespace NATSInternal.Services;
 
-/// <inheritdoc />
+/// <inheritdoc cref="IProductCategoryService" />
 internal class ProductCategoryService
     :
-        UpsertableAbstractService<ProductCategory, ProductCategoryListRequestDto>,
+        UpsertableAbstractService<
+            ProductCategory,
+            ProductCategoryListRequestDto,
+            ProductCategoryExistingAuthorizationResponseDto>,
         IProductCategoryService
 {
     private readonly DatabaseContext _context;
-    private readonly IAuthorizationInternalService _authorizationService;
 
     public ProductCategoryService(
             DatabaseContext context,
-            IAuthorizationInternalService authorizationService)
+            IAuthorizationInternalService authorizationService) : base(authorizationService)
     {
         _context = context;
-        _authorizationService = authorizationService;
     }
 
     /// <inheritdoc />
@@ -32,22 +33,22 @@ internal class ProductCategoryService
         {
             PageCount = listDto.PageCount,
             Items = listDto.Items
-                .Select(category => new ProductCategoryResponseDto(
-                    category,
-                    _authorizationService.GetProductCategoryAuthorization()))
-                .ToList(),
-            Authorization = _authorizationService.GetProductCategoryAuthorization()
+                .Select(productCategory =>
+                {
+                    ProductCategoryExistingAuthorizationResponseDto authorization;
+                    authorization = GetExistingAuthorization(productCategory);
+
+                    return new ProductCategoryResponseDto(productCategory, authorization);
+                }).ToList()
         };
     }
 
     /// <inheritdoc />
-    public async Task<List<ProductCategoryResponseDto>> GetAllAsync()
+    public async Task<List<ProductCategoryMinimalResponseDto>> GetAllAsync()
     {
         return await _context.ProductCategories
-            .OrderBy(pc => pc.Id)
-            .Select(productCategory => new ProductCategoryResponseDto(
-                productCategory,
-                _authorizationService.GetProductCategoryAuthorization()))
+            .OrderBy(productCategory => productCategory.Id)
+            .Select(productCategory => new ProductCategoryMinimalResponseDto(productCategory))
             .ToListAsync();
     }
 
@@ -56,9 +57,7 @@ internal class ProductCategoryService
     {
         return await _context.ProductCategories
             .Where(pc => pc.Id == id)
-            .Select(pc => new ProductCategoryResponseDto(
-                pc,
-                _authorizationService.GetProductCategoryAuthorization()))
+            .Select(pc => new ProductCategoryResponseDto(pc, GetExistingAuthorization(pc)))
             .SingleOrDefaultAsync()
             ?? throw new ResourceNotFoundException(
                 nameof(ProductCategory),
@@ -173,6 +172,27 @@ internal class ProductCategoryService
 
             throw;
         }
+    }
+    
+    /// <inheritdoc cref="IProductCategoryService.GetListSortingOptions" />
+    public override ListSortingOptionsResponseDto GetListSortingOptions()
+    {
+        List<ListSortingByFieldResponseDto> fieldOptions;
+        fieldOptions = new List<ListSortingByFieldResponseDto>
+        {
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.CreatedDateTime),
+                DisplayName = DisplayNames.CreatedDateTime
+            }
+        };
+
+        return new ListSortingOptionsResponseDto
+        {
+            FieldOptions = fieldOptions,
+            DefaultFieldName = fieldOptions.Single().Name,
+            DefaultAscending = true
+        };
     }
 
     /// <summary>

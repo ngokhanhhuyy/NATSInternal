@@ -20,14 +20,14 @@ internal interface IUpdateHistoryService<T, TUpdateHistory, TUpdateHistoryDataDt
     /// Logs the old and new data to update history for the specified entity.
     /// </summary>
     /// <param name="entity">
-    /// An instance of the <see cref="T"/> entity class, representing the entity to be logged.
+    /// An instance of the <typeparamref name="T"/> entity class, representing the entity to be logged.
     /// </param>
     /// <param name="oldData">
-    /// An instance of the <see cref="TUpdateHistoryDataDto"/> class, containing the data of
+    /// An instance of the <typeparamref name="TUpdateHistoryDataDto"/> class, containing the data of
     /// the entity before the modification.
     /// </param>
     /// <param name="newData">
-    /// An instance of the <see cref="TUpdateHistoryDataDto"/> class, containing the data of
+    /// An instance of the <typeparamref name="TUpdateHistoryDataDto"/> class, containing the data of
     /// the entity after the modification.
     /// </param>
     /// <param name="reason">

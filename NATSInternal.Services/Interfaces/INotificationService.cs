@@ -75,9 +75,19 @@ public interface INotificationService
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is a
     /// <see cref="Tuple"/> containing 2 following elements.<br/>
-    /// - A <see cref="List{T}"/> where <c>T</c> is <see cref="int"/>, representing the ids of
-    /// the users those the created notification is distributed.<br/>
-    /// - A <see cref="int"/> value, representing the id of the created notification.
+    /// - A <see cref="List{T}"/> of <see cref="int"/>, containing the ids of the users those
+    /// the created notification is distributed.<br/>
+    /// - An <see cref="int"/> value, representing the id of the created notification.
     /// </returns>
     Task<(List<int>, int)> CreateAsync(NotificationType type, List<int> resourceIds);
+
+    /// <summary>
+    /// Get all fields those are used as options to order the results in list retrieving
+    /// operation.
+    /// </summary>
+    /// <returns>
+    /// An instance of the <see cref="ListSortingOptionsResponseDto"/> DTO, containing the
+    /// options with name and display names of the fields and the default field.
+    /// </returns>
+    ListSortingOptionsResponseDto GetListSortingOptions();
 }

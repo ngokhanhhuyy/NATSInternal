@@ -196,4 +196,32 @@ public class DebtIncurrenceController : ControllerBase
             return UnprocessableEntity(ModelState);
         }
     }
+    
+    [HttpGet("ListSortingOptions")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult ListSortingOptions()
+    {
+        return Ok(_service.GetListSortingOptions());
+    }
+
+    [HttpGet("ListMonthYearOptions")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ListMonthYearOptions()
+    {
+        return Ok(await _service.GetListMonthYearOptionsAsync());
+    }
+
+    [HttpGet("GetCreatingPermission")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetCreatingPermission()
+    {
+        return Ok(_service.GetCreatingPermission());
+    }
+
+    [HttpGet("GetCreatingAuthorization")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetCreatingAuthorization()
+    {
+        return Ok(_service.GetCreatingAuthorization());
+    }
 }

@@ -31,7 +31,7 @@ public class ResourceAccessController : ControllerBase
         // Fetch the list of users.
         try
         {
-            return Ok(await _userService.GetListAsync(userIds));
+            return Ok(await _userService.GetMultipleAsync(userIds));
         }
         catch (ResourceNotFoundException)
         {

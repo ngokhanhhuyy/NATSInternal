@@ -199,4 +199,32 @@ public class ConsultantController : ControllerBase
             return Conflict();
         }
     }
+
+    [HttpGet("ListSortingOptions")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult ListSortingOptions()
+    {
+        return Ok(_service.GetListSortingOptions());
+    }
+
+    [HttpGet("ListMonthYearOptions")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ListMonthYearOptions()
+    {
+        return Ok(await _service.GetListMonthYearOptionsAsync());
+    }
+
+    [HttpGet("CreatingPermission")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetCreatingPermission()
+    {
+        return Ok(_service.GetCreatingPermission());
+    }
+
+    [HttpGet("CreatingAuthorization")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetCreatingAuthorization()
+    {
+        return Ok(_service.GetCreatingAuthorization());
+    }
 }

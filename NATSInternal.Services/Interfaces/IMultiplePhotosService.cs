@@ -16,14 +16,14 @@ internal interface IMultiplePhotosService<T, out TPhoto> : ISinglePhotoService<T
     /// provided in the request.
     /// </summary>
     /// <param name="entity">
-    /// The <see cref="T"/> entity to which the photos are associated.
+    /// The <typeparamref name="T"/> entity to which the photos are associated.
     /// </param>
     /// <param name="requestDtos">
     /// A <see cref="List{T}"/> of photo DTOs, containing the data of the photos to be created.
     /// </param>
     /// <param name="initializer">
     /// (Optional) An action which will be executed during the intialization of the
-    /// <see cref="TPhoto"/> entity.
+    /// <typeparamref name="TPhoto"/> entity.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> reprensenting the asynchronous operation.
@@ -45,14 +45,14 @@ internal interface IMultiplePhotosService<T, out TPhoto> : ISinglePhotoService<T
     /// </param>
     /// <param name="initializer">
     /// (Optional) An action which will be executed during the intialization of the
-    /// <see cref="TPhoto"/> of a new entity.
+    /// <typeparamref name="TPhoto"/> of a new entity.
     /// </param>
     /// <param name="updateAssigner">
     /// (Optional) An action which will be executed during data assignment from the associated
     /// DTO to each entity when the entity is indicated to be updated (not deleted).
     /// </param>
     /// <returns>
-    /// A <see cref="Tuple"/> containing 2 lists of strings. The first one contains the urls
+    /// A <typeparamref name="Tuple"/> containing 2 lists of strings. The first one contains the urls
     /// of the photos which must be deleted when the update operation succeeded. The
     /// other one contains the urls of the photos which must be deleted when the
     /// updating operation failed.

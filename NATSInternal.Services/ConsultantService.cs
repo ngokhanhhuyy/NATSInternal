@@ -7,25 +7,24 @@ internal class ConsultantService
             Consultant,
             ConsultantUpdateHistory,
             ConsultantListRequestDto,
-            ConsultantUpdateHistoryDataDto>,
+            ConsultantUpdateHistoryDataDto,
+            ConsultantNewAuthorizationResponseDto,
+            ConsultantExistingAuthorizationResponseDto>,
         IConsultantService
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IStatsInternalService<Consultant, ConsultantUpdateHistory> _statsService;
-    private readonly IMonthYearService<Consultant, ConsultantUpdateHistory> _monthYearService;
 
     public ConsultantService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService<Consultant, ConsultantUpdateHistory> statsService,
-            IMonthYearService<Consultant, ConsultantUpdateHistory> monthYearService)
+            IStatsInternalService<Consultant, ConsultantUpdateHistory> statsService)
         : base(context, authorizationService)
     {
         _context = context;
         _authorizationService = authorizationService;
         _statsService = statsService;
-        _monthYearService = monthYearService;
     }
 
     /// <inheritdoc />
@@ -36,19 +35,23 @@ internal class ConsultantService
         IQueryable<Consultant> query = _context.Consultants
             .Include(c => c.Customer);
 
-        // Sort results.
-        Expression<Func<Consultant, long>> amountExpression = (Consultant consultant) =>
+        // Determine the field and the direction the sort.
+        string sortingByField = requestDto.SortingByField
+                                ?? GetListSortingOptions().DefaultFieldName;
+        bool sortingByAscending = requestDto.SortingByAscending
+                                  ?? GetListSortingOptions().DefaultAscending;
+        Expression<Func<Consultant, long>> amountExpression = (consultant) =>
             consultant.AmountBeforeVat + consultant.VatAmount;
-        switch (requestDto.OrderByField)
+        switch (sortingByField)
         {
             case nameof(OrderByFieldOption.Amount):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(amountExpression).ThenBy(e => e.StatsDateTime)
                     : query.OrderByDescending(amountExpression)
                         .ThenByDescending(e => e.StatsDateTime);
                 break;
             case nameof(OrderByFieldOption.StatsDateTime):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(e => e.StatsDateTime).ThenBy(amountExpression)
                     : query.OrderByDescending(e => e.StatsDateTime)
                         .ThenByDescending(amountExpression);
@@ -65,10 +68,8 @@ internal class ConsultantService
             Items = listDto.Items?
                 .Select(consultant => new ConsultantBasicResponseDto(
                     consultant,
-                    _authorizationService.GetConsultantAuthorization(consultant)))
+                    GetExistingAuthorization(consultant)))
                 .ToList(),
-            MonthYearOptions = await GenerateMonthYearOptions(),
-            Authorization = _authorizationService.GetConsultantListAuthorization()
         };
     }
 
@@ -82,10 +83,10 @@ internal class ConsultantService
 
         // Fetch the entity.
         Consultant consultant = await GetEntityAsync(query, id);
-        ConsultantAuthorizationResponseDto authorization = _authorizationService
-            .GetConsultantAuthorization(consultant);
 
-        return new ConsultantDetailResponseDto(consultant, authorization);
+        return new ConsultantDetailResponseDto(
+            consultant,
+            GetExistingAuthorization(consultant));
     }
 
     /// <inheritdoc />
@@ -100,7 +101,7 @@ internal class ConsultantService
         if (requestDto.StatsDateTime.HasValue)
         {
             // Check if the current user has permission to specify a value for StatsDateTime.
-            if (!_authorizationService.CanSetConsultantStatsDateTime())
+            if (!CanSetStatsDateTimeWhenCreating())
             {
                 throw new AuthorizationException();
             }
@@ -164,7 +165,7 @@ internal class ConsultantService
                 id.ToString());
 
         // Ensure the consultant is editable by the requester.
-        if (!_authorizationService.CanEditConsultant(consultant))
+        if (!CanEdit(consultant))
         {
             throw new AuthorizationException();
         }
@@ -183,22 +184,10 @@ internal class ConsultantService
         // Determining the StatsDateTime value based on the specified data from the request.
         if (requestDto.StatsDateTime.HasValue)
         {
-            // Check if the current user has permission to specify the paid datetime.
-            if (!_authorizationService.CanSetConsultantStatsDateTime())
+            // Ensure the requesting user has permission to specify a value for StatsDateTime.
+            if (!CanSetStatsDateTimeWhenEditing(consultant))
             {
                 throw new AuthorizationException();
-            }
-
-            // Prevent the consultant's StatsDateTime to be modified when the consultant is
-            // locked.
-            if (consultant.IsLocked)
-            {
-                string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
-                    .ReplaceResourceName(DisplayNames.Consultant)
-                    .ReplacePropertyName(DisplayNames.StatsDateTime);
-                throw new OperationException(
-                    nameof(requestDto.StatsDateTime),
-                    errorMessage);
             }
 
             // Assign the new StatsDateTime value only if it's different from the old one.
@@ -273,7 +262,7 @@ internal class ConsultantService
                 id.ToString());
 
         // Ensure the consultant is editable by the requester.
-        if (!_authorizationService.CanEditConsultant(consultant))
+        if (!CanEdit(consultant))
         {
             throw new AuthorizationException();
         }
@@ -310,16 +299,38 @@ internal class ConsultantService
         }
     }
 
+    /// <inheritdoc cref="IConsultantService.GetListSortingOptions"/>
+    public override ListSortingOptionsResponseDto GetListSortingOptions()
+    {
+        List<ListSortingByFieldResponseDto> fieldOptions;
+        fieldOptions = new List<ListSortingByFieldResponseDto>
+        {
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.Amount),
+                DisplayName = DisplayNames.Amount
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.StatsDateTime),
+                DisplayName = DisplayNames.StatsDateTime
+            }
+        };
+
+        return new ListSortingOptionsResponseDto
+        {
+            FieldOptions = fieldOptions,
+            DefaultFieldName = fieldOptions
+                .Single(i => i.Name == nameof(OrderByFieldOption.StatsDateTime))
+                .Name,
+            DefaultAscending = false
+        };
+    }
+
     /// <inheritdoc/>
     protected override DbSet<Consultant> GetRepository(DatabaseContext context)
     {
         return context.Consultants;
-    }
-
-    /// <inheritdoc />
-    protected override bool CanAccessUpdateHistories(IAuthorizationInternalService service)
-    {
-        return service.CanAccessConsultantUpdateHistories();
     }
 
     /// <summary>
@@ -335,7 +346,8 @@ internal class ConsultantService
     /// </exception>
     /// <exception cref="OperationException">
     /// Throws when the referenced <see cref="Customer"/> who has id specfied by the value of
-    /// the <c>CustomerId</c> property in the consultant doesn't exist or has already been deleted.
+    /// the <c>CustomerId</c> property in the consultant doesn't exist or has already been
+    /// deleted.
     /// </exception>
     private static void HandleCreateOrUpdateException(SqlExceptionHandler handler)
     {

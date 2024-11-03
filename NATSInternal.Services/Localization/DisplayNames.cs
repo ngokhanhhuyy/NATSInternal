@@ -83,8 +83,8 @@ public static class DisplayNames
     public const string Content = "Nội dung";
     public const string IsPinned = "Được đánh dấu";
     public const string OrderedDateTime = "Ngày giờ đặt hàng";
-    public const string OrderByField = "Trường sắp xếp";
-    public const string OrderByAscending = "Thứ tự sắp xếp";
+    public const string SortingByField = "Trường sắp xếp";
+    public const string SortingByAscending = "Thứ tự sắp xếp";
     public const string SearchByField = "Trường tìm kiếm";
     public const string SearchByContent = "Nội dung tìm kiếm";
     public const string Page = "Trang";
@@ -108,6 +108,7 @@ public static class DisplayNames
     public const string Reason = "Lý do";
     public const string Debt = "Khoản nợ";
     public const string DebtPayment = "Khoản thanh toán nợ";
+    public const string DebtRemainingAmount = "Số nợ còn lại";
     public const string MonthlyStats = "Thống kê tháng";
     public const string Month = "Tháng";
     public const string Year = "Năm";
@@ -119,22 +120,22 @@ public static class DisplayNames
     public const string IntervalInMinutes = "Số phút hiệu lực";
     public const string StatsDateTime = "Ngày thống kê";
 
-    private static readonly Dictionary<string, string> names;
+    private static readonly Dictionary<string, string> _names;
 
     static DisplayNames()
     {
-        names = new Dictionary<string, string>();
+        _names = new Dictionary<string, string>();
         FieldInfo[] fields = typeof(DisplayNames).GetFields(BindingFlags.Public | BindingFlags.Static);
         foreach (var field in fields)
         {
-            names.Add(field.Name, (string)field.GetValue(null));
+            _names.Add(field.Name, (string)field.GetValue(null));
         }
     }
 
     public static string Get(string objectName)
     {
         ArgumentNullException.ThrowIfNull(objectName);
-        return names
+        return _names
             .Where(pair => pair.Key == objectName.CapitalizeFirstLetter())
             .Select(pair => pair.Value)
             .Single();
@@ -153,5 +154,10 @@ public static class DisplayNames
             .Where(name => name != null)
             .Select(name => name.ToString().CapitalizeFirstLetter())
             .First());
+    }
+
+    public static Dictionary<string, string> GetAll()
+    {
+        return _names;
     }
 }

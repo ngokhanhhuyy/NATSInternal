@@ -25,7 +25,7 @@ public class AnnouncementController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpGet]
-    public async Task<IActionResult> AnnouncementList(
+    public async Task<IActionResult> GetList(
             [FromQuery] AnnouncementListRequestDto requestDto)
     {
         // Validate data from the request.
@@ -44,7 +44,7 @@ public class AnnouncementController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> AnnouncementDetail(int id)
+    public async Task<IActionResult> GetDetail(int id)
     {
         try
         {
@@ -61,7 +61,7 @@ public class AnnouncementController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> AnnouncementCreate(
+    public async Task<IActionResult> Create(
             [FromBody] AnnouncementUpsertRequestDto requestDto)
     {
         // Validate data from the request.
@@ -82,7 +82,7 @@ public class AnnouncementController : ControllerBase
             // Create the announcement.
             int createdId = await _service.CreateAsync(requestDto);
             string createdResourceUrl = Url.Action(
-                "AnnouncementDetail",
+                "GetDetail",
                 "Announcement",
                 new { id = createdId });
 
@@ -103,7 +103,7 @@ public class AnnouncementController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> AnnouncementUpdate(
+    public async Task<IActionResult> Update(
             int id,
             [FromBody] AnnouncementUpsertRequestDto requestDto)
     {
@@ -145,7 +145,7 @@ public class AnnouncementController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> AnnouncementDelete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         try
         {
@@ -161,5 +161,12 @@ public class AnnouncementController : ControllerBase
         {
             return NotFound();
         }
+    }
+
+    [HttpGet("GetCreatingPermission")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetCreatingPermission()
+    {
+        return Ok(_service.GetCreatingPermission());
     }
 }

@@ -9,7 +9,9 @@ internal class SupplyService
         SupplyUpdateHistory,
         SupplyListRequestDto,
         SupplyItemRequestDto,
-        SupplyUpdateHistoryDataDto>,
+        SupplyUpdateHistoryDataDto,
+        SupplyNewAuthorizationResponseDto,
+        SupplyExistingAuthorizationResponseDto>,
     ISupplyService
 {
     private readonly DatabaseContext _context;
@@ -39,19 +41,23 @@ internal class SupplyService
             .Include(s => s.Items)
             .Include(s => s.Photos);
 
-        // Sorting directing and sorting by field.
-        Expression<Func<Supply, long>> amountExpression = (Supply supply) =>
+        // Determine the field and the direction the sort.
+        string sortingByField = requestDto.SortingByField
+                                ?? GetListSortingOptions().DefaultFieldName;
+        bool sortingByAscending = requestDto.SortingByAscending
+                                  ?? GetListSortingOptions().DefaultAscending;
+        Expression<Func<Supply, long>> amountExpression = (supply) =>
             supply.Items.Sum(s => s.ProductAmountPerUnit * s.Quantity) + supply.ShipmentFee;
-        switch (requestDto.OrderByField)
+        switch (sortingByField)
         {
             case nameof(OrderByFieldOption.Amount):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(amountExpression).ThenBy(s => s.StatsDateTime)
                     : query.OrderByDescending(amountExpression)
                         .ThenByDescending(s => s.StatsDateTime);
                 break;
             case nameof(OrderByFieldOption.StatsDateTime):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(s => s.StatsDateTime).ThenBy(amountExpression)
                     : query.OrderByDescending(s => s.StatsDateTime)
                         .ThenByDescending(amountExpression);
@@ -67,12 +73,14 @@ internal class SupplyService
         {
             PageCount = entityListDto.PageCount,
             Items = entityListDto.Items?
-                .Select(supply => new SupplyBasicResponseDto(
-                    supply,
-                    _authorizationService.GetSupplyAuthorization(supply)))
-                .ToList(),
-            MonthYearOptions = await GenerateMonthYearOptions(),
-            Authorization = _authorizationService.GetSupplyListAuthorization()
+                .Select(supply =>
+                {
+                    SupplyExistingAuthorizationResponseDto authorization;
+                    authorization = GetExistingAuthorization(supply);
+
+                    return new SupplyBasicResponseDto(supply, authorization);
+                }).ToList()
+                ?? new List<SupplyBasicResponseDto>()
         };
     }
 
@@ -89,8 +97,8 @@ internal class SupplyService
         Supply supply = await GetEntityAsync(query, id);
 
         // Get the authorization information.
-        SupplyAuthorizationResponseDto authorization;
-        authorization = _authorizationService.GetSupplyAuthorization(supply);
+        SupplyExistingAuthorizationResponseDto authorization;
+        authorization = GetExistingAuthorization(supply);
 
         return new SupplyDetailResponseDto(supply, authorization);
     }
@@ -102,23 +110,23 @@ internal class SupplyService
         await using IDbContextTransaction transaction = await _context.Database
             .BeginTransactionAsync();
 
-        // Determine the StatsDateTime.
-        DateTime statsDateTime = DateTime.UtcNow.ToApplicationTime();
+        // Determine the SupplyDateTime.
+        DateTime paidDateTime = DateTime.UtcNow.ToApplicationTime();
         if (requestDto.StatsDateTime.HasValue)
         {
-            // Check if the current user has permission to specify the StatsDateTime.
-            if (!_authorizationService.CanSetSupplyStatsDateTime())
+            // Check if the current user has permission to specify the SupplyDateTime.
+            if (!CanSetStatsDateTimeWhenCreating())
             {
                 throw new AuthorizationException();
             }
 
-            statsDateTime = requestDto.StatsDateTime.Value;
+            paidDateTime = requestDto.StatsDateTime.Value;
         }
 
         // Initialize entity.
         Supply supply = new Supply
         {
-            StatsDateTime = statsDateTime,
+            StatsDateTime = paidDateTime,
             ShipmentFee = requestDto.ShipmentFee,
             Note = requestDto.Note,
             CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),
@@ -183,7 +191,7 @@ internal class SupplyService
                 id.ToString());
 
         // Ensure the user has permission to edit the supply.
-        if (!_authorizationService.CanEditSupply(supply))
+        if (!CanEdit(supply))
         {
             throw new AuthorizationException();
         }
@@ -198,10 +206,10 @@ internal class SupplyService
         long oldShipmentFee = supply.ShipmentFee;
         DateOnly oldPaidDate = DateOnly.FromDateTime(supply.StatsDateTime);
 
-        // Determining StatsDateTime.
+        // Determining SupplyDateTime.
         if (requestDto.StatsDateTime.HasValue)
         {
-            // Restrict the StatsDateTime to be modified after being locked.
+            // Restrict the SupplyDateTime to be modified after being locked.
             if (supply.IsLocked)
             {
                 string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
@@ -212,7 +220,7 @@ internal class SupplyService
                     errorMessage);
             }
 
-            // Validate StatsDateTime.
+            // Validate SupplyDateTime.
             try
             {
                 supply.StatsDateTime = requestDto.StatsDateTime.Value;
@@ -309,7 +317,7 @@ internal class SupplyService
                 nameof(id),
                 id.ToString());
 
-        if (!_authorizationService.CanDeleteSupply(supply))
+        if (!CanDelete(supply))
         {
             throw new AuthorizationException();
         }
@@ -365,6 +373,35 @@ internal class SupplyService
         }
     }
 
+    /// <inheritdoc cref="ISupplyService.GetListSortingOptions" />
+    public override ListSortingOptionsResponseDto GetListSortingOptions()
+    {
+        List<ListSortingByFieldResponseDto> fieldOptions;
+        fieldOptions = new List<ListSortingByFieldResponseDto>
+        {
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.Amount),
+                DisplayName = DisplayNames.Amount
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.StatsDateTime),
+                DisplayName = DisplayNames.StatsDateTime
+            }
+        };
+        
+
+        return new ListSortingOptionsResponseDto
+        {
+            FieldOptions = fieldOptions,
+            DefaultFieldName = fieldOptions
+                .Single(i => i.Name == nameof(OrderByFieldOption.StatsDateTime))
+                .Name,
+            DefaultAscending = false
+        };
+    }
+
     /// <inheritdoc />
     protected override DbSet<Supply> GetRepository(DatabaseContext context)
     {
@@ -375,12 +412,6 @@ internal class SupplyService
     protected override DbSet<SupplyItem> GetItemRepository(DatabaseContext context)
     {
         return context.SupplyItems;
-    }
-
-    /// <inheritdoc />
-    protected override bool CanAccessUpdateHistories(IAuthorizationInternalService service)
-    {
-        return service.CanAccessSupplyUpdateHistories();
     }
 
     /// <summary>

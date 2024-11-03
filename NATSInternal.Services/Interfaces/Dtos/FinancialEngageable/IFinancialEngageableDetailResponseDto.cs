@@ -1,12 +1,14 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-internal interface IFinancialEngageableDetailResponseDto<TUpdateHistory, TAuthorization>
+internal interface IFinancialEngageableDetailResponseDto<
+        TUpdateHistory,
+        TExistingAuthorization>
     :
-        IFinancialEngageableBasicResponseDto<TAuthorization>,
-        ICreatorTrackableDetailResponseDto<TAuthorization>,
-        IUpdaterTrackableDetailResponseDto<TUpdateHistory, TAuthorization>
+        IFinancialEngageableBasicResponseDto<TExistingAuthorization>,
+        ICreatorTrackableDetailResponseDto<TExistingAuthorization>,
+        IUpdaterTrackableDetailResponseDto<TUpdateHistory, TExistingAuthorization>
     where TUpdateHistory : IFinancialEngageableUpdateHistoryResponseDto
-    where TAuthorization : IFinancialEngageableAuthorizationResponseDto
+    where TExistingAuthorization : IFinancialEngageableExistingAuthorizationResponseDto
 {
     string Note { get; }
 }

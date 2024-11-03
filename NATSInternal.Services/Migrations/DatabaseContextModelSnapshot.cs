@@ -641,7 +641,7 @@ namespace NATSInternal.Services.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long>("AmountBeforeVat")
+                    b.Property<long>("Amount")
                         .HasColumnType("bigint")
                         .HasColumnName("amount");
 
@@ -749,7 +749,7 @@ namespace NATSInternal.Services.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long>("AmountBeforeVat")
+                    b.Property<long>("Amount")
                         .HasColumnType("bigint")
                         .HasColumnName("amount");
 
@@ -857,7 +857,7 @@ namespace NATSInternal.Services.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long>("AmountBeforeVat")
+                    b.Property<long>("Amount")
                         .HasColumnType("bigint")
                         .HasColumnName("amount");
 
@@ -1441,6 +1441,12 @@ namespace NATSInternal.Services.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)")
                         .HasColumnName("name");
+
+                    b.Property<string>("NormalizedName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("normalized_name");
 
                     b.Property<int>("StockingQuantity")
                         .HasColumnType("int")

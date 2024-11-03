@@ -14,8 +14,8 @@ public interface ICustomerService
     /// conditions for the results.
     /// </param>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is an
-    /// instance of the <see cref="CustomerListResponseDto"/> class, containing the results
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is
+    /// an instance of the <see cref="CustomerListResponseDto"/> class, containing the results
     /// and the additional information for the pagination.
     /// </returns>
     Task<CustomerListResponseDto> GetListAsync(CustomerListRequestDto requestDto);
@@ -27,8 +27,8 @@ public interface ICustomerService
     /// A <see cref="int"/> representing the id of the customer to retrieve.
     /// </param>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is an
-    /// instance of the <see cref="CustomerBasicResponseDto"/> class, containing the basic
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is
+    /// an instance of the <see cref="CustomerBasicResponseDto"/> class, containing the basic
     /// information of the customer.
     /// </returns>
     /// <exception cref="ResourceNotFoundException">
@@ -44,8 +44,8 @@ public interface ICustomerService
     /// A <see cref="int"/> representing the id of the customer to retrieve.
     /// </param>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is an
-    /// instance of the <see cref="CustomerBasicResponseDto"/> class, containing the details
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is
+    /// an instance of the <see cref="CustomerBasicResponseDto"/> class, containing the details
     /// of the customer.
     /// </returns>
     /// <exception cref="ResourceNotFoundException">
@@ -62,13 +62,13 @@ public interface ICustomerService
     /// for the new customer.
     /// </param>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is an
-    /// <see cref="int"/> representing the id of the new customer.
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is
+    /// an <see cref="int"/> representing the id of the new customer.
     /// </returns>
     /// <exception cref="OperationException">
     /// Throws when the customer who is this customer's introducer, specified by the value of
-    /// the property <c>IntroducerId</c> in the <c>requestDto</c>, doesn't exist or has
-    /// already been deleted.
+    /// the property <c>IntroducerId</c> in the <c>requestDto</c>, doesn't exist or has already
+    /// been deleted.
     /// </exception>
     Task<int> CreateAsync(CustomerUpsertRequestDto requestDto);
 
@@ -88,8 +88,8 @@ public interface ICustomerService
     /// </exception>
     /// <exception cref="OperationException">
     /// Throws when the customer who is this customer's introducer, specified by the value of
-    /// the property <c>IntroducerId</c> in the <c>requestDto</c>, doesn't exist or has
-    /// already been deleted.
+    /// the property <c>IntroducerId</c> in the <c>requestDto</c>, doesn't exist or has already
+    /// been deleted.
     /// </exception>
     Task UpdateAsync(int id, CustomerUpsertRequestDto requestDto);
 
@@ -106,4 +106,22 @@ public interface ICustomerService
     /// The customer with the specified id doesn't exist or has already been deleted.
     /// </exception>
     Task DeleteAsync(int id);
+
+    /// <summary>
+    /// Get all fields those are used as options to order the results in list retrieving
+    /// operation.
+    /// </summary>
+    /// <returns>
+    /// An instance of the <see cref="ListSortingOptionsResponseDto"/> DTO, containing the
+    /// options with name and display names of the fields and the default field.
+    /// </returns>
+    ListSortingOptionsResponseDto GetListSortingOptions();
+
+    /// <summary>
+    /// Check if the requesting user has permission to create a new <see cref="Customer"/>.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.
+    /// </returns>
+    bool GetCreatingPermission();
 }

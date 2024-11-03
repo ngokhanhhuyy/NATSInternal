@@ -1,20 +1,4 @@
 @host = http://localhost:5000/api
-# @name Authentication
-// @no-log
-POST {{host}}/authentication/getAccessToken?includeRefreshToken=False
-Content-Type: application/json
-
-{
-    "userName": "ngokhanhhuyy",
-    "password": "Huyy47b1"
-}
-
-> {%
-    if (response.status === 200) {
-        const accessToken = response.body["accessToken"];
-        client.global.set("accessToken", accessToken);
-    }
- %}
 
 ###
 # @name GetAccessCookie
@@ -34,27 +18,42 @@ Content-Type: application/json
 %}
 
 ###
+# @name UserList
+// @no-log
+GET {{host}}/user
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
 # @name CustomerList
 // @no-log
 @orderByAscending = orderByAsceding=False
 @orderByField = orderByField=DebtRemainingAmount
-@page = page=1
+@page = page=100
 @resultsPerPage = resultsPerPage=15
-@hasRemainingDebtAmountOnly = hasRemainingDebtAmountOnly=False
-GET {{host}}/customer?
-    {{orderByAscending}}&
-    {{orderByField}}&
-    {{page}}&
-    {{resultsPerPage}}&{{hasRemainingDebtAmountOnly}}
+@hasRemainingDebtAmountOnly = hasRemainingDebtAmountOnly=True
+GET {{host}}/customer
+    ?orderByAsceding=False
+    &orderByField=DebtRemainingAmount
+    &page=100
+    &resultsPerPage=15
+    &hasRemainingDebtAmountOnly=True
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
 # @name CustomerDetail
 // @no-log
-GET {{host}}/customer/100/detail
+GET {{host}}/customer/1
 Content-Type: application/json
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{accessCookie}}
+
+###
+# @name CustomerGetCreatingPermission
+// @no-log
+GET {{host}}/customer/getCreatingPermission
+Content-Type: application/json
+Authorization: Bearer {{accessCookie}}
 
 ###
 # @name ProductList
@@ -71,16 +70,37 @@ Content-Type: application/json
 Authorization: Bearer {{accessCookie}}
 
 ###
+# @name ConsultantList
+// @no-log
+GET {{host}}/consultant?month=4&year=2024
+Content-Type: application/json
+Authorization: Bearer {{accessCookie}}
+
+###
+# @name ConsultantListSortingOptions
+// @no-log
+GET {{host}}/consultant/ListSortingOptions
+Content-Type: application/json
+Authorization: Bearer {{accessCookie}}
+
+###
+# @name ConsultantListMonthYearOptions
+// @no-log
+GET {{host}}/consultant/ListMonthYearOptions
+Content-Type: application/json
+Authorization: Bearer {{accessCookie}}
+
+###
 # @name ConsultantCreate
 // @no-log
 POST {{host}}/consultant
 Content-Type: application/json
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{accessCookie}}
 
 {
     "amount": 500000,
     "note": null,
-    "paidDateTime": null,
+    "statsDateTime": null,
     "customerId": 50
 }
 
@@ -94,7 +114,7 @@ Cookie: {{accessCookie}}
 {
     "amount": 2500000,
     "note": null,
-    "paidDateTime": null,
+    "statsDateTime": null,
     "customerId": 100,
     "updateReason": "Updated amount."
 }
@@ -125,7 +145,7 @@ Cookie: {{accessCookie}}
 // @no-log
 POST {{host}}/debtPayment
 Content-Type: application/json
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{accessCookie}}
 
 {
     "amount": 2000000,
@@ -139,14 +159,14 @@ Authorization: Bearer {{accessToken}}
 // @no-log
 GET {{host}}/announcement
 Content-Type: application/json
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{accessCookie}}
 
 ###
 # @name AnnouncementCreate
 // @no-log
 POST {{host}}/announcement
 Content-Type: application/json
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{accessCookie}}
 
 {
     "category": 0,
@@ -162,7 +182,7 @@ Authorization: Bearer {{accessToken}}
 // @no-log
 PUT {{host}}/announcement/1
 Content-Type: application/json
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{accessCookie}}
 
 {
     "category": 5,
@@ -177,7 +197,7 @@ Authorization: Bearer {{accessToken}}
 // @no-log
 GET {{host}}/notification
 Content-Type: application/json
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{accessCookie}}
 
 ###
 # @name ResourceAccess
@@ -185,6 +205,11 @@ Authorization: Bearer {{accessToken}}
 GET {{host}}/resourceAccess/accessingUsers?type=Customer&primaryId=11&mode=0
 Content-Type: application/json
 Cookie: {{accessCookie}}
+
+###
+# @name Utility-DisplayName
+// @no-log
+GET {{host}}/Utility/DisplayNames
 
 ###
 # @name Ping

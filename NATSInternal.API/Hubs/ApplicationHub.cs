@@ -17,12 +17,6 @@ public class ApplicationHub : Hub
     private readonly IUserService _userService;
 
     /// <summary>
-    /// An instance of a <see cref="INotificationService"/> interface's implementation
-    /// which is injected using dependency injection.
-    /// </summary>
-    private readonly INotificationService _notificationService;
-
-    /// <summary>
     /// A <c>Dictionary</c> contaning resources' information and the connection ids of the
     /// users connecting to each resource.
     /// </summary>
@@ -51,15 +45,9 @@ public class ApplicationHub : Hub
     /// <param name="userService">
     /// An instance of the <see cref="IUserService"/>.
     /// </param>
-    /// <param name="notificationService">
-    /// An instance of the <see cref="INotificationService"/>.
-    /// </param>
-    public ApplicationHub(
-        IUserService userService,
-        INotificationService notificationService)
+    public ApplicationHub(IUserService userService)
     {
         _userService = userService;
-        _notificationService = notificationService;
     }
 
     /// <summary>
@@ -176,7 +164,7 @@ public class ApplicationHub : Hub
             {
                 _userConnections.Remove(pair.Key);
             }
-        };
+        }
 
         await LogConnectionStatus(false);
     }
@@ -211,8 +199,8 @@ public class ApplicationHub : Hub
             .Where(pair => pair.Value.Any(id => connectionIds.Contains(id)))
             .Select(pair => pair.Key)
             .ToList();
-        UserListResponseDto listResponseDto = await _userService
-            .GetListAsync(connectingUserIds);
+        List<UserBasicResponseDto> responseDtos = await _userService
+            .GetMultipleAsync(connectingUserIds);
 
         // Notify other accessing users that this user's access session has started.
         await Clients
@@ -222,12 +210,12 @@ public class ApplicationHub : Hub
             .SendAsync(
                 "Other.ResourceAccessStarted",
                 resource,
-                listResponseDto.Results.Single(u => u.Id == UserId));
+                responseDtos.Single(u => u.Id == UserId));
 
         // Send the list of all connecting users back to the caller.
         await Clients
             .Client(Context.ConnectionId)
-            .SendAsync("Self.ResourceAccessStarted", resource, listResponseDto);
+            .SendAsync("Self.ResourceAccessStarted", resource, responseDtos);
     }
 
     /// <summary>

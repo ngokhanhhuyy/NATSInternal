@@ -80,4 +80,22 @@ public interface IAnnouncementService
     /// deleted.
     /// </exception>
     Task DeleteAsync(int id);
+
+    /// <summary>
+    /// Get all fields those are used as options to order the results in list retrieving
+    /// operation.
+    /// </summary>
+    /// <returns>
+    /// An instance of the <see cref="ListSortingOptionsResponseDto"/> DTO, containing the
+    /// options with name and display names of the fields and the default field.
+    /// </returns>
+    ListSortingOptionsResponseDto GetListSortingOptions();
+
+    /// <summary>
+    /// Check if the requesting user has permission to create a new announcement.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.
+    /// </returns>
+    bool GetCreatingPermission();
 }

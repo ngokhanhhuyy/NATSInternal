@@ -1,13 +1,13 @@
 namespace NATSInternal.Services.Dtos;
 
-public class OrderBasicResponseDto : IFinancialEngageableBasicResponseDto<OrderAuthorizationResponseDto>
+public class OrderBasicResponseDto : IFinancialEngageableBasicResponseDto<OrderExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public DateTime StatsDateTime { get; set; }
     public long AmountAfterVat { get; set; }
     public bool IsLocked { get; set; }  
     public CustomerBasicResponseDto Customer { get; set; }
-    public OrderAuthorizationResponseDto Authorization { get; set; }
+    public OrderExistingAuthorizationResponseDto Authorization { get; set; }
 
     internal OrderBasicResponseDto(Order order)
     {
@@ -16,7 +16,7 @@ public class OrderBasicResponseDto : IFinancialEngageableBasicResponseDto<OrderA
 
     internal OrderBasicResponseDto(
             Order order,
-            OrderAuthorizationResponseDto authorization)
+            OrderExistingAuthorizationResponseDto authorization)
     {
         MapFromEntity(order);
         Authorization = authorization;

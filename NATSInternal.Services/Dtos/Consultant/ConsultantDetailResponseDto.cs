@@ -2,7 +2,7 @@ namespace NATSInternal.Services.Dtos;
 
 public class ConsultantDetailResponseDto : IFinancialEngageableDetailResponseDto<
     ConsultantUpdateHistoryResponseDto,
-    ConsultantAuthorizationResponseDto>
+    ConsultantExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public long AmountBeforeVat { get; set; }
@@ -13,7 +13,7 @@ public class ConsultantDetailResponseDto : IFinancialEngageableDetailResponseDto
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
     public UserBasicResponseDto CreatedUser { get; set; }
-    public ConsultantAuthorizationResponseDto Authorization { get; set; }
+    public ConsultantExistingAuthorizationResponseDto Authorization { get; set; }
     public List<ConsultantUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
     [JsonIgnore]
@@ -21,7 +21,7 @@ public class ConsultantDetailResponseDto : IFinancialEngageableDetailResponseDto
 
     internal ConsultantDetailResponseDto(
             Consultant consultant,
-            ConsultantAuthorizationResponseDto authorization)
+            ConsultantExistingAuthorizationResponseDto authorization)
     {
         Id = consultant.Id;
         AmountBeforeVat = consultant.AmountBeforeVat;

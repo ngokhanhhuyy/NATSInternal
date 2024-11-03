@@ -347,4 +347,11 @@ public class UserController : ControllerBase
             return Forbid();
         }
     }
+
+    [HttpGet("GetCreatingPermission")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetCreatingPermission()
+    {
+        return Ok(_userService.GetCreatingPermission());
+    }
 }

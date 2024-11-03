@@ -167,4 +167,11 @@ public class ProductCategoryController : ControllerBase
             return NotFound(ModelState);
         }
     }
+
+    [HttpGet("GetCreatingPermission")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetCreatingPermission()
+    {
+        return Ok(_service.GetCreatingPermission());
+    }
 }

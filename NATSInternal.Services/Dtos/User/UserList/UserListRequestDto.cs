@@ -2,18 +2,18 @@ namespace NATSInternal.Services.Dtos;
 
 public class UserListRequestDto : IRequestDto
 {
-    public string OrderByField { get; set; } = nameof(OrderByFieldOption.LastName);
-    public bool OrderByAscending { get; set; } = true;
+    public bool? SortingByAscending { get; set; }
+    public string SortingByField { get; set; }
     public int? RoleId { get; set; }
-    public bool JoinedRencentlyOnly { get; set; } = false;
-    public bool UpcomingBirthdayOnly { get; set; } = false;
+    public bool JoinedRencentlyOnly { get; set; }
+    public bool UpcomingBirthdayOnly { get; set; }
     public string Content { get; set; }
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
 
     public void TransformValues()
     {
-        OrderByField = OrderByField?.ToNullIfEmpty()?.SnakeCaseToPascalCase();
+        SortingByField = SortingByField?.ToNullIfEmpty();
         Content = Content?.ToNullIfEmpty();
     }
 }

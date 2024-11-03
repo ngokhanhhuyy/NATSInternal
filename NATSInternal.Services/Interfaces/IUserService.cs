@@ -28,21 +28,14 @@ public interface IUserService
     /// <see cref="int"/>, representing the ids of the customers to retrieve.
     /// </param>
     /// <returns>
-    /// An instance of the <see cref="UserListResponseDto"/> class, containing the results.
+    /// A <see cref="List{T}"/>>of the <see cref="UserListResponseDto"/> class instances,
+    /// containing the results.
     /// </returns>
     /// <exception cref="ResourceNotFoundException">
     /// Throws when there is any user with the specified id doesn't exist or has already been
     /// deleted.
     /// </exception>
-    /// <remarks>
-    /// This method's results don't contain neither the information for pagination nor the
-    /// authorization information. It only returns the results containing the users with the
-    /// exactly ids specified in the parameter if all of the users are found. At that time,
-    /// the value of the property <c>PageCount</c> in the <see cref="UserListResponseDto"/>
-    /// instance will always be 1 and the value of the property <c>Authorization</c> will
-    /// always be null.
-    /// </remarks>
-    Task<UserListResponseDto> GetListAsync(IEnumerable<int> ids);
+    Task<List<UserBasicResponseDto>> GetMultipleAsync(IEnumerable<int> ids);
 
     /// <summary>
     /// Retrieves a list of users who have just joined (within 1 month from joining date) with
@@ -112,12 +105,12 @@ public interface IUserService
     /// </param>
     /// <returns>An <see cref="int"/> representing the id of the new user.</returns>
     /// <exception cref="DuplicatedException">
-    /// Throws when the username specified in the argument for the <c>requestDto</c> parameter
-    /// already exists.
+    /// Throws when the username specified in the argument for the
+    /// <paramref name="requestDto"/> already exists.
     /// </exception>
     /// <exception cref="ResourceNotFoundException">
     /// Throws when the name of the role, specified by the value of the property
-    /// <c>UserInformation.Role.Name</c> in the argument for the <c>requestDto</c> parameter
+    /// <c>UserInformation.Role.Name</c> in the argument for the <paramref name="requestDto"/>
     /// doesn't exist.
     /// </exception>
     /// <exception cref="AuthorizationException">
@@ -231,4 +224,22 @@ public interface IUserService
     /// operation.
     /// </exception>
     Task RestoreAsync(int id);
+
+    /// <summary>
+    /// Get all fields those are used as options to order the results in list retrieving
+    /// operation.
+    /// </summary>
+    /// <returns>
+    /// An instance of the <see cref="ListSortingOptionsResponseDto"/> DTO, containing the
+    /// options with name and display names of the fields and the default field.
+    /// </returns>
+    ListSortingOptionsResponseDto GetListSortingOptions();
+
+    /// <summary>
+    /// Check if the requesting user has permission to create a new user.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.
+    /// </returns>
+    bool GetCreatingPermission();
 }

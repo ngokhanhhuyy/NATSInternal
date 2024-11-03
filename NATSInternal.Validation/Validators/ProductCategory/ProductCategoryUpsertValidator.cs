@@ -1,8 +1,8 @@
 ﻿namespace NATSInternal.Validation.Validators.ProductCategory;
 
-public class ProductCategoryValidator : Validator<ProductCategoryRequestDto>
+public class ProductCategoryUpsertValidator : Validator<ProductCategoryRequestDto>
 {
-    public ProductCategoryValidator()
+    public ProductCategoryUpsertValidator()
     {
         RuleFor(dto => dto.Name)
             .NotEmpty()

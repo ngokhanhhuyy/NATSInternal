@@ -9,10 +9,47 @@ namespace NATSInternal.Services;
 /// <typeparam name="TListRequestDto">
 /// The type of the request DTO used in the list retrieving operation.
 /// </typeparam>
-internal abstract class UpsertableAbstractService<T, TListRequestDto>
-    where T : class, IUpsertableEntity<T>, new()
-    where TListRequestDto : IOrderableListRequestDto
+/// <typeparam name="TExistingAuthorizationResponseDto">
+/// The type of response DTO which contains the authorization information for an existing
+/// <typeparamref name="T"/> entity.
+/// </typeparam>
+internal abstract class UpsertableAbstractService<
+            T,
+            TListRequestDto,
+            TExistingAuthorizationResponseDto>
+        where T : class, IUpsertableEntity<T>, new()
+        where TListRequestDto : IOrderableListRequestDto
+        where TExistingAuthorizationResponseDto : IUpsertableExistingAuthorizationResponseDto, new()
 {
+    private readonly IAuthorizationInternalService _authorizationService;
+
+    protected UpsertableAbstractService(IAuthorizationInternalService authorizationService)
+    {
+        _authorizationService = authorizationService;
+    }
+
+    /// <summary>
+    /// Get all fields those are used as options to order the results in list retrieving
+    /// operation.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="List{T}"/> of the <see cref="ListSortingByFieldResponseDto"/> DTOs,
+    /// containing the name and the display name of the field
+    /// </returns>
+    public abstract ListSortingOptionsResponseDto GetListSortingOptions();
+
+    /// <summary>
+    /// Check if the requesting user has permission to create a new <typeparamref name="T"/>
+    /// entity.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.
+    /// </returns>
+    public bool GetCreatingPermission()
+    {
+        return _authorizationService.CanCreate<T>();
+    }
+
     /// <summary>
     /// Gets a list of entities, based on the specified query and paginating conditions.
     /// </summary>
@@ -23,8 +60,8 @@ internal abstract class UpsertableAbstractService<T, TListRequestDto>
     /// A DTO containing conditions for the results.
     /// </param>
     /// <returns>
-    /// A <see cref="Task"/> which representing the asynchronous operation, which result is
-    /// a DTO, containing a list of entities and the additional information for pagination.
+    /// A <see cref="Task"/> which representing the asynchronous operation, which result is a
+    /// DTO, containing a list of entities and the additional information for pagination.
     /// </returns>
     protected virtual async Task<EntityListDto<T>> GetListOfEntitiesAsync(
             IQueryable<T> query,
@@ -47,8 +84,7 @@ internal abstract class UpsertableAbstractService<T, TListRequestDto>
             .Skip(requestDto.ResultsPerPage * (requestDto.Page - 1))
             .Take(requestDto.ResultsPerPage)
             .AsSplitQuery()
-            .ToListAsync()
-            ?? new List<T>();
+            .ToListAsync();
 
         return entitiesDto;
     }
@@ -84,5 +120,21 @@ internal abstract class UpsertableAbstractService<T, TListRequestDto>
         }
 
         throw new ArgumentException("Invalid property expression.");
+    }
+
+    /// <summary>
+    /// Retrieve the authorization information for an existing <typeparamref name="T"/> entity.
+    /// </summary>
+    /// <param name="entity">
+    /// The instance of the <typeparamref name="T"/> entity to retrieve the authorization
+    /// information.
+    /// </param>
+    /// <returns>
+    /// A DTO containing the authorization information.
+    /// </returns>
+    protected virtual TExistingAuthorizationResponseDto GetExistingAuthorization(T entity)
+    {
+        return _authorizationService
+            .GetExistingAuthorization<T, TExistingAuthorizationResponseDto>();
     }
 }

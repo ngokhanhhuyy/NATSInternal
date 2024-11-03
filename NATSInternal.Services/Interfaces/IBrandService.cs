@@ -18,12 +18,12 @@ public interface IBrandService
     Task<BrandListResponseDto> GetListAsync(BrandListRequestDto requestDto);
 
     /// <summary>
-    /// Retrives a list of all brands.
+    /// Retrives a list of all brands with minimal information.
     /// </summary>
     /// <returns>
-    /// A list of DTO, containing the basic information of the all brands.
+    /// A list of DTO, containing the minimal information of the all brands.
     /// </returns>
-    Task<List<BrandBasicResponseDto>> GetAllAsync();
+    Task<List<BrandMinimalResponseDto>> GetAllAsync();
 
     /// <summary>
     /// Retrives the details of a specific brand.
@@ -54,9 +54,9 @@ public interface IBrandService
     /// </returns>
     /// <exception cref="OperationException">
     /// Throws when the country with the id specified by the value of the property
-    /// <c>Country.Id</c> in the argument for the <c>requestDto</c> parameter doesn't exist or
-    /// when the name specified by the value of the property <c>Name</c> in the argument for
-    /// the <c>requestDto</c> parameter already exists.
+    /// <c>Country.Id</c> in the <paramref name="requestDto"/> argument doesn't
+    /// exist or when the name specified by the value of the property <c>Name</c> in the
+    /// <paramref name="requestDto"/> argument already exists.
     /// </exception>
     Task<int> CreateAsync(BrandUpsertRequestDto requestDto);
 
@@ -79,7 +79,7 @@ public interface IBrandService
     /// <exception cref="OperationException">
     /// Throws when the country with the id specified by the value of the property
     /// <c>Country.Id</c> doesn't exist or when the specified name by the property <c>Name</c>
-    /// in the argument for the <c>requestDto</c> parameter already exists.
+    /// in the <paramref name="requestDto"/> argument already exists.
     /// </exception>
     Task UpdateAsync(int id, BrandUpsertRequestDto requestDto);
 
@@ -96,4 +96,22 @@ public interface IBrandService
     /// Throws when the brand with the specified id doesn't exist or has already been deleted.
     /// </exception>
     Task DeleteAsync(int id);
+
+    /// <summary>
+    /// Get all fields those are used as options to order the results in list retrieving
+    /// operation.
+    /// </summary>
+    /// <returns>
+    /// An instance of the <see cref="ListSortingOptionsResponseDto"/> DTO, containing the
+    /// options with name and display names of the fields and the default field.
+    /// </returns>
+    ListSortingOptionsResponseDto GetListSortingOptions();
+
+    /// <summary>
+    /// Check if the requesting user has permission to create a new brand.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.
+    /// </returns>
+    bool GetCreatingPermission();
 }

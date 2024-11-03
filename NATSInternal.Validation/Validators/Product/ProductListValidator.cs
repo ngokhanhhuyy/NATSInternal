@@ -2,8 +2,11 @@
 
 public class ProductListValidator : Validator<ProductListRequestDto>
 {
-    public ProductListValidator()
+    public ProductListValidator(IProductService service)
     {
+        RuleFor(dto => dto.SortingByField)
+            .IsOneOfFieldOptions(service.GetListSortingOptions().FieldOptions)
+            .WithName(DisplayNames.SortingByField);
         RuleFor(dto => dto.Page)
             .GreaterThanOrEqualTo(1)
             .WithName(DisplayNames.Page);

@@ -18,12 +18,10 @@ internal class TreatmentService
         TreatmentUpdateHistoryResponseDto,
         TreatmentItemUpdateHistoryDataDto,
         TreatmentUpdateHistoryDataDto,
-        TreatmentListAuthorizationResponseDto,
-        TreatmentAuthorizationResponseDto>,
+        TreatmentNewAuthorizationResponseDto,
+        TreatmentExistingAuthorizationResponseDto>,
     ITreatmentService
 {
-    private readonly IAuthorizationInternalService _authorizationService;
-
     public TreatmentService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
@@ -31,7 +29,6 @@ internal class TreatmentService
             IStatsInternalService<Treatment, TreatmentUpdateHistory> statsService)
         : base(context, authorizationService, photoService, statsService)
     {
-        _authorizationService = authorizationService;
     }
 
     /// <inheritdoc />
@@ -43,13 +40,11 @@ internal class TreatmentService
         return new TreatmentListResponseDto
         {
             PageCount = listDto.PageCount,
-            Items = listDto.Items?
+            Items = listDto.Items
                 .Select(treatment => new TreatmentBasicResponseDto(
                     treatment,
-                    _authorizationService.GetTreatmentAuthorization(treatment)))
+                    GetExistingAuthorization(treatment)))
                 .ToList(),
-            MonthYearOptions = await GenerateMonthYearOptions(),
-            Authorization = _authorizationService.GetTreatmentListAuthorization()
         };
     }
 
@@ -57,10 +52,8 @@ internal class TreatmentService
     public async Task<TreatmentDetailResponseDto> GetDetailAsync(int id)
     {
         Treatment treatment = await GetEntityAsync(id);
-        TreatmentAuthorizationResponseDto authorization = _authorizationService
-            .GetTreatmentAuthorization(treatment);
 
-        return new TreatmentDetailResponseDto(treatment, authorization);
+        return new TreatmentDetailResponseDto(treatment, GetExistingAuthorization(treatment));
     }
 
     /// <inheritdoc />
@@ -76,41 +69,10 @@ internal class TreatmentService
     }
 
     /// <inheritdoc />
-    protected override IQueryable<Treatment> InitializeDetailQuery()
-    {
-        return base.InitializeDetailQuery()
-            .Include(t => t.Therapist).ThenInclude(u => u.Roles);
-    }
-
-    /// <inheritdoc />
     protected override TreatmentUpdateHistoryDataDto
         InitializeUpdateHistoryDataDto(Treatment treatment)
     {
         return new TreatmentUpdateHistoryDataDto(treatment);
-    }
-
-    /// <inheritdoc />
-    protected override bool CanAccessUpdateHistories(IAuthorizationInternalService service)
-    {
-        return service.CanAccessTreatmentUpdateHistories();
-    }
-
-    /// <inheritdoc />
-    protected override bool CanSetStatsDateTime(IAuthorizationInternalService service)
-    {
-        return service.CanSetTreatmentStatsDateTime();
-    }
-
-    /// <inheritdoc />
-    protected override bool CanEdit(Treatment treatment, IAuthorizationInternalService service)
-    {
-        return service.CanEditTreatment(treatment);
-    }
-
-    /// <inheritdoc />
-    protected override bool CanDelete(Treatment treatment, IAuthorizationInternalService service)
-    {
-        return service.CanDeleteTreatment(treatment);
     }
 
     /// <inheritdoc />

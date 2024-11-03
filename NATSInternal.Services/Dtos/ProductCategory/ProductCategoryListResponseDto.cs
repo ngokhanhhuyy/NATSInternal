@@ -4,5 +4,4 @@ public class ProductCategoryListResponseDto : IListResponseDto<ProductCategoryRe
 {
     public int PageCount { get; set; }
     public List<ProductCategoryResponseDto> Items { get; set; }
-    public ProductCategoryAuthorizationResponseDto Authorization { get; set; }
 }

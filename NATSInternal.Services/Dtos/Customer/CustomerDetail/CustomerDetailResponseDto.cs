@@ -1,7 +1,10 @@
 namespace NATSInternal.Services.Dtos;
 
+using DebtIncurrenceAuthorizationGetter = Func<DebtIncurrence, DebtIncurrenceExistingAuthorizationResponseDto>;
+using DebtPaymentAuthorizationGetter = Func<DebtPayment, DebtPaymentExistingAuthorizationResponseDto>;
+
 public record CustomerDetailResponseDto
-    : IUpsertableDetailResponseDto<CustomerAuthorizationResponseDto>
+    : IUpsertableDetailResponseDto<CustomerExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public string FirstName { get; set; }
@@ -22,11 +25,13 @@ public record CustomerDetailResponseDto
     public CustomerBasicResponseDto Introducer { get; set; }
     public long? DebtAmount { get; set; }
     public List<CustomerDebtOperationResponseDto> DebtOperations { get; set; }
-    public CustomerAuthorizationResponseDto Authorization { get; set; }
+    public CustomerExistingAuthorizationResponseDto Authorization { get; set; }
 
     internal CustomerDetailResponseDto(
             Customer customer,
-            IAuthorizationInternalService authorizationService)
+            CustomerExistingAuthorizationResponseDto authorization,
+            DebtIncurrenceAuthorizationGetter getDebtIncurrenceAuthorization,
+            DebtPaymentAuthorizationGetter getDebtPaymentAuthorization)
     {
         Id = customer.Id;
         FirstName = customer.FirstName;
@@ -45,7 +50,7 @@ public record CustomerDetailResponseDto
         CreatedDateTime = customer.CreatedDateTime;
         UpdatedDateTime = customer.UpdatedDateTime;
         DebtAmount = customer.DebtAmount;
-        Authorization = authorizationService.GetCustomerAuthorization(customer);
+        Authorization = authorization;
 
         if (customer.Introducer != null)
         {
@@ -60,7 +65,7 @@ public record CustomerDetailResponseDto
                 CustomerDebtOperationResponseDto operationResponseDto;
                 operationResponseDto = new CustomerDebtOperationResponseDto(
                     debtIncurrence,
-                    authorizationService);
+                    getDebtIncurrenceAuthorization(debtIncurrence));
                 DebtOperations.Add(operationResponseDto);
             }
         }
@@ -73,7 +78,7 @@ public record CustomerDetailResponseDto
                 CustomerDebtOperationResponseDto operationResponseDto;
                 operationResponseDto = new CustomerDebtOperationResponseDto(
                     debtPayment,
-                    authorizationService);
+                    getDebtPaymentAuthorization(debtPayment));
                 DebtOperations.Add(operationResponseDto);
             }
         }

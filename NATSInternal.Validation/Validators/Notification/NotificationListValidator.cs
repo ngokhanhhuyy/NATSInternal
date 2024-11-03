@@ -2,8 +2,11 @@ namespace NATSInternal.Validation.Validators;
 
 public class NotificationListValidator : Validator<NotificationListRequestDto>
 {
-    public NotificationListValidator()
+    public NotificationListValidator(INotificationService service)
     {
+        RuleFor(dto => dto.SortingByField)
+            .IsOneOfFieldOptions(service.GetListSortingOptions().FieldOptions)
+            .WithName(DisplayNames.SortingByField);
         RuleFor(dto => dto.Page)
             .GreaterThan(0)
             .WithName(DisplayNames.Page);

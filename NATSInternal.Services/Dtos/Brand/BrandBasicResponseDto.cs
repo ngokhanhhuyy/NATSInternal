@@ -2,20 +2,22 @@
 
 public class BrandBasicResponseDto
     :
-        IUpsertableBasicResponseDto<BrandAuthorizationResponseDto>,
+        IUpsertableBasicResponseDto<BrandExistingAuthorizationResponseDto>,
         IHasThumbnailBasicResponseDto
 {
     public int Id { get; set; }
     public string Name { get; set; }
     public string ThumbnailUrl { get; set; }
-    public BrandAuthorizationResponseDto Authorization { get; set; }
+    public BrandExistingAuthorizationResponseDto Authorization { get; set; }
 
     internal BrandBasicResponseDto(Brand brand)
     {
         MapFromEntity(brand);
     }
 
-    internal BrandBasicResponseDto(Brand brand, BrandAuthorizationResponseDto authorization)
+    internal BrandBasicResponseDto(
+            Brand brand,
+            BrandExistingAuthorizationResponseDto authorization)
     {
         MapFromEntity(brand);
         Authorization = authorization;

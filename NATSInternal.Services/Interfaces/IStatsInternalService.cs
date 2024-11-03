@@ -239,18 +239,18 @@ internal interface IStatsInternalService<T, TUpdateHistory> : IStatsService
     DateTime GetResourceMinimumOpenedDateTime();
 
     /// <summary>
-    /// Validates if the specified <c>statsDateTime</c> argument is valid for an entity so that
+    /// Validates if the specified <paramref name="statsDateTime"/> is valid for an entity so that
     /// its locking status won't change after the assignment.
     /// </summary>
     /// <param name="entity">
-    /// An instance of the entity class to which the <c>statsDateTime</c> argument is assigned.
+    /// An instance of the entity class to which the <paramref name="statsDateTime"/> is assigned.
     /// </param>
     /// <param name="statsDateTime">
     /// A <see cref="DateTime"/> value specified in the request representing the date and time
     /// for the field in the entity which is used to calculate the statistics.
     /// </param>
     /// <exception cref="ValidationException">
-    /// Throws when the value specified by the <c>statsDateTime</c> argument is invalid.
+    /// Throws when the value specified by the <paramref name="statsDateTime"/> is invalid.
     /// </exception>
     void ValidateStatsDateTime(T entity, DateTime statsDateTime);
 }

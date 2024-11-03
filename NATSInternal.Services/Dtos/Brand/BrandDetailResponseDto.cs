@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
 public class BrandDetailResponseDto
-    : IUpsertableDetailResponseDto<BrandAuthorizationResponseDto>
+    : IUpsertableDetailResponseDto<BrandExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public string Name { get; set; }
@@ -13,9 +13,11 @@ public class BrandDetailResponseDto
     public DateTime CreatedDateTime { get; set; }
     public string ThumbnailUrl { get; set; }
     public CountryResponseDto Country { get; set; }
-    public BrandAuthorizationResponseDto Authorization { get; set; }
+    public BrandExistingAuthorizationResponseDto Authorization { get; set; }
 
-    internal BrandDetailResponseDto(Brand brand, BrandAuthorizationResponseDto authorization)
+    internal BrandDetailResponseDto(
+            Brand brand,
+            BrandExistingAuthorizationResponseDto authorization)
     {
         Id = brand.Id;
         Name = brand.Name;

@@ -3,7 +3,10 @@ namespace NATSInternal.Services;
 /// <inheritdoc cref="INotificationService" />
 internal class NotificationService
     :
-        UpsertableAbstractService<Notification, NotificationListRequestDto>,
+        UpsertableAbstractService<
+            Notification,
+            NotificationListRequestDto,
+            NotificationExistingAuthorizationResponseDto>,
         INotificationService
 {
     private readonly DatabaseContext _context;
@@ -11,7 +14,7 @@ internal class NotificationService
 
     public NotificationService(
             DatabaseContext context,
-            IAuthorizationInternalService authorizationService)
+            IAuthorizationInternalService authorizationService) : base(authorizationService)
     {
         _context = context;
         _authorizationService = authorizationService;
@@ -174,6 +177,49 @@ internal class NotificationService
         // Commit the transaction and finish the operation.
         await transaction.CommitAsync();
         return (userIds, notification.Id);
+    }
+    
+    /// <inheritdoc cref="INotificationService.GetListSortingOptions" />
+    public override ListSortingOptionsResponseDto GetListSortingOptions()
+    {
+        List<ListSortingByFieldResponseDto> fieldOptions;
+        fieldOptions = new List<ListSortingByFieldResponseDto>
+        {
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.FirstName),
+                DisplayName = DisplayNames.FirstName
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.Birthday),
+                DisplayName = DisplayNames.Birthday
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.CreatedDateTime),
+                DisplayName = DisplayNames.CreatedDateTime
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.DebtRemainingAmount),
+                DisplayName = DisplayNames.DebtRemainingAmount
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.LastName),
+                DisplayName = DisplayNames.LastName
+            }
+        };
+
+        return new ListSortingOptionsResponseDto
+        {
+            FieldOptions = fieldOptions,
+            DefaultFieldName = fieldOptions
+                .Single(i => i.Name == nameof(OrderByFieldOption.LastName))
+                .Name,
+            DefaultAscending = true
+        };
     }
 
     /// <summary>

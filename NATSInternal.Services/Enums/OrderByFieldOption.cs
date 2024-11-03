@@ -13,5 +13,7 @@ public enum OrderByFieldOption
     CreatedDateTime,
     StatsDateTime,
     Amount,
-    DebtRemainingAmount
+    DebtRemainingAmount,
+    StockingQuantity,
+    StartingDateTime
 }

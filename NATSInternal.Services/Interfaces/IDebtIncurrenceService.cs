@@ -32,7 +32,7 @@ public interface IDebtIncurrenceService
     /// of the debt incurrence.
     /// </returns>
     /// <exception cref="ResourceNotFoundException">
-    /// Throws when the debt incurrence, specified by the value of the <c>id</c> argument,
+    /// Throws when the debt incurrence, specified by the value of the <paramref name="id"/>,
     /// doesn't exist or has already been deleted.
     /// </exception>
     Task<DebtIncurrenceDetailResponseDto> GetDetailAsync(int id);
@@ -50,13 +50,13 @@ public interface IDebtIncurrenceService
     /// </returns>
     /// <exception cref="AuthorizationException">
     /// Throws when the requesting user doens't have enough permissions to specify a value for
-    /// the <c>StatsDateTime</c> property in the <c>requestDto</c> argument.
+    /// the <c>StatsDateTime"</c> property in the <paramref name="requestDto"/>.
     /// </exception>
     /// <exception cref="ConcurrencyException">
     /// Throws under the following circumstances:
     /// - When information of the requesting user has been deleted before the operation.
     /// - When the customer which has the id specified by the value of the <c>CustomerId</c>
-    /// property in the <c>requestDto</c> argument doesn't exist or has already been deleted.
+    /// property in the <paramref name="requestDto"/> doesn't exist or has already been deleted.
     /// </exception>
     Task<int> CreateAsync(DebtIncurrenceUpsertRequestDto requestDto);
     
@@ -77,7 +77,7 @@ public interface IDebtIncurrenceService
     /// Throws when the specified value for the <c>StatsDateTime</c> property is invalid.
     /// </exception>
     /// <exception cref="ResourceNotFoundException">
-    /// Throws when the debt incurrence, specified by the value of the <c>id</c> argument,
+    /// Throws when the debt incurrence, specified by the value of the <paramref name="id"/>,
     /// doesn't exist or has already been deleted.
     /// </exception>
     /// <exception cref="AuthorizationException">
@@ -85,7 +85,7 @@ public interface IDebtIncurrenceService
     /// - When the requesting user doesn't have enough permissions to update the specified debt
     /// incurrencesome of the new entity's properties.<br/>
     /// - When the requesting user doesn't have enough permissions to specify a value for the
-    /// <c>StatsDateTime</c> property in the <c>requestDto</c> argument.
+    /// <c>StatsDateTime</c> property in the <param name="requestDto"/> argument.
     /// </exception>
     /// <exception cref="ConcurrencyException">
     /// Throws under the following circumstances:<br/>
@@ -95,8 +95,8 @@ public interface IDebtIncurrenceService
     /// </exception>
     /// <exception cref="OperationException">
     /// Throws under the following circumstances:<br/>
-    /// - The <c>StatsDateTime</c> property in the <c>requestDto</c> argument is specified a
-    /// value when the debt incurrence has already been locked.<br/>
+    /// - The <c>StatsDateTime</c> property in the <param name="requestDto"/> argument is
+    /// specified a value when the debt incurrence has already been locked.<br/>
     /// - The remaining debt amount of the specified customer becomes negative after the
     /// operation.
     /// </exception>
@@ -110,7 +110,7 @@ public interface IDebtIncurrenceService
     /// </param>
     /// <returns>A task that represents the asynchronous operation.</returns>
     /// <exception cref="ResourceNotFoundException">
-    /// Throws when the debt incurrence with the id specified by the <c>id</c> argument doesn't
+    /// Throws when the debt incurrence with the id specified by the <paramref name="id"/> doesn't
     /// exist or has already been deleted.
     /// </exception>
     /// <exception cref="AuthorizationException">
@@ -128,4 +128,47 @@ public interface IDebtIncurrenceService
     /// the operation.
     /// </exception>
     Task DeleteAsync(int id);
+
+    /// <summary>
+    /// Get all fields those are used as options to order the results in list retrieving
+    /// operation.
+    /// </summary>
+    /// <returns>
+    /// An instance of the <see cref="ListSortingOptionsResponseDto"/> DTO, containing the
+    /// options with name and display names of the fields and the default field.
+    /// </returns>
+    ListSortingOptionsResponseDto GetListSortingOptions();
+
+    /// <summary>
+    /// Retrieve a list of the <see cref="MonthYearResponseDto"/> instances, representing the
+    /// options and the default option that users can select as filtering condition in list
+    /// retrieving operation.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is
+    /// a <see cref="List{T}"/> of <see cref="MonthYearOptionsResponseDto"/> DTO, representing
+    /// the options.
+    /// </returns>
+    Task<MonthYearOptionsResponseDto> GetListMonthYearOptionsAsync();
+
+    /// <summary>
+    /// Check if the requesting user has permission to create a new
+    /// <see cref="DebtIncurrence"/>.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.
+    /// </returns>
+    bool GetCreatingPermission();
+
+    /// <summary>
+    /// Check if the requesting user has permission to create a new
+    /// <see cref="DebtIncurrence"/> and retrieve the authorization information for creating
+    /// operation.
+    /// </summary>
+    /// <returns>
+    /// An instance of the <see cref="DebtIncurrenceNewAuthorizationResponseDto"/> DTO
+    /// containing the authorization information for the operation when the requesting user has
+    /// permission to perform the operation. Otherwise, <c>null</c>.
+    /// </returns>
+    DebtIncurrenceNewAuthorizationResponseDto GetCreatingAuthorization();
 }

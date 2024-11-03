@@ -142,17 +142,6 @@ public static class ConfigurationExtensions
             IStatsInternalService<DebtPayment, DebtPaymentUpdateHistory>,
             StatsInternalService<DebtPayment, DebtPaymentUpdateHistory>>();
 
-        // Product-engagement services.
-        services.AddScoped<
-            IProductEngagementService<SupplyItem, SupplyPhoto, SupplyUpdateHistory>,
-            ProductEngagementService<SupplyItem, SupplyPhoto, SupplyUpdateHistory>>();
-        services.AddScoped<
-            IProductEngagementService<OrderItem, OrderPhoto, OrderUpdateHistory>,
-            ProductEngagementService<OrderItem, OrderPhoto, OrderUpdateHistory>>();
-        services.AddScoped<
-            IProductEngagementService<TreatmentItem, TreatmentPhoto, TreatmentUpdateHistory>,
-            ProductEngagementService<TreatmentItem, TreatmentPhoto, TreatmentUpdateHistory>>();
-
         // Month-year services.
         services.AddScoped<
             IMonthYearService<Expense, ExpenseUpdateHistory>,

@@ -1,9 +1,12 @@
 ﻿namespace NATSInternal.Services;
 
-/// <inheritdoc />
+/// <inheritdoc cref="ICustomerService" />
 internal class CustomerService
     :
-        UpsertableAbstractService<Customer, CustomerListRequestDto>,
+        UpsertableAbstractService<
+            Customer,
+            CustomerListRequestDto,
+            CustomerExistingAuthorizationResponseDto>,
         ICustomerService
 {
     private readonly DatabaseContext _context;
@@ -11,7 +14,7 @@ internal class CustomerService
 
     public CustomerService(
             DatabaseContext context,
-            IAuthorizationInternalService authorizationService)
+            IAuthorizationInternalService authorizationService) : base(authorizationService)
     {
         _context = context;
         _authorizationService = authorizationService;
@@ -25,25 +28,29 @@ internal class CustomerService
             .Include(c => c.DebtPayments);
 
         // Determine the field and the direction the sort.
-        switch (requestDto.OrderByField)
+        string sortingByField = requestDto.SortingByField
+                                ?? GetListSortingOptions().DefaultFieldName;
+        bool sortingByAscending = requestDto.SortingByAscending
+                                  ?? GetListSortingOptions().DefaultAscending;
+        switch (sortingByField)
         {
             case nameof(OrderByFieldOption.FirstName):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(c => c.FirstName)
                     : query.OrderByDescending(c => c.FirstName);
                 break;
             case nameof(OrderByFieldOption.Birthday):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(c => c.Birthday)
                     : query.OrderByDescending(c => c.Birthday);
                 break;
             case nameof(OrderByFieldOption.CreatedDateTime):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(c => c.CreatedDateTime)
                     : query.OrderByDescending(c => c.CreatedDateTime);
                 break;
             case nameof(OrderByFieldOption.DebtRemainingAmount):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(c => c.DebtIncurrences
                             .Where(d => !d.IsDeleted)
                             .Sum(d => d.Amount) - c.DebtPayments
@@ -58,7 +65,7 @@ internal class CustomerService
                         .ThenByDescending(c => c.Id);
                 break;
             case nameof(OrderByFieldOption.LastName):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(c => c.LastName).ThenBy(c => c.FirstName)
                     : query.OrderByDescending(c => c.LastName)
                         .ThenByDescending(c => c.FirstName);
@@ -99,11 +106,8 @@ internal class CustomerService
         {
             PageCount = listDto.PageCount,
             Items = listDto.Items?
-                .Select(customer => new CustomerBasicResponseDto(
-                    customer,
-                    _authorizationService.GetCustomerAuthorization(customer)))
-                .ToList(),
-            Authorization = _authorizationService.GetCustomerListAuthorization()
+                .Select(c => new CustomerBasicResponseDto(c, GetExistingAuthorization(c)))
+                .ToList()
         };
     }
 
@@ -114,9 +118,7 @@ internal class CustomerService
             .Include(c => c.DebtIncurrences)
             .Include(c => c.DebtPayments)
             .Where(c => c.Id == id)
-            .Select(c => new CustomerBasicResponseDto(
-                c,
-                _authorizationService.GetCustomerAuthorization(c)))
+            .Select(c => new CustomerBasicResponseDto(c, GetExistingAuthorization(c)))
             .SingleOrDefaultAsync()
             ?? throw new ResourceNotFoundException(
                 nameof(Customer),
@@ -127,20 +129,29 @@ internal class CustomerService
     /// <inheritdoc />
     public async Task<CustomerDetailResponseDto> GetDetailAsync(int id)
     {
-        return await _context.Customers
+        Customer customer = await _context.Customers
             .Include(customer => customer.Introducer)
             .Include(customer => customer.CreatedUser)
             .Include(customer => customer.DebtIncurrences)
             .Include(customer => customer.DebtPayments)
             .Where(c => !c.IsDeleted && c.Id == id)
-            .Select(customer => new CustomerDetailResponseDto(
-                customer,
-                _authorizationService))
             .SingleOrDefaultAsync()
             ?? throw new ResourceNotFoundException(
                 nameof(Customer),
                 nameof(id),
                 id.ToString());
+
+        return new CustomerDetailResponseDto(
+            customer,
+            GetExistingAuthorization(customer),
+            (debtIncurrence) => _authorizationService.GetExistingAuthorization<
+                DebtIncurrence,
+                DebtIncurrenceUpdateHistory,
+                DebtIncurrenceExistingAuthorizationResponseDto>(debtIncurrence),
+            (debtPayment) => _authorizationService.GetExistingAuthorization<
+                DebtPayment,
+                DebtPaymentUpdateHistory,
+                DebtPaymentExistingAuthorizationResponseDto>(debtPayment));
     }
 
     /// <inheritdoc />
@@ -238,7 +249,7 @@ internal class CustomerService
                     .SetProperty(c => c.Note, requestDto.Note)
                     .SetProperty(c => c.IntroducerId, requestDto.IntroducerId));
             
-            // Check if the customer has been updated.
+            // Check if the c has been updated.
             if (affactedRows == 0)
             {
                 throw new ResourceNotFoundException(
@@ -278,5 +289,48 @@ internal class CustomerService
                 nameof(id),
                 id.ToString());
         }
+    }
+    
+    /// <inheritdoc cref="ICustomerService.GetListSortingOptions" />
+    public override ListSortingOptionsResponseDto GetListSortingOptions()
+    {
+        List<ListSortingByFieldResponseDto> fieldOptions;
+        fieldOptions = new List<ListSortingByFieldResponseDto>
+        {
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.FirstName),
+                DisplayName = DisplayNames.FirstName
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.Birthday),
+                DisplayName = DisplayNames.Birthday
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.CreatedDateTime),
+                DisplayName = DisplayNames.CreatedDateTime
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.DebtRemainingAmount),
+                DisplayName = DisplayNames.DebtRemainingAmount
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.LastName),
+                DisplayName = DisplayNames.LastName
+            }
+        };
+
+        return new ListSortingOptionsResponseDto
+        {
+            FieldOptions = fieldOptions,
+            DefaultFieldName = fieldOptions
+                .Single(i => i.Name == nameof(OrderByFieldOption.LastName))
+                .Name,
+            DefaultAscending = true
+        };
     }
 }

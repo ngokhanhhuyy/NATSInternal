@@ -1,10 +1,10 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-internal interface IDebtDetailResponseDto<TUpdateHistory, TAuthorization>
+internal interface IDebtDetailResponseDto<TUpdateHistory, TExistingAuthorization>
     :
-        ICustomerEngageableBasicResponseDto<TAuthorization>,
+        ICustomerEngageableBasicResponseDto<TExistingAuthorization>,
         IFinancialEngageableDetailResponseDto<
             TUpdateHistory,
-            TAuthorization>
+            TExistingAuthorization>
     where TUpdateHistory : IDebtUpdateHistoryResponseDto
-    where TAuthorization : IFinancialEngageableAuthorizationResponseDto;
+    where TExistingAuthorization : IFinancialEngageableExistingAuthorizationResponseDto;

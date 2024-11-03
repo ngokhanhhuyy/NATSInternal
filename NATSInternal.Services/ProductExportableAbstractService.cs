@@ -7,13 +7,13 @@
 /// The type of the entity.
 /// </typeparam>
 /// <typeparam name="TItem">
-/// The type of the item entity associated to the <see cref="T"/> entity.
+/// The type of the item entity associated to the <typeparamref name="T"/> entity.
 /// </typeparam>
 /// <typeparam name="TPhoto">
-/// The type of the photo entity associated to the <see cref="T"/> entity.
+/// The type of the photo entity associated to the <typeparamref name="T"/> entity.
 /// </typeparam>
 /// <typeparam name="TUpdateHistory">
-/// The type of the update history entity associated to the <see cref="T"/> entity.
+/// The type of the update history entity associated to the <typeparamref name="T"/> entity.
 /// </typeparam>
 /// <typeparam name="TListRequestDto">
 /// The type of the request DTO used in the list retrieving operation.
@@ -22,46 +22,52 @@
 /// The type of the request DTO used in the upserting (create or update) operations.
 /// </typeparam>
 /// <typeparam name="TItemRequestDto">
-/// The type of the item request DTO, associated to the <see cref="TUpsertRequestDto"/> DTO.
+/// The type of the item request DTO, associated to the
+/// <typeparamref name="TUpsertRequestDto"/> DTO.
 /// </typeparam>
 /// <typeparam name="TPhotoRequestDto">
-/// The type of the photo request DTO, associated to the <see cref="TUpsertRequestDto"/> DTO.
+/// The type of the photo request DTO, associated to the
+/// <typeparamref name="TUpsertRequestDto"/> DTO.
 /// </typeparam>
 /// <typeparam name="TListResponseDto">
 /// The type of the response DTO used in the list retrieving operation.
 /// </typeparam>
 /// <typeparam name="TBasicResponseDto">
-/// The type of the response DTO, containing the basic information of the <see cref="T"/>
-/// entity in the list retriving operation as individual items.
+/// The type of the response DTO, containing the basic information of the
+/// <typeparamref name="T"/> entity in the list retriving operation as individual items.
 /// </typeparam>
 /// <typeparam name="TDetailResponseDto">
-/// The type of the response DTO, containing the details of the <see cref="T"/> entity in the
-/// detail retriving operation.
+/// The type of the response DTO, containing the details of the <typeparamref name="T"/> entity
+/// in the detail retriving operation.
 /// </typeparam>
 /// <typeparam name="TItemResponseDto">
-/// The type of the item response DTO, associated to the <see cref="TItemResponseDto"/> DTO in
-/// the detail retrieving operation.
+/// The type of the item response DTO, associated to the
+/// <typeparamref name="TItemResponseDto"/> DTO in the detail retrieving operation.
 /// </typeparam>
 /// <typeparam name="TPhotoResponseDto">
-/// The type of the photo response DTO, associated to the <see cref="TItemResponseDto"/> DTO in
-/// the detail retrieving operation.
+/// The type of the photo response DTO, associated to the
+/// <typeparamref name="TItemResponseDto"/> DTO in the detail retrieving operation.
 /// </typeparam>
 /// <typeparam name="TUpdateHistoryResponseDto">
 /// The type of the update history response dto, containing the data of the updating history
-/// entity associated to the <see cref="T"/> entity.
+/// entity associated to the <typeparamref name="T"/> entity.
+/// </typeparam>
+/// <typeparam name="TItemUpdateHistoryDataDto">
+/// The type of the DTO, containing the data of the updating history item entity associated to
+/// the <typeparamref name="TUpdateHistoryResponseDto"/> entity.
 /// </typeparam>
 /// <typeparam name="TUpdateHistoryDataDto">
-/// The type of the update history data DTO, containing the data of a specific <see cref="T"/>
-/// entity instance after each modification, used in the updating operation.
+/// The type of the update history data DTO, containing the data of a specific
+/// <typeparamref name="T"/> entity instance after each modification, used in the updating
+/// operation.
 /// </typeparam>
-/// <typeparam name="TListAuthorizationResponseDto">
-/// The type of the response DTO, containing the authorization information for the
-/// <see cref="TListResponseDto"/> DTO in the list retrieving operation.
+/// <typeparam name="TNewAuthorizationResponseDto">
+/// The type of response DTO which contains the authorization information when creating a new
+/// <typeparamref name="T"/> entity.
 /// </typeparam>
-/// <typeparam name="TAuthorizationResponseDto">
-/// The type of the response DTO, containing the authorization information for the
-/// <see cref="TBasicResponseDto"/> and <see cref="TDetailResponseDto"/> DTOs, used in the
-/// list retrieving and detail retrieving operations.
+/// <typeparam name="TExistingAuthorizationResponseDto">
+/// The type of response DTO which contains the authorization information when updating an
+/// existing <typeparamref name="T"/> entity.
 /// </typeparam>
 internal abstract class ProductExportableAbstractService<
         T,
@@ -80,8 +86,8 @@ internal abstract class ProductExportableAbstractService<
         TUpdateHistoryResponseDto,
         TItemUpdateHistoryDataDto,
         TUpdateHistoryDataDto,
-        TListAuthorizationResponseDto,
-        TAuthorizationResponseDto>
+        TNewAuthorizationResponseDto,
+        TExistingAuthorizationResponseDto>
     : ProductEngageableAbstractService<
         T,
         TItem,
@@ -89,7 +95,9 @@ internal abstract class ProductExportableAbstractService<
         TUpdateHistory,
         TListRequestDto,
         TItemRequestDto,
-        TUpdateHistoryDataDto>
+        TUpdateHistoryDataDto,
+        TNewAuthorizationResponseDto,
+        TExistingAuthorizationResponseDto>
     where T : class, IProductExportableEntity<T, TItem, TPhoto, TUpdateHistory>, new()
     where TItem : class, IProductExportableItemEntity<TItem>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
@@ -103,25 +111,24 @@ internal abstract class ProductExportableAbstractService<
     where TListResponseDto :
         IFinancialEngageableListResponseDto<
             TBasicResponseDto,
-            TAuthorizationResponseDto,
-            TListAuthorizationResponseDto>,
+            TExistingAuthorizationResponseDto>,
         new()
     where TBasicResponseDto :
         class,
-        IFinancialEngageableBasicResponseDto<TAuthorizationResponseDto>
+        IFinancialEngageableBasicResponseDto<TExistingAuthorizationResponseDto>
     where TDetailResponseDto : IProductEngageableDetailResponseDto<
         TItemResponseDto,
         TPhotoResponseDto,
         TUpdateHistoryResponseDto,
         TItemUpdateHistoryDataDto,
-        TAuthorizationResponseDto>
+        TExistingAuthorizationResponseDto>
     where TItemResponseDto : IProductEngageableItemResponseDto
     where TPhotoResponseDto : IPhotoResponseDto
     where TUpdateHistoryResponseDto : IProductExportableUpdateHistoryResponseDto<
         TItemUpdateHistoryDataDto>
     where TItemUpdateHistoryDataDto : IProductExportableItemUpdateHistoryDataDto
-    where TListAuthorizationResponseDto : IUpsertableListAuthorizationResponseDto
-    where TAuthorizationResponseDto : IFinancialEngageableAuthorizationResponseDto
+    where TNewAuthorizationResponseDto : class, IFinancialEngageableNewAuthorizationResponseDto, new()
+    where TExistingAuthorizationResponseDto : IFinancialEngageableExistingAuthorizationResponseDto, new()
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
@@ -169,8 +176,8 @@ internal abstract class ProductExportableAbstractService<
         DateTime statsDateTime = DateTime.UtcNow.ToApplicationTime();
         if (requestDto.StatsDateTime.HasValue)
         {
-            // Check if the current user has permission to specify the stats datetime.
-            if (!CanSetStatsDateTime(_authorizationService))
+            // Ensure the requesting user has permission to specify a value for StatsDateTime.
+            if (!CanSetStatsDateTimeWhenCreating())
             {
                 throw new AuthorizationException();
             }
@@ -261,8 +268,8 @@ internal abstract class ProductExportableAbstractService<
     /// </exception>
     /// <exception cref="OperationException">
     /// Throws when the customer with the id specified by the property <c>CustomerId</c> in
-    /// the argument for the <c>requestDto</c> parameter doesn't exist or has already been
-    /// deleted.
+    /// the argument for the <paramref name="requestDto"/> argument doesn't exist or has
+    /// already been deleted.
     /// </exception>
     public async Task UpdateAsync(int id, TUpsertRequestDto requestDto)
     {
@@ -279,7 +286,7 @@ internal abstract class ProductExportableAbstractService<
                 id.ToString());
 
         // Check if the current user has permission to edit this entity.
-        if (!CanEdit(entity, _authorizationService))
+        if (!CanEdit(entity))
         {
             throw new AuthorizationException();
         }
@@ -297,21 +304,10 @@ internal abstract class ProductExportableAbstractService<
         // Handle the new entityed datetime when the request specifies it.
         if (requestDto.StatsDateTime.HasValue)
         {
-            // Ensure the requesting user has permission to specify a new StatsDateTime.
-            if (!CanSetStatsDateTime(_authorizationService))
+            // Ensure the requesting user has permission to specify a value for StatsDateTime.
+            if (!CanSetStatsDateTimeWhenEditing(entity))
             {
                 throw new AuthorizationException();
-            }
-
-            // Prevent the entity's StatsDateTime to be modified when the entity is locked.
-            if (entity.IsLocked)
-            {
-                string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
-                    .ReplaceResourceName(typeof(T).Name)
-                    .ReplacePropertyName(DisplayNames.StatsDateTime);
-                throw new OperationException(
-                    nameof(requestDto.StatsDateTime),
-                    errorMessage);
             }
 
             // Assign the new StatsDateTime value only if it's different from the old one.
@@ -434,7 +430,7 @@ internal abstract class ProductExportableAbstractService<
                 id.ToString());
 
         // Check if the current user has permission to delete the entity.
-        if (!CanDelete(entity, _authorizationService))
+        if (!CanDelete(entity))
         {
             throw new AuthorizationException();
         }
@@ -484,6 +480,34 @@ internal abstract class ProductExportableAbstractService<
         }
     }
 
+    /// <inheritdoc />
+    public override ListSortingOptionsResponseDto GetListSortingOptions()
+    {
+        List<ListSortingByFieldResponseDto> items = new List<ListSortingByFieldResponseDto>
+        {
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.Amount),
+                DisplayName = DisplayNames.Amount
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.StatsDateTime),
+                DisplayName = DisplayNames.StatsDateTime
+            }
+        };
+        
+
+        return new ListSortingOptionsResponseDto
+        {
+            FieldOptions = items,
+            DefaultFieldName = items
+                .Single(i => i.Name == nameof(OrderByFieldOption.StatsDateTime))
+                .Name,
+            DefaultAscending = false
+        };
+    }
+
     /// <summary>
     /// Gets a list of entities and month-year options, based on the specified filtering,
     /// sorting and paginating conditions.
@@ -504,17 +528,21 @@ internal abstract class ProductExportableAbstractService<
             .Include(t => t.Items)
             .Include(t => t.Photos);
 
-        // Order the results.
-        switch (requestDto.OrderByField)
+        // Determine the field and the direction the sort.
+        string sortingByField = requestDto.SortingByField
+                                ?? GetListSortingOptions().DefaultFieldName;
+        bool sortingByAscending = requestDto.SortingByAscending
+                                  ?? GetListSortingOptions().DefaultAscending;
+        switch (sortingByField)
         {
             case nameof(OrderByFieldOption.Amount):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(T.AmountAfterVatExpression).ThenBy(t => t.StatsDateTime)
                     : query.OrderByDescending(T.AmountAfterVatExpression)
                         .ThenByDescending(t => t.StatsDateTime);
                 break;
             case nameof(OrderByFieldOption.StatsDateTime):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(t => t.StatsDateTime)
                         .ThenBy(T.AmountAfterVatExpression)
                     : query.OrderByDescending(t => t.StatsDateTime)
@@ -550,7 +578,7 @@ internal abstract class ProductExportableAbstractService<
     /// The id of the entity to retrieve.
     /// </param>
     /// <returns>
-    /// An instance of the <see cref="T"/> entity with the specified id.
+    /// An instance of the <typeparamref name="T"/> entity with the specified id.
     /// </returns>
     /// <exception cref="ResourceNotFoundException">
     /// Throws when the entity with the specified id doesn't exist or has already been deleted.
@@ -710,7 +738,7 @@ internal abstract class ProductExportableAbstractService<
     protected abstract TUpdateHistoryDataDto InitializeUpdateHistoryDataDto(T entity);
 
     /// <summary>
-    /// Increments the statistics amounts with the <see cref="T"/> entity's amounts.
+    /// Increments the statistics amounts with the <typeparamref name="T"/> entity's amounts.
     /// </summary>
     /// <param name="entity">
     /// The instance of the entity with which the associated statistics is to be incremented.
@@ -730,47 +758,4 @@ internal abstract class ProductExportableAbstractService<
             T entity,
             IStatsInternalService<T, TUpdateHistory> statsService,
             bool isIncrementing);
-
-    /// <summary>
-    /// Determines whether the current user has enough permissions to set a value for the
-    /// <c>StatsDateTime</c> property in the entity, used in the creating or updating
-    /// operation.
-    /// </summary>
-    /// <param name="service">
-    /// The service providing the authorization information.
-    /// </param>
-    /// <returns>
-    /// A <see cref="bool"/> value representing the permission.
-    /// </returns>
-    protected abstract bool CanSetStatsDateTime(IAuthorizationInternalService service);
-
-    /// <summary>
-    /// Determines whether the current user has enough permissions to edit the specified
-    /// entity, used in the creating or updating operation.
-    /// </summary>
-    /// <param name="entity">
-    /// The instance of the entity to check the authorization.
-    /// </param>
-    /// <param name="service">
-    /// The service providing the authorization information.
-    /// </param>
-    /// <returns>
-    /// A <see cref="bool"/> value representing the permission.
-    /// </returns>
-    protected abstract bool CanEdit(T entity, IAuthorizationInternalService service);
-
-    /// <summary>
-    /// Determines whether the current user has enough permissions to delete a specific entity,
-    /// used in the deleting operation.
-    /// </summary>
-    /// <param name="entity">
-    /// The instance of the entity to check the authorization.
-    /// </param>
-    /// <param name="service">
-    /// The service providing the authorization information.
-    /// </param>
-    /// <returns>
-    /// A <see cref="bool"/> value representing the permission.
-    /// </returns>
-    protected abstract bool CanDelete(T entity, IAuthorizationInternalService service);
 }

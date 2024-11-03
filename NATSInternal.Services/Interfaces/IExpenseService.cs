@@ -110,4 +110,45 @@ public interface IExpenseService
     /// data.
     /// </exception>
     Task DeleteAsync(int id);
+
+    /// <summary>
+    /// Get all fields those are used as options to order the results in list retrieving
+    /// operation.
+    /// </summary>
+    /// <returns>
+    /// An instance of the <see cref="ListSortingOptionsResponseDto"/> DTO, containing the
+    /// options with name and display names of the fields and the default field.
+    /// </returns>
+    ListSortingOptionsResponseDto GetListSortingOptions();
+
+    /// <summary>
+    /// Retrieve a list of the <see cref="MonthYearResponseDto"/> instances, representing the
+    /// options and the default option that users can select as filtering condition in list
+    /// retrieving operation.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is
+    /// a <see cref="List{T}"/> of <see cref="MonthYearOptionsResponseDto"/> DTO, representing
+    /// the options.
+    /// </returns>
+    Task<MonthYearOptionsResponseDto> GetListMonthYearOptionsAsync();
+
+    /// <summary>
+    /// Check if the requesting user has permission to create a new <see cref="Expense"/>.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.
+    /// </returns>
+    bool GetCreatingPermission();
+
+    /// <summary>
+    /// Check if the requesting user has permission to create a new <see cref="Expense"/>
+    /// and retrieve the authorization information for creating operation.
+    /// </summary>
+    /// <returns>
+    /// An instance of the <see cref="ExpenseNewAuthorizationResponseDto"/> DTO containing
+    /// the authorization information for the operation when the requesting user has permission
+    /// to perform the operation. Otherwise, <c>null</c>.
+    /// </returns>
+    ExpenseNewAuthorizationResponseDto GetCreatingAuthorization();
 }

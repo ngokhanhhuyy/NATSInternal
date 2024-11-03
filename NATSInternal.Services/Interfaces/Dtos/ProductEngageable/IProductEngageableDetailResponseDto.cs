@@ -18,7 +18,7 @@ namespace NATSInternal.Services.Interfaces.Dtos;
 /// The type of the item DTO, containing the update histories' information
 /// and the data of the items entity before and after each modification.
 /// </typeparam>
-/// <typeparam name="TAuthorization">
+/// <typeparam name="TExistingAuthorization">
 /// The type of the authorization DTO, containing the information of the permissions to
 /// interact with the entity.
 /// </typeparam>
@@ -27,15 +27,15 @@ internal interface IProductEngageableDetailResponseDto<
         TPhoto,
         TUpdateHistory,
         TItemUpdateHistoryData,
-        TAuthorization>
+        TExistingAuthorization>
     :
-        IFinancialEngageableDetailResponseDto<TUpdateHistory, TAuthorization>,
+        IFinancialEngageableDetailResponseDto<TUpdateHistory, TExistingAuthorization>,
         IHasMultiplePhotosDetailResponseDto<TPhoto>
     where TItem : IProductEngageableItemResponseDto
     where TPhoto : IPhotoResponseDto
     where TUpdateHistory : IProductEngageableUpdateHistoryResponseDto<TItemUpdateHistoryData>
     where TItemUpdateHistoryData : IProductEngageableItemUpdateHistoryDataDto
-    where TAuthorization : IFinancialEngageableAuthorizationResponseDto
+    where TExistingAuthorization : IFinancialEngageableExistingAuthorizationResponseDto
 {
     /// <summary>
     /// Contains the product-related engagements' information and the

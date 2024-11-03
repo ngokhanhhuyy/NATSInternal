@@ -51,14 +51,18 @@ internal static class RuleValidators
 
     public static IRuleBuilderOptions<T, string> IsOneOfFieldOptions<T>(
             this IRuleBuilder<T, string> ruleBuilder,
-            IEnumerable<OrderByFieldOption> fieldOptions)
+            ICollection<ListSortingByFieldResponseDto> fieldOptions)
     {
         return ruleBuilder
-            .Must(fieldName => fieldOptions
-                .Select(fieldOption => Enum.GetName(typeof(OrderByFieldOption), fieldOption))
-                .Contains(fieldName))
-            .When(_ => fieldOptions?.Any() == true)
-            .WithMessage(ErrorMessages.Invalid);
+            .Must(field =>
+            {
+                if (field == null || fieldOptions == null || !fieldOptions.Any())
+                {
+                    return true;
+                }
+                
+                return fieldOptions.Select(option => option.Name).Contains(field);
+            }).WithMessage(ErrorMessages.Invalid);
     }
 
     public static IRuleBuilderOptions<T, byte[]> IsValidImage<T>(
@@ -127,9 +131,9 @@ internal static class RuleValidators
         return ruleBuilder
             .GreaterThanOrEqualTo(1)
             .LessThanOrEqualTo(DateTime.UtcNow.ToApplicationTime().Month)
-            .When(dto => dto.Year == DateTime.UtcNow.ToApplicationTime().Year)
+            .When(dto => dto.MonthYear.Year == DateTime.UtcNow.ToApplicationTime().Year)
             .LessThanOrEqualTo(12)
-            .When(dto => dto.Year < DateTime.UtcNow.ToApplicationTime().Year);
+            .When(dto => dto.MonthYear.Year < DateTime.UtcNow.ToApplicationTime().Year);
     }
 
     private static DateTime MinimumStatsDateTime

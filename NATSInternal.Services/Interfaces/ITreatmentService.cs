@@ -10,7 +10,7 @@ public interface ITreatmentService
     /// conditions.
     /// </summary>
     /// <param name="requestDto">
-    /// An instance of the <see cref="TreatmentListRequestDto"/> class, containing the
+    /// An instance of the <see name="TreatmentListRequestDto"/> class, containing the
     /// filtering and paginating conditions for the results.
     /// </param>
     /// <returns>
@@ -58,7 +58,7 @@ public interface ITreatmentService
     /// <exception cref="OperationException">
     /// Throws when the customer with the id specified by the value of the property
     /// <c>CustomerId</c> or the user with the id specified by the value of the property
-    /// <c>TherapistId</c> in the argument for the <c>requestDto</c> parameter doesn't exist
+    /// <c>TherapistId</c> in the <paramref name="requestDto"/> argument the doesn't exist
     /// or has already been deleted.
     /// </exception>
     Task<int> CreateAsync(TreatmentUpsertRequestDto requestDto);
@@ -90,8 +90,8 @@ public interface ITreatmentService
     /// <exception cref="OperationException">
     /// Throws when the customer with the id specified by the value of the property
     /// <c>CustomerId</c> or the user with the id specified by the value of the property
-    /// <c>TherapistId</c> in the argument for the <c>requestDto</c> parameter doesn't exist
-    /// or has already been deleted.
+    /// <c>TherapistId</c> in the <paramref name="requestDto"/> argument doesn't exist or has
+    /// already been deleted.
     /// </exception>
     Task UpdateAsync(int id, TreatmentUpsertRequestDto requestDto);
 
@@ -120,4 +120,45 @@ public interface ITreatmentService
     /// Throws when a concurrency-related conflict occurs during the operation.
     /// </exception>
     Task DeleteAsync(int id);
+
+    /// <summary>
+    /// Get all fields those are used as options to order the results in list retrieving
+    /// operation.
+    /// </summary>
+    /// <returns>
+    /// An instance of the <see cref="ListSortingOptionsResponseDto"/> DTO, containing the
+    /// options with name and display names of the fields and the default field.
+    /// </returns>
+    ListSortingOptionsResponseDto GetListSortingOptions();
+
+    /// <summary>
+    /// Retrieve a list of the <see cref="MonthYearResponseDto"/> instances, representing the
+    /// options and the default option that users can select as filtering condition in list
+    /// retrieving operation.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is
+    /// a <see cref="List{T}"/> of <see cref="MonthYearOptionsResponseDto"/> DTO, representing
+    /// the options.
+    /// </returns>
+    Task<MonthYearOptionsResponseDto> GetListMonthYearOptionsAsync();
+
+    /// <summary>
+    /// Check if the requesting user has permission to create a new treatment.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.
+    /// </returns>
+    bool GetCreatingPermission();
+
+    /// <summary>
+    /// Check if the requesting user has permission to create a new treatment and retrieve the
+    /// authorization information for creating operation.
+    /// </summary>
+    /// <returns>
+    /// An instance of the <see cref="TreatmentNewAuthorizationResponseDto"/> DTO containing
+    /// the authorization information for the operation when the requesting user has permission
+    /// to perform the operation. Otherwise, <c>null</c>.
+    /// </returns>
+    TreatmentNewAuthorizationResponseDto GetCreatingAuthorization();
 }

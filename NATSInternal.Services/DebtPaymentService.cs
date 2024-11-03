@@ -7,11 +7,10 @@ internal class DebtPaymentService
             DebtPaymentListRequestDto, DebtPaymentUpsertRequestDto,
             DebtPaymentListResponseDto, DebtPaymentBasicResponseDto,
             DebtPaymentDetailResponseDto, DebtPaymentUpdateHistoryResponseDto,
-            DebtPaymentUpdateHistoryDataDto, DebtPaymentListAuthorizationResponseDto,
-            DebtPaymentAuthorizationResponseDto>,
+            DebtPaymentUpdateHistoryDataDto, DebtPaymentNewAuthorizationResponseDto,
+            DebtPaymentExistingAuthorizationResponseDto>,
         IDebtPaymentService
 {
-    private readonly IAuthorizationInternalService _authorizationService;
 
     public DebtPaymentService(
             DatabaseContext context,
@@ -19,7 +18,6 @@ internal class DebtPaymentService
             IStatsInternalService<DebtPayment, DebtPaymentUpdateHistory> statsService)
         : base(context, authorizationService, statsService)
     {
-        _authorizationService = authorizationService;
     }
 
     /// <inheritdoc />
@@ -32,14 +30,14 @@ internal class DebtPaymentService
         {
             PageCount = entityListDto.PageCount,
             Items = entityListDto.Items?
-                .Select(dp =>
+                .Select(debtPayment =>
                 {
-                    DebtPaymentAuthorizationResponseDto authorization;
-                    authorization = _authorizationService.GetDebtPaymentAuthorization(dp);
-                    return new DebtPaymentBasicResponseDto(dp, authorization);
-                }).ToList(),
-            MonthYearOptions = await GenerateMonthYearOptions(),
-            Authorization = _authorizationService.GetDebtPaymentListAuthorization()
+                    DebtPaymentExistingAuthorizationResponseDto authorization;
+                    authorization = GetExistingAuthorization(debtPayment);
+
+                    return new DebtPaymentBasicResponseDto(debtPayment, authorization);
+                }).ToList()
+                ?? new List<DebtPaymentBasicResponseDto>(),
         };
     }
 
@@ -47,8 +45,9 @@ internal class DebtPaymentService
     public async Task<DebtPaymentDetailResponseDto> GetDetailAsync(int id)
     {
         DebtPayment debtPayment = await GetEntityAsync(id);
-        DebtPaymentAuthorizationResponseDto authorization;
-        authorization = _authorizationService.GetDebtPaymentAuthorization(debtPayment);
+
+        DebtPaymentExistingAuthorizationResponseDto authorization;
+        authorization = GetExistingAuthorization(debtPayment);
 
         return new DebtPaymentDetailResponseDto(debtPayment, authorization);
     }
@@ -64,34 +63,6 @@ internal class DebtPaymentService
         InitializeUpdateHistoryDataDto(DebtPayment debtPayment)
     {
         return new DebtPaymentUpdateHistoryDataDto(debtPayment);
-    }
-
-    /// <inheritdoc />
-    protected override bool CanAccessUpdateHistories(IAuthorizationInternalService service)
-    {
-        return service.CanAccessDebtPaymentUpdateHistories();
-    }
-
-    /// <inheritdoc />
-    protected override bool CanEdit(
-            DebtPayment debtPayment,
-            IAuthorizationInternalService service)
-    {
-        return service.CanEditDebtPayment(debtPayment);
-    }
-
-    /// <inheritdoc />
-    protected override bool CanSetStatsDateTime(IAuthorizationInternalService service)
-    {
-        return service.CanSetDebtPaymentStatsDateTime();
-    }
-
-    /// <inheritdoc />
-    protected override bool CanDelete(
-            DebtPayment debtPayment,
-            IAuthorizationInternalService service)
-    {
-        return service.CanDeleteDebtPayment(debtPayment);
     }
 
     /// <inheritdoc />

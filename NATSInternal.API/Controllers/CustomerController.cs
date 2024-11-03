@@ -25,7 +25,7 @@ public class CustomerController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CustomerList(
+    public async Task<IActionResult> GetList(
             [FromQuery] CustomerListRequestDto requestDto)
     {
         // Validate data from the request.
@@ -45,7 +45,7 @@ public class CustomerController : ControllerBase
     [HttpGet("{id:int}/Basic")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> CustomerBasic(int id)
+    public async Task<IActionResult> GetBasic(int id)
     {
         try
         {
@@ -63,7 +63,7 @@ public class CustomerController : ControllerBase
     [Authorize(Policy = "CanGetCustomerDetail")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> CustomerDetail(int id)
+    public async Task<IActionResult> GetDetail(int id)
     {
         try
         {
@@ -82,7 +82,7 @@ public class CustomerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> CustomerCreate(
+    public async Task<IActionResult> Create(
             [FromBody] CustomerUpsertRequestDto requestDto)
     {
         // Validate data from the request.
@@ -99,7 +99,7 @@ public class CustomerController : ControllerBase
         {
             // Create the customer.
             int createdId = await _service.CreateAsync(requestDto);
-            string createdUrl = Url.Action("CustomerDetail", new { id = createdId });
+            string createdUrl = Url.Action("GetDetail", new { id = createdId });
 
             // Create and distribute the notification to the users.
             await _notifier.Notify(NotificationType.CustomerCreation, createdId);
@@ -118,7 +118,7 @@ public class CustomerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> CustomerUpdate(
+    public async Task<IActionResult> Update(
             int id,
             [FromBody] CustomerUpsertRequestDto requestDto)
     {
@@ -154,7 +154,7 @@ public class CustomerController : ControllerBase
     [Authorize(Policy = "CanDeleteCustomer")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> CustomerDelete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         try
         {
@@ -171,5 +171,12 @@ public class CustomerController : ControllerBase
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);
         }
+    }
+
+    [HttpGet("GetCreatingPermission")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetCreatingPermission()
+    {
+        return Ok(_service.GetCreatingPermission());
     }
 }

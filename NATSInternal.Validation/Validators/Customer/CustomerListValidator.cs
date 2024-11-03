@@ -2,12 +2,11 @@
 
 public class CustomerListValidator : Validator<CustomerListRequestDto>
 {
-    public CustomerListValidator()
+    public CustomerListValidator(ICustomerService service)
     {
-        RuleFor(dto => dto.OrderByField)
-            .NotEmpty()
-            .IsOneOfFieldOptions(FieldOptions)
-            .WithName(dto => DisplayNames.Get(nameof(dto.OrderByField)));
+        RuleFor(dto => dto.SortingByField)
+            .IsOneOfFieldOptions(service.GetListSortingOptions().FieldOptions)
+            .WithName(DisplayNames.SortingByField);
         RuleFor(dto => dto.Page)
             .GreaterThanOrEqualTo(1)
             .WithName(dto => DisplayNames.Get(nameof(dto.Page)));
@@ -15,17 +14,5 @@ public class CustomerListValidator : Validator<CustomerListRequestDto>
             .GreaterThanOrEqualTo(10)
             .LessThanOrEqualTo(50)
             .WithName(dto => DisplayNames.Get(nameof(dto.ResultsPerPage)));
-    }
-
-    private static IEnumerable<OrderByFieldOption> FieldOptions
-    {
-        get => new List<OrderByFieldOption>
-        {
-            OrderByFieldOption.LastName,
-            OrderByFieldOption.FullName,
-            OrderByFieldOption.Birthday,
-            OrderByFieldOption.CreatedDateTime,
-            OrderByFieldOption.DebtRemainingAmount
-        };
     }
 }

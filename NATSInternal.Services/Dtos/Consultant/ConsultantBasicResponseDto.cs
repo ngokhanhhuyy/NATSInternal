@@ -1,14 +1,14 @@
 namespace NATSInternal.Services.Dtos;
 
 public class ConsultantBasicResponseDto
-    : IFinancialEngageableBasicResponseDto<ConsultantAuthorizationResponseDto>
+    : IFinancialEngageableBasicResponseDto<ConsultantExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public long AmountAfterVat { get; set; }
     public DateTime StatsDateTime { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
-    public ConsultantAuthorizationResponseDto Authorization { get; set; }
+    public ConsultantExistingAuthorizationResponseDto Authorization { get; set; }
 
     internal ConsultantBasicResponseDto(Consultant consultant)
     {
@@ -17,7 +17,7 @@ public class ConsultantBasicResponseDto
 
     internal ConsultantBasicResponseDto(
             Consultant consultant,
-            ConsultantAuthorizationResponseDto authorization)
+            ConsultantExistingAuthorizationResponseDto authorization)
     {
         MapFromEntity(consultant);
         Authorization = authorization;

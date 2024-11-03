@@ -8,20 +8,32 @@ namespace NATSInternal.Services;
 /// The type of the entity.
 /// </typeparam>
 /// <typeparam name="TItem">
-/// The type of the item entity associated to the <see cref="T"/> entity.
+/// The type of the item entity associated to the <typeparamref name="T"/> entity.
 /// </typeparam>
 /// <typeparam name="TPhoto">
-/// The type of the photo entity associated to the <see cref="T"/> entity.
+/// The type of the photo entity associated to the <typeparamref name="T"/> entity.
 /// </typeparam>
 /// <typeparam name="TUpdateHistory">
-/// The type of the update history entity associated to the <see cref="T"/> entity.
+/// The type of the update history entity associated to the <typeparamref name="T"/> entity.
 /// </typeparam>
 /// <typeparam name="TListRequestDto">
 /// The type of the request DTO used in the list retrieving operation.
 /// </typeparam>
+/// <typeparam name="TItemRequestDto">
+/// The type of the item request DTO.
+/// </typeparam>
 /// <typeparam name="TUpdateHistoryDataDto">
-/// The type of the update history data DTO, containing the data of a specific <see cref="T"/>
-/// entity instance after each modification, used in the updating operation.
+/// The type of the update history data DTO, containing the data of a specific
+/// <typeparamref name="T"/> entity instance after each modification, used in the updating
+/// operation.
+/// </typeparam>
+/// <typeparam name="TNewAuthorizationResponseDto">
+/// The type of response DTO which contains the authorization information when creating a new
+/// <typeparamref name="T"/> entity.
+/// </typeparam>
+/// <typeparam name="TExistingAuthorizationResponseDto">
+/// The type of response DTO which contains the authorization information when updating an
+/// existing <typeparamref name="T"/> entity.
 /// </typeparam>
 internal abstract class ProductEngageableAbstractService<
         T,
@@ -30,18 +42,24 @@ internal abstract class ProductEngageableAbstractService<
         TUpdateHistory,
         TListRequestDto,
         TItemRequestDto,
-        TUpdateHistoryDataDto>
+        TUpdateHistoryDataDto,
+        TNewAuthorizationResponseDto,
+        TExistingAuthorizationResponseDto>
     : FinancialEngageableAbstractService<
         T,
         TUpdateHistory,
         TListRequestDto,
-        TUpdateHistoryDataDto>
+        TUpdateHistoryDataDto,
+        TNewAuthorizationResponseDto,
+        TExistingAuthorizationResponseDto>
     where T : class, IProductEngageableEntity<T, TItem, TPhoto, TUpdateHistory>, new()
     where TItem : class, IProductEngageableItemEntity<TItem>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
     where TListRequestDto : IProductEngageableListRequestDto
     where TItemRequestDto : IProductEngageableItemRequestDto
+    where TNewAuthorizationResponseDto : class, IFinancialEngageableNewAuthorizationResponseDto, new()
+    where TExistingAuthorizationResponseDto : IFinancialEngageableExistingAuthorizationResponseDto, new()
 {
     private readonly DatabaseContext _context;
 
@@ -62,10 +80,11 @@ internal abstract class ProductEngageableAbstractService<
 
         if (requestDto.ProductId.HasValue)
         {
-            query = query.Where(e => e.Items.Any(ei => ei.ProductId == requestDto.ProductId));
+            filteredQuery = query
+                .Where(e => e.Items.Any(ei => ei.ProductId == requestDto.ProductId));
         }
 
-        return await base.GetListOfEntitiesAsync(query, requestDto);
+        return await base.GetListOfEntitiesAsync(filteredQuery, requestDto);
     }
 
     /// <summary>
@@ -81,6 +100,10 @@ internal abstract class ProductEngageableAbstractService<
     /// </param>
     /// <param name="engagementType">
     /// The type of the engagement operation.
+    /// </param>
+    /// <param name="itemInitializer">
+    /// A function to initialize an instance of the <typeparamref name="TItem"/> entity from
+    /// a given request DTO.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -161,6 +184,15 @@ internal abstract class ProductEngageableAbstractService<
     /// </param>
     /// <param name="engagementType">
     /// The type of the engagement operation.
+    /// </param>
+    /// <param name="itemInitializer">
+    /// A function to assign the data from the given <typeparamref name="TItemRequestDto"/> DTO
+    /// to the newly initialized <typeparamref name="TItem"/> entity when the entity is
+    /// created.
+    /// </param>
+    /// <param name="itemUpdatingAssigner">
+    /// A function to assign the data from the given <typeparamref name="TItemRequestDto"/> DTO
+    /// to the existing <typeparamref name="TItem"/> entity when updating the entity.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -273,7 +305,7 @@ internal abstract class ProductEngageableAbstractService<
     /// A collection of item entities that act as the connection with the products.
     /// </param>
     /// <param name="repositorySelector">
-    /// A function that is used to select the <see cref="TItem"/> repository from the given
+    /// A function that is used to select the <typeparamref name="TItem"/> repository from the given
     /// <see cref="DatabaseContext"/> instance.
     /// </param>
     /// <param name="engagementType">
@@ -312,6 +344,7 @@ internal abstract class ProductEngageableAbstractService<
 
     /// <summary>
     /// Gets the item entity repository in the <see cref="DatabaseContext"/> class.
+    /// </summary>
     /// <param name="context">
     /// An instance of the injected <see cref="DatabaseContext"/>
     /// </param>

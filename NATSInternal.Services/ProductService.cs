@@ -1,33 +1,65 @@
 ﻿namespace NATSInternal.Services;
 
-/// <inheritdoc />
-internal class ProductService : IProductService
+/// <inheritdoc cref="IProductService" />
+internal class ProductService
+    :
+        UpsertableAbstractService<
+            Product,
+            ProductListRequestDto,
+            ProductExistingAuthorizationResponseDto>,
+        IProductService
 {
     private readonly DatabaseContext _context;
     private readonly IMultiplePhotosService<Product, ProductPhoto> _photoService;
-    private readonly IAuthorizationInternalService _authorizationService;
 
     public ProductService(
             DatabaseContext context,
             IMultiplePhotosService<Product, ProductPhoto> photoService,
-            IAuthorizationInternalService authorizationService)
+            IAuthorizationInternalService authorizationService) : base(authorizationService)
     {
         _context = context;
         _photoService = photoService;
-        _authorizationService = authorizationService;
     }
 
     /// <inheritdoc />
     public async Task<ProductListResponseDto> GetListAsync(ProductListRequestDto requestDto)
     {
-        IQueryable<Product> query = _context.Products
-            .OrderBy(p => p.CreatedDateTime);
+        IQueryable<Product> query = _context.Products;
+        
+        // Determine the field and the direction the sort.
+        string sortingByField = requestDto.SortingByField
+                                ?? GetListSortingOptions().DefaultFieldName;
+        bool sortingByAscending = requestDto.SortingByAscending
+                                  ?? GetListSortingOptions().DefaultAscending;
+        switch (sortingByField)
+        {
+            case nameof(OrderByFieldOption.CreatedDateTime):
+                query = sortingByAscending
+                    ? query
+                        .OrderBy(p => p.CreatedDateTime)
+                        .ThenBy(p => p.StockingQuantity)
+                    : query
+                        .OrderBy(p => p.CreatedDateTime)
+                        .ThenByDescending(p => p.StockingQuantity);
+                break;
+            case nameof(OrderByFieldOption.StockingQuantity):
+                query = sortingByAscending
+                    ? query
+                        .OrderBy(p => p.StockingQuantity)
+                        .ThenBy(p => p.NormalizedName)
+                    : query
+                        .OrderBy(p => p.StockingQuantity)
+                        .ThenByDescending(p => p.NormalizedName);
+                break;
+            default:
+                throw new NotImplementedException();
+        }
 
         // Filter by category name.
-        if (requestDto.CategoryName != null)
+        if (requestDto.CategoryId != null)
         {
             query = query
-                .Where(p => p.Category != null && p.Category.Name == requestDto.CategoryName);
+                .Where(p => p.Category != null && p.Category.Id == requestDto.CategoryId);
         }
 
         // Filter by brand id.
@@ -39,34 +71,23 @@ internal class ProductService : IProductService
         // Filter by product name.
         if (requestDto.ProductName != null)
         {
-            string productNonDiacriticsName = requestDto.ProductName.ToNonDiacritics();
-            query = query
-                .Where(p => p.Name.Contains(
-                    productNonDiacriticsName,
-                    StringComparison.OrdinalIgnoreCase));
+            string productNonDiacriticsName = requestDto.ProductName
+                .ToNonDiacritics()
+                .ToUpper();
+            query = query.Where(p => p.NormalizedName.Contains(productNonDiacriticsName));
         }
 
-        ProductListResponseDto responseDto = new ProductListResponseDto
+        // Fetch the list of the entities.
+        EntityListDto<Product> listDto = await GetListOfEntitiesAsync(query, requestDto);
+
+        return new ProductListResponseDto
         {
-            Authorization = _authorizationService.GetProductListAuthorization()
+            PageCount = listDto.PageCount,
+            Items = listDto.Items?
+                .Select(p => new ProductBasicResponseDto(p, GetExistingAuthorization(p)))
+                .ToList()
+                ?? new List<ProductBasicResponseDto>()
         };
-        int resultCount = await query.CountAsync();
-        if (resultCount == 0)
-        {
-            responseDto.PageCount = 0;
-            return responseDto;
-        }
-        responseDto.PageCount = (int)Math.Ceiling(
-            (double)resultCount / requestDto.ResultsPerPage);
-        responseDto.Items = await query
-            .Select(p => new ProductBasicResponseDto(
-                p,
-                _authorizationService.GetProductAuthorization(p)))
-            .Skip(requestDto.ResultsPerPage * (requestDto.Page - 1))
-            .Take(requestDto.ResultsPerPage)
-            .ToListAsync();
-
-        return responseDto;
     }
 
     /// <inheritdoc />
@@ -84,8 +105,8 @@ internal class ProductService : IProductService
                 nameof(id),
                 id.ToString());
 
-        ProductAuthorizationResponseDto authorizationResponseDto = _authorizationService
-            .GetProductAuthorization(product);
+        ProductExistingAuthorizationResponseDto authorizationResponseDto;
+        authorizationResponseDto = GetExistingAuthorization(product);
 
         return new ProductDetailResponseDto(product, authorizationResponseDto);
     }
@@ -314,6 +335,34 @@ internal class ProductService : IProductService
 
             throw;
         }
+    }
+
+    /// <inheritdoc cref="IProductService.GetListSortingOptions" />
+    public override ListSortingOptionsResponseDto GetListSortingOptions()
+    {
+        List<ListSortingByFieldResponseDto> fieldOptions;
+        fieldOptions = new List<ListSortingByFieldResponseDto>
+        {
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.CreatedDateTime),
+                DisplayName = DisplayNames.Amount
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.StockingQuantity),
+                DisplayName = DisplayNames.StatsDateTime
+            }
+        };
+
+        return new ListSortingOptionsResponseDto
+        {
+            FieldOptions = fieldOptions,
+            DefaultFieldName = fieldOptions
+                .Single(i => i.Name == nameof(OrderByFieldOption.CreatedDateTime))
+                .Name,
+            DefaultAscending = false
+        };
     }
 
     /// <summary>

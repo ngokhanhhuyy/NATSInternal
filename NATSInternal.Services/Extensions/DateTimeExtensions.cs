@@ -50,7 +50,7 @@ public static class DateTimeExtensions
         if (pastDateTime > dateTime)
         {
             throw new ArgumentException(
-                "Value for pastDateTime parameter cannot be later " +
+                "Value for the pastDateTime property cannot be later " +
                 "than current CreatedDateTime value."
             );
         }
@@ -70,7 +70,7 @@ public static class DateTimeExtensions
         if (futureDateTime < dateTime)
         {
             throw new ArgumentException(
-                "Value for futureDateTime parameter cannot be earlier" +
+                "Value for the futureDateTime property cannot be earlier" +
                 "than current CreatedDateTime value."
             );
         }
@@ -87,7 +87,7 @@ public static class DateTimeExtensions
         if (pastDateTime > dateTime)
         {
             throw new ArgumentException(
-                "Value for pastDateTime parameter cannot be later " +
+                "Value for the pastDateTime property cannot be later " +
                 "than current CreatedDateTime value."
             );
         }

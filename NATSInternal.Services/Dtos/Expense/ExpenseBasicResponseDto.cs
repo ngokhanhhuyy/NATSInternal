@@ -2,16 +2,16 @@ namespace NATSInternal.Services.Dtos;
 
 public class ExpenseBasicResponseDto
     :
-        IFinancialEngageableBasicResponseDto<ExpenseAuthorizationResponseDto>,
+        IFinancialEngageableBasicResponseDto<ExpenseExistingAuthorizationResponseDto>,
         IHasThumbnailBasicResponseDto
 {
     public int Id { get; set; }
-    public long Amount { get; set; }
+    public long AmountAfterVat { get; set; }
     public DateTime StatsDateTime { get; set; }
     public ExpenseCategory Category { get; set; }
     public bool IsLocked { get; set; }
     public string ThumbnailUrl { get; set; }
-    public ExpenseAuthorizationResponseDto Authorization { get; set; }
+    public ExpenseExistingAuthorizationResponseDto Authorization { get; set; }
 
     internal ExpenseBasicResponseDto(Expense expense)
     {
@@ -20,7 +20,7 @@ public class ExpenseBasicResponseDto
 
     internal ExpenseBasicResponseDto(
             Expense expense,
-            ExpenseAuthorizationResponseDto authorization)
+            ExpenseExistingAuthorizationResponseDto authorization)
     {
         MapFromEntity(expense);
         Authorization = authorization;
@@ -29,7 +29,7 @@ public class ExpenseBasicResponseDto
     private void MapFromEntity(Expense expense)
     {
         Id = expense.Id;
-        Amount = expense.Amount;
+        AmountAfterVat = expense.Amount;
         StatsDateTime = expense.StatsDateTime;
         Category = expense.Category;
         IsLocked = expense.IsLocked;

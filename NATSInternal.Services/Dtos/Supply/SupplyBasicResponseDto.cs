@@ -1,15 +1,15 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
 public class SupplyBasicResponseDto
-    : IFinancialEngageableBasicResponseDto<SupplyAuthorizationResponseDto>
+    : IFinancialEngageableBasicResponseDto<SupplyExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public DateTime StatsDateTime { get; set; }
-    public long Amount { get; set; }
+    public long AmountAfterVat { get; set; }
     public bool IsLocked { get; set; }
     public UserBasicResponseDto CreatedUser { get; set; }
     public string ThumbnailUrl { get; set; }
-    public SupplyAuthorizationResponseDto Authorization { get; set; }
+    public SupplyExistingAuthorizationResponseDto Authorization { get; set; }
 
     internal SupplyBasicResponseDto(Supply supply)
     {
@@ -18,7 +18,7 @@ public class SupplyBasicResponseDto
 
     internal SupplyBasicResponseDto(
             Supply supply,
-            SupplyAuthorizationResponseDto authorization)
+            SupplyExistingAuthorizationResponseDto authorization)
     {
         MapFromEntity(supply);
         Authorization = authorization;
@@ -28,7 +28,7 @@ public class SupplyBasicResponseDto
     {
         Id = supply.Id;
         StatsDateTime = supply.StatsDateTime;
-        Amount = supply.Amount;
+        AmountAfterVat = supply.Amount;
         IsLocked = supply.IsLocked;
         CreatedUser = new UserBasicResponseDto(supply.CreatedUser);
         ThumbnailUrl = supply.ThumbnailUrl;

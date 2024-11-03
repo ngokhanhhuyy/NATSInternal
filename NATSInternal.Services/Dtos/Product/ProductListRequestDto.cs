@@ -2,9 +2,9 @@
 
 public class ProductListRequestDto : IOrderableListRequestDto
 {
-    public bool OrderByAscending { get; set; }
-    public string OrderByField { get; set; }
-    public string CategoryName { get; set; }
+    public bool? SortingByAscending { get; set; }
+    public string SortingByField { get; set; }
+    public int? CategoryId { get; set; }
     public int? BrandId { get; set; }
     public string ProductName { get; set; }
     public int Page { get; set; } = 1;
@@ -12,8 +12,7 @@ public class ProductListRequestDto : IOrderableListRequestDto
 
     public void TransformValues()
     {
-        OrderByField = OrderByField?.ToNullIfEmpty();
-        CategoryName = CategoryName?.ToNullIfEmpty();
+        SortingByField = SortingByField?.ToNullIfEmpty();
         ProductName = ProductName?.ToNullIfEmpty();
     }
 }

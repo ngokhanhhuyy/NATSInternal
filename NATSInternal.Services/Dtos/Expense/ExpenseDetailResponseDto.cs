@@ -2,10 +2,10 @@ namespace NATSInternal.Services.Dtos;
 
 public class ExpenseDetailResponseDto : IFinancialEngageableDetailResponseDto<
     ExpenseUpdateHistoryResponseDto,
-    ExpenseAuthorizationResponseDto>
+    ExpenseExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
-    public long Amount { get; set; }
+    public long AmountAfterVat { get; set; }
     public DateTime StatsDateTime { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public ExpenseCategory Category { get; set; }
@@ -14,16 +14,15 @@ public class ExpenseDetailResponseDto : IFinancialEngageableDetailResponseDto<
     public UserBasicResponseDto CreatedUser { get; set; }
     public ExpensePayeeResponseDto Payee { get; set; }
     public List<ExpensePhotoResponseDto> Photos { get; set; }
-    public ExpenseAuthorizationResponseDto Authorization { get; set; }
+    public ExpenseExistingAuthorizationResponseDto Authorization { get; set; }
     public List<ExpenseUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
     internal ExpenseDetailResponseDto(
             Expense expense,
-            ExpenseAuthorizationResponseDto authorization)
+            ExpenseExistingAuthorizationResponseDto authorization)
     {
         Id = expense.Id;
-        Amount = expense.Amount;
-        CreatedDateTime = expense.CreatedDateTime;
+        AmountAfterVat = expense.Amount;
         StatsDateTime = expense.StatsDateTime;
         Category = expense.Category;
         Note = expense.Note;

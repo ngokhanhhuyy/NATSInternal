@@ -17,11 +17,11 @@ public class ProductDetailResponseDto
     public ProductCategoryResponseDto Category { get; set; }
     public BrandBasicResponseDto Brand { get; set; }
     public List<ProductPhotoResponseDto> Photos { get; set; }
-    public ProductAuthorizationResponseDto Authorization { get; set; }
+    public ProductExistingAuthorizationResponseDto Authorization { get; set; }
 
     internal ProductDetailResponseDto(
             Product product,
-            ProductAuthorizationResponseDto authorization)
+            ProductExistingAuthorizationResponseDto authorization)
     {
         Id = product.Id;
         Name = product.Name;

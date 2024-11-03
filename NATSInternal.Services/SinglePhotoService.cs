@@ -204,7 +204,7 @@ internal class SinglePhotoService<T> : ISinglePhotoService<T>
 /// The type of the entity with which the photos are associate.
 /// </typeparam>
 /// The type of the photo entity, ass
-/// <typeparam name="TPhoto">ociated to the <see cref="T"/> entity.
+/// <typeparam name="TPhoto">ociated to the <typeparamref name="T"/> entity.
 /// </typeparam>
 internal class MultiplePhotosService<T, TPhoto>
     :

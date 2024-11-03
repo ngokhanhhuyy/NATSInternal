@@ -1,23 +1,24 @@
 ﻿namespace NATSInternal.Services;
 
-/// <inheritdoc />
+/// <inheritdoc cref="IBrandService" />
 internal class BrandService
     :
-        UpsertableAbstractService<Brand, BrandListRequestDto>,
+        UpsertableAbstractService<
+            Brand,
+            BrandListRequestDto,
+            BrandExistingAuthorizationResponseDto>,
         IBrandService
 {
     private readonly DatabaseContext _context;
     private readonly ISinglePhotoService<Brand> _photoService;
-    private readonly IAuthorizationInternalService _authorizationService;
 
     public BrandService(
             DatabaseContext context,
             ISinglePhotoService<Brand> photoService,
-            IAuthorizationInternalService authorizationService)
+            IAuthorizationInternalService authorizationService) : base(authorizationService)
     {
         _context = context;
         _photoService = photoService;
-        _authorizationService = authorizationService;
     }
 
     /// <inheritdoc />
@@ -30,23 +31,24 @@ internal class BrandService
         return new BrandListResponseDto
         {
             PageCount = entityListDto.PageCount,
-            Items = entityListDto.Items
-                .Select(b => new BrandBasicResponseDto(
-                    b,
-                    _authorizationService.GetBrandAuthorization()))
-                .ToList(),
-            Authorization = _authorizationService.GetBrandListAuthorization()
+            Items = entityListDto.Items?
+                .Select(brand =>
+                {
+                    BrandExistingAuthorizationResponseDto authorization;
+                    authorization = GetExistingAuthorization(brand);
+
+                    return new BrandBasicResponseDto(brand, authorization);
+                }).ToList()
+                ?? new List<BrandBasicResponseDto>()
         };
     }
 
     /// <inheritdoc />
-    public async Task<List<BrandBasicResponseDto>> GetAllAsync()
+    public async Task<List<BrandMinimalResponseDto>> GetAllAsync()
     {
         return await _context.Brands
             .OrderBy(brand => brand.Id)
-            .Select(brand => new BrandBasicResponseDto(
-                brand,
-                _authorizationService.GetBrandAuthorization()))
+            .Select(brand => new BrandMinimalResponseDto(brand))
             .ToListAsync();
     }
 
@@ -54,11 +56,9 @@ internal class BrandService
     public async Task<BrandDetailResponseDto> GetDetailAsync(int id)
     {
         return await _context.Brands
-            .Include(brand => brand.Country)
-            .Where(brand => brand.Id == id)
-            .Select(brand => new BrandDetailResponseDto(
-                brand,
-                _authorizationService.GetBrandAuthorization()))
+            .Include(b => b.Country)
+            .Where(b => b.Id == id)
+            .Select(b => new BrandDetailResponseDto(b, GetExistingAuthorization(b)))
             .SingleOrDefaultAsync()
             ?? throw new ResourceNotFoundException(
                 nameof(Brand),
@@ -107,7 +107,7 @@ internal class BrandService
     /// <inheritdoc />
     public async Task UpdateAsync(int id, BrandUpsertRequestDto requestDto)
     {
-        // Fetch the brand from the database and ensure it exists.
+        // Fetch the b from the database and ensure it exists.
         Brand brand = await _context.Brands.SingleOrDefaultAsync(b => b.Id == id)
             ?? throw new ResourceNotFoundException(
                 nameof(Brand),
@@ -146,7 +146,7 @@ internal class BrandService
         {
             await _context.SaveChangesAsync();
             
-            // The brand has been updated successfully, delete the old photos.
+            // The b has been updated successfully, delete the old photos.
             if (urlToBeDeletedWhenSucceeded != null)
             {
                 _photoService.Delete(urlToBeDeletedWhenSucceeded);
@@ -186,6 +186,27 @@ internal class BrandService
         }
     }
 
+    /// <inheritdoc cref="IBrandService.GetListSortingOptions" />
+    public override ListSortingOptionsResponseDto GetListSortingOptions()
+    {
+        List<ListSortingByFieldResponseDto> fieldOptions;
+        fieldOptions = new List<ListSortingByFieldResponseDto>
+        {
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.CreatedDateTime),
+                DisplayName = DisplayNames.CreatedDateTime
+            }
+        };
+
+        return new ListSortingOptionsResponseDto
+        {
+            FieldOptions = fieldOptions,
+            DefaultFieldName = fieldOptions.Single().Name,
+            DefaultAscending = true
+        };
+    }
+    
     /// <summary>
     /// Handle the <c>MySqlException</c> that is thrown by the database during the updating
     /// operation and convert into the corresponding meaningful expcetion.

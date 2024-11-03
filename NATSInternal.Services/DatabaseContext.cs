@@ -109,14 +109,14 @@ internal class DatabaseContext
             // Set table name.
             entity.SetTableName(entity.GetTableName().PascalCaseToSnakeCase());
 
-            // Set columns' names.
+            // Set columns' _names.
             foreach (IMutableProperty property in entity.GetProperties())
             {
                 string name = property.Name.PascalCaseToSnakeCase();
                 property.SetColumnName(name);
             }
 
-            // Set primary keys' names.
+            // Set primary keys' _names.
             foreach (IMutableKey key in entity.GetKeys())
             {
                 if (key.IsPrimaryKey())
@@ -136,7 +136,7 @@ internal class DatabaseContext
                 }
             }
 
-            // Set foreign keys' constraint names.
+            // Set foreign keys' constraint _names.
             foreach (IMutableForeignKey foreignKey in entity.GetForeignKeys())
             {
                 string referencingTable = foreignKey.PrincipalEntityType
@@ -161,7 +161,7 @@ internal class DatabaseContext
                     $"FK__{referencingTable}__{referencedTable}__{referencingColumns}");
             }
 
-            // Change index names
+            // Change index _names
             foreach (IMutableIndex index in entity.GetIndexes())
             {
                 string indexName = index.IsUnique ? "UNIQUE__" : "INDEX__";

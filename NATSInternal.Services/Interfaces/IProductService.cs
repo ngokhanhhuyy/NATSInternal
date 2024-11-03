@@ -59,10 +59,10 @@ public interface IProductService
     /// <exception cref="OperationException">
     /// Throws under the following circumstances:<br/>
     /// - When the brand with the id specified by the value of the property <c>BrandId</c>
-    /// in the <c>requestDto</c> argument doesn't exist or has already been deleted.<br/>
+    /// in the <paramref name="requestDto"/> doesn't exist or has already been deleted.<br/>
     /// - When the category with the id specified by the value of the property
-    /// <c>CategoryId</c> in the <c>requestDto</c> argument doens't exist or has already been
-    /// deleted.<br/>
+    /// <c>CategoryId</c> in the <paramref name="requestDto"/> doens't exist or has already
+    /// been deleted.<br/>
     /// - When the specfied value for the property <c>Name</c> in the <c>requestDto</c>
     /// argument already exists.
     /// </exception>
@@ -91,12 +91,12 @@ public interface IProductService
     /// <exception cref="OperationException">
     /// Throws under the following circumstances:<br/>
     /// - When the brand with the id specified by the value of the property <c>BrandId</c>
-    /// in the <c>requestDto</c> argument doesn't exist or has already been deleted.<br/>
+    /// in the <paramref name="requestDto"/> doesn't exist or has already been deleted.<br/>
     /// - When the category with the id specified by the value of the property
-    /// <c>CategoryId</c> in the <c>requestDto</c> argument doens't exist or has already been
-    /// deleted.<br/>
+    /// <c>CategoryId</c> in the <paramref name="requestDto"/> doens't exist or has already
+    /// been deleted.<br/>
     /// - When the specfied value for the property <c>Name</c> property in the
-    /// <c>requestDto</c> argument already exists.
+    /// <paramref name="requestDto"/> already exists.
     /// </exception>
     Task UpdateAsync(int id, ProductUpsertRequestDto requestDto);
 
@@ -121,4 +121,22 @@ public interface IProductService
     /// data.
     /// </exception>
     Task DeleteAsync(int id);
+
+    /// <summary>
+    /// Get all fields those are used as options to order the results in list retrieving
+    /// operation.
+    /// </summary>
+    /// <returns>
+    /// An instance of the <see cref="ListSortingOptionsResponseDto"/> DTO, containing the
+    /// options with name and display names of the fields and the default field.
+    /// </returns>
+    ListSortingOptionsResponseDto GetListSortingOptions();
+
+    /// <summary>
+    /// Check if the requesting user has permission to create a new product.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.
+    /// </returns>
+    bool GetCreatingPermission();
 }

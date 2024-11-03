@@ -7,7 +7,9 @@ internal class ExpenseService
             Expense,
             ExpenseUpdateHistory,
             ExpenseListRequestDto,
-            ExpenseUpdateHistoryDataDto>,
+            ExpenseUpdateHistoryDataDto,
+            ExpenseNewAuthorizationResponseDto,
+            ExpenseExistingAuthorizationResponseDto>,
         IExpenseService
 {
     private readonly DatabaseContext _context;
@@ -35,18 +37,24 @@ internal class ExpenseService
         IQueryable<Expense> query = _context.Expenses
             .Include(e => e.Photos);
 
-        // Sort the results.
-        switch (requestDto.OrderByField)
+
+        // Determine the field and the direction the sort.
+        string sortingByField = requestDto.SortingByField
+                                ?? GetListSortingOptions().DefaultFieldName;
+        bool sortingByAscending = requestDto.SortingByAscending
+                                  ?? GetListSortingOptions().DefaultAscending;
+        
+        switch (sortingByField)
         {
             case nameof(OrderByFieldOption.Amount):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(e => e.Amount)
                         .ThenBy(e => e.StatsDateTime)
                     : query.OrderByDescending(e => e.Amount)
                         .ThenByDescending(e => e.StatsDateTime);
                 break;
             case nameof(OrderByFieldOption.StatsDateTime):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(e => e.StatsDateTime)
                         .ThenBy(e => e.Amount)
                     : query.OrderByDescending(e => e.StatsDateTime)
@@ -63,12 +71,13 @@ internal class ExpenseService
         {
             PageCount = listDto.PageCount,
             Items = listDto.Items
-                .Select(expense => new ExpenseBasicResponseDto(
-                    expense,
-                    _authorizationService.GetExpenseAuthorization(expense)))
-                .ToList(),
-            MonthYearOptions = await GenerateMonthYearOptions(),
-            Authorization = _authorizationService.GetExpenseListAuthorization()
+                .Select(expense =>
+                {
+                    ExpenseExistingAuthorizationResponseDto authorization;
+                    authorization = GetExistingAuthorization(expense);
+
+                    return new ExpenseBasicResponseDto(expense, authorization);
+                }).ToList()
         };
     }
 
@@ -82,9 +91,7 @@ internal class ExpenseService
             .Include(e => e.Photos);
 
         // Determine if the update histories should be fetched.
-        bool shouldIncludeUpdateHistories = _authorizationService
-            .CanAccessExpenseUpdateHistories();
-        if (shouldIncludeUpdateHistories)
+        if (CanAccessUpdateHistories())
         {
             query = query.Include(e => e.UpdateHistories);
         }
@@ -98,9 +105,7 @@ internal class ExpenseService
                 nameof(id),
                 id.ToString());
 
-        return new ExpenseDetailResponseDto(
-            expense,
-            _authorizationService.GetExpenseAuthorization(expense));
+        return new ExpenseDetailResponseDto(expense, GetExistingAuthorization(expense));
     }
 
     /// <inheritdoc/>
@@ -114,8 +119,8 @@ internal class ExpenseService
         DateTime statsDateTime = DateTime.UtcNow.ToApplicationTime();
         if (requestDto.StatsDateTime.HasValue)
         {
-            // Check if the current user has permission to specify a value for StatsDateTime.
-            if (!_authorizationService.CanSetExpenseStatsDateTime())
+            // Ensure the requesting user has permission to specify a value for StatsDateTime.
+            if (!CanSetStatsDateTimeWhenCreating())
             {
                 throw new AuthorizationException();
             }
@@ -202,7 +207,7 @@ internal class ExpenseService
             ?? throw new ResourceNotFoundException(nameof(Expense), nameof(id), id.ToString());
 
         // Ensure the expense is editable by the requester.
-        if (!_authorizationService.CanEditExpense(expense))
+        if (!CanEdit(expense))
         {
             throw new AuthorizationException();
         }
@@ -220,30 +225,19 @@ internal class ExpenseService
         // Store the current data as the old data for update history logging.
         ExpenseUpdateHistoryDataDto oldData = new ExpenseUpdateHistoryDataDto(expense);
 
-        // Determine the StatsDateTime if the request has specified a value.
+        // Determine the SupplyDateTime if the request has specified a value.
         if (requestDto.StatsDateTime.HasValue)
         {
-            // Check if the current user has permission to specify the paid datetime.
-            if (!_authorizationService.CanSetExpenseStatsDateTime())
+            // Ensure the requesting user has permission to specify a value for StatsDateTime.
+            if (!CanSetStatsDateTimeWhenEditing(expense))
             {
                 throw new AuthorizationException();
             }
 
-            // Ensure the StatsDateTime isn't modified when the expense is locked.
-            if (expense.IsLocked)
-            {
-                string errorMessage = ErrorMessages.CannotSetDateTimeAfterLocked
-                    .ReplaceResourceName(DisplayNames.Consultant)
-                    .ReplacePropertyName(DisplayNames.StatsDateTime);
-                throw new OperationException(
-                    nameof(requestDto.StatsDateTime),
-                    errorMessage);
-            }
-
-            // Assign the new StatsDateTime value only if it's different from the old one.
+            // Assign the new SupplyDateTime value only if it's different from the old one.
             if (requestDto.StatsDateTime.Value != expense.StatsDateTime)
             {
-                // Validate and assign the specified StatsDateTime value from the request.
+                // Validate and assign the specified SupplyDateTime value from the request.
                 try
                 {
                     ValidateStatsDateTime(expense, requestDto.StatsDateTime.Value);
@@ -356,7 +350,7 @@ internal class ExpenseService
             ?? throw new ResourceNotFoundException(nameof(Expense), nameof(id), id.ToString());
 
         // Ensure the user has permission to delete this expense.
-        if (!_authorizationService.CanDeleteExpense(expense))
+        if (!CanDelete(expense))
         {
             throw new AuthorizationException();
         }
@@ -401,7 +395,6 @@ internal class ExpenseService
         catch (DbUpdateException exception)
         when (exception.InnerException is MySqlException sqlExecption)
         {
-            SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(sqlExecption);
             HandleException(sqlExecption);
 
             throw;
@@ -412,16 +405,38 @@ internal class ExpenseService
         }
     }
 
+    /// <inheritdoc cref="IExpenseService" />
+    public override ListSortingOptionsResponseDto GetListSortingOptions()
+    {
+        List<ListSortingByFieldResponseDto> fieldOptions;
+        fieldOptions = new List<ListSortingByFieldResponseDto>
+        {
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.Amount),
+                DisplayName = DisplayNames.Amount
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.StatsDateTime),
+                DisplayName = DisplayNames.StatsDateTime
+            }
+        };
+
+        return new ListSortingOptionsResponseDto
+        {
+            FieldOptions = fieldOptions,
+            DefaultFieldName = fieldOptions
+                .Single(i => i.Name == nameof(OrderByFieldOption.StatsDateTime))
+                .Name,
+            DefaultAscending = false
+        };
+    }
+
     /// <inheritdoc/>
     protected override DbSet<Expense> GetRepository(DatabaseContext context)
     {
         return context.Expenses;
-    }
-
-    /// <inheritdoc/>
-    protected override bool CanAccessUpdateHistories(IAuthorizationInternalService service)
-    {
-        return service.CanAccessExpenseUpdateHistories();
     }
 
     /// <summary>

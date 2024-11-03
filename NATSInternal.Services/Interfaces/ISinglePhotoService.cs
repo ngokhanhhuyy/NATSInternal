@@ -9,7 +9,7 @@ internal interface ISinglePhotoService<T> where T : class, IHasSinglePhotoEntity
     /// Creates a new photo and save it into a specific folder.
     /// </summary>
     /// <remarks>
-    /// The folder which name is specified by the value of the <c>folderName</c> argument is
+    /// The folder which name is specified by the value of the <paramref name="folderName"/> is
     /// placed under the directory <c>/wwwroot/photos</c>. The name of the photo file is a
     /// string which contains the combination of the created datetime and a UUID.
     /// </remarks>
@@ -31,7 +31,7 @@ internal interface ISinglePhotoService<T> where T : class, IHasSinglePhotoEntity
     /// </summary>
     /// <remarks>
     /// The folder in which the photo is stored has name determined by the name of the
-    /// <see cref="T" /> entity (converted into snake case) and placed under the directory
+    /// <typeparamref name="T"/> entity (converted into snake case) and placed under the directory
     /// <c>/wwwroot/photos</c>. The name of the photo file is a string which contains the
     /// combination of the created datetime and a UUID.
     /// </remarks>

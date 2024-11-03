@@ -3,25 +3,25 @@
 public class DebtIncurrenceDetailResponseDto
     : IDebtDetailResponseDto<
         DebtIncurrenceUpdateHistoryResponseDto,
-        DebtIncurrenceAuthorizationResponseDto>
+        DebtIncurrenceExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
-    public long Amount { get; set; }
+    public long AmountAfterVat { get; set; }
     public string Note { get; set; }
     public DateTime StatsDateTime { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
     public UserBasicResponseDto CreatedUser { get; set; }
-    public DebtIncurrenceAuthorizationResponseDto Authorization { get; set; }
+    public DebtIncurrenceExistingAuthorizationResponseDto Authorization { get; set; }
     public List<DebtIncurrenceUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
     internal DebtIncurrenceDetailResponseDto(
             DebtIncurrence debtIncurrence,
-            DebtIncurrenceAuthorizationResponseDto authorization)
+            DebtIncurrenceExistingAuthorizationResponseDto authorization)
     {
         Id = debtIncurrence.Id;
-        Amount = debtIncurrence.Amount;
+        AmountAfterVat = debtIncurrence.Amount;
         Note = debtIncurrence.Note;
         CreatedDateTime = debtIncurrence.CreatedDateTime;
         IsLocked = debtIncurrence.IsLocked;

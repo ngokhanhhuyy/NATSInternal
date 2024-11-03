@@ -4,7 +4,7 @@ public class ProductCategoryResponseDto : IBasicResponseDto
 {
     public int Id { get; set; }
     public string Name { get; set; }
-    public ProductCategoryAuthorizationResponseDto Authorization { get; set; }
+    public ProductCategoryExistingAuthorizationResponseDto Authorization { get; set; }
 
     internal ProductCategoryResponseDto(ProductCategory category)
     {
@@ -13,7 +13,7 @@ public class ProductCategoryResponseDto : IBasicResponseDto
 
     internal ProductCategoryResponseDto(
             ProductCategory category,
-            ProductCategoryAuthorizationResponseDto authoriztion)
+            ProductCategoryExistingAuthorizationResponseDto authoriztion)
     {
         MapFromEntity(category);
         Authorization = authoriztion;

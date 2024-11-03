@@ -12,22 +12,22 @@ public interface IProductCategoryService
     /// A DTO containing the paginating conditions for the results.
     /// </param>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is an
-    /// instance of the <see cref="ProductCategoryListResponseDto"/> class, containing the
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is
+    /// an instance of the <see cref="ProductCategoryListResponseDto"/> class, containing the
     /// results.
     /// </returns>
     Task<ProductCategoryListResponseDto> GetListAsync(
             ProductCategoryListRequestDto requestDto);
 
     /// <summary>
-    /// Retrieves a list of all product categories.
+    /// Retrieves a list of all product categories with minimal information.
     /// </summary>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is an
-    /// instance of the <see cref="ProductCategoryListResponseDto"/> class, containing the
-    /// results.
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is
+    /// a <see cref="List{T}"/> of the <see cref="ProductCategoryMinimalResponseDto"/> DTOs,
+    /// containing results.
     /// </returns>
-    Task<List<ProductCategoryResponseDto>> GetAllAsync();
+    Task<List<ProductCategoryMinimalResponseDto>> GetAllAsync();
 
     /// <summary>
     /// Retrieves the details a specfic product category, based on its id.
@@ -36,9 +36,9 @@ public interface IProductCategoryService
     /// An <see cref="int"/> representing the id of the product category to retrieve.
     /// </param>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is an
-    /// instance of the <see cref="ProductCategoryResponseDto"/> class, containing the details
-    /// of the product category.
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is
+    /// an instance of the <see cref="ProductCategoryResponseDto"/> class, containing the
+    /// details of the product category.
     /// </returns>
     /// <exception cref="ResourceNotFoundException">
     /// Throws when the product category with the specified id doesn't exist or has already
@@ -54,8 +54,8 @@ public interface IProductCategoryService
     /// for the creating operation.
     /// </param>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is an
-    /// <see cref="int"/> representing the id of the new product category.
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is
+    /// an <see cref="int"/> representing the id of the new product category.
     /// </returns>
     /// <exception cref="ConcurrencyException">
     /// Throws when a concurrency-related conflict occurs during the operation.
@@ -76,7 +76,9 @@ public interface IProductCategoryService
     /// An instance of the <see cref="ProductCategoryRequestDto"/> class, contanining the data
     /// for the updating operation.
     /// </param>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation.
+    /// </returns>
     /// <exception cref="ResourceNotFoundException">
     /// Throws when the product category with the specfied id doens't exist or has already been
     /// deleted.
@@ -111,4 +113,23 @@ public interface IProductCategoryService
     /// related data.
     /// </exception>
     Task DeleteAsync(int id);
+
+    /// <summary>
+    /// Get all fields those are used as options to order the results in list retrieving
+    /// operation.
+    /// </summary>
+    /// <returns>
+    /// An instance of the <see cref="ListSortingOptionsResponseDto"/> DTO, containing the
+    /// options with name and display names of the fields and the default field.
+    /// </returns>
+    ListSortingOptionsResponseDto GetListSortingOptions();
+
+    /// <summary>
+    /// Check if the requesting user has permission to create a new
+    /// <see cref="ProductCategory"/>.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.
+    /// </returns>
+    bool GetCreatingPermission();
 }

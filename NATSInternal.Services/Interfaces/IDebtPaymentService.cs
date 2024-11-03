@@ -32,7 +32,7 @@ public interface IDebtPaymentService
     /// details of the debt payment.
     /// </returns>
     /// <exception cref="ResourceNotFoundException">
-    /// Throws when the debt payment with the specified <c>id</c> arguments doesn't exist or
+    /// Throws when the debt payment with the specified <paramref name="id"/>s doesn't exist or
     /// has already been deleted.
     /// </exception>
     Task<DebtPaymentDetailResponseDto> GetDetailAsync(int id);
@@ -50,7 +50,7 @@ public interface IDebtPaymentService
     /// </returns>
     /// <exception cref="AuthorizationException">
     /// Throws when the requesting user doesn't have enough permissions to specify a value
-    /// for the <c>StatsDateTime</c> property in the <c>requestDto</c> argument.
+    /// for the <c>StatsDateTime</c> property in the <param name="requestDto"/> argument.
     /// </exception>
     /// <exception cref="ConcurrencyException">
     /// Throws when the information of the requesting user has already been deleted before the
@@ -58,7 +58,7 @@ public interface IDebtPaymentService
     /// </exception>
     /// <exception cref="OperationException">
     /// Throws under the following circumstances:<br/>
-    /// - The customer specified by the <c>CustomerId</c> in the <c>requestDto</c> argument
+    /// - The customer specified by the <c>CustomerId</c> in the <paramref name="requestDto"/>
     /// doesn't exist or has already been deleted.
     /// - The remaining debt amount of the specified customer becomes negative after the
     /// operation.
@@ -79,7 +79,7 @@ public interface IDebtPaymentService
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
     /// <exception cref="ResourceNotFoundException">
-    /// Throws when the debt payment specified by the <c>id</c> argument doesn't exist or has
+    /// Throws when the debt payment specified by the <paramref name="id"/> doesn't exist or has
     /// already been deleted.
     /// </exception>
     /// <exception cref="AuthorizationException">
@@ -87,7 +87,7 @@ public interface IDebtPaymentService
     /// - When the requesting user doesn't have enough permissions to update the debt payment.
     /// - When the requesting user can update the debt payment, but doesn't have enough
     /// permissions to specify a value for the <c>StatsDateTime</c> property in the
-    /// <c>requestDto</c> argument.
+    /// <paramref name="requestDto"/>.
     /// </exception>
     /// <exception cref="ValidationException">
     /// Throws when the value of the <c>StatsDateTime</c> property in the <c>requestDto</c>
@@ -95,7 +95,8 @@ public interface IDebtPaymentService
     /// </exception>
     /// <exception cref="OperationException">
     /// Throws under the following circumstances:<br/>
-    /// - When the <c>StatsDateTime</c> property in the <c>requestDto</c> argument is specified
+    /// - When the <c>StatsDateTime</c> property in the <param name="requestDto"/> argument is
+    /// specified
     /// a value while the debt payment has already been locked.
     /// - When the remaining debt amount of the associated customer becomes negative after the
     /// operation.
@@ -119,7 +120,7 @@ public interface IDebtPaymentService
     /// </returns>
     /// <exception cref="ResourceNotFoundException">
     /// Throws when the debt payment specified by the <c>customerId</c> and the
-    /// <c>id</c> argument doesn't exist.
+    /// <paramref name="id"/> doesn't exist.
     /// </exception>
     /// <exception cref="AuthorizationException">
     /// Throws when the requesting user doesn't have enough permissions to delete the specified
@@ -135,4 +136,46 @@ public interface IDebtPaymentService
     /// Throws when a concurrency-related conflict occurs during the operation.
     /// </exception>
     Task DeleteAsync(int id);
+
+    /// <summary>
+    /// Get all fields those are used as options to order the results in list retrieving
+    /// operation.
+    /// </summary>
+    /// <returns>
+    /// An instance of the <see cref="ListSortingOptionsResponseDto"/> DTO, containing the
+    /// options with name and display names of the fields and the default field.
+    /// </returns>
+    ListSortingOptionsResponseDto GetListSortingOptions();
+
+    /// <summary>
+    /// Retrieve a list of the <see cref="MonthYearResponseDto"/> instances, representing the
+    /// options and the default option that users can select as filtering condition in list
+    /// retrieving operation.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is
+    /// a <see cref="List{T}"/> of <see cref="MonthYearOptionsResponseDto"/> DTO, representing
+    /// the options.
+    /// </returns>
+    Task<MonthYearOptionsResponseDto> GetListMonthYearOptionsAsync();
+
+    /// <summary>
+    /// Check if the requesting user has permission to create a new <see cref="DebtPayment"/>.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.
+    /// </returns>
+    bool GetCreatingPermission();
+
+    /// <summary>
+    /// Check if the requesting user has permission to create a new
+    /// <see cref="DebtPayment"/> and retrieve the authorization information for creating
+    /// operation.
+    /// </summary>
+    /// <returns>
+    /// An instance of the <see cref="DebtPaymentNewAuthorizationResponseDto"/> DTO
+    /// containing the authorization information for the operation when the requesting user has
+    /// permission to perform the operation. Otherwise, <c>null</c>.
+    /// </returns>
+    DebtPaymentNewAuthorizationResponseDto GetCreatingAuthorization();
 }

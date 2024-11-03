@@ -8,7 +8,7 @@ public sealed class DataInitializer
     private DatabaseContext _context;
     private UserManager<User> _userManager;
     private RoleManager<Role> _roleManager;
-    private Queue<DebtPayment> _queueingDebtPayments = new Queue<DebtPayment>();
+    private readonly Queue<DebtPayment> _queueingDebtPayments = new Queue<DebtPayment>();
 
     public void InitializeData(IApplicationBuilder builder)
     {
@@ -28,9 +28,6 @@ public sealed class DataInitializer
         InitializeProducts();
         InitializeStats();
         GenerateLockableEntitiesData();
-        // InitializeSupply();
-        // InitializeExpense();
-        // InitializeOrders();
         _context.SaveChanges();
         transaction.Commit();
     }
@@ -437,7 +434,8 @@ public sealed class DataInitializer
                     NormalizedFullName = fullName
                         .ToNonDiacritics()
                         .ToUpper(),
-                    NickName = nameElements.LastName + " " + faker.Lorem.Word(),
+                    NickName = nameElements.LastName + " " +
+                               faker.Lorem.Word().CapitalizeFirstLetter(),
                     Gender = genderInt == 0 ? Gender.Male : Gender.Female,
                     Birthday = DateOnly.FromDateTime(faker.Date.Between(
                         DateTime.UtcNow.ToApplicationTime().AddYears(-20),
@@ -852,241 +850,6 @@ public sealed class DataInitializer
         }
     }
 
-    private void InitializeSupply()
-    {
-        if (!_context.Supplies.Any())
-        {
-            Console.WriteLine("Initializing supplies");
-            Random random = new();
-            Faker faker = new Faker("vi");
-            DateTime startingDateTime = new(
-                DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime().AddMonths(-6)),
-                new TimeOnly(8, 0, 0));
-            DateTime endingDateTime = DateTime.UtcNow.ToApplicationTime();
-            DateTime currentDateTime = startingDateTime;
-            List<Product> products = _context.Products.ToList();
-            List<int> userIds = _context.Users
-                .Include(u => u.Roles).ThenInclude(r => r.Claims)
-                .Where(u => u.Roles.Any(r => r.Claims.Select(c => c.ClaimValue).Contains(PermissionConstants.CreateSupply)))
-                .Select(u => u.Id)
-                .ToList();
-            while (currentDateTime <= endingDateTime)
-            {
-                List<SupplyItem> supplyItems = [];
-                int itemCount = random.Next(4, products.Count);
-                for (int i = 0; i < itemCount; i++)
-                {
-                    Product product;
-                    product = products
-                        .Where(p => !supplyItems
-                            .Select(si => si.ProductId)
-                            .Contains(p.Id))
-                        .OrderBy(_ => random.Next(1000))
-                        .Take(1)
-                        .Single();
-
-                    SupplyItem supplyItem = new()
-                    {
-                        ProductAmountPerUnit = product.DefaultPrice,
-                        Quantity = random.Next(50),
-                        ProductId = product.Id
-                    };
-
-                    product.StockingQuantity += supplyItem.Quantity;
-                    supplyItems.Add(supplyItem);
-                }
-
-                Supply supply = new()
-                {
-                    StatsDateTime = currentDateTime,
-                    ShipmentFee = 0,
-                    Note = faker.Lorem.Sentences(5),
-                    CreatedDateTime = currentDateTime,
-                    CreatedUserId = userIds.Skip(random.Next(userIds.Count)).Take(1).Single(),
-                    Items = supplyItems
-                };
-
-                _context.Supplies.Add(supply);
-
-                DateTime nextDateTime;
-                do
-                {
-                    nextDateTime = currentDateTime.AddHours(random.Next(24 * 9, 24 * 10));
-                }
-                while (!(nextDateTime.Hour >= 8 && nextDateTime.Hour <= 17));
-                currentDateTime = nextDateTime;
-            }
-            _context.SaveChanges();
-        }
-    }
-
-    private void InitializeExpense()
-    {
-        if (!_context.Expenses.Any())
-        {
-            Console.WriteLine("Initializing expenses.");
-            Random random = new Random();
-            Faker faker = new Faker();
-            List<int> userIds = _context.Users.Select(u => u.Id).ToList();
-            DateTime endingDateTime = DateTime.UtcNow.ToApplicationTime();
-            DateTime currentDateTime = endingDateTime.AddMonths(-6);
-            while (currentDateTime < endingDateTime)
-            {
-                // Generating category.
-                ExpenseCategory category = Enum.GetValues(typeof(ExpenseCategory))
-                    .OfType<ExpenseCategory>()
-                    .MinBy(_ => Guid.NewGuid());
-
-                // Generating company name.
-                string companyName = faker.Company.CompanyName();
-                ExpensePayee payee = _context.ExpensePayees.SingleOrDefault(e => e.Name == companyName);
-                if (payee is null)
-                {
-                    payee = new ExpensePayee
-                    {
-                        Name = companyName
-                    };
-                    _context.ExpensePayees.Add(payee);
-                }
-
-                // Generating expense.
-                Expense expense = new Expense
-                {
-                    Amount = random.Next(500, 5000) * 1000,
-                    StatsDateTime = currentDateTime,
-                    Category = category,
-                    Note = null,
-                    CreatedUserId = userIds.Skip(random.Next(userIds.Count)).Take(1).Single(),
-                    Payee = payee
-                };
-                _context.Expenses.Add(expense);
-
-                do
-                {
-                    currentDateTime = currentDateTime.AddHours(random.Next(36, 72));
-                } while (currentDateTime.Hour is < 8 or > 17);
-            }
-
-            _context.SaveChanges();
-        }
-    }
-
-    private void InitializeOrders()
-    {
-        if (!_context.Orders.Any())
-        {
-            Console.WriteLine("Initializing orders.");
-            Random random = new Random();
-            DateTime maxStatsDateTime = DateTime.UtcNow.ToApplicationTime();
-            DateTime currentDateTime = maxStatsDateTime
-                .AddMonths(-6);
-            List<int> customerIds = _context.Customers.Select(c => c.Id).ToList();
-            List<Product> products = _context.Products.ToList();
-            List<int> userIds = _context.Users
-                .Include(u => u.Roles).ThenInclude(r => r.Claims)
-                .Where(u => u.Roles
-                    .Single()
-                    .Claims
-                    .Select(c => c.ClaimValue)
-                    .Contains(PermissionConstants.CreateOrder))
-                .Select(u => u.Id)
-                .ToList();
-            while (currentDateTime < maxStatsDateTime)
-            {
-                // Determine datetime
-                do
-                {
-                    currentDateTime = currentDateTime.AddMinutes(random.Next(120, 360));
-                }
-                while (currentDateTime.Hour < 8 ||
-                    currentDateTime.Hour > 17 ||
-                    currentDateTime.DayOfWeek == DayOfWeek.Saturday ||
-                    currentDateTime.DayOfWeek == DayOfWeek.Sunday);
-
-                // Initialize order.
-                Order order = new Order
-                {
-                    StatsDateTime = currentDateTime,
-                    Note = null,
-                    CustomerId = customerIds.MinBy(_ => Guid.NewGuid()),
-                    CreatedUserId = userIds.MinBy(_ => Guid.NewGuid()),
-                    Items = new List<OrderItem>()
-                };
-                _context.Orders.Add(order);
-
-                // Initialize order items.
-                int orderItemCount = random.Next(3, 10);
-                List<int> pickedProductIds = new List<int>();
-                for (int i = 0; i < orderItemCount; i++)
-                {
-                    // Determine product.
-                    Product product = products
-                        .OrderBy(_ => Guid.NewGuid())
-                        .First(p => p.StockingQuantity > 0 && !pickedProductIds.Contains(p.Id));
-                    pickedProductIds.Add(product.Id);
-
-                    OrderItem item = new OrderItem
-                    {
-                        ProductAmountPerUnit = product.DefaultPrice,
-                        VatAmountPerUnit = 0,
-                        Quantity = Math.Min(5, product.StockingQuantity),
-                        ProductId = product.Id
-                    };
-                    order.Items.Add(item);
-                }
-            }
-
-            _context.SaveChanges();
-        }
-    }
-
-    private void InitializeTreatments()
-    {
-        if (!_context.Treatments.Any())
-        {
-            Console.WriteLine("Initializing treatments");
-            Random random = new Random();
-            DateTime maxStatsDateTime = DateTime.UtcNow.ToApplicationTime();
-            DateTime currentDateTime = maxStatsDateTime
-                .AddMonths(-6);
-
-            // Fetch all necessary data for foreign keys.
-            List<int> customerIds = _context.Customers.Select(c => c.Id).ToList();
-            List<Product> products = _context.Products.ToList();
-            List<int> userIds = _context.Users
-                .Include(u => u.Roles).ThenInclude(r => r.Claims)
-                .Where(u => u.Roles
-                    .Single()
-                    .Claims
-                    .Select(c => c.ClaimValue)
-                    .Contains(PermissionConstants.CreateTreatment))
-                .Select(u => u.Id)
-                .ToList();
-
-            // Perform the loop for initialization.
-            while (currentDateTime < maxStatsDateTime)
-            {
-                // Determine datetime.
-                do
-                {
-                    currentDateTime = currentDateTime.AddMinutes(random.Next(120, 360));
-                }
-                while (currentDateTime.Hour < 8 ||
-                    currentDateTime.Hour > 17 ||
-                    currentDateTime.DayOfWeek == DayOfWeek.Saturday ||
-                    currentDateTime.DayOfWeek == DayOfWeek.Sunday);
-
-                // 
-
-                // Initialize treatment.
-                Treatment treatment = new Treatment
-                {
-
-                };
-            }
-        }
-    }
-
     private void InitializeStats()
     {
         Console.WriteLine("Initializing stats ...");
@@ -1135,9 +898,8 @@ public sealed class DataInitializer
 
             // Initialize monthly stats if not exists.
             MonthlyStats monthlyStats = _context.MonthlyStats
-                .Where(ms => ms.RecordedYear == date.Year)
-                .Where(ms => ms.RecordedMonth == date.Month)
-                .SingleOrDefault();
+                .SingleOrDefault(ms => ms.RecordedYear == date.Year &&
+                                       ms.RecordedMonth == date.Month);
             if (monthlyStats == null)
             {
                 monthlyStats = new MonthlyStats
@@ -1243,14 +1005,13 @@ public sealed class DataInitializer
             int totalDaysDifferent = maxStatsDateTime.Subtract(statsDateTime).Days;
 
             // Function to check if the statsDateTime is still valid for the loop to continue.
-            Func<DateTime, bool> isStatsDateTimeValid = delegate (DateTime dateTime)
+            bool IsStatsDateTimeValid(DateTime dateTime)
             {
-                bool isInBusinessHours = dateTime.Hour >= 8
-                    && dateTime.Hour <= 17;
-                bool isInBusinessDaysOfWeek = dateTime.DayOfWeek != DayOfWeek.Saturday
-                    && dateTime.DayOfWeek != DayOfWeek.Sunday;
+                bool isInBusinessHours = dateTime.Hour >= 8 && dateTime.Hour <= 17;
+                bool isInBusinessDaysOfWeek = dateTime.DayOfWeek != DayOfWeek.Saturday && dateTime.DayOfWeek != DayOfWeek.Sunday;
                 return isInBusinessHours && isInBusinessDaysOfWeek;
-            };
+            }
+
             Console.WriteLine("");
             int oldRemainingDaysDifferent = 0;
             Task completedTask = Task.CompletedTask;
@@ -1262,7 +1023,7 @@ public sealed class DataInitializer
                 {
                     statsDateTime = statsDateTime.AddMinutes(random.Next(300, 420));
                 }
-                while (!isStatsDateTimeValid(statsDateTime));
+                while (!IsStatsDateTimeValid(statsDateTime));
 
                 if (statsDateTime > maxStatsDateTime)
                 {
@@ -1356,8 +1117,7 @@ public sealed class DataInitializer
             DateOnly statsDate = DateOnly.FromDateTime(statsDateTime);
             DailyStats dailyStats = _context.DailyStats
                 .Include(ds => ds.Monthly)
-                .Where(ds => ds.RecordedDate == statsDate)
-                .Single();
+                .Single(ds => ds.RecordedDate == statsDate);
             dailyStats.SupplyCost += supply.ItemAmount;
             dailyStats.ShipmentCost += supply.ShipmentFee;
             dailyStats.Monthly.SupplyCost += supply.ItemAmount;
@@ -1419,8 +1179,7 @@ public sealed class DataInitializer
         DateOnly statsDate = DateOnly.FromDateTime(statsDateTime);
         DailyStats dailyStats = _context.DailyStats
             .Include(ds => ds.Monthly)
-            .Where(ds => ds.RecordedDate == statsDate)
-            .Single();
+            .Single(ds => ds.RecordedDate == statsDate);
         switch (expense.Category)
         {
             case ExpenseCategory.Utilities:
@@ -1488,14 +1247,13 @@ public sealed class DataInitializer
             {
                 // Get a list of product ids which have been picked ealier.
                 List<int> pickedProductIds = order.Items
-                    .Select(i => i.ProductId)
+                    .Select(item => item.ProductId)
                     .ToList();
 
                 // Determine product.
                 Product product = products
                     .OrderBy(_ => Guid.NewGuid())
-                    .Where(p => p.StockingQuantity > 0 && !pickedProductIds.Contains(p.Id))
-                    .First();
+                    .First(p => p.StockingQuantity > 0 && !pickedProductIds.Contains(p.Id));
                 pickedProductIds.Add(product.Id);
 
                 OrderItem item = new OrderItem
@@ -1513,8 +1271,7 @@ public sealed class DataInitializer
             DateOnly statsDate = DateOnly.FromDateTime(statsDateTime);
             DailyStats dailyStats = _context.DailyStats
                 .Include(ds => ds.Monthly)
-                .Where(ds => ds.RecordedDate == statsDate)
-                .Single();
+                .Single(ds => ds.RecordedDate == statsDate);
             dailyStats.RetailGrossRevenue += order.ProductAmountBeforeVat;
             dailyStats.VatCollectedAmount += order.ProductVatAmount;
             dailyStats.Monthly.RetailGrossRevenue += order.ProductAmountBeforeVat;
@@ -1676,8 +1433,7 @@ public sealed class DataInitializer
         DateOnly statsDate = DateOnly.FromDateTime(statsDateTime);
         DailyStats dailyStats = _context.DailyStats
             .Include(ds => ds.Monthly)
-            .Where(ds => ds.RecordedDate == statsDate)
-            .Single();
+            .Single(ds => ds.RecordedDate == statsDate);
         dailyStats.ConsultantGrossRevenue += consultant.AmountBeforeVat;
         dailyStats.Monthly.ConsultantGrossRevenue += consultant.AmountBeforeVat;
 
@@ -1741,7 +1497,7 @@ public sealed class DataInitializer
             if (dateTime.DayOfWeek == DayOfWeek.Sunday)
             {
                 return dateTime.AddDays(1);
-            };
+            }
 
             return dateTime;
         }
@@ -1764,7 +1520,8 @@ public sealed class DataInitializer
         }
         else
         {
-            List<(DateTime DateTime, long Amount)> dateTimesAndAmounts = new();
+            List<(DateTime DateTime, long Amount)> dateTimesAndAmounts;
+            dateTimesAndAmounts = new List<(DateTime, long)>();
             dateTimesAndAmounts.Add((
                 GeneratePaymentStatsDateTime(statsDateTime, random),
                 (long)Math.Ceiling((double)amount / 2 / 1000) * 1000));
@@ -1807,8 +1564,7 @@ public sealed class DataInitializer
         DateOnly statsDate = DateOnly.FromDateTime(debtIncurrence.StatsDateTime);
         DailyStats dailyStats = _context.DailyStats
             .Include(ds => ds.Monthly)
-            .Where(ds => ds.RecordedDate == statsDate)
-            .Single();
+            .Single(ds => ds.RecordedDate == statsDate);
         dailyStats.DebtIncurredAmount += debtIncurrence.Amount;
         dailyStats.Monthly.DebtIncurredAmount += debtIncurrence.Amount;
 
@@ -1832,8 +1588,7 @@ public sealed class DataInitializer
             DateOnly statsDate = DateOnly.FromDateTime(debtPayment.StatsDateTime);
             DailyStats dailyStats = _context.DailyStats
                 .Include(ds => ds.Monthly)
-                .Where(ds => ds.RecordedDate == statsDate)
-                .Single();
+                .Single(ds => ds.RecordedDate == statsDate);
             dailyStats.DebtPaidAmount += debtPayment.Amount;
             dailyStats.Monthly.DebtPaidAmount += debtPayment.Amount;
 
@@ -1915,48 +1670,6 @@ public sealed class DataInitializer
         }
 
         return value[..maxLength];
-    }
-
-    private static DateTime GetMinimumResourceDateTimeToBeOpened()
-    {
-        DateTime minimumOpenedDateTime;
-        if (DateTime.UtcNow.ToApplicationTime().Day >= 4 && DateTime.UtcNow.ToApplicationTime().Hour >= 1)
-        {
-            minimumOpenedDateTime = new DateTime(
-                DateTime.UtcNow.ToApplicationTime().AddMonths(-1).Year,
-                DateTime.UtcNow.ToApplicationTime().AddMonths(-1).Month,
-                1,
-                0, 0, 0);
-        }
-        else
-        {
-            minimumOpenedDateTime = new DateTime(
-                DateTime.UtcNow.ToApplicationTime().AddMonths(-2).Year,
-                DateTime.UtcNow.ToApplicationTime().AddMonths(-2).Month,
-                1,
-                0, 0, 0);
-        }
-
-        return minimumOpenedDateTime;
-    }
-
-    private static DateTime GetMaximumTemporarilyClosedDateTime()
-    {
-        DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
-        DateTime closingDateTime = new DateTime(
-            currentDateTime.Year, currentDateTime.Month, 4,
-            2, 30, 0);
-
-        return closingDateTime;
-    }
-
-    private static bool ShouldOfficiallyClose(DateTime resouceDateTime)
-    {
-        if (resouceDateTime < GetMinimumResourceDateTimeToBeOpened())
-        {
-            return true;
-        }
-        return false;
     }
 
     private static bool ShouldTemporarilyCloseStats(DateOnly recordedDate)

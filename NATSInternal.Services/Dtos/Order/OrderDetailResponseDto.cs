@@ -5,7 +5,7 @@ public class OrderDetailResponseDto : IProductExportableDetailResponseDto<
         OrderPhotoResponseDto,
         OrderUpdateHistoryResponseDto,
         OrderItemUpdateHistoryDataDto,
-        OrderAuthorizationResponseDto>
+        OrderExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public DateTime StatsDateTime { get; set; }
@@ -18,7 +18,7 @@ public class OrderDetailResponseDto : IProductExportableDetailResponseDto<
     public CustomerBasicResponseDto Customer { get; set; }
     public UserBasicResponseDto CreatedUser { get; set; }
     public List<OrderPhotoResponseDto> Photos { get; set; }
-    public OrderAuthorizationResponseDto Authorization { get; set; }
+    public OrderExistingAuthorizationResponseDto Authorization { get; set; }
     public List<OrderUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
     [JsonIgnore]
@@ -29,7 +29,9 @@ public class OrderDetailResponseDto : IProductExportableDetailResponseDto<
         .Select(op => op.Url)
         .FirstOrDefault();
 
-    internal OrderDetailResponseDto(Order order, OrderAuthorizationResponseDto authorization)
+    internal OrderDetailResponseDto(
+            Order order,
+            OrderExistingAuthorizationResponseDto authorization)
     {
         Id = order.Id;
         StatsDateTime = order.StatsDateTime;

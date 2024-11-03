@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class UserBasicAuthorizationResponseDto : IUpsertableAuthorizationResponseDto
+public class UserBasicAuthorizationResponseDto : IUpsertableExistingAuthorizationResponseDto
 {
     public bool CanEdit { get; set; }
     public bool CanChangePassword { get; set; }

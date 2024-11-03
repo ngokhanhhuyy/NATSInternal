@@ -1,7 +1,7 @@
 namespace NATSInternal.Services.Dtos;
 
 public class CustomerBasicResponseDto
-    : IUpsertableBasicResponseDto<CustomerAuthorizationResponseDto>
+    : IUpsertableBasicResponseDto<CustomerExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public string FullName { get; set; }
@@ -10,7 +10,7 @@ public class CustomerBasicResponseDto
     public DateOnly? Birthday { get; set; }
     public string PhoneNumber { get; set; }
     public long? DebtAmount { get; set; }
-    public CustomerAuthorizationResponseDto Authorization { get; set; }
+    public CustomerExistingAuthorizationResponseDto Authorization { get; set; }
 
     internal CustomerBasicResponseDto(Customer customer)
     {
@@ -19,7 +19,7 @@ public class CustomerBasicResponseDto
 
     internal CustomerBasicResponseDto(
             Customer customer,
-            CustomerAuthorizationResponseDto authorization)
+            CustomerExistingAuthorizationResponseDto authorization)
     {
         MapFromEntity(customer);
         Authorization = authorization;

@@ -3,15 +3,29 @@ namespace NATSInternal.Services.Entities;
 internal class Product
     :
         FinancialEngageableAbstractEntity,
-        IHasSinglePhotoEntity<Product>,
         IHasMultiplePhotosEntity<Product, ProductPhoto>
 {
+    private string _name;
+    private string _normalizedName;
+    
     [Key]
     public int Id { get; set; }
 
     [Required]
     [StringLength(50)]
-    public string Name { get; set; }
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            _name = value;
+            _normalizedName = _name.ToUpper().ToNonDiacritics();
+        }
+    }
+
+    [Required]
+    [StringLength(100)]
+    public string NormalizedName { get => _normalizedName; init => _normalizedName = value; }
 
     [StringLength(1000)]
     public string Description { get; set; }

@@ -2,8 +2,11 @@
 
 public class BrandListValidator : Validator<BrandListRequestDto>
 {
-    public BrandListValidator()
+    public BrandListValidator(IBrandService service)
     {
+        RuleFor(dto => dto.SortingByField)
+            .IsOneOfFieldOptions(service.GetListSortingOptions().FieldOptions)
+            .WithName(DisplayNames.SortingByField);
         RuleFor(dto => dto.Page)
             .GreaterThanOrEqualTo(1)
             .WithName(dto => DisplayNames.Get(nameof(dto.Page)));

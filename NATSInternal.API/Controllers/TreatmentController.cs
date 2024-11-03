@@ -64,7 +64,8 @@ public class TreatmentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> TreatmentCreate([FromBody] TreatmentUpsertRequestDto requestDto)
+    public async Task<IActionResult> TreatmentCreate(
+            [FromBody] TreatmentUpsertRequestDto requestDto)
     {
         // Validate the data from the request.
         requestDto.TransformValues();
@@ -105,8 +106,7 @@ public class TreatmentController : ControllerBase
             return Conflict();
         }
     }
-
-
+    
     [HttpPut("{id:int}")]
     [Authorize(Policy = "CanEditTreatment")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -115,7 +115,9 @@ public class TreatmentController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> TreatmentUpdate(int id, [FromBody] TreatmentUpsertRequestDto requestDto)
+    public async Task<IActionResult> TreatmentUpdate(
+            int id,
+            [FromBody] TreatmentUpsertRequestDto requestDto)
     {
         // Validate the data from the request.
         requestDto.TransformValues();
@@ -189,5 +191,33 @@ public class TreatmentController : ControllerBase
         {
             return Conflict();
         }
+    }
+    
+    [HttpGet("ListSortingOptions")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult ListSortingOptions()
+    {
+        return Ok(_service.GetListSortingOptions());
+    }
+
+    [HttpGet("ListMonthYearOptions")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ListMonthYearOptions()
+    {
+        return Ok(await _service.GetListMonthYearOptionsAsync());
+    }
+
+    [HttpGet("GetCreatingPermission")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetCreatingPermission()
+    {
+        return Ok(_service.GetCreatingPermission());
+    }
+
+    [HttpGet("GetCreatingAuthorization")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetCreatingAuthorization()
+    {
+        return Ok(_service.GetCreatingAuthorization());
     }
 }

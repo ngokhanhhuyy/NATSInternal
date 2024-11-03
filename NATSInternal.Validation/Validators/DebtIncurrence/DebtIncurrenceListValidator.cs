@@ -2,20 +2,14 @@ namespace NATSInternal.Validation.Validators;
 
 public class DebtIncurrenceListValidator : Validator<DebtIncurrenceListRequestDto>
 {
-    public DebtIncurrenceListValidator()
+    public DebtIncurrenceListValidator(IDebtIncurrenceService service)
     {
-        RuleFor(dto => dto.OrderByField)
-            .NotNull()
-            .IsOneOfFieldOptions(FieldOptions)
-            .WithName(DisplayNames.OrderByField);
-        RuleFor(dto => dto.Month)
-            .IsValidQueryStatsMonth()
-            .When(dto => !dto.IgnoreMonthYear)
-            .WithName(DisplayNames.Month);
-        RuleFor(dto => dto.Year)
-            .IsValidQueryStatsYear()
-            .When(dto => !dto.IgnoreMonthYear)
-            .WithName(DisplayNames.Year);
+        RuleFor(dto => dto.SortingByField)
+            .IsOneOfFieldOptions(service.GetListSortingOptions().FieldOptions)
+            .WithName(DisplayNames.SortingByField);
+        RuleFor(dto => dto.MonthYear)
+            .SetValidator(new MonthYearValidator())
+            .WithName(DisplayNames.RecordedMonthAndYear);
         RuleFor(dto => dto.Page)
             .GreaterThanOrEqualTo(1)
             .WithName(DisplayNames.Page);
@@ -23,14 +17,5 @@ public class DebtIncurrenceListValidator : Validator<DebtIncurrenceListRequestDt
             .GreaterThanOrEqualTo(5)
             .LessThanOrEqualTo(50)
             .WithName(DisplayNames.ResultsPerPage);
-    }
-
-    private static IEnumerable<OrderByFieldOption> FieldOptions
-    {
-        get => new List<OrderByFieldOption>
-        {
-            OrderByFieldOption.Amount,
-            OrderByFieldOption.StatsDateTime
-        };
     }
 }

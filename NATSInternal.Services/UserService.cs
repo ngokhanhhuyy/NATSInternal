@@ -5,20 +5,17 @@ internal class UserService : IUserService
 {
     private readonly DatabaseContext _context;
     private readonly UserManager<User> _userManager;
-    private readonly RoleManager<Role> _roleManager;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly ISinglePhotoService<User> _photoService;
 
     public UserService(
             DatabaseContext context,
             UserManager<User> userManager,
-            RoleManager<Role> roleManager,
             IAuthorizationInternalService authorizationService,
             ISinglePhotoService<User> photoService)
     {
         _context = context;
         _userManager = userManager;
-        _roleManager = roleManager;
         _authorizationService = authorizationService;
         _photoService = photoService;
     }
@@ -30,48 +27,52 @@ internal class UserService : IUserService
         IQueryable<User> query = _context.Users
             .Include(u => u.Roles)
             .Where(u => !u.IsDeleted);
-
-        // Determine the field and the direction to sort.
-        switch (requestDto.OrderByField)
+        // Determine the field and the direction the sort.
+        string sortingByField = requestDto.SortingByField
+                                ?? GetListSortingOptions().DefaultFieldName;
+        bool sortingByAscending = requestDto.SortingByAscending
+                                  ?? GetListSortingOptions().DefaultAscending;
+        switch (sortingByField)
         {
             case nameof(OrderByFieldOption.FirstName):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(u => u.FirstName)
                     : query.OrderByDescending(u => u.FirstName);
                 break;
             case nameof(OrderByFieldOption.UserName):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(u => u.UserName)
                     : query.OrderByDescending(u => u.UserName);
                 break;
             case nameof(OrderByFieldOption.Birthday):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(u => u.Birthday.Value.Month)
                         .ThenBy(u => u.Birthday.Value.Day)
                     : query.OrderByDescending(u => u.Birthday.Value.Month)
                         .ThenByDescending(u => u.Birthday.Value.Day);
                 break;
             case nameof(OrderByFieldOption.Age):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(u => u.Birthday)
                     : query.OrderByDescending(u => u.Birthday);
                 break;
             case nameof(OrderByFieldOption.CreatedDateTime):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(u => u.CreatedDateTime)
                     : query.OrderByDescending(u => u.CreatedDateTime);
                 break;
             case nameof(OrderByFieldOption.Role):
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(u => u.Roles.First().Id)
                     : query.OrderByDescending(u => u.Roles.First().Id);
                 break;
             case nameof(OrderByFieldOption.LastName):
-            default:
-                query = requestDto.OrderByAscending
+                query = sortingByAscending
                     ? query.OrderBy(u => u.LastName)
                     : query.OrderByDescending(u => u.LastName);
                 break;
+            default:
+                throw new NotImplementedException();
         }
 
         // Filter by role.
@@ -128,18 +129,16 @@ internal class UserService : IUserService
         }
 
         // Initialize response dto.
-        UserListResponseDto responseDto = new UserListResponseDto
-        {
-            Authorization = _authorizationService.GetUserListAuthorization()
-        };
+        UserListResponseDto responseDto = new UserListResponseDto();
         int resultCount = await query.CountAsync();
         if (resultCount == 0)
         {
             responseDto.PageCount = 0;
             return responseDto;
         }
-        responseDto.PageCount = (int)Math.Ceiling((double)resultCount / requestDto.ResultsPerPage);
-        responseDto.Results = await query
+        responseDto.PageCount = (int)Math.Ceiling(
+            (double)resultCount / requestDto.ResultsPerPage);
+        responseDto.Items = await query
             .Skip(requestDto.ResultsPerPage * (requestDto.Page - 1))
             .Take(requestDto.ResultsPerPage)
             .Select(u => new UserBasicResponseDto(
@@ -151,7 +150,7 @@ internal class UserService : IUserService
     }
 
     /// <inheritdoc />
-    public async Task<UserListResponseDto> GetListAsync(IEnumerable<int> ids)
+    public async Task<List<UserBasicResponseDto>> GetMultipleAsync(IEnumerable<int> ids)
     {
         // Fetch a list of users with specified ids.
         List<User> users = await _context.Users
@@ -166,10 +165,7 @@ internal class UserService : IUserService
             throw new ResourceNotFoundException();
         }
 
-        return new UserListResponseDto
-        {
-            Results = users.Select(u => new UserBasicResponseDto(u)).ToList()
-        };
+        return users.Select(u => new UserBasicResponseDto(u)).ToList();
     }
 
     /// <inheritdoc />
@@ -188,7 +184,7 @@ internal class UserService : IUserService
 
         return new UserListResponseDto
         {
-            Results = users
+            Items = users
                 .Select(u => new UserBasicResponseDto(u))
                 .ToList()
         };
@@ -216,7 +212,7 @@ internal class UserService : IUserService
 
         return new UserListResponseDto
         {
-            Results = users.Select(u => new UserBasicResponseDto(u)).ToList()
+            Items = users.Select(u => new UserBasicResponseDto(u)).ToList()
         };
     }
 
@@ -567,5 +563,63 @@ internal class UserService : IUserService
 
         // Save changes.
         await _context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
+    public ListSortingOptionsResponseDto GetListSortingOptions()
+    {
+        List<ListSortingByFieldResponseDto> fieldOptions;
+        fieldOptions = new List<ListSortingByFieldResponseDto>
+        {
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.FirstName),
+                DisplayName = DisplayNames.Amount
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.UserName),
+                DisplayName = DisplayNames.UserName
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.Birthday),
+                DisplayName = DisplayNames.Birthday
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.Age),
+                DisplayName = DisplayNames.Age
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.CreatedDateTime),
+                DisplayName = DisplayNames.CreatedDateTime
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.Role),
+                DisplayName = DisplayNames.Role
+            },
+            new ListSortingByFieldResponseDto
+            {
+                Name = nameof(OrderByFieldOption.LastName),
+                DisplayName = DisplayNames.LastName
+            }
+        };
+
+        return new ListSortingOptionsResponseDto
+        {
+            FieldOptions = fieldOptions,
+            DefaultFieldName = fieldOptions
+                .Single(i => i.Name == nameof(OrderByFieldOption.LastName))
+                .Name,
+            DefaultAscending = false
+        };
+    }
+
+    public bool GetCreatingPermission()
+    {
+        return _authorizationService.CanCreateUser();
     }
 }

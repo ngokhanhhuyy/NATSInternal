@@ -1,13 +1,13 @@
 namespace NATSInternal.Services.Dtos;
 
-public class TreatmentBasicResponseDto : IProductExportableBasicResponseDto<TreatmentAuthorizationResponseDto>
+public class TreatmentBasicResponseDto : IProductExportableBasicResponseDto<TreatmentExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public DateTime StatsDateTime { get; set; }
     public long AmountAfterVat { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
-    public TreatmentAuthorizationResponseDto Authorization { get; set; }
+    public TreatmentExistingAuthorizationResponseDto Authorization { get; set; }
 
     internal TreatmentBasicResponseDto(Treatment treatment)
     {
@@ -16,7 +16,7 @@ public class TreatmentBasicResponseDto : IProductExportableBasicResponseDto<Trea
 
     internal TreatmentBasicResponseDto(
             Treatment treatment,
-            TreatmentAuthorizationResponseDto authorizationResponseDto)
+            TreatmentExistingAuthorizationResponseDto authorizationResponseDto)
     {
         MapFromEntity(treatment);
         Authorization = authorizationResponseDto;

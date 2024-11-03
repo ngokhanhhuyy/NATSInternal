@@ -1,8 +1,8 @@
 ﻿namespace NATSInternal.Validation.Validators.Brand;
 
-public class BrandValidator : Validator<BrandUpsertRequestDto>
+public class BrandUpsertValidator : Validator<BrandUpsertRequestDto>
 {
-    public BrandValidator()
+    public BrandUpsertValidator()
     {
         RuleFor(dto => dto.Name)
             .NotEmpty()

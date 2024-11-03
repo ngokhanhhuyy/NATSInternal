@@ -3,26 +3,26 @@ namespace NATSInternal.Services.Dtos;
 public class DebtPaymentDetailResponseDto
     : IDebtDetailResponseDto<
         DebtPaymentUpdateHistoryResponseDto,
-        DebtPaymentAuthorizationResponseDto>
+        DebtPaymentExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
-    public long Amount { get; set; }
+    public long AmountAfterVat { get; set; }
     public string Note { get; set; }
     public DateTime StatsDateTime { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
     public UserBasicResponseDto CreatedUser { get; set; }
-    public DebtPaymentAuthorizationResponseDto Authorization { get; set; }
+    public DebtPaymentExistingAuthorizationResponseDto Authorization { get; set; }
     public List<DebtPaymentUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
     internal DebtPaymentDetailResponseDto(
             DebtPayment payment,
-            DebtPaymentAuthorizationResponseDto authorization,
+            DebtPaymentExistingAuthorizationResponseDto authorization,
             bool mapUpdateHistories = false)
     {
         Id = payment.Id;
-        Amount = payment.Amount;
+        AmountAfterVat = payment.Amount;
         Note = payment.Note;
         StatsDateTime = payment.StatsDateTime;
         CreatedDateTime = payment.CreatedDateTime;

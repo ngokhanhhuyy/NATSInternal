@@ -1,15 +1,15 @@
 namespace NATSInternal.Services.Dtos;
 
 public class DebtPaymentBasicResponseDto
-    : ICustomerEngageableBasicResponseDto<DebtPaymentAuthorizationResponseDto>
+    : ICustomerEngageableBasicResponseDto<DebtPaymentExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
-    public long Amount { get; set; }
+    public long AmountAfterVat { get; set; }
     public string Note { get; set; }
     public DateTime StatsDateTime { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
-    public DebtPaymentAuthorizationResponseDto Authorization { get; set; }
+    public DebtPaymentExistingAuthorizationResponseDto Authorization { get; set; }
 
     internal DebtPaymentBasicResponseDto(DebtPayment payment)
     {
@@ -18,7 +18,7 @@ public class DebtPaymentBasicResponseDto
 
     internal DebtPaymentBasicResponseDto(
             DebtPayment payment,
-            DebtPaymentAuthorizationResponseDto authorization)
+            DebtPaymentExistingAuthorizationResponseDto authorization)
     {
         MapFromEntity(payment);
         Authorization = authorization;
@@ -27,7 +27,7 @@ public class DebtPaymentBasicResponseDto
     private void MapFromEntity(DebtPayment payment)
     {
         Id = payment.Id;
-        Amount = payment.Amount;
+        AmountAfterVat = payment.Amount;
         Note = payment.Note;
         StatsDateTime = payment.StatsDateTime;
         IsLocked = payment.IsLocked;

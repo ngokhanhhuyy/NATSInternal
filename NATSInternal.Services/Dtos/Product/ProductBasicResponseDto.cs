@@ -1,6 +1,7 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
 public class ProductBasicResponseDto
+        : IUpsertableBasicResponseDto<ProductExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public string Name { get; set; }
@@ -9,7 +10,7 @@ public class ProductBasicResponseDto
     public int DefaultVatPercentage { get; set; }
     public int StockingQuantity { get; set; }
     public string ThumbnailUrl { get; set; }
-    public ProductAuthorizationResponseDto Authorization { get; set; }
+    public ProductExistingAuthorizationResponseDto Authorization { get; set; }
 
     internal ProductBasicResponseDto(Product product)
     {
@@ -18,7 +19,7 @@ public class ProductBasicResponseDto
 
     internal ProductBasicResponseDto(
             Product product,
-            ProductAuthorizationResponseDto authorization)
+            ProductExistingAuthorizationResponseDto authorization)
     {
         MapFromEntity(product);
         Authorization = authorization;
