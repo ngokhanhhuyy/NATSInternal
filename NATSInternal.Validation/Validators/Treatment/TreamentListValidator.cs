@@ -8,7 +8,7 @@ public class TreamentListValidator : Validator<TreatmentListRequestDto>
             .IsOneOfFieldOptions(service.GetListSortingOptions().FieldOptions)
             .WithName(DisplayNames.SortingByField);
         RuleFor(dto => dto.MonthYear)
-            .SetValidator(new MonthYearValidator())
+            .SetValidator(new ListMonthYearValidator())
             .WithName(DisplayNames.RecordedMonthAndYear);
         RuleFor(dto => dto.Page)
             .GreaterThanOrEqualTo(1)

@@ -24,6 +24,7 @@ internal class CustomerService
     {
         // Initialize query.
         IQueryable<Customer> query = _context.Customers
+            .Include(c => c.CreatedUser).ThenInclude(u => u.Roles)
             .Include(c => c.DebtIncurrences)
             .Include(c => c.DebtPayments);
 

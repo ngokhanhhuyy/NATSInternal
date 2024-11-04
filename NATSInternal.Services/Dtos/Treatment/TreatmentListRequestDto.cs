@@ -4,7 +4,7 @@ public class TreatmentListRequestDto : IProductExportableListRequestDto
 {
     public bool? SortingByAscending { get; set; }
     public string SortingByField { get; set; }
-    public MonthYearRequestDto MonthYear { get; set; }
+    public ListMonthYearRequestDto MonthYear { get; set; }
     public int? CreatedUserId { get; set; }
     public int? CustomerId { get; set; }
     public int? ProductId { get; set; }

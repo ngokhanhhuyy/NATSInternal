@@ -7,7 +7,7 @@ internal sealed class MonthYearService<T, TUpdateHistory>
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
 {
     private readonly DatabaseContext _context;
-    private static MonthYearResponseDto _earliestRecordedMonthYear;
+    private static ListMonthYearResponseDto _earliestRecordedMonthYear;
 
     public MonthYearService(DatabaseContext context)
     {
@@ -15,12 +15,12 @@ internal sealed class MonthYearService<T, TUpdateHistory>
     }
 
     /// <inheritdoc />
-    public async Task<List<MonthYearResponseDto>> GenerateMonthYearOptions(
+    public async Task<List<ListMonthYearResponseDto>> GenerateMonthYearOptions(
             Func<DatabaseContext, DbSet<T>> repositorySelector)
     {
         _earliestRecordedMonthYear ??= await repositorySelector(_context)
             .OrderBy(e => e.StatsDateTime)
-            .Select(entity => new MonthYearResponseDto
+            .Select(entity => new ListMonthYearResponseDto
             {
                 Year = entity.StatsDateTime.Year,
                 Month = entity.StatsDateTime.Month
@@ -29,7 +29,7 @@ internal sealed class MonthYearService<T, TUpdateHistory>
         DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
         int currentYear = currentDateTime.Year;
         int currentMonth = currentDateTime.Month;
-        List<MonthYearResponseDto> monthYearOptions = new List<MonthYearResponseDto>();
+        List<ListMonthYearResponseDto> monthYearOptions = new List<ListMonthYearResponseDto>();
         if (_earliestRecordedMonthYear != null)
         {
             for (int initializingYear = _earliestRecordedMonthYear.Year;
@@ -44,8 +44,8 @@ internal sealed class MonthYearService<T, TUpdateHistory>
                 
                 while (initializingMonth <= 12)
                 {
-                    MonthYearResponseDto option;
-                    option = new MonthYearResponseDto(
+                    ListMonthYearResponseDto option;
+                    option = new ListMonthYearResponseDto(
                         initializingYear,
                         initializingMonth);
                     monthYearOptions.Add(option);
@@ -60,7 +60,7 @@ internal sealed class MonthYearService<T, TUpdateHistory>
         }
         else
         {
-            monthYearOptions.Add(new MonthYearResponseDto(currentYear, currentMonth));
+            monthYearOptions.Add(new ListMonthYearResponseDto(currentYear, currentMonth));
         }
 
         return monthYearOptions;

@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class NotificationListRequestDto : IOrderableListRequestDto
+public class NotificationListRequestDto : ISortableListRequestDto
 {
     public bool? SortingByAscending { get; set; }
     public string SortingByField { get; set; }

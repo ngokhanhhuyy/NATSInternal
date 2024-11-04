@@ -105,19 +105,17 @@ public interface ISupplyService
     ListSortingOptionsResponseDto GetListSortingOptions();
 
     /// <summary>
-    /// Retrieve a list of the <see cref="MonthYearResponseDto"/> instances, representing the
-    /// options and the default option that users can select as filtering condition in list
-    /// retrieving operation.
+    /// Retrieve month year options which user can select as the filtering condition and the
+    /// default option, used in the list retrieving operation.
     /// </summary>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is
-    /// a <see cref="List{T}"/> of <see cref="MonthYearOptionsResponseDto"/> DTO, representing
-    /// the options.
+    /// A <see cref="Task"/> representing the asynchronous operation, which is an instance of
+    /// the <see cref="ListMonthYearOptionsResponseDto"/> DTO, containing the options.
     /// </returns>
-    Task<MonthYearOptionsResponseDto> GetListMonthYearOptionsAsync();
+    Task<ListMonthYearOptionsResponseDto> GetListMonthYearOptionsAsync();
 
     /// <summary>
-    /// Check if the requesting user has permission to create a new <see cref="Supply"/>.
+    /// Check if the requesting user has permission to create a new supply.
     /// </summary>
     /// <returns>
     /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.

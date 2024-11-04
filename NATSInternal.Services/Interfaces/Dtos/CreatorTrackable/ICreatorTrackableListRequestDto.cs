@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface ICreatorTrackableListRequestDto : IOrderableListRequestDto
+public interface ICreatorTrackableListRequestDto : ISortableListRequestDto
 {
     int? CreatedUserId { get; set; }
 }

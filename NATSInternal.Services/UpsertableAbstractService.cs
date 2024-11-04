@@ -18,7 +18,7 @@ internal abstract class UpsertableAbstractService<
             TListRequestDto,
             TExistingAuthorizationResponseDto>
         where T : class, IUpsertableEntity<T>, new()
-        where TListRequestDto : IOrderableListRequestDto
+        where TListRequestDto : ISortableListRequestDto
         where TExistingAuthorizationResponseDto : IUpsertableExistingAuthorizationResponseDto, new()
 {
     private readonly IAuthorizationInternalService _authorizationService;

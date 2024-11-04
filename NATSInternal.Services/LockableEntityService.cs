@@ -2,13 +2,13 @@
 
 public class LockableEntityService
 {
-    protected static List<MonthYearResponseDto> GenerateMonthYearOptions(
-            MonthYearResponseDto earliestRecordedMonthYear)
+    protected static List<ListMonthYearResponseDto> GenerateMonthYearOptions(
+            ListMonthYearResponseDto earliestRecordedMonthYear)
     {
         DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
         int currentYear = currentDateTime.Year;
         int currentMonth = currentDateTime.Month;
-        List<MonthYearResponseDto> monthYearOptions = new List<MonthYearResponseDto>();
+        List<ListMonthYearResponseDto> monthYearOptions = new List<ListMonthYearResponseDto>();
         if (earliestRecordedMonthYear != null)
         {
             for (int initializingYear = earliestRecordedMonthYear.Year;
@@ -23,8 +23,8 @@ public class LockableEntityService
                 
                 while (initializingMonth <= 12)
                 {
-                    MonthYearResponseDto option;
-                    option = new MonthYearResponseDto(
+                    ListMonthYearResponseDto option;
+                    option = new ListMonthYearResponseDto(
                         initializingYear,
                         initializingMonth);
                     monthYearOptions.Add(option);
@@ -39,7 +39,7 @@ public class LockableEntityService
         }
         else
         {
-            monthYearOptions.Add(new MonthYearResponseDto(currentYear, currentMonth));
+            monthYearOptions.Add(new ListMonthYearResponseDto(currentYear, currentMonth));
         }
 
         return monthYearOptions;

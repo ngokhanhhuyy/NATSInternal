@@ -125,8 +125,7 @@ public interface IProductCategoryService
     ListSortingOptionsResponseDto GetListSortingOptions();
 
     /// <summary>
-    /// Check if the requesting user has permission to create a new
-    /// <see cref="ProductCategory"/>.
+    /// Check if the requesting user has permission to create a new product category.
     /// </summary>
     /// <returns>
     /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.

@@ -1,8 +1,8 @@
 ﻿namespace NATSInternal.Validation.Validators;
 
-public class MonthYearValidator : Validator<MonthYearRequestDto>
+public class ListMonthYearValidator : Validator<ListMonthYearRequestDto>
 {
-    public MonthYearValidator()
+    public ListMonthYearValidator()
     {
         RuleFor(dto => dto.Month)
             .GreaterThanOrEqualTo(1)

@@ -168,7 +168,7 @@ public class ProductCategoryController : ControllerBase
         }
     }
 
-    [HttpGet("GetCreatingPermission")]
+    [HttpGet("CreatingPermission")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetCreatingPermission()
     {

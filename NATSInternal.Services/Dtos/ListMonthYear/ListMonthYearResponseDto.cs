@@ -1,13 +1,13 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class MonthYearResponseDto
+public class ListMonthYearResponseDto
 {
     public int Month { get; set; }
     public int Year { get; set; }
 
-    public MonthYearResponseDto() { }
+    public ListMonthYearResponseDto() { }
 
-    public MonthYearResponseDto(int year, int month)
+    public ListMonthYearResponseDto(int year, int month)
     {
         Month = month;
         Year = year;

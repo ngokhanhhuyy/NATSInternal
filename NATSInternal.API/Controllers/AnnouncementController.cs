@@ -163,7 +163,7 @@ public class AnnouncementController : ControllerBase
         }
     }
 
-    [HttpGet("GetCreatingPermission")]
+    [HttpGet("CreatingPermission")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetCreatingPermission()
     {

@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class ProductCategoryListRequestDto : IOrderableListRequestDto
+public class ProductCategoryListRequestDto : ISortableListRequestDto
 {
     public bool? SortingByAscending { get; set; }
     public string SortingByField { get; set; }

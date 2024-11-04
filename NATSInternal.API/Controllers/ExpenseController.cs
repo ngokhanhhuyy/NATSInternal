@@ -194,14 +194,14 @@ public class ExpenseController : ControllerBase
         return Ok(await _service.GetListMonthYearOptionsAsync());
     }
 
-    [HttpGet("GetCreatingPermission")]
+    [HttpGet("CreatingPermission")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetCreatingPermission()
     {
         return Ok(_service.GetCreatingPermission());
     }
 
-    [HttpGet("GetCreatingAuthorization")]
+    [HttpGet("CreatingAuthorization")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetCreatingAuthorization()
     {

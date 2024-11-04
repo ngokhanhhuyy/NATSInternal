@@ -14,7 +14,7 @@ internal interface IMonthYearService<T, TUpdateHistory>
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
 {
     /// <summary>
-    /// Generates a list of the <see cref="MonthYearResponseDto"/> instances, representing the
+    /// Generates a list of the <see cref="ListMonthYearResponseDto"/> instances, representing the
     /// options that users can select as filtering condition when fetching a list of
     /// <typeparamref name="T"/> DTOs.
     /// </summary>
@@ -24,9 +24,9 @@ internal interface IMonthYearService<T, TUpdateHistory>
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is a
-    /// <see cref="List{T}"/> of <see cref="MonthYearResponseDto"/> instances, representing
+    /// <see cref="List{T}"/> of <see cref="ListMonthYearResponseDto"/> instances, representing
     /// the options.
     /// </returns>
-    Task<List<MonthYearResponseDto>> GenerateMonthYearOptions(
+    Task<List<ListMonthYearResponseDto>> GenerateMonthYearOptions(
         Func<DatabaseContext, DbSet<T>> repositorySelector);
 }

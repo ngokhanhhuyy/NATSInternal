@@ -118,7 +118,7 @@ public interface ICustomerService
     ListSortingOptionsResponseDto GetListSortingOptions();
 
     /// <summary>
-    /// Check if the requesting user has permission to create a new <see cref="Customer"/>.
+    /// Check if the requesting user has permission to create a new customer.
     /// </summary>
     /// <returns>
     /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.

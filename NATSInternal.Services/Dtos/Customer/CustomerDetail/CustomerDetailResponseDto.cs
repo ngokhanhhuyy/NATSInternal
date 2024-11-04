@@ -20,6 +20,7 @@ public record CustomerDetailResponseDto
     public string Email { get; set; }
     public string Address { get; set; }
     public string Note { get; set; }
+    public UserBasicResponseDto CreatedUser { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public DateTime? UpdatedDateTime { get; set; }
     public CustomerBasicResponseDto Introducer { get; set; }
@@ -47,6 +48,7 @@ public record CustomerDetailResponseDto
         Email = customer.Email;
         Address = customer.Address;
         Note = customer.Note;
+        CreatedUser = new UserBasicResponseDto(customer.CreatedUser);
         CreatedDateTime = customer.CreatedDateTime;
         UpdatedDateTime = customer.UpdatedDateTime;
         DebtAmount = customer.DebtAmount;

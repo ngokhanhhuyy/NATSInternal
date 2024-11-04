@@ -56,7 +56,8 @@ public interface IDebtIncurrenceService
     /// Throws under the following circumstances:
     /// - When information of the requesting user has been deleted before the operation.
     /// - When the customer which has the id specified by the value of the <c>CustomerId</c>
-    /// property in the <paramref name="requestDto"/> doesn't exist or has already been deleted.
+    /// property in the <paramref name="requestDto"/> doesn't exist or has already been
+    /// deleted.
     /// </exception>
     Task<int> CreateAsync(DebtIncurrenceUpsertRequestDto requestDto);
     
@@ -110,8 +111,8 @@ public interface IDebtIncurrenceService
     /// </param>
     /// <returns>A task that represents the asynchronous operation.</returns>
     /// <exception cref="ResourceNotFoundException">
-    /// Throws when the debt incurrence with the id specified by the <paramref name="id"/> doesn't
-    /// exist or has already been deleted.
+    /// Throws when the debt incurrence with the id specified by the <paramref name="id"/>
+    /// doesn't exist or has already been deleted.
     /// </exception>
     /// <exception cref="AuthorizationException">
     /// Throws when the requesting user doesn't have enough permissions to delete the specified
@@ -140,20 +141,17 @@ public interface IDebtIncurrenceService
     ListSortingOptionsResponseDto GetListSortingOptions();
 
     /// <summary>
-    /// Retrieve a list of the <see cref="MonthYearResponseDto"/> instances, representing the
-    /// options and the default option that users can select as filtering condition in list
-    /// retrieving operation.
+    /// Retrieve month year options which user can select as the filtering condition and the
+    /// default option, used in the list retrieving operation.
     /// </summary>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is
-    /// a <see cref="List{T}"/> of <see cref="MonthYearOptionsResponseDto"/> DTO, representing
-    /// the options.
+    /// A <see cref="Task"/> representing the asynchronous operation, which is an instance of
+    /// the <see cref="ListMonthYearOptionsResponseDto"/> DTO, containing the options.
     /// </returns>
-    Task<MonthYearOptionsResponseDto> GetListMonthYearOptionsAsync();
+    Task<ListMonthYearOptionsResponseDto> GetListMonthYearOptionsAsync();
 
     /// <summary>
-    /// Check if the requesting user has permission to create a new
-    /// <see cref="DebtIncurrence"/>.
+    /// Check if the requesting user has permission to create a new debt incurrence.
     /// </summary>
     /// <returns>
     /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.

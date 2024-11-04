@@ -51,19 +51,19 @@ internal abstract class FinancialEngageableAbstractService<
     }
 
     /// <summary>
-    /// Retrieve a list of the <see cref="MonthYearResponseDto"/> instances, representing the
+    /// Retrieve a list of the <see cref="ListMonthYearResponseDto"/> instances, representing the
     /// options that users can select as filtering condition in list retrieving operation.
     /// </summary>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is
-    /// a <see cref="List{T}"/> of <see cref="MonthYearResponseDto"/> instances, representing
+    /// a <see cref="List{T}"/> of <see cref="ListMonthYearResponseDto"/> instances, representing
     /// the options.
     /// </returns>
-    public async Task<MonthYearOptionsResponseDto> GetListMonthYearOptionsAsync()
+    public async Task<ListMonthYearOptionsResponseDto> GetListMonthYearOptionsAsync()
     {
         EarliestRecordedMonthYear ??= await GetRepository(_context)
             .OrderBy(e => e.StatsDateTime)
-            .Select(entity => new MonthYearResponseDto
+            .Select(entity => new ListMonthYearResponseDto
             {
                 Year = entity.StatsDateTime.Year,
                 Month = entity.StatsDateTime.Month
@@ -72,7 +72,7 @@ internal abstract class FinancialEngageableAbstractService<
         DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
         int currentYear = currentDateTime.Year;
         int currentMonth = currentDateTime.Month;
-        List<MonthYearResponseDto> monthYearOptions = new List<MonthYearResponseDto>();
+        List<ListMonthYearResponseDto> monthYearOptions = new List<ListMonthYearResponseDto>();
         if (EarliestRecordedMonthYear != null)
         {
             for (int initializingYear = EarliestRecordedMonthYear.Year;
@@ -87,8 +87,8 @@ internal abstract class FinancialEngageableAbstractService<
 
                 while (initializingMonth <= 12)
                 {
-                    MonthYearResponseDto option;
-                    option = new MonthYearResponseDto(
+                    ListMonthYearResponseDto option;
+                    option = new ListMonthYearResponseDto(
                         initializingYear,
                         initializingMonth);
                     monthYearOptions.Add(option);
@@ -103,12 +103,12 @@ internal abstract class FinancialEngageableAbstractService<
         }
         else
         {
-            monthYearOptions.Add(new MonthYearResponseDto(currentYear, currentMonth));
+            monthYearOptions.Add(new ListMonthYearResponseDto(currentYear, currentMonth));
         }
 
-        return new MonthYearOptionsResponseDto
+        return new ListMonthYearOptionsResponseDto
         {
-            Items = monthYearOptions
+            Options = monthYearOptions
         };
     }
 
@@ -379,5 +379,5 @@ internal abstract class FinancialEngageableAbstractService<
     /// Stores the month and year information of the entity instance which is created earliest
     /// in the table as static value and doesn't change over requests.
     /// </summary>
-    protected static MonthYearResponseDto EarliestRecordedMonthYear { get; set; }
+    protected static ListMonthYearResponseDto EarliestRecordedMonthYear { get; set; }
 }

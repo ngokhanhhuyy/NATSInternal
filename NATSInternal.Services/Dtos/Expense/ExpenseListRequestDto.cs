@@ -3,8 +3,8 @@ namespace NATSInternal.Services.Dtos;
 public class ExpenseListRequestDto : IFinancialEngageableListRequestDto
 {
     public bool? SortingByAscending { get; set; }
-    public string SortingByField { get; set; } = nameof(OrderByFieldOption.StatsDateTime);
-    public MonthYearRequestDto MonthYear { get; set; }
+    public string SortingByField { get; set; }
+    public ListMonthYearRequestDto MonthYear { get; set; }
     public ExpenseCategory? Category { get; set; }
     public int? CreatedUserId { get; set; }
     public int Page { get; set; } = 1;
