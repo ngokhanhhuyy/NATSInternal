@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Interfaces.Dtos;
 
-internal interface IFinancialEngageableNewAuthorizationResponseDto
+internal interface IHasStatsCreatingAuthorizationResponseDto
 {
     bool CanSetStatsDateTime { get; set; }
 }

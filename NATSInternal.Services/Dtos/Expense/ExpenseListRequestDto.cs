@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class ExpenseListRequestDto : IFinancialEngageableListRequestDto
+public class ExpenseListRequestDto : IHasStatsListRequestDto
 {
     public bool? SortingByAscending { get; set; }
     public string SortingByField { get; set; }

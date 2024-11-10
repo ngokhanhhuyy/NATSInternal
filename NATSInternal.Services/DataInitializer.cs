@@ -43,7 +43,7 @@ public sealed class DataInitializer
                 {
                     Name = "Developer",
                     DisplayName = "Nhà phát triển",
-                    PowerLevel = 40
+                    PowerLevel = 50
                 },
                 new Role
                 {

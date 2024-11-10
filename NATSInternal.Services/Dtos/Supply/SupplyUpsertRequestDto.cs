@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
 public class SupplyUpsertRequestDto
-    : IProductEngageableUpsertRequestDto<SupplyItemRequestDto, SupplyPhotoRequestDto>
+    : IHasProductUpsertRequestDto<SupplyItemRequestDto, SupplyPhotoRequestDto>
 {
     public DateTime? StatsDateTime { get; set; }
     public long ShipmentFee { get; set; }

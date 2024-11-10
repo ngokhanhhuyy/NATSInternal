@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Entities;
 
-internal class OrderItem : IProductExportableItemEntity<OrderItem>
+internal class OrderItem : IHasProductExportableItemEntity<OrderItem>
 {
     [Key]
     public int Id { get; set; }

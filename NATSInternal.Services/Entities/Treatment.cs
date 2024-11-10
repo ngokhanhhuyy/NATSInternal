@@ -3,7 +3,7 @@ namespace NATSInternal.Services.Entities;
 internal class Treatment
     :
         FinancialEngageableAbstractEntity,
-        IProductExportableEntity<
+        IExportProductEntity<
             Treatment,
             TreatmentItem,
             TreatmentPhoto,

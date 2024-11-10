@@ -1,5 +1,5 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
 internal interface IProductExportableUpdateHistoryResponseDto<TItemDataDto>
-    : IProductEngageableUpdateHistoryResponseDto<TItemDataDto>
+    : IHasProductUpdateHistoryResponseDto<TItemDataDto>
     where TItemDataDto : IProductExportableItemUpdateHistoryDataDto;

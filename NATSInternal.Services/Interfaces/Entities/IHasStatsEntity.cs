@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Interfaces.Entities;
 
-internal interface IFinancialEngageableEntity<T, TUpdateHistory>
+internal interface IHasStatsEntity<T, TUpdateHistory>
     :
         ICreatorTrackableEntity<T>,
         IUpdaterTrackableEntity<T, TUpdateHistory>

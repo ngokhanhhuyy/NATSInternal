@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Entities;
 
-internal class SupplyItem : IProductEngageableItemEntity<SupplyItem>
+internal class SupplyItem : IHasProductItemEntity<SupplyItem>
 {
     [Key]
     public int Id { get; set; }

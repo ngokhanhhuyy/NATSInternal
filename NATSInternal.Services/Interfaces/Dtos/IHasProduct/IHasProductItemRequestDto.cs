@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface IProductEngageableItemRequestDto : IRequestDto
+public interface IHasProductItemRequestDto : IRequestDto
 {
     int? Id { get; set; }
     long ProductAmountPerUnit { get; set; }

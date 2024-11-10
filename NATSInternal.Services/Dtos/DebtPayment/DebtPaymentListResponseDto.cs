@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class DebtPaymentListResponseDto : IFinancialEngageableListResponseDto<
+public class DebtPaymentListResponseDto : IHasStatsResponseDto<
         DebtPaymentBasicResponseDto,
         DebtPaymentExistingAuthorizationResponseDto>
 {

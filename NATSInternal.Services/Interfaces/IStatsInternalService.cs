@@ -10,7 +10,7 @@ namespace NATSInternal.Services.Interfaces;
 /// The type of the update history with which the stats is associated.
 /// </typeparam>
 internal interface IStatsInternalService<T, TUpdateHistory> : IStatsService
-        where T : class, IFinancialEngageableEntity<T, TUpdateHistory>, new()
+        where T : class, IHasStatsEntity<T, TUpdateHistory>, new()
         where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
 {
     /// <summary>

@@ -1,7 +1,7 @@
 namespace NATSInternal.Services.Dtos;
 
 public class DebtIncurrenceExistingAuthorizationResponseDto
-    : IFinancialEngageableExistingAuthorizationResponseDto
+    : IHasStatsExistingAuthorizationResponseDto
 {
     public bool CanEdit { get; set; }
     public bool CanDelete { get; set; }

@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class ConsultantUpsertRequestDto : IFinancialEngageableUpsertRequestDto
+public class ConsultantUpsertRequestDto : IHasStatsUpsertRequestDto
 {
     public long AmountBeforeVat { get; set; }
     public long VatAmount { get; set; }

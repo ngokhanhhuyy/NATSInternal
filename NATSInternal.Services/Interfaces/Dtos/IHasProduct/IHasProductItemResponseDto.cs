@@ -1,9 +1,9 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-internal interface IProductEngageableItemUpdateHistoryDataDto
+internal interface IHasProductItemResponseDto
 {
-    int Id { get; }
+    int Id { get; set; }
     long ProductAmountPerUnit { get; }
     int Quantity { get; }
-    string ProductName { get; }
+    ProductBasicResponseDto Product { get; }
 }

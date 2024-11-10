@@ -5,7 +5,7 @@ internal class StatsInternalService<T, TUpdateHistory>
     :
         StatsService,
         IStatsInternalService<T, TUpdateHistory>
-    where T : class, IFinancialEngageableEntity<T, TUpdateHistory>, new()
+    where T : class, IHasStatsEntity<T, TUpdateHistory>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
 {
     public StatsInternalService(DatabaseContext context) : base(context) { }

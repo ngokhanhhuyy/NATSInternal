@@ -11,18 +11,18 @@ internal interface IAuthorizationInternalService : IAuthorizationService
 
     // Authorization for other resources.
     TResponseDto GetCreatingAuthorization<TEntity, TUpdateHistoryEntity, TResponseDto>()
-            where TEntity : class, IFinancialEngageableEntity<TEntity, TUpdateHistoryEntity>, new()
+            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
             where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new()
-            where TResponseDto : IFinancialEngageableNewAuthorizationResponseDto, new();
+            where TResponseDto : IHasStatsCreatingAuthorizationResponseDto, new();
 
     TResponseDto GetExistingAuthorization<TEntity, TResponseDto>()
             where TEntity : class, IUpsertableEntity<TEntity>, new()
             where TResponseDto : IUpsertableExistingAuthorizationResponseDto, new();
 
     TResponseDto GetExistingAuthorization<TEntity, TUpdateHistoryEntity, TResponseDto>(TEntity entity)
-            where TEntity : class, IFinancialEngageableEntity<TEntity, TUpdateHistoryEntity>, new()
+            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
             where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new()
-            where TResponseDto : IFinancialEngageableExistingAuthorizationResponseDto, new();
+            where TResponseDto : IHasStatsExistingAuthorizationResponseDto, new();
 
     // Permissions to interact with users.
     bool CanCreateUser();
@@ -38,19 +38,19 @@ internal interface IAuthorizationInternalService : IAuthorizationService
     bool CanCreate<TEntity>() where TEntity : class, IUpsertableEntity<TEntity>, new();
     bool CanEdit<TEntity>() where TEntity : class, IUpsertableEntity<TEntity>, new();
     bool CanEdit<TEntity, TUpdateHistoryEntity>(TEntity entity)
-            where TEntity : class, IFinancialEngageableEntity<TEntity, TUpdateHistoryEntity>, new()
+            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
             where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new();
     bool CanDelete<TEntity>() where TEntity : class, IUpsertableEntity<TEntity>, new();
     bool CanDelete<TEntity, TUpdateHistoryEntity>(TEntity entity)
-            where TEntity : class, IFinancialEngageableEntity<TEntity, TUpdateHistoryEntity>, new()
+            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
             where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new();
     bool CanSetStatsDateTimeWhenCreating<TEntity, TUpdateHistoryEntity>()
-            where TEntity : class, IFinancialEngageableEntity<TEntity, TUpdateHistoryEntity>, new()
+            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
             where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new();
     bool CanSetStatsDateTimeWhenEditing<TEntity, TUpdateHistoryEntity>(TEntity entity)
-            where TEntity : class, IFinancialEngageableEntity<TEntity, TUpdateHistoryEntity>, new()
+            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
             where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new();
     bool CanAccessUpdateHistory<TEntity, TUpdateHistoryEntity>()
-            where TEntity : class, IFinancialEngageableEntity<TEntity, TUpdateHistoryEntity>, new()
+            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
             where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new();
 }

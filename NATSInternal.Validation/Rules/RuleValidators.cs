@@ -118,7 +118,7 @@ internal static class RuleValidators
     }
 
     public static IRuleBuilderOptions<T, int> IsValidQueryStatsYear<T>(
-            this IRuleBuilder<T, int> ruleBuilder) where T : IFinancialEngageableListRequestDto
+            this IRuleBuilder<T, int> ruleBuilder) where T : IHasStatsListRequestDto
     {
         return ruleBuilder
             .GreaterThanOrEqualTo(1)
@@ -126,7 +126,7 @@ internal static class RuleValidators
     }
 
     public static IRuleBuilderOptions<T, int> IsValidQueryStatsMonth<T>(
-            this IRuleBuilder<T, int> ruleBuilder) where T : IFinancialEngageableListRequestDto
+            this IRuleBuilder<T, int> ruleBuilder) where T : IHasStatsListRequestDto
     {
         return ruleBuilder
             .GreaterThanOrEqualTo(1)

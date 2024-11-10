@@ -61,7 +61,7 @@
 /// <typeparamref name="T"/> entity instance after each modification, used in the updating
 /// operation.
 /// </typeparam>
-/// <typeparam name="TNewAuthorizationResponseDto">
+/// <typeparam name="TCreatingAuthorizationResponseDto">
 /// The type of response DTO which contains the authorization information when creating a new
 /// <typeparamref name="T"/> entity.
 /// </typeparam>
@@ -69,7 +69,7 @@
 /// The type of response DTO which contains the authorization information when updating an
 /// existing <typeparamref name="T"/> entity.
 /// </typeparam>
-internal abstract class ProductExportableAbstractService<
+internal abstract class ExportProductAbstractService<
         T,
         TItem,
         TPhoto,
@@ -86,9 +86,9 @@ internal abstract class ProductExportableAbstractService<
         TUpdateHistoryResponseDto,
         TItemUpdateHistoryDataDto,
         TUpdateHistoryDataDto,
-        TNewAuthorizationResponseDto,
+        TCreatingAuthorizationResponseDto,
         TExistingAuthorizationResponseDto>
-    : ProductEngageableAbstractService<
+    : HasProductAbstractService<
         T,
         TItem,
         TPhoto,
@@ -96,10 +96,10 @@ internal abstract class ProductExportableAbstractService<
         TListRequestDto,
         TItemRequestDto,
         TUpdateHistoryDataDto,
-        TNewAuthorizationResponseDto,
+        TCreatingAuthorizationResponseDto,
         TExistingAuthorizationResponseDto>
-    where T : class, IProductExportableEntity<T, TItem, TPhoto, TUpdateHistory>, new()
-    where TItem : class, IProductExportableItemEntity<TItem>, new()
+    where T : class, IExportProductEntity<T, TItem, TPhoto, TUpdateHistory>, new()
+    where TItem : class, IHasProductExportableItemEntity<TItem>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
     where TListRequestDto : IProductExportableListRequestDto
@@ -109,33 +109,33 @@ internal abstract class ProductExportableAbstractService<
     where TItemRequestDto : IProductExportableItemRequestDto
     where TPhotoRequestDto : IPhotoRequestDto
     where TListResponseDto :
-        IFinancialEngageableListResponseDto<
+        IHasStatsResponseDto<
             TBasicResponseDto,
             TExistingAuthorizationResponseDto>,
         new()
     where TBasicResponseDto :
         class,
-        IFinancialEngageableBasicResponseDto<TExistingAuthorizationResponseDto>
-    where TDetailResponseDto : IProductEngageableDetailResponseDto<
+        IHasStatsBasicResponseDto<TExistingAuthorizationResponseDto>
+    where TDetailResponseDto : IHasProductDetailResponseDto<
         TItemResponseDto,
         TPhotoResponseDto,
         TUpdateHistoryResponseDto,
         TItemUpdateHistoryDataDto,
         TExistingAuthorizationResponseDto>
-    where TItemResponseDto : IProductEngageableItemResponseDto
+    where TItemResponseDto : IHasProductItemResponseDto
     where TPhotoResponseDto : IPhotoResponseDto
     where TUpdateHistoryResponseDto : IProductExportableUpdateHistoryResponseDto<
         TItemUpdateHistoryDataDto>
     where TItemUpdateHistoryDataDto : IProductExportableItemUpdateHistoryDataDto
-    where TNewAuthorizationResponseDto : class, IFinancialEngageableNewAuthorizationResponseDto, new()
-    where TExistingAuthorizationResponseDto : IFinancialEngageableExistingAuthorizationResponseDto, new()
+    where TCreatingAuthorizationResponseDto : class, IHasStatsCreatingAuthorizationResponseDto, new()
+    where TExistingAuthorizationResponseDto : IHasStatsExistingAuthorizationResponseDto, new()
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IMultiplePhotosService<T, TPhoto> _photoService;
     private readonly IStatsInternalService<T, TUpdateHistory> _statsService;
 
-    protected ProductExportableAbstractService(
+    protected ExportProductAbstractService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
             IMultiplePhotosService<T, TPhoto> photoService,

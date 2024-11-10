@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services;
 
 internal class TreatmentService
-    : ProductExportableAbstractService<
+    : ExportProductAbstractService<
         Treatment,
         TreatmentItem,
         TreatmentPhoto,

@@ -1,10 +1,10 @@
 namespace NATSInternal.Services.Dtos;
 
 public class ConsultantBasicResponseDto
-    : IFinancialEngageableBasicResponseDto<ConsultantExistingAuthorizationResponseDto>
+    : IHasStatsBasicResponseDto<ConsultantExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
-    public long AmountAfterVat { get; set; }
+    public long Amount { get; set; }
     public DateTime StatsDateTime { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
@@ -26,7 +26,7 @@ public class ConsultantBasicResponseDto
     private void MapFromEntity(Consultant consultant)
     {
         Id = consultant.Id;
-        AmountAfterVat = consultant.AmountBeforeVat;
+        Amount = consultant.AmountBeforeVat;
         StatsDateTime = consultant.StatsDateTime;
         IsLocked = consultant.IsLocked;
         Customer = new CustomerBasicResponseDto(consultant.Customer);

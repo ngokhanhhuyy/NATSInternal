@@ -57,12 +57,23 @@ internal class AuthorizationService : IAuthorizationInternalService
 
     public UserDetailAuthorizationResponseDto GetUserDetailAuthorization(User targetUser)
     {
-        UserBasicAuthorizationResponseDto basicResponseDto;
-        basicResponseDto = GetUserBasicAuthorization(targetUser);
-        return new()
+        UserDetailAuthorizationResponseDto dto = new UserDetailAuthorizationResponseDto
         {
             CanGetNote = CanGetNote(targetUser.PowerLevel),
-            CanEdit = basicResponseDto.CanEdit,
+            CanEdit = CanEditUserPersonalInformation(targetUser) ||
+                CanEditUserUserInformation(targetUser),
+            CanEditUserPersonalInformation = CanEditUserPersonalInformation(targetUser),
+            CanEditUserUserInformation = CanEditUserUserInformation(targetUser),
+            CanAssignRole = CanAssignRole(),
+            CanChangePassword = CanChangeUserPassword(targetUser),
+            CanResetPassword = CanResetUserPassword(targetUser),
+            CanDelete = CanDeleteUser(targetUser)
+        };
+        return new UserDetailAuthorizationResponseDto
+        {
+            CanGetNote = CanGetNote(targetUser.PowerLevel),
+            CanEdit = CanEditUserPersonalInformation(targetUser) ||
+                CanEditUserUserInformation(targetUser),
             CanEditUserPersonalInformation = CanEditUserPersonalInformation(targetUser),
             CanEditUserUserInformation = CanEditUserUserInformation(targetUser),
             CanAssignRole = CanAssignRole(),
@@ -74,9 +85,9 @@ internal class AuthorizationService : IAuthorizationInternalService
 
     // Authorization for other resources.
     public TResponseDto GetCreatingAuthorization<TEntity, TUpdateHistoryEntity, TResponseDto>()
-            where TEntity : class, IFinancialEngageableEntity<TEntity, TUpdateHistoryEntity>, new()
+            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
             where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new()
-            where TResponseDto : IFinancialEngageableNewAuthorizationResponseDto, new()
+            where TResponseDto : IHasStatsCreatingAuthorizationResponseDto, new()
     {
         return new TResponseDto
         {
@@ -101,13 +112,13 @@ internal class AuthorizationService : IAuthorizationInternalService
             TEntity entity)
                 where TEntity :
                     class,
-                    IFinancialEngageableEntity<TEntity, TUpdateHistoryEntity>,
+                    IHasStatsEntity<TEntity, TUpdateHistoryEntity>,
                     new()
                 where TUpdateHistoryEntity :
                     class,
                     IUpdateHistoryEntity<TUpdateHistoryEntity>,
                     new()
-                where TResponseDto : IFinancialEngageableExistingAuthorizationResponseDto, new()
+                where TResponseDto : IHasStatsExistingAuthorizationResponseDto, new()
     {
         return new TResponseDto
         {
@@ -220,7 +231,7 @@ internal class AuthorizationService : IAuthorizationInternalService
     }
 
     public bool CanEdit<TEntity, TUpdateHistoryEntity>(TEntity entity)
-            where TEntity : class, IFinancialEngageableEntity<TEntity, TUpdateHistoryEntity>, new()
+            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
             where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new()
     {
         return _user.HasPermission($"Edit{typeof(TEntity).Name}") &&
@@ -234,7 +245,7 @@ internal class AuthorizationService : IAuthorizationInternalService
     }
 
     public bool CanDelete<TEntity, TUpdateHistoryEntity>(TEntity entity)
-            where TEntity : class, IFinancialEngageableEntity<TEntity, TUpdateHistoryEntity>, new()
+            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
             where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new()
     {
         return _user.HasPermission($"Edit{typeof(TEntity).Name}") &&
@@ -243,14 +254,14 @@ internal class AuthorizationService : IAuthorizationInternalService
     }
 
     public bool CanSetStatsDateTimeWhenCreating<TEntity, TUpdateHistoryEntity>()
-            where TEntity : class, IFinancialEngageableEntity<TEntity, TUpdateHistoryEntity>, new()
+            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
             where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new()
     {
         return _user.HasPermission($"Set{typeof(TEntity).Name}StatsDateTime");
     }
 
     public bool CanSetStatsDateTimeWhenEditing<TEntity, TUpdateHistoryEntity>(TEntity entity)
-            where TEntity : class, IFinancialEngageableEntity<TEntity, TUpdateHistoryEntity>, new()
+            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
             where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new()
     {
         return _user.HasPermission($"Set{typeof(TEntity).Name}StatsDateTime") &&
@@ -259,7 +270,7 @@ internal class AuthorizationService : IAuthorizationInternalService
     }
 
     public bool CanAccessUpdateHistory<TEntity, TUpdateHistoryEntity>()
-            where TEntity : class, IFinancialEngageableEntity<TEntity, TUpdateHistoryEntity>, new()
+            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
             where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new()
     {
         return _user.HasPermission($"Access{typeof(TEntity).Name}UpdateHistories");

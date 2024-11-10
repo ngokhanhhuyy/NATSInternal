@@ -1,7 +1,7 @@
 namespace NATSInternal.Services.Dtos;
 
 public class TreatmentDetailResponseDto
-    : IProductExportableDetailResponseDto<
+    : IExportProductDetailResponseDto<
         TreatmentItemResponseDto,
         TreatmentPhotoResponseDto,
         TreatmentUpdateHistoryResponseDto,
@@ -36,7 +36,7 @@ public class TreatmentDetailResponseDto
     public long VatAmount => ProductVatAmount + ServiceVatAmount;
 
     [JsonIgnore]
-    public long AmountAfterVat => ServiceAmountBeforeVat + ProductAmount;
+    public long Amount => ServiceAmountBeforeVat + ProductAmount;
 
     public string ThumbnailUrl => Photos
         .OrderBy(p => p.Id)

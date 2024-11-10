@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class SupplyItemUpdateHistoryDataDto : IProductEngageableItemUpdateHistoryDataDto
+public class SupplyItemUpdateHistoryDataDto : IHasProductItemUpdateHistoryDataDto
 {
     public int Id { get; set; }
     public long ProductAmountPerUnit { get; set; }

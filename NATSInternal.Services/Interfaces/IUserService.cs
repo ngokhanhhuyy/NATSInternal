@@ -230,7 +230,7 @@ public interface IUserService
     /// operation.
     /// </summary>
     /// <returns>
-    /// An instance of the <see cref="ListSortingOptionsResponseDto"/> DTO, containing the
+    /// An instance of the <see cref="ListSortingOptionsResponseDto"/> DTO, containing theWSz
     /// options with name and display names of the fields and the default field.
     /// </returns>
     ListSortingOptionsResponseDto GetListSortingOptions();
@@ -242,4 +242,15 @@ public interface IUserService
     /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.
     /// </returns>
     bool GetCreatingPermission();
+
+    /// <summary>
+    /// Check if the requesting user has permission to create a new user.
+    /// </summary>
+    /// <param name="id">
+    /// The id of the user to reset password.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.
+    /// </returns>
+    Task<bool> GetPasswordResetPermission(int id);
 }

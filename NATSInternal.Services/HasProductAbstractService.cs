@@ -27,7 +27,7 @@ namespace NATSInternal.Services;
 /// <typeparamref name="T"/> entity instance after each modification, used in the updating
 /// operation.
 /// </typeparam>
-/// <typeparam name="TNewAuthorizationResponseDto">
+/// <typeparam name="TCreatingAuthorizationResponseDto">
 /// The type of response DTO which contains the authorization information when creating a new
 /// <typeparamref name="T"/> entity.
 /// </typeparam>
@@ -35,7 +35,7 @@ namespace NATSInternal.Services;
 /// The type of response DTO which contains the authorization information when updating an
 /// existing <typeparamref name="T"/> entity.
 /// </typeparam>
-internal abstract class ProductEngageableAbstractService<
+internal abstract class HasProductAbstractService<
         T,
         TItem,
         TPhoto,
@@ -43,27 +43,27 @@ internal abstract class ProductEngageableAbstractService<
         TListRequestDto,
         TItemRequestDto,
         TUpdateHistoryDataDto,
-        TNewAuthorizationResponseDto,
+        TCreatingAuthorizationResponseDto,
         TExistingAuthorizationResponseDto>
-    : FinancialEngageableAbstractService<
+    : HasStatsAbstractService<
         T,
         TUpdateHistory,
         TListRequestDto,
         TUpdateHistoryDataDto,
-        TNewAuthorizationResponseDto,
+        TCreatingAuthorizationResponseDto,
         TExistingAuthorizationResponseDto>
-    where T : class, IProductEngageableEntity<T, TItem, TPhoto, TUpdateHistory>, new()
-    where TItem : class, IProductEngageableItemEntity<TItem>, new()
+    where T : class, IHasProductEntity<T, TItem, TPhoto, TUpdateHistory>, new()
+    where TItem : class, IHasProductItemEntity<TItem>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
-    where TListRequestDto : IProductEngageableListRequestDto
-    where TItemRequestDto : IProductEngageableItemRequestDto
-    where TNewAuthorizationResponseDto : class, IFinancialEngageableNewAuthorizationResponseDto, new()
-    where TExistingAuthorizationResponseDto : IFinancialEngageableExistingAuthorizationResponseDto, new()
+    where TListRequestDto : IHasProductListRequestDto
+    where TItemRequestDto : IHasProductItemRequestDto
+    where TCreatingAuthorizationResponseDto : class, IHasStatsCreatingAuthorizationResponseDto, new()
+    where TExistingAuthorizationResponseDto : IHasStatsExistingAuthorizationResponseDto, new()
 {
     private readonly DatabaseContext _context;
 
-    protected ProductEngageableAbstractService(
+    protected HasProductAbstractService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService)
         : base(context, authorizationService)

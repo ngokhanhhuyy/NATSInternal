@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services.Interfaces.Entities;
 
 internal interface ICustomerEngageableEntity<T, TUpdateHistory>
-    : IFinancialEngageableEntity<T, TUpdateHistory>
+    : IHasStatsEntity<T, TUpdateHistory>
     where T : class, IUpsertableEntity<T>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
 {

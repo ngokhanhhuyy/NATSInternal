@@ -1,24 +1,23 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-internal interface IProductExportableDetailResponseDto<
+internal interface IExportProductDetailResponseDto<
         TItem,
         TPhoto,
         TUpdateHistory,
         TItemUpdateHistoryData,
         TExistingAuthorization>
     :
-        IProductEngageableDetailResponseDto<
+        IHasProductDetailResponseDto<
             TItem,
             TPhoto,
             TUpdateHistory,
             TItemUpdateHistoryData,
-            TExistingAuthorization>,
-        ICustomerEngageableBasicResponseDto<TExistingAuthorization>
-    where TItem : IProductEngageableItemResponseDto
+            TExistingAuthorization>
+    where TItem : IHasProductItemResponseDto
     where TPhoto : IPhotoResponseDto
     where TUpdateHistory : IProductExportableUpdateHistoryResponseDto<TItemUpdateHistoryData>
     where TItemUpdateHistoryData : IProductExportableItemUpdateHistoryDataDto
-    where TExistingAuthorization : IFinancialEngageableExistingAuthorizationResponseDto
+    where TExistingAuthorization : IHasStatsExistingAuthorizationResponseDto
 {
     long AmountBeforeVat { get; }
     long VatAmount { get; }

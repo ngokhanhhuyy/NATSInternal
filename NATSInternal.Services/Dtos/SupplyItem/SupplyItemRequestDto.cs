@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class SupplyItemRequestDto : IProductEngageableItemRequestDto
+public class SupplyItemRequestDto : IHasProductItemRequestDto
 {
     public int? Id { get; set; }
     public long ProductAmountPerUnit { get; set; }

@@ -3,7 +3,7 @@ namespace NATSInternal.Services;
 /// <inheritdoc cref="IExpenseService" />
 internal class ExpenseService
     :
-        FinancialEngageableAbstractService<
+        HasStatsAbstractService<
             Expense,
             ExpenseUpdateHistory,
             ExpenseListRequestDto,

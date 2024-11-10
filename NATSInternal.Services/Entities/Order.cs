@@ -2,7 +2,7 @@ namespace NATSInternal.Services.Entities;
 
 internal class Order
     :   FinancialEngageableAbstractEntity,
-        IProductExportableEntity<Order, OrderItem, OrderPhoto, OrderUpdateHistory>
+        IExportProductEntity<Order, OrderItem, OrderPhoto, OrderUpdateHistory>
 {
     [Key]
     public int Id { get; set; }

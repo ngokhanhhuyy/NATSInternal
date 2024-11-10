@@ -1,7 +1,7 @@
 namespace NATSInternal.Services.Dtos;
 
 public class TreatmentNewAuthorizationResponseDto
-        : IFinancialEngageableNewAuthorizationResponseDto
+        : IHasStatsCreatingAuthorizationResponseDto
 {
     public bool CanSetStatsDateTime { get; set; }
 }

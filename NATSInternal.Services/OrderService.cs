@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services;
 
 internal class OrderService
-    : ProductExportableAbstractService<
+    : ExportProductAbstractService<
         Order,
         OrderItem,
         OrderPhoto,

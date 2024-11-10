@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class OrderDetailResponseDto : IProductExportableDetailResponseDto<
+public class OrderDetailResponseDto : IExportProductDetailResponseDto<
         OrderItemResponseDto,
         OrderPhotoResponseDto,
         OrderUpdateHistoryResponseDto,
@@ -22,7 +22,7 @@ public class OrderDetailResponseDto : IProductExportableDetailResponseDto<
     public List<OrderUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
     [JsonIgnore]
-    public long AmountAfterVat => AmountBeforeVat + VatAmount;
+    public long Amount => AmountBeforeVat + VatAmount;
 
     public string ThumbnailUrl => Photos?
         .OrderBy(op => op.Id)

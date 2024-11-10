@@ -173,6 +173,13 @@ public class CustomerController : ControllerBase
         }
     }
 
+    [HttpGet("ListSortingOptions")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetListSortingOptionsAsync()
+    {
+        return Ok(_service.GetListSortingOptions());
+    }
+
     [HttpGet("CreatingPermission")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetCreatingPermission()

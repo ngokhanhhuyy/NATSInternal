@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface IFinancialEngageableListRequestDto : ICreatorTrackableListRequestDto
+public interface IHasStatsListRequestDto : ICreatorTrackableListRequestDto
 {
     ListMonthYearRequestDto MonthYear { get; set; }
 }

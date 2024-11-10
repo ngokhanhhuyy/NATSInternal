@@ -3,7 +3,7 @@ namespace NATSInternal.Services;
 /// <inheritdoc cref="IConsultantService" />
 internal class ConsultantService
     :
-        FinancialEngageableAbstractService<
+        HasStatsAbstractService<
             Consultant,
             ConsultantUpdateHistory,
             ConsultantListRequestDto,

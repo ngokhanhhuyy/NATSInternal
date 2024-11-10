@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class TreatmentListResponseDto : IFinancialEngageableListResponseDto<
+public class TreatmentListResponseDto : IHasStatsResponseDto<
         TreatmentBasicResponseDto,
         TreatmentExistingAuthorizationResponseDto>
 {

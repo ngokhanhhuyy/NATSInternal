@@ -348,7 +348,21 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpGet("GetCreatingPermission")]
+    [HttpGet("ListSortingOptions")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult ListSortingOptions()
+    {
+        return Ok(_userService.GetListSortingOptions());
+    }
+
+    [HttpGet("{id:int}/PasswordResetPermission")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPasswordResetPermission(int id)
+    {
+        return Ok(await _userService.GetPasswordResetPermission(id));
+    }
+
+    [HttpGet("CreatingPermission")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetCreatingPermission()
     {

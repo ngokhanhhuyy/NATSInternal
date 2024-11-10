@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class ExpenseUpsertRequestDto : IFinancialEngageableUpsertRequestDto
+public class ExpenseUpsertRequestDto : IHasStatsUpsertRequestDto
 {
     public long Amount { get; set; }
     public DateTime? StatsDateTime { get; set; }

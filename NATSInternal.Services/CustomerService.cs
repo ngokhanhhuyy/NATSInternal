@@ -132,7 +132,7 @@ internal class CustomerService
     {
         Customer customer = await _context.Customers
             .Include(customer => customer.Introducer)
-            .Include(customer => customer.CreatedUser)
+            .Include(customer => customer.CreatedUser).ThenInclude(u => u.Roles)
             .Include(customer => customer.DebtIncurrences)
             .Include(customer => customer.DebtPayments)
             .Where(c => !c.IsDeleted && c.Id == id)
@@ -145,14 +145,14 @@ internal class CustomerService
         return new CustomerDetailResponseDto(
             customer,
             GetExistingAuthorization(customer),
-            (debtIncurrence) => _authorizationService.GetExistingAuthorization<
+            _authorizationService.GetExistingAuthorization<
                 DebtIncurrence,
                 DebtIncurrenceUpdateHistory,
-                DebtIncurrenceExistingAuthorizationResponseDto>(debtIncurrence),
-            (debtPayment) => _authorizationService.GetExistingAuthorization<
+                DebtIncurrenceExistingAuthorizationResponseDto>,
+            _authorizationService.GetExistingAuthorization<
                 DebtPayment,
                 DebtPaymentUpdateHistory,
-                DebtPaymentExistingAuthorizationResponseDto>(debtPayment));
+                DebtPaymentExistingAuthorizationResponseDto>);
     }
 
     /// <inheritdoc />

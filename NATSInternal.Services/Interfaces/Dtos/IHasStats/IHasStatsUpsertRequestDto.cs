@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface IFinancialEngageableUpsertRequestDto : IRequestDto
+public interface IHasStatsUpsertRequestDto : IRequestDto
 {
     string Note { get; }
     DateTime? StatsDateTime { get; }

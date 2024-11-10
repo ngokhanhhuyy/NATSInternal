@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class SupplyDetailResponseDto : IProductEngageableDetailResponseDto<
+public class SupplyDetailResponseDto : IHasProductDetailResponseDto<
         SupplyItemResponseDto,
         SupplyPhotoResponseDto,
         SupplyUpdateHistoryResponseDto, 

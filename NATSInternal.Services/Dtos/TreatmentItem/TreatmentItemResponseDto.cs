@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class TreatmentItemResponseDto : IProductEngageableItemResponseDto
+public class TreatmentItemResponseDto : IHasProductItemResponseDto
 {
     public int Id { get; set; }
     public long ProductAmountPerUnit { get; set; }

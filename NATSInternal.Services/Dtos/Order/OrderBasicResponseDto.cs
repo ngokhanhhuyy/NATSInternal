@@ -1,10 +1,10 @@
 namespace NATSInternal.Services.Dtos;
 
-public class OrderBasicResponseDto : IFinancialEngageableBasicResponseDto<OrderExistingAuthorizationResponseDto>
+public class OrderBasicResponseDto : IHasStatsBasicResponseDto<OrderExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public DateTime StatsDateTime { get; set; }
-    public long AmountAfterVat { get; set; }
+    public long Amount { get; set; }
     public bool IsLocked { get; set; }  
     public CustomerBasicResponseDto Customer { get; set; }
     public OrderExistingAuthorizationResponseDto Authorization { get; set; }
@@ -26,7 +26,7 @@ public class OrderBasicResponseDto : IFinancialEngageableBasicResponseDto<OrderE
     {
         Id = order.Id;
         StatsDateTime = order.StatsDateTime;
-        AmountAfterVat = order.AmountBeforeVat + order.VatAmount;
+        Amount = order.AmountBeforeVat + order.VatAmount;
         IsLocked = order.IsLocked;
         Customer = new CustomerBasicResponseDto(order.Customer);
     }

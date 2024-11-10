@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface IProductExportableItemRequestDto : IProductEngageableItemRequestDto
+public interface IProductExportableItemRequestDto : IHasProductItemRequestDto
 {
     long VatAmountPerUnit { get; }
 }

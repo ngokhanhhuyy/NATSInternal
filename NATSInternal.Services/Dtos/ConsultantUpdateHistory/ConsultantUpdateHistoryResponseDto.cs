@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class ConsultantUpdateHistoryResponseDto : IFinancialEngageableUpdateHistoryResponseDto
+public class ConsultantUpdateHistoryResponseDto : IHasStatsUpdateHistoryResponseDto
 {
     private readonly ConsultantUpdateHistoryDataDto _oldData;
     private readonly ConsultantUpdateHistoryDataDto _newData;

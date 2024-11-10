@@ -1,7 +1,7 @@
 namespace NATSInternal.Services.Dtos;
 
 public class SupplyUpdateHistoryResponseDto
-        : IProductEngageableUpdateHistoryResponseDto<SupplyItemUpdateHistoryDataDto>
+        : IHasProductUpdateHistoryResponseDto<SupplyItemUpdateHistoryDataDto>
 {
     private readonly SupplyUpdateHistoryDataDto _oldData;
     private readonly SupplyUpdateHistoryDataDto _newData;

@@ -2,7 +2,7 @@
 
 public interface IProductExportableUpsertRequestDto<TItem, TPhoto>
     :
-        IProductEngageableUpsertRequestDto<TItem, TPhoto>,
-        ICustomerEngageableUpsertRequestDto
-    where TItem : IProductEngageableItemRequestDto
+        IHasProductUpsertRequestDto<TItem, TPhoto>,
+        IHasCustomerUpsertRequestDto
+    where TItem : IHasProductItemRequestDto
     where TPhoto : IPhotoRequestDto;

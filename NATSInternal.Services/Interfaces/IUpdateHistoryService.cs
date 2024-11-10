@@ -13,7 +13,7 @@ namespace NATSInternal.Services.Interfaces;
 /// The type of the DTO which contains the data before and after modificiations.
 /// </typeparam>
 internal interface IUpdateHistoryService<T, TUpdateHistory, TUpdateHistoryDataDto>
-    where T : class, IFinancialEngageableEntity<T, TUpdateHistory>, new()
+    where T : class, IHasStatsEntity<T, TUpdateHistory>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
 {
     /// <summary>

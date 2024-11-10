@@ -35,7 +35,7 @@ namespace NATSInternal.Services;
 /// <typeparamref name="T"/> entity instance after each modification, used in the updating
 /// operation.
 /// </typeparam>
-/// <typeparam name="TNewAuthorizationResponseDto">
+/// <typeparam name="TCreatingAuthorizationResponseDto">
 /// The type of the response DTO, containing the authorization information for the
 /// <typeparamref name="TListResponseDto"/> DTO in the list retrieving operation.
 /// </typeparam>
@@ -54,35 +54,35 @@ internal abstract class DebtAbstractService<
         TDetailResponseDto,
         TUpdateHistoryResponseDto,
         TUpdateHistoryDataDto,
-        TNewAuthorizationResponseDto,
+        TCreatingAuthorizationResponseDto,
         TExistingAuthorizationResponseDto>
-    : FinancialEngageableAbstractService<
+    : HasStatsAbstractService<
         T,
         TUpdateHistory,
         TListRequestDto,
         TUpdateHistoryDataDto,
-        TNewAuthorizationResponseDto,
+        TCreatingAuthorizationResponseDto,
         TExistingAuthorizationResponseDto>
     where T : class, IDebtEntity<T, TUpdateHistory>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
     where TListRequestDto :
-        IFinancialEngageableListRequestDto,
-        ICustomerEngageableListRequestDto
+        IHasStatsListRequestDto,
+        IHasCustomerListRequestDto
     where TUpsertRequestDto : IDebtUpsertRequestDto
     where TListResponseDto :
-        IFinancialEngageableListResponseDto<
+        IHasStatsResponseDto<
             TBasicResponseDto,
             TExistingAuthorizationResponseDto>,
         new()
     where TBasicResponseDto :
         class,
-        ICustomerEngageableBasicResponseDto<TExistingAuthorizationResponseDto>
+        IHasCustomerBasicResponseDto<TExistingAuthorizationResponseDto>
     where TDetailResponseDto : IDebtDetailResponseDto<
         TUpdateHistoryResponseDto,
         TExistingAuthorizationResponseDto>
     where TUpdateHistoryResponseDto : IDebtUpdateHistoryResponseDto
-    where TNewAuthorizationResponseDto : class, IFinancialEngageableNewAuthorizationResponseDto, new()
-    where TExistingAuthorizationResponseDto : IFinancialEngageableExistingAuthorizationResponseDto, new()
+    where TCreatingAuthorizationResponseDto : class, IHasStatsCreatingAuthorizationResponseDto, new()
+    where TExistingAuthorizationResponseDto : IHasStatsExistingAuthorizationResponseDto, new()
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;

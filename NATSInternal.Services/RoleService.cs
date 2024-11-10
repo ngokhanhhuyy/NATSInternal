@@ -11,15 +11,10 @@ internal class RoleService : IRoleService
     }
 
     /// <inheritdoc />
-    public async Task<RoleListResponseDto> GetListAsync()
+    public async Task<List<RoleMinimalResponseDto>> GetAllAsync()
     {
-        RoleListResponseDto responseDto = new RoleListResponseDto
-        {
-            Items = await _context.Roles
-                .Select(r => new RoleBasicResponseDto(r))
-                .ToListAsync()
-        };
-
-        return responseDto;
+        return await _context.Roles
+            .Select(role => new RoleMinimalResponseDto(role))
+            .ToListAsync();
     }
 }

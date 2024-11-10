@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
 public class SupplyExistingAuthorizationResponseDto
-        : IFinancialEngageableExistingAuthorizationResponseDto
+        : IHasStatsExistingAuthorizationResponseDto
 {
     public bool CanEdit { get; set; }
     public bool CanDelete { get; set; }

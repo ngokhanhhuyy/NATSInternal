@@ -154,7 +154,7 @@ internal class UserService : IUserService
     {
         // Fetch a list of users with specified ids.
         List<User> users = await _context.Users
-            .Include(u => u.Roles)
+            .Include(u => u.Roles).ThenInclude(r => r.Claims)
             .OrderBy(u => u.Id)
             .Where(u => ids.Contains(u.Id))
             .ToListAsync();
@@ -618,8 +618,19 @@ internal class UserService : IUserService
         };
     }
 
+    /// <inheritdoc />
     public bool GetCreatingPermission()
     {
         return _authorizationService.CanCreateUser();
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> GetPasswordResetPermission(int id)
+    {
+        User user = await _context.Users
+            .Include(u => u.Roles)
+            .SingleOrDefaultAsync(u => u.Id == id)
+            ?? throw new ResourceNotFoundException();
+        return _authorizationService.CanResetUserPassword(user);
     }
 }

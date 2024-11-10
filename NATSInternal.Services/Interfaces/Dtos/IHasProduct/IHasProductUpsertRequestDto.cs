@@ -1,8 +1,7 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface IProductEngageableUpsertRequestDto<TItem, TPhoto>
-    : IFinancialEngageableUpsertRequestDto
-    where TItem : IProductEngageableItemRequestDto
+public interface IHasProductUpsertRequestDto<TItem, TPhoto> : IHasStatsUpsertRequestDto
+    where TItem : IHasProductItemRequestDto
     where TPhoto : IPhotoRequestDto
 {
     List<TItem> Items { get; set; }

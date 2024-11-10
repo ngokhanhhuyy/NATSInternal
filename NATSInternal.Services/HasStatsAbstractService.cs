@@ -17,7 +17,7 @@ namespace NATSInternal.Services;
 /// <typeparamref name="T"/> entity instance after each modification, used in the updating
 /// operation.
 /// </typeparam>
-/// <typeparam name="TNewAuthorizationResponseDto">
+/// <typeparam name="TCreatingAuthorizationResponseDto">
 /// The type of response DTO which contains the authorization information when creating a new
 /// <typeparamref name="T"/> entity.
 /// </typeparam>
@@ -25,24 +25,27 @@ namespace NATSInternal.Services;
 /// The type of response DTO which contains the authorization information when updating an
 /// existing <typeparamref name="T"/> entity.
 /// </typeparam>
-internal abstract class FinancialEngageableAbstractService<
+internal abstract class HasStatsAbstractService<
         T,
         TUpdateHistory,
         TListRequestDto,
         TUpdateHistoryDataDto,
-        TNewAuthorizationResponseDto,
+        TCreatingAuthorizationResponseDto,
         TExistingAuthorizationResponseDto>
     : UpsertableAbstractService<T, TListRequestDto, TExistingAuthorizationResponseDto>
-    where T : class, IFinancialEngageableEntity<T, TUpdateHistory>, new()
+    where T : class, IHasStatsEntity<T, TUpdateHistory>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
-    where TListRequestDto : IFinancialEngageableListRequestDto
-    where TNewAuthorizationResponseDto : class, IFinancialEngageableNewAuthorizationResponseDto, new()
-    where TExistingAuthorizationResponseDto : IFinancialEngageableExistingAuthorizationResponseDto, new()
+    where TListRequestDto : IHasStatsListRequestDto
+    where TCreatingAuthorizationResponseDto :
+        class,
+        IHasStatsCreatingAuthorizationResponseDto,
+        new()
+    where TExistingAuthorizationResponseDto : IHasStatsExistingAuthorizationResponseDto, new()
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
 
-    protected FinancialEngageableAbstractService(
+    protected HasStatsAbstractService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService) : base(authorizationService)
     {
@@ -51,13 +54,13 @@ internal abstract class FinancialEngageableAbstractService<
     }
 
     /// <summary>
-    /// Retrieve a list of the <see cref="ListMonthYearResponseDto"/> instances, representing the
-    /// options that users can select as filtering condition in list retrieving operation.
+    /// Retrieve a list of the <see cref="ListMonthYearResponseDto"/> instances, representing
+    /// the options that users can select as filtering condition in list retrieving operation.
     /// </summary>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is
-    /// a <see cref="List{T}"/> of <see cref="ListMonthYearResponseDto"/> instances, representing
-    /// the options.
+    /// a <see cref="List{T}"/> of <see cref="ListMonthYearResponseDto"/> instances,
+    /// representing the options.
     /// </returns>
     public async Task<ListMonthYearOptionsResponseDto> GetListMonthYearOptionsAsync()
     {
@@ -124,7 +127,7 @@ internal abstract class FinancialEngageableAbstractService<
     /// <exception cref="AuthorizationException">
     /// Throws when the requesting user doesn't have permission to create.
     /// </exception>
-    public virtual TNewAuthorizationResponseDto GetCreatingAuthorization()
+    public virtual TCreatingAuthorizationResponseDto GetCreatingAuthorization()
     {
         if (!GetCreatingPermission())
         {
@@ -132,7 +135,7 @@ internal abstract class FinancialEngageableAbstractService<
         }
 
         return _authorizationService
-            .GetCreatingAuthorization<T, TUpdateHistory, TNewAuthorizationResponseDto>();
+            .GetCreatingAuthorization<T, TUpdateHistory, TCreatingAuthorizationResponseDto>();
     }
 
     /// <summary>

@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class SupplyListResponseDto : IFinancialEngageableListResponseDto<
+public class SupplyListResponseDto : IHasStatsResponseDto<
         SupplyBasicResponseDto,
         SupplyExistingAuthorizationResponseDto>
 {

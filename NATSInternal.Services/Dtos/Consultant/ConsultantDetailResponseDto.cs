@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class ConsultantDetailResponseDto : IFinancialEngageableDetailResponseDto<
+public class ConsultantDetailResponseDto : IHasStatsDetailResponseDto<
     ConsultantUpdateHistoryResponseDto,
     ConsultantExistingAuthorizationResponseDto>
 {

@@ -1,7 +1,7 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
 internal interface IProductExportableItemUpdateHistoryDataDto
-    : IProductEngageableItemUpdateHistoryDataDto
+    : IHasProductItemUpdateHistoryDataDto
 {
     long VatAmountPerUnit { get; set; }
 }

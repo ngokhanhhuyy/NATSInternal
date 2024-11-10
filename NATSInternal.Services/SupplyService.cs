@@ -2,7 +2,7 @@ namespace NATSInternal.Services;
 
 /// <inheritdoc cref="ISupplyService" />
 internal class SupplyService
-    : ProductEngageableAbstractService<
+    : HasProductAbstractService<
         Supply,
         SupplyItem,
         SupplyPhoto,

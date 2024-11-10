@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-public interface IDebtUpsertRequestDto : ICustomerEngageableUpsertRequestDto
+public interface IDebtUpsertRequestDto : IHasCustomerUpsertRequestDto
 {
     long Amount { get; }
 }

@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Interfaces.Dtos;
 
-internal interface IFinancialEngageableUpdateHistoryResponseDto : IUpdateHistoryResponseDto
+internal interface IHasStatsUpdateHistoryResponseDto : IUpdateHistoryResponseDto
 {
     DateTime OldStatsDateTime { get; }
     DateTime NewStatsDateTime { get; }

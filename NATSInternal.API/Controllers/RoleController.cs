@@ -13,8 +13,8 @@ public class RoleController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> RoleList()
+    public async Task<IActionResult> GetAll()
     {
-        return Ok(await _roleService.GetListAsync());
+        return Ok(await _roleService.GetAllAsync());
     }
 }

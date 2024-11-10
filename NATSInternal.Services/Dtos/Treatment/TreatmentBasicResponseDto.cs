@@ -1,10 +1,10 @@
 namespace NATSInternal.Services.Dtos;
 
-public class TreatmentBasicResponseDto : IProductExportableBasicResponseDto<TreatmentExistingAuthorizationResponseDto>
+public class TreatmentBasicResponseDto : IExportProductBasicResponseDto<TreatmentExistingAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public DateTime StatsDateTime { get; set; }
-    public long AmountAfterVat { get; set; }
+    public long Amount { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
     public TreatmentExistingAuthorizationResponseDto Authorization { get; set; }
@@ -26,7 +26,7 @@ public class TreatmentBasicResponseDto : IProductExportableBasicResponseDto<Trea
     {
         Id = treatment.Id;
         StatsDateTime = treatment.StatsDateTime;
-        AmountAfterVat = treatment.AmountAfterVat;
+        Amount = treatment.AmountAfterVat;
         IsLocked = treatment.IsLocked;
         Customer = new CustomerBasicResponseDto(treatment.Customer);
     }

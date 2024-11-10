@@ -1,8 +1,8 @@
 namespace NATSInternal.Services.Interfaces.Entities;
 
 internal interface IRevenueEntity<T, TUpdateHistory>
-    : IFinancialEngageableEntity<T, TUpdateHistory>
-    where T : class, IFinancialEngageableEntity<T, TUpdateHistory>, new()
+    : IHasStatsEntity<T, TUpdateHistory>
+    where T : class, IHasStatsEntity<T, TUpdateHistory>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
 {
     long AmountBeforeVat { get; }

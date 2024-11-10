@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Dtos;
 
-public class ExpenseListResponseDto : IFinancialEngageableListResponseDto<
+public class ExpenseListResponseDto : IHasStatsResponseDto<
         ExpenseBasicResponseDto,
         ExpenseExistingAuthorizationResponseDto>
 {

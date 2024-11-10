@@ -2,8 +2,8 @@ namespace NATSInternal.Services.Dtos;
 
 public class ConsultantListRequestDto
     :
-        IFinancialEngageableListRequestDto,
-        ICustomerEngageableListRequestDto
+        IHasStatsListRequestDto,
+        IHasCustomerListRequestDto
 {
     public bool? SortingByAscending { get; set; }
     public string SortingByField { get; set; }
