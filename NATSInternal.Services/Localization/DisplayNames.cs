@@ -107,6 +107,7 @@ public static class DisplayNames
     public const string File = "File";
     public const string Reason = "Lý do";
     public const string Debt = "Khoản nợ";
+    public const string DebtIncurrence = "Khoản ghi nợ";
     public const string DebtPayment = "Khoản thanh toán nợ";
     public const string DebtRemainingAmount = "Số nợ còn lại";
     public const string MonthlyStats = "Thống kê tháng";

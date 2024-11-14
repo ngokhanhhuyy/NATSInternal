@@ -171,9 +171,9 @@ public interface IDebtPaymentService
     /// operation.
     /// </summary>
     /// <returns>
-    /// An instance of the <see cref="DebtPaymentNewAuthorizationResponseDto"/> DTO
+    /// An instance of the <see cref="DebtPaymentCreatingAuthorizationResponseDto"/> DTO
     /// containing the authorization information for the operation when the requesting user has
     /// permission to perform the operation. Otherwise, <c>null</c>.
     /// </returns>
-    DebtPaymentNewAuthorizationResponseDto GetCreatingAuthorization();
+    DebtPaymentCreatingAuthorizationResponseDto GetCreatingAuthorization();
 }

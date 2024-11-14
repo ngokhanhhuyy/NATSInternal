@@ -16,9 +16,6 @@ public class ConsultantDetailResponseDto : IHasStatsDetailResponseDto<
     public ConsultantExistingAuthorizationResponseDto Authorization { get; set; }
     public List<ConsultantUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
-    [JsonIgnore]
-    public long AmountAfterVat => AmountBeforeVat + VatAmount;
-
     internal ConsultantDetailResponseDto(
             Consultant consultant,
             ConsultantExistingAuthorizationResponseDto authorization)

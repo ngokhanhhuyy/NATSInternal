@@ -11,14 +11,11 @@ internal class CountryService : ICountryService
     }
 
     /// <inheritdoc />
-    public async Task<CountryListResponseDto> GetListAsync()
+    public async Task<List<CountryResponseDto>> GetAllAsync()
     {
-        return new CountryListResponseDto
-        {
-            Items = await _context.Countries
-                .OrderBy(c => c.Id)
-                .Select(c => new CountryResponseDto(c))
-                .ToListAsync()
-        };
+        return await _context.Countries
+            .OrderBy(c => c.Id)
+            .Select(c => new CountryResponseDto(c))
+            .ToListAsync();
     }
 }

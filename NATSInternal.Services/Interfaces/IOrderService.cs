@@ -144,9 +144,9 @@ public interface IOrderService
     /// authorization information for creating operation.
     /// </summary>
     /// <returns>
-    /// An instance of the <see cref="OrderNewAuthorizationResponseDto"/> DTO containing the
+    /// An instance of the <see cref="OrderCreatingAuthorizationResponseDto"/> DTO containing the
     /// authorization information for the operation when the requesting user has permission to
     /// perform the operation. Otherwise, <c>null</c>.
     /// </returns>
-    OrderNewAuthorizationResponseDto GetCreatingAuthorization();
+    OrderCreatingAuthorizationResponseDto GetCreatingAuthorization();
 }

@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class SupplyNewAuthorizationResponseDto
+public class ConsultantCreatingAuthorizationResponseDto
         : IHasStatsCreatingAuthorizationResponseDto
 {
     public bool CanSetStatsDateTime { get; set; }

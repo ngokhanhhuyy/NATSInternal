@@ -144,9 +144,9 @@ public interface IExpenseService
     /// and retrieve the authorization information for creating operation.
     /// </summary>
     /// <returns>
-    /// An instance of the <see cref="ExpenseNewAuthorizationResponseDto"/> DTO containing
+    /// An instance of the <see cref="ExpenseCreatingAuthorizationResponseDto"/> DTO containing
     /// the authorization information for the operation when the requesting user has permission
     /// to perform the operation. Otherwise, <c>null</c>.
     /// </returns>
-    ExpenseNewAuthorizationResponseDto GetCreatingAuthorization();
+    ExpenseCreatingAuthorizationResponseDto GetCreatingAuthorization();
 }

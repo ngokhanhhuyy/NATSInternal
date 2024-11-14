@@ -8,7 +8,7 @@ internal class ConsultantService
             ConsultantUpdateHistory,
             ConsultantListRequestDto,
             ConsultantUpdateHistoryDataDto,
-            ConsultantNewAuthorizationResponseDto,
+            ConsultantCreatingAuthorizationResponseDto,
             ConsultantExistingAuthorizationResponseDto>,
         IConsultantService
 {

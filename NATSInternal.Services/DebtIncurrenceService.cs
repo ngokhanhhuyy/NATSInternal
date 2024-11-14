@@ -7,7 +7,7 @@ internal class DebtIncurrenceService
             DebtIncurrenceListRequestDto, DebtIncurrenceUpsertRequestDto,
             DebtIncurrenceListResponseDto, DebtIncurrenceBasicResponseDto,
             DebtIncurrenceDetailResponseDto, DebtIncurrenceUpdateHistoryResponseDto,
-            DebtIncurrenceUpdateHistoryDataDto, DebtIncurrenceNewAuthorizationResponseDto,
+            DebtIncurrenceUpdateHistoryDataDto, DebtIncurrenceCreatingAuthorizationResponseDto,
             DebtIncurrenceExistingAuthorizationResponseDto>,
         IDebtIncurrenceService
 {

@@ -72,42 +72,40 @@ internal abstract class HasStatsAbstractService<
                 Month = entity.StatsDateTime.Month
             }).FirstOrDefaultAsync();
 
+        if (EarliestRecordedMonthYear == null)
+        {
+            return null;
+        }
+
         DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
         int currentYear = currentDateTime.Year;
         int currentMonth = currentDateTime.Month;
         List<ListMonthYearResponseDto> monthYearOptions = new List<ListMonthYearResponseDto>();
-        if (EarliestRecordedMonthYear != null)
+        for (int initializingYear = EarliestRecordedMonthYear.Year;
+            initializingYear <= currentYear;
+            initializingYear++)
         {
-            for (int initializingYear = EarliestRecordedMonthYear.Year;
-                initializingYear <= currentYear;
-                initializingYear++)
+            int initializingMonth = 1;
+            if (initializingYear == EarliestRecordedMonthYear.Year)
             {
-                int initializingMonth = 1;
-                if (initializingYear == EarliestRecordedMonthYear.Year)
-                {
-                    initializingMonth = EarliestRecordedMonthYear.Month;
-                }
+                initializingMonth = EarliestRecordedMonthYear.Month;
+            }
 
-                while (initializingMonth <= 12)
+            while (initializingMonth <= 12)
+            {
+                ListMonthYearResponseDto option;
+                option = new ListMonthYearResponseDto(
+                    initializingYear,
+                    initializingMonth);
+                monthYearOptions.Add(option);
+                initializingMonth++;
+                if (initializingYear == currentYear && initializingMonth > currentMonth)
                 {
-                    ListMonthYearResponseDto option;
-                    option = new ListMonthYearResponseDto(
-                        initializingYear,
-                        initializingMonth);
-                    monthYearOptions.Add(option);
-                    initializingMonth++;
-                    if (initializingYear == currentYear && initializingMonth > currentMonth)
-                    {
-                        break;
-                    }
+                    break;
                 }
             }
-            monthYearOptions.Reverse();
         }
-        else
-        {
-            monthYearOptions.Add(new ListMonthYearResponseDto(currentYear, currentMonth));
-        }
+        monthYearOptions.Reverse();
 
         return new ListMonthYearOptionsResponseDto
         {

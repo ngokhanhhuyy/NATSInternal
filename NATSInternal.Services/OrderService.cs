@@ -18,7 +18,7 @@ internal class OrderService
         OrderUpdateHistoryResponseDto,
         OrderItemUpdateHistoryDataDto,
         OrderUpdateHistoryDataDto,
-        OrderNewAuthorizationResponseDto,
+        OrderCreatingAuthorizationResponseDto,
         OrderExistingAuthorizationResponseDto>,
     IOrderService
 {

@@ -1,6 +1,7 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
 public class UserBasicResponseDto
+        : IUpsertableBasicResponseDto<UserBasicAuthorizationResponseDto>
 {
     public int Id { get; set; }
     public string UserName { get; set; }
@@ -12,7 +13,7 @@ public class UserBasicResponseDto
     public DateOnly? Birthday { get; set; }
     public DateOnly? JoiningDate { get; set; }
     public string AvatarUrl { get; set; }
-    public RoleBasicResponseDto Role { get; set; }
+    public RoleMinimalResponseDto Role { get; set; }
     public UserBasicAuthorizationResponseDto Authorization { get; set; }
 
     [JsonIgnore]
@@ -43,6 +44,6 @@ public class UserBasicResponseDto
         Birthday = user.Birthday;
         JoiningDate = user.JoiningDate;
         AvatarUrl = user.AvatarUrl;
-        Role = new RoleBasicResponseDto(user.Role);
+        Role = new RoleMinimalResponseDto(user.Role);
     }
 }

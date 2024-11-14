@@ -8,7 +8,7 @@ internal class ExpenseService
             ExpenseUpdateHistory,
             ExpenseListRequestDto,
             ExpenseUpdateHistoryDataDto,
-            ExpenseNewAuthorizationResponseDto,
+            ExpenseCreatingAuthorizationResponseDto,
             ExpenseExistingAuthorizationResponseDto>,
         IExpenseService
 {

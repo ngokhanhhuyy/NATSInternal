@@ -154,9 +154,9 @@ public interface ITreatmentService
     /// authorization information for creating operation.
     /// </summary>
     /// <returns>
-    /// An instance of the <see cref="TreatmentNewAuthorizationResponseDto"/> DTO containing
+    /// An instance of the <see cref="TreatmentCreatingAuthorizationResponseDto"/> DTO containing
     /// the authorization information for the operation when the requesting user has permission
     /// to perform the operation. Otherwise, <c>null</c>.
     /// </returns>
-    TreatmentNewAuthorizationResponseDto GetCreatingAuthorization();
+    TreatmentCreatingAuthorizationResponseDto GetCreatingAuthorization();
 }

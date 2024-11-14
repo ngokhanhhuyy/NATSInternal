@@ -2,7 +2,7 @@ namespace NATSInternal.Services.Entities;
 
 internal class Consultant
     :
-        FinancialEngageableAbstractEntity,
+        HasStatsAbstractEntity,
         IRevenueEntity<Consultant, ConsultantUpdateHistory>
 {
     [Key]

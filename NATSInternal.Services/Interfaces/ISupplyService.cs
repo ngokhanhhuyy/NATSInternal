@@ -127,9 +127,9 @@ public interface ISupplyService
     /// authorization information for creating operation.
     /// </summary>
     /// <returns>
-    /// An instance of the <see cref="SupplyNewAuthorizationResponseDto"/> DTO containing the
+    /// An instance of the <see cref="SupplyCreatingAuthorizationResponseDto"/> DTO containing the
     /// authorization information for the operation when the requesting user has permission
     /// to perform the operation. Otherwise, <c>null</c>.
     /// </returns>
-    SupplyNewAuthorizationResponseDto GetCreatingAuthorization();
+    SupplyCreatingAuthorizationResponseDto GetCreatingAuthorization();
 }

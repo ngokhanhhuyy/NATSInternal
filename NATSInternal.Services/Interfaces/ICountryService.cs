@@ -4,14 +4,13 @@
 /// A service to handle the country-related operations.
 /// </summary>
 public interface ICountryService
-{    
+{
     /// <summary>
-    /// Retrieves a list of all countries with _names, which are available in the applccation.
+    /// Retrieves all available countries in the application.
     /// </summary>
     /// <returns>
-    /// A <typeparamref name="Task{TResult}"/> representing the asynchronous operation, where
-    /// <c>TResult</c> is an instance of the <see cref="CountryListResponseDto"/> class,
-    /// containing the results.
+    /// A <typeparamref name="Task{TResult}"/> representing the asynchronous operation, which
+    /// result is a <see cref="List{T}"/> of DTOs containing the countries' information.
     /// </returns>
-    Task<CountryListResponseDto> GetListAsync();
+    Task<List<CountryResponseDto>> GetAllAsync();
 }

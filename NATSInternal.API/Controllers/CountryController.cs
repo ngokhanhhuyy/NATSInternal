@@ -16,6 +16,6 @@ public class CountryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> CountryList()
     {
-        return Ok(await _service.GetListAsync());
+        return Ok(await _service.GetAllAsync());
     }
 }

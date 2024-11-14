@@ -2,7 +2,7 @@
 
 internal class DebtIncurrence
     :
-        FinancialEngageableAbstractEntity,
+        HasStatsAbstractEntity,
         IDebtEntity<DebtIncurrence, DebtIncurrenceUpdateHistory>
 {
     [Key]

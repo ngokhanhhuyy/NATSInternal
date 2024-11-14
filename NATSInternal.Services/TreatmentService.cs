@@ -18,7 +18,7 @@ internal class TreatmentService
         TreatmentUpdateHistoryResponseDto,
         TreatmentItemUpdateHistoryDataDto,
         TreatmentUpdateHistoryDataDto,
-        TreatmentNewAuthorizationResponseDto,
+        TreatmentCreatingAuthorizationResponseDto,
         TreatmentExistingAuthorizationResponseDto>,
     ITreatmentService
 {

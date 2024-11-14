@@ -2,7 +2,7 @@ namespace NATSInternal.Services.Entities;
 
 internal class Supply
     :
-        FinancialEngageableAbstractEntity,
+        HasStatsAbstractEntity,
         IHasProductEntity<Supply, SupplyItem, SupplyPhoto, SupplyUpdateHistory>
 {
     [Key]

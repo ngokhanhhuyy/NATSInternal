@@ -2,7 +2,7 @@ namespace NATSInternal.Services.Entities;
 
 internal class Product
     :
-        FinancialEngageableAbstractEntity,
+        HasStatsAbstractEntity,
         IHasMultiplePhotosEntity<Product, ProductPhoto>
 {
     private string _name;

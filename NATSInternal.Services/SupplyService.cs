@@ -10,7 +10,7 @@ internal class SupplyService
         SupplyListRequestDto,
         SupplyItemRequestDto,
         SupplyUpdateHistoryDataDto,
-        SupplyNewAuthorizationResponseDto,
+        SupplyCreatingAuthorizationResponseDto,
         SupplyExistingAuthorizationResponseDto>,
     ISupplyService
 {

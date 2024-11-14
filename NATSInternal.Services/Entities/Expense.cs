@@ -2,7 +2,7 @@ namespace NATSInternal.Services.Entities;
 
 internal class Expense
     :
-        FinancialEngageableAbstractEntity,
+        HasStatsAbstractEntity,
         ICostEntity<Expense, ExpenseUpdateHistory>,
         IHasMultiplePhotosEntity<Expense, ExpensePhoto>
 {

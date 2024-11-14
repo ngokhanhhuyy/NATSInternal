@@ -123,7 +123,7 @@ internal abstract class DebtAbstractService<
             DefaultFieldName = fieldOptions
                 .Single(i => i.Name == nameof(OrderByFieldOption.StatsDateTime))
                 .Name,
-            DefaultAscending = true
+            DefaultAscending = false
         };
     }
 

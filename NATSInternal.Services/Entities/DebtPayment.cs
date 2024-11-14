@@ -2,7 +2,7 @@
 
 internal class DebtPayment
     :
-        FinancialEngageableAbstractEntity,
+        HasStatsAbstractEntity,
         IDebtEntity<DebtPayment, DebtPaymentUpdateHistory>
 {
     [Key]

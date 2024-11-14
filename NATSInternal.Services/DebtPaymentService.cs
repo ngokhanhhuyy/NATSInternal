@@ -7,7 +7,7 @@ internal class DebtPaymentService
             DebtPaymentListRequestDto, DebtPaymentUpsertRequestDto,
             DebtPaymentListResponseDto, DebtPaymentBasicResponseDto,
             DebtPaymentDetailResponseDto, DebtPaymentUpdateHistoryResponseDto,
-            DebtPaymentUpdateHistoryDataDto, DebtPaymentNewAuthorizationResponseDto,
+            DebtPaymentUpdateHistoryDataDto, DebtPaymentCreatingAuthorizationResponseDto,
             DebtPaymentExistingAuthorizationResponseDto>,
         IDebtPaymentService
 {

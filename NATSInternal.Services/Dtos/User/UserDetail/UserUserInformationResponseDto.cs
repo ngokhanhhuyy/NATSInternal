@@ -6,7 +6,7 @@ public class UserUserInformationResponseDto
     public DateTime CreatedDateTime { get; set; }
     public DateTime? UpdatedDateTime { get; set; }
     public string Note { get; set; }
-    public RoleDetailResponseDto Role { get; set; }
+    public RoleMinimalResponseDto Role { get; set; }
 
     internal UserUserInformationResponseDto(User user)
     {
@@ -14,6 +14,6 @@ public class UserUserInformationResponseDto
         CreatedDateTime = user.CreatedDateTime;
         UpdatedDateTime = user.UpdatedDateTime;
         Note = user.Note;
-        Role = new RoleDetailResponseDto(user.Role);
+        Role = new RoleMinimalResponseDto(user.Role);
     }
 }

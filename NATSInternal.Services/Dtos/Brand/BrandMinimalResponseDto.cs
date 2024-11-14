@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Dtos;
 
-public class BrandMinimalResponseDto
+public class BrandMinimalResponseDto : IMinimalResponseDto
 {
     public int Id { get; internal set; }
     public string Name { get; internal set; }

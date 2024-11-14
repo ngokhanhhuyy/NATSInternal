@@ -23,7 +23,7 @@ Cookie: {{accessCookie}}
 ###
 # @name SupplyList
 // @no-log
-GET {{host}}/supply?month=7&year=2024&productId=1
+GET {{host}}/supply
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
@@ -92,5 +92,12 @@ Cookie: {{accessCookie}}
 # @name ResourceAccess-Status
 // @no-log
 GET {{host}}/resourceAccess/status
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name Utility-InitialData
+// @no-log
+GET {{host}}/utility/initialData
 Content-Type: application/json
 Cookie: {{accessCookie}}
