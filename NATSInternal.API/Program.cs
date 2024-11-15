@@ -184,7 +184,6 @@ builder.Services.AddCors(options =>
     options.AddPolicy(
         name: "LocalhostDevelopment",
         policyBuilder => policyBuilder
-            .AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
@@ -195,6 +194,18 @@ dataInitializer = new DataInitializer();
 dataInitializer.InitializeData(app);
 
 app.UseCors("LocalhostDevelopment");
+app.Use(async (context, next) =>
+{
+    if (context.Request.Headers.ContainsKey("Origin"))
+    {
+        string origin = context.Request.Headers["Origin"].ToString();
+        context.Response.Headers["Access-Control-Allow-Origin"] = origin;
+        context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
+    }
+
+    await next();
+});
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
