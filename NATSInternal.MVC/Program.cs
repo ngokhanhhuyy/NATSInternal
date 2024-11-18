@@ -27,31 +27,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/SignIn";
     options.LogoutPath = "/SignOut";
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-
-    options.Events.OnValidatePrincipal = async (context) =>
-    {
-        IAuthorizationService authorizationService = context.HttpContext
-            .RequestServices
-            .GetRequiredService<IAuthorizationService>();
-        string userIdAsString = context.Principal?
-            .FindFirst(ClaimTypes.NameIdentifier)?
-            .Value;
-
-        // Validate user id in the token.
-        try
-        {
-            if (userIdAsString == null)
-            {
-                throw new Exception();
-            }
-            int userId = int.Parse(userIdAsString);
-            await authorizationService.SetUserId(userId);
-        }
-        catch (Exception)
-        {
-            context.RejectPrincipal();
-        }
-    };
 });
 
 // Authentication by cookie strategies.
@@ -191,7 +166,6 @@ builder.Services.AddCors(options =>
     options.AddPolicy(
         name: "LocalhostDevelopment",
         policyBuilder => policyBuilder
-            .AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod());
 });
@@ -202,6 +176,18 @@ dataInitializer = new DataInitializer();
 dataInitializer.InitializeData(app);
 
 app.UseCors("LocalhostDevelopment");
+app.Use(async (context, next) =>
+{
+    if (context.Request.Headers.ContainsKey("Origin"))
+    {
+        string origin = context.Request.Headers["Origin"].ToString();
+        context.Response.Headers["Access-Control-Allow-Origin"] = origin;
+        context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
+    }
+
+    await next();
+}); 
+
 if (app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");

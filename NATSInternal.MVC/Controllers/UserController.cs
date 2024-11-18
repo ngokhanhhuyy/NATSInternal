@@ -33,7 +33,7 @@ public class UserController : Controller
         UserListResponseDto joinedRecentlyUsersResponseDto;
         joinedRecentlyUsersResponseDto = await _userService.GetListAsync(new UserListRequestDto
         {
-            OrderByField = nameof(UserListRequestDto.FieldToBeOrdered.Birthday),
+            SortingByField = nameof(OrderByFieldOption.Birthday),
             JoinedRencentlyOnly = true,
         });
 
@@ -41,17 +41,18 @@ public class UserController : Controller
         incomingBirthdayUsersResponseDto = await _userService
             .GetListAsync(new UserListRequestDto
             {
-                OrderByField = nameof(UserListRequestDto.FieldToBeOrdered.Birthday),
+                SortingByField = nameof(OrderByFieldOption.Birthday),
                 JoinedRencentlyOnly = true,
             });
 
-        RoleListResponseDto roleOptionsResponseDto = await _roleService.GetListAsync();
+        List<RoleMinimalResponseDto> roleOptionsResponseDtos;
+        roleOptionsResponseDtos = await _roleService.GetAllAsync();
 
         model.MapFromResponseDto(
             userListResponseDto,
             joinedRecentlyUsersResponseDto,
             incomingBirthdayUsersResponseDto,
-            roleOptionsResponseDto);
+            roleOptionsResponseDtos);
 
         return View("UserList/UserListView", model);
     }

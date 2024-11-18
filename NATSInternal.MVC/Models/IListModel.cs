@@ -2,8 +2,8 @@ namespace NATSInternal.Models;
 
 public interface IListModel<TModel>
 {
-    string OrderByField { get; set; }
-    bool OrderByAscending { get; set; }
+    string SortingByField { get; set; }
+    bool SortingByAscending { get; set; }
     int Page { get; set; }
     int ResultsPerPage { get; set; }
     int PageCount { get; set; }

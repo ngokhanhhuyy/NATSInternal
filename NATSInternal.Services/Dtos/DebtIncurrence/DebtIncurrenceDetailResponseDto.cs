@@ -23,6 +23,7 @@ public class DebtIncurrenceDetailResponseDto
         Id = debtIncurrence.Id;
         Amount = debtIncurrence.Amount;
         Note = debtIncurrence.Note;
+        StatsDateTime = debtIncurrence.StatsDateTime;
         CreatedDateTime = debtIncurrence.CreatedDateTime;
         IsLocked = debtIncurrence.IsLocked;
         Customer = new CustomerBasicResponseDto(debtIncurrence.Customer);

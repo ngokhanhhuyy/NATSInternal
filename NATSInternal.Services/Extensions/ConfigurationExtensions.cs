@@ -21,18 +21,18 @@ public static class ConfigurationExtensions
     /// </returns>
     public static IServiceCollection ConfigureServices(
             this IServiceCollection services,
-            string _, // connectionString
+            string connectionString, // connectionString
             bool isForBlazor = false)
     {
         services.AddDbContext<DatabaseContext>(options => options
-            .UseSqlite(
-                "DataSource=database.db",
-                x => x.MigrationsAssembly("NATSInternal.Services")));
-            // .UseMySql(
-            //     connectionString,
-            //     ServerVersion.AutoDetect(connectionString),
-            //     x => x.MigrationsAssembly("NATSInternal.Services"))
-            // .AddInterceptors(new VietnamTimeInterceptor()));
+            // .UseSqlite(
+            //     "DataSource=database.db",
+            //     x => x.MigrationsAssembly("NATSInternal.Services")));
+            .UseMySql(
+                connectionString,
+                ServerVersion.AutoDetect(connectionString),
+                x => x.MigrationsAssembly("NATSInternal.Services"))
+            .AddInterceptors(new VietnamTimeInterceptor()));
 
         services.AddIdentity<User, Role>()
             .AddEntityFrameworkStores<DatabaseContext>()

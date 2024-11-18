@@ -16,7 +16,7 @@ public class UserUserInformationModel
             CreatedDateTime = responseDto.CreatedDateTime,
             UpdatedDateTime = responseDto.UpdatedDateTime,
             Note = responseDto.Note,
-            Role = RoleDetailModel.FromResponseDto(responseDto.Role)
+            Role = RoleDetailModel(responseDto.Role)
         };
     }
 }

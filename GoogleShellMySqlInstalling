@@ -1,0 +1,5 @@
+sudo apt-get install mysql-server
+sudo mysql
+
+ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY 'Huyy47b1';
+exit;

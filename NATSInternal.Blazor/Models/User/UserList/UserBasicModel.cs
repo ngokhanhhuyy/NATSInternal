@@ -12,7 +12,7 @@ public class UserBasicModel
     public DateOnly? Birthday { get; set; }
     public DateOnly? JoiningDate { get; set; }
     public string AvatarUrl { get; set; }
-    public RoleBasicModel Role { get; set; }
+    public RoleMinimalModel Role { get; set; }
 
     public UserBasicModel(UserBasicResponseDto responseDto)
     {
@@ -29,6 +29,6 @@ public class UserBasicModel
         AvatarUrl = responseDto.AvatarUrl ??
             $"https://ui-avatars.com/api/?name={FullName.Replace(" ", "+")}" +
             "&background=random&size=256";
-        Role = new RoleBasicModel(responseDto.Role);
+        Role = new RoleMinimalModel(responseDto.Role);
     }
 }

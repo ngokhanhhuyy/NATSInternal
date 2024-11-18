@@ -2,12 +2,11 @@ namespace NATSInternal.Models;
 
 public class UserListModel : IListModel<UserBasicModel>
 {
-    public bool OrderByAscending { get; set; } = true;
-    public string OrderByField { get; set; } =
-        nameof(UserListRequestDto.FieldToBeOrdered.LastName);
+    public bool SortingByAscending { get; set; } = true;
+    public string SortingByField { get; set; } = nameof(OrderByFieldOption.LastName);
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
-    public RoleBasicModel Role { get; set; }
+    public RoleMinimalModel Role { get; set; }
     public bool JoinedRencentlyOnly { get; set; } = false;
     public bool UpcomingBirthdayOnly { get; set; } = false;
     public string Content { get; set; }
@@ -15,39 +14,37 @@ public class UserListModel : IListModel<UserBasicModel>
     public List<UserBasicModel> Items { get; set; }
     public List<UserBasicModel> JoinedRecentlyUsers { get; set; }
     public List<UserBasicModel> UpcomingBirthdayUsers { get; set; }
-    public List<RoleBasicModel> RoleOptions { get; set; }
+    public List<RoleMinimalModel> RoleOptions { get; set; }
     public PaginationRangeModel PaginationRanges => new PaginationRangeModel(Page, PageCount);
-    public UserListAuthorizationModel Authorization { get; set; }
+    public bool CanCreate { get; set; }
 
     public void MapFromResponseDto(
             UserListResponseDto userListResponseDto,
             UserListResponseDto joinedRecentlyUsersResponseDto,
             UserListResponseDto incomingBirthdayUsersResponseDto,
-            RoleListResponseDto roleOptionsResponseDto)
+            List<RoleMinimalResponseDto> roleOptionsResponseDtos)
     {
         PageCount = userListResponseDto.PageCount;
-        Items = userListResponseDto.Results?
+        Items = userListResponseDto.Items?
             .Select(u => new UserBasicModel(u))
             .ToList();
-        JoinedRecentlyUsers = joinedRecentlyUsersResponseDto.Results?
+        JoinedRecentlyUsers = joinedRecentlyUsersResponseDto.Items?
             .Select(u => new UserBasicModel(u))
             .ToList();
-        UpcomingBirthdayUsers = incomingBirthdayUsersResponseDto.Results?
+        UpcomingBirthdayUsers = incomingBirthdayUsersResponseDto.Items?
             .Select(u => new UserBasicModel(u))
             .ToList();
-        RoleOptions = roleOptionsResponseDto.Items?
-            .Select(RoleBasicModel.FromResponseDto)
+        RoleOptions = roleOptionsResponseDtos
+            .Select(dto => new RoleMinimalModel(dto))
             .ToList();
-        Authorization = new UserListAuthorizationModel(userListResponseDto.Authorization);
     }
 
     public UserListRequestDto ToRequestDto()
     {
         UserListRequestDto requestDto = new UserListRequestDto
         {
-            OrderByField = OrderByField ??
-                nameof(UserListRequestDto.FieldToBeOrdered.LastName),
-            OrderByAscending = OrderByAscending,
+            SortingByField = SortingByField ?? nameof(OrderByFieldOption.LastName),
+            SortingByAscending = SortingByAscending,
             RoleId = Role?.Id,
             JoinedRencentlyOnly = JoinedRencentlyOnly,
             UpcomingBirthdayOnly = UpcomingBirthdayOnly,
