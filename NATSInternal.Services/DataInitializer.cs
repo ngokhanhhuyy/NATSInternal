@@ -15,6 +15,7 @@ public sealed class DataInitializer
         Randomizer.Seed = new Random(8675309);
         using IServiceScope serviceScope = builder.ApplicationServices.CreateScope();
         _context = serviceScope.ServiceProvider.GetService<DatabaseContext>();
+        _context.Database.EnsureCreated();
         _userManager = serviceScope.ServiceProvider.GetService<UserManager<User>>();
         _roleManager = serviceScope.ServiceProvider.GetService<RoleManager<Role>>();
         using var transaction = _context.Database.BeginTransaction();
@@ -913,10 +914,7 @@ public sealed class DataInitializer
             }
 
             // Link the daily stats to the monthly stats.
-            if (monthlyStats.DailyStats == null)
-            {
-                monthlyStats.DailyStats = new List<DailyStats>();
-            }
+            monthlyStats.DailyStats ??= new List<DailyStats>();
             monthlyStats.DailyStats.Add(dailyStats);
 
             // Close the monthly stats if the daily stats is closed.
@@ -1008,7 +1006,8 @@ public sealed class DataInitializer
             bool IsStatsDateTimeValid(DateTime dateTime)
             {
                 bool isInBusinessHours = dateTime.Hour >= 8 && dateTime.Hour <= 17;
-                bool isInBusinessDaysOfWeek = dateTime.DayOfWeek != DayOfWeek.Saturday && dateTime.DayOfWeek != DayOfWeek.Sunday;
+                bool isInBusinessDaysOfWeek = dateTime.DayOfWeek != DayOfWeek.Saturday &&
+                    dateTime.DayOfWeek != DayOfWeek.Sunday;
                 return isInBusinessHours && isInBusinessDaysOfWeek;
             }
 
@@ -1100,7 +1099,7 @@ public sealed class DataInitializer
         }
 
         // Initialize supply entitiy.
-        if (items.Any())
+        if (items.Count != 0)
         {
             Supply supply = new()
             {
@@ -1322,7 +1321,7 @@ public sealed class DataInitializer
                     .Select(u => u.Id)
                     .ToList();
             int therapistId = _context.Users
-                .OrderBy(_ => Guid.NewGuid())
+                .OrderBy(_ => EF.Functions.Random())
                 .Select(u => u.Id)
                 .First();
 
@@ -1655,7 +1654,7 @@ public sealed class DataInitializer
             string capitalizedNameSegment = segment[0].ToString();
             if (segment.Length > 1)
             {
-                capitalizedNameSegment += segment.Substring(1, segment.Length - 1);
+                capitalizedNameSegment += segment[1..];
             }
             capitalizedSegments.Add(capitalizedNameSegment);
         }
