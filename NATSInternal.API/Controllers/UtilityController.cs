@@ -60,6 +60,7 @@ public class UtilityController : ControllerBase
     }
 
     [HttpGet("InitialData")]
+    [Authorize]
     public async Task<IActionResult> GetInitialData()
     {
         return Ok(new InitialDataResponseDto

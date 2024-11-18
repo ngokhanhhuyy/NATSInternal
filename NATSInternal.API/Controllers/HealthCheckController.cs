@@ -4,12 +4,7 @@
 [ApiController]
 public class HealthCheckController : ControllerBase
 {
-    private readonly IStatsTaskService _statsTaskService;
-
-    public HealthCheckController(IStatsTaskService statsTaskService)
-    {
-        _statsTaskService = statsTaskService;
-    }
+    private static readonly DateTime _startedDateTime = DateTime.UtcNow.ToApplicationTime();
 
     [HttpGet("Ping")]
     public IActionResult Ping()
@@ -20,24 +15,12 @@ public class HealthCheckController : ControllerBase
     [HttpGet("StartedDateTime")]
     public IActionResult StartedDateTime()
     {
-        return Ok(_statsTaskService.StartedDateTime);
-    }
-
-    [HttpGet("ExpectedRestartingDateTime")]
-    public IActionResult ExpectedRestartingDateTime()
-    {
-        return Ok(_statsTaskService.ExpectedRestartingDateTime);
+        return Ok(_startedDateTime);
     }
 
     [HttpGet("RunningTime")]
     public IActionResult RunningTime()
     {
-        return Ok(_statsTaskService.RunningTime);
-    }
-
-    [HttpGet("RemainingTime")]
-    public IActionResult RemainingTime()
-    {
-        return Ok(_statsTaskService.RemainingTime);
+        return Ok(DateTime.UtcNow.ToApplicationTime() - _startedDateTime);
     }
 }

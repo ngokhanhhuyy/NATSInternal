@@ -4,7 +4,7 @@
 <MainBlock title="Danh sách nhân viên" body-padding="2">
     <!-- Header -->
     <Header>
-        @if (Model.Authorization.CanCreate)
+        @if (Model.CanCreate)
         {
             <NavLink to="/User/Create" class="btn btn-primary btn-sm">
                 <i class="bi bi-plus-lg"></i>
@@ -25,7 +25,7 @@
 
                     <!-- Advance filters / collapse button -->        
                     <button class="btn btn-outline-primary" data-bs-toggle="collapse"
-                            href="#advanced-filters-container" aria-expanded="false"
+                            href="#advanced-filters-container" aria-expanded="fPrestalse"
                             role="button" aria-controls="advanced-filters-container">
                         <i class="bi bi-sliders"></i>
                     </button>
@@ -48,26 +48,26 @@
             <!-- Order by field -->
             <div class="col col-sm-6 col-12">
                 <InputLabel Name="Trường sắp xếp" />
-                <SelectInput @bind-Value="Model.OrderByField">
-                    <option value="@OrderByFieldOptions.LastName">
+                <SelectInput @bind-Value="Model.SortingByField">
+                    <option value="@OrderByFieldOption.Name">
                         @DisplayNames.LastName
                     </option>
-                    <option value="@OrderByFieldOptions.FirstName">
+                    <option value="@OrderByFieldOption.FirstName">
                         @DisplayNames.FirstName
                     </option>
-                    <option value="@OrderByFieldOptions.UserName">
+                    <option value="@OrderByFieldOption.UserName">
                         @DisplayNames.UserName
                     </option>
-                    <option value="@OrderByFieldOptions.Birthday">
+                    <option value="@OrderByFieldOption.Birthday">
                         @DisplayNames.Birthday
                     </option>
-                    <option value="@OrderByFieldOptions.Age">
+                    <option value="@OrderByFieldOption.Age">
                         @DisplayNames.Age
                     </option>
-                    <option value="@OrderByFieldOptions.CreatedDateTime">
+                    <option value="@OrderByFieldOption.CreatedDateTime">
                         @DisplayNames.CreatedDateTime
                     </option>
-                    <option value="@OrderByFieldOptions.Role">
+                    <option value="@OrderByFieldOption.Role">
                         @DisplayNames.Role
                     </option>
                 </SelectInput>
@@ -76,7 +76,7 @@
             <!-- Order by direction -->
             <div class="col col-sm-6 col-12">
                 <InputLabel name="Thứ tự sắp xếp" />
-                <SelectInput @bind-Value="Model.OrderByAscending">
+                <SelectInput @bind-Value="Model.SortingByAscending">
                     <option value="@true">Từ nhỏ đến lớn</option>
                     <option value="@false">Từ lớn đến nhỏ</option>
                 </SelectInput>
@@ -87,7 +87,7 @@
                 <InputLabel name="Vị trí" />
                 <div class="d-flex flex-row flex-wrap">
                     <!-- Specific role button -->
-                    @foreach (RoleBasicModel role in RoleOptions)
+                    @foreach (RoleMinimalModel role in RoleOptions)
                     {
                         <div class="btn btn-sm me-2 mb-2 @RoleButtonClassName(role.Name)"
                                 @onclick="@(e => OnRoleButtonClicked(role))">
@@ -119,7 +119,7 @@
     [Parameter]
     public EventCallback OnSearchButtonClicked { get; set; }
 
-    private List<RoleBasicModel> RoleOptions { get; set; }
+    private List<RoleMinimalModel> RoleOptions { get; set; }
 
     private bool IsSearchContentValid => Model.Content.Length == 0 ||
         Model.Content.Length >= 3;
@@ -130,8 +130,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        RoleListResponseDto responseDto = await RoleService.GetListAsync();
-        RoleOptions = responseDto.Items.Select(role => new RoleBasicModel(role)).ToList();
+        List<RoleMinimalResponseDto> responseDtos = await RoleService.GetAllAsync(); 
+        RoleOptions = responseDtos.Select(dto => new RoleMinimalModel(dto)).ToList();
     }
 
     private string RoleButtonClassName(string roleName) {
@@ -144,7 +144,7 @@
         Model.Page = 1;
     }
 
-    private void OnRoleButtonClicked(RoleBasicModel role)
+    private void OnRoleButtonClicked(RoleMinimalModel role)
     {
         Model.Role = role;
     }

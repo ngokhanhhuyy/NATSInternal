@@ -15,7 +15,7 @@ builder.Services.ConfigureServices(connectionString);
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.ExpireTimeSpan = TimeSpan.FromDays(30);
-    options.SlidingExpiration = true;
+    options.SlidingExpiration = false;
     options.Cookie.Name = "NATSInternalAuthenticationCookie";
     options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
@@ -204,7 +204,7 @@ app.Use(async (context, next) =>
     }
 
     await next();
-});
+}); 
 
 if (app.Environment.IsDevelopment())
 {
@@ -223,5 +223,4 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHub<ApplicationHub>("/Api/Hub");
 app.UseStaticFiles();
-// app.MapFallbackToFile("/index.html");
 app.Run();

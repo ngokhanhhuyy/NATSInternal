@@ -2,7 +2,7 @@
 
 # @name GetAccessCookie
 // @no-log
-POST {{host}}/authentication/getAccessCookie
+POST {{host}}/authentication/getAccessCookie HTTP/2.0
 Content-Type: application/json
 
 {

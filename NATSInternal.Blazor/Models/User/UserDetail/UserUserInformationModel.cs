@@ -6,7 +6,7 @@ public class UserUserInformationModel
     public DateTime CreatedDateTime { get; set; }
     public DateTime? UpdatedDateTime { get; set; }
     public string Note { get; set; }
-    public RoleDetailModel Role { get; set; }
+    public RoleMinimalModel Role { get; set; }
 
     public UserUserInformationModel(UserUserInformationResponseDto responseDto)
     {
@@ -14,6 +14,6 @@ public class UserUserInformationModel
         CreatedDateTime = responseDto.CreatedDateTime;
         UpdatedDateTime = responseDto.UpdatedDateTime;
         Note = responseDto.Note;
-        Role = new RoleDetailModel(responseDto.Role);
+        Role = new RoleMinimalModel(responseDto.Role);
     }
 }
