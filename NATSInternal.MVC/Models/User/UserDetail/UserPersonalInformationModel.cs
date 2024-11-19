@@ -12,20 +12,16 @@ public class UserPersonalInformationModel
     public string Email { get; set; }
     public string AvatarUrl { get; set; }
 
-    public static UserPersonalInformationModel FromResponseDto(
-            UserPersonalInformationResponseDto responseDto)
+    public UserPersonalInformationModel(UserPersonalInformationResponseDto responseDto)
     {
-        return new UserPersonalInformationModel
-        {
-            FirstName = responseDto.FirstName,
-            MiddleName = responseDto.MiddleName,
-            LastName = responseDto.LastName,
-            FullName = responseDto.FullName,
-            Gender = responseDto.Gender,
-            Birthday = responseDto.Birthday,
-            PhoneNumber = responseDto.PhoneNumber,
-            Email = responseDto.Email,
-            AvatarUrl = responseDto.AvatarUrl
-        };
+        FirstName = responseDto.FirstName;
+        MiddleName = responseDto.MiddleName;
+        LastName = responseDto.LastName;
+        FullName = responseDto.FullName;
+        Gender = responseDto.Gender;
+        Birthday = responseDto.Birthday;
+        PhoneNumber = responseDto.PhoneNumber;
+        Email = responseDto.Email;
+        AvatarUrl = responseDto.AvatarUrl;
     }
 }

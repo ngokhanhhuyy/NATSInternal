@@ -6,17 +6,14 @@ public class UserUserInformationModel
     public DateTime CreatedDateTime { get; set; }
     public DateTime? UpdatedDateTime { get; set; }
     public string Note { get; set; }
-    public RoleDetailModel Role { get; set; }
+    public RoleMinimalModel Role { get; set; }
 
-    public static UserUserInformationModel FromResponseDto(UserUserInformationResponseDto responseDto)
+    public UserUserInformationModel(UserUserInformationResponseDto responseDto)
     {
-        return new UserUserInformationModel
-        {
-            JoiningDate = responseDto.JoiningDate,
-            CreatedDateTime = responseDto.CreatedDateTime,
-            UpdatedDateTime = responseDto.UpdatedDateTime,
-            Note = responseDto.Note,
-            Role = RoleDetailModel(responseDto.Role)
-        };
+        JoiningDate = responseDto.JoiningDate;
+        CreatedDateTime = responseDto.CreatedDateTime;
+        UpdatedDateTime = responseDto.UpdatedDateTime;
+        Note = responseDto.Note;
+        Role = new RoleMinimalModel(responseDto.Role);
     }
 }

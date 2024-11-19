@@ -12,6 +12,4 @@ public class RoleMinimalModel
         Name = responseDto.Name;
         DisplayName = responseDto.DisplayName;
     }
-
-    public
 }

@@ -211,8 +211,8 @@ public class ApplicationHub : Hub
             .Where(pair => pair.Value.Any(id => connectionIds.Contains(id)))
             .Select(pair => pair.Key)
             .ToList();
-        UserListResponseDto listResponseDto = await _userService
-            .GetListAsync(connectingUserIds);
+        List<UserBasicResponseDto> listResponseDto = await _userService
+            .GetMultipleAsync(connectingUserIds);
 
         // Notify other accessing users that this user's access session has started.
         await Clients
@@ -222,7 +222,7 @@ public class ApplicationHub : Hub
             .SendAsync(
                 "Other.ResourceAccessStarted",
                 resource,
-                listResponseDto.Results.Single(u => u.Id == UserId));
+                listResponseDto.Single(u => u.Id == UserId));
 
         // Send the list of all connecting users back to the caller.
         await Clients

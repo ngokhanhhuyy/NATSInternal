@@ -48,7 +48,7 @@
         <label class="form-label">Vị trí</label>
         <select asp-for="Role" form="@FormId" class="form-select">
             <option value="@null">Tất cả</option>
-            @foreach (RoleBasicModel role in Model.RoleOptions)
+            @foreach (RoleMinimalModel role in Model.RoleOptions)
             {
                 <option value="@role.Name" class="text-@Html.RoleBootstrapColor(role.Name)">
                     @role.DisplayName

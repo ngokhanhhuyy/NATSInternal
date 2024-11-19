@@ -12,7 +12,7 @@ public class CurrentUserComponent : ViewComponent
     public IViewComponentResult Invoke()
     {
         UserDetailResponseDto responseDto = _authorizationService.GetUserDetail();
-        UserDetailModel model = UserDetailModel.FromResponseDto(responseDto);
+        UserDetailModel model = new UserDetailModel(responseDto);
         return View("~/Views/Shared/Layout/TopBar/CurrentUserComponent.cshtml", model);
     }
 }
