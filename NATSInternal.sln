@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NATSInternal.Validation", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NATSInternal.API", "NATSInternal.API\NATSInternal.API.csproj", "{1FF86FBA-A18C-4A7D-8917-E7135359BCD7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal.MVC", "NATSInternal.MVC\NATSInternal.MVC.csproj", "{95A7E65E-298F-4629-927B-25168D34C404}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{1FF86FBA-A18C-4A7D-8917-E7135359BCD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FF86FBA-A18C-4A7D-8917-E7135359BCD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FF86FBA-A18C-4A7D-8917-E7135359BCD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95A7E65E-298F-4629-927B-25168D34C404}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95A7E65E-298F-4629-927B-25168D34C404}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95A7E65E-298F-4629-927B-25168D34C404}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95A7E65E-298F-4629-927B-25168D34C404}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -28,7 +28,6 @@ public class AuthenticationController : Controller
 
     [HttpPost("SignIn")]
     [AllowAnonymous]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> SignIn(
             [FromForm] SignInModel model,
             [FromQuery] string returningUrl)
@@ -60,5 +59,13 @@ public class AuthenticationController : Controller
             ModelState.AddModelErrorsFromServiceException(exception);
             return View(model);
         }
+    }
+
+    [HttpPost("SignOut")]
+    [ValidateAntiForgeryToken]
+    public new async Task<IActionResult> SignOut()
+    {
+        await _authenticationService.SignOutAsync();
+        return RedirectToAction("SignIn");
     }
 }

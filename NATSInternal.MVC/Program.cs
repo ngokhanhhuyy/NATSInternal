@@ -8,7 +8,10 @@ builder.Services.AddControllersWithViews()
         options.ViewLocationFormats.Add("~/Views/{1}/{0}View.cshtml");
         options.PageViewLocationFormats.Add("~/Views/{1}/{0}Partial.cshtml");
     }).AddRazorRuntimeCompilation();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(hubOptions =>
+{
+    hubOptions.EnableDetailedErrors = true;
+});
 
 // Connection string - EF Core.
 string connectionString = builder.Configuration.GetConnectionString("Mysql");
@@ -205,5 +208,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}");
+app.MapHub<WrapperHub>("/Wrapper");
 app.UseStaticFiles();
 app.Run();

@@ -101,3 +101,9 @@ Cookie: {{accessCookie}}
 GET {{host}}/utility/initialData
 Content-Type: application/json
 Cookie: {{accessCookie}}
+
+###
+# @name Utility-InitialData
+// @no-log
+GET http://localhost:5000/healthcheck/ping
+Content-Type: application/json

@@ -121,11 +121,6 @@ public class ApplicationHub : Hub
             .TryGetValue(UserId, out HashSet<string> connectionIds);
         if (!userIdExists)
         {
-            connectionIds = new HashSet<string>
-            {
-                Context.ConnectionId
-            };
-
             // Add the current connection id to the user's connection id list.
             _userConnections.Add(UserId, connectionIds);
         }
@@ -270,7 +265,7 @@ public class ApplicationHub : Hub
 
             // Check if the list is empty after the removal. If it is, remove the entire
             // resource from the resource access dictionary.
-            if (!connectionIds.Any())
+            if (connectionIds.Count == 0)
             {
                 _resourceConnections.Remove(resource);
             }

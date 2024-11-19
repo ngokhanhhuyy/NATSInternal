@@ -5,6 +5,10 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal.MVC", "NATSInternal.MVC.csproj", "{B705AA57-F11F-40EB-9F5A-FB9D8E805DE0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal.Services", "..\NATSInternal.Services\NATSInternal.Services.csproj", "{C0C23278-716E-4E9C-9B76-56411D7E6017}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal.Validation", "..\NATSInternal.Validation\NATSInternal.Validation.csproj", "{4553D5E0-EF32-40C0-B140-2B65F7021E37}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{B705AA57-F11F-40EB-9F5A-FB9D8E805DE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B705AA57-F11F-40EB-9F5A-FB9D8E805DE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B705AA57-F11F-40EB-9F5A-FB9D8E805DE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0C23278-716E-4E9C-9B76-56411D7E6017}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0C23278-716E-4E9C-9B76-56411D7E6017}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0C23278-716E-4E9C-9B76-56411D7E6017}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0C23278-716E-4E9C-9B76-56411D7E6017}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4553D5E0-EF32-40C0-B140-2B65F7021E37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4553D5E0-EF32-40C0-B140-2B65F7021E37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4553D5E0-EF32-40C0-B140-2B65F7021E37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4553D5E0-EF32-40C0-B140-2B65F7021E37}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
