@@ -4,6 +4,7 @@
     ViewBag.BlockTitle = "Danh sách nhân viên";
     ViewBag.BlockBodyClass = "px-2 py-3";
 }
+
 @functions {
     private string FormId => "user-list-filters-form";
     private string RoleButtonClassName(string roleName)
@@ -61,7 +62,7 @@
     <!-- Sort by field -->
     <div class="col col-md-4 col-sm-12 col-12 mt-3">
         <label class="form-label">Trường sắp xếp</label>
-        <select asp-for="OrderByField" form="@FormId" class="form-select">
+        <select asp-for="SortingByField" form="@FormId" class="form-select">
             <option value="LastName">@DisplayNames.LastName</option>
             <option value="FirstName">@DisplayNames.FirstName</option>
             <option value="UserName">@DisplayNames.UserName</option>
@@ -69,22 +70,22 @@
             <option value="CreatedDateTime">@DisplayNames.CreatedDateTime</option>
             <option value="Role">@DisplayNames.Role</option>
         </select>
-        <span asp-validation-for="OrderByField"></span>
+        <span asp-validation-for="SortingByField"></span>
     </div>
 
     <!-- Sort by direction -->
     <div class="col col-md-4 col-sm-12 col-12 mt-3">
         <label class="form-label">Thứ tự sắp xếp</label>
-        <select asp-for="OrderByAscending" form="@FormId" class="form-select">
+        <select asp-for="SortingByAscending" form="@FormId" class="form-select">
             <option value="@true">Từ nhỏ đến lớn</option>
             <option value="@false">Từ lớn đến nhỏ</option>
         </select>
-        <span asp-validation-for="OrderByAscending"></span>
+        <span asp-validation-for="SortingByAscending"></span>
     </div>
 </div>        
 
 @section Header {
-    @if (Model.Authorization.CanCreate)
+    @if (Model.CanCreate)
     {
         <a href="@Url.Action("UserCreate", "User")" class="btn btn-primary btn-sm">
             <i class="bi bi-plus-lg me-1"></i>
