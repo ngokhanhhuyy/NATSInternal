@@ -23,4 +23,12 @@
   <ItemGroup>
     <Folder Include="wwwroot\js\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\repos\NATSInternal\NATSInternal.MVC\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\repos\NATSInternal\NATSInternal.MVC\.editorconfig" />
+  </ItemGroup>
 </Project>
