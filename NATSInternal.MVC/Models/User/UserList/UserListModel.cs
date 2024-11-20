@@ -1,3 +1,5 @@
+using NATSInternal.MVC.Models;
+
 namespace NATSInternal.Models;
 
 public class UserListModel : IListModel<UserBasicModel>
@@ -12,8 +14,8 @@ public class UserListModel : IListModel<UserBasicModel>
     public string Content { get; set; }
     public int PageCount { get; set; }
     public List<UserBasicModel> Items { get; set; }
-    public List<UserBasicModel> JoinedRecentlyUsers { get; set; }
-    public List<UserBasicModel> UpcomingBirthdayUsers { get; set; }
+    public UserSecondaryListModel JoinedRecentlyUsers { get; set; }
+    public UserSecondaryListModel UpcomingBirthdayUsers { get; set; }
     public List<RoleMinimalModel> RoleOptions { get; set; }
     public PaginationRangeModel PaginationRanges => new PaginationRangeModel(Page, PageCount);
     public bool CanCreate { get; set; }
@@ -28,12 +30,12 @@ public class UserListModel : IListModel<UserBasicModel>
         Items = userListResponseDto.Items?
             .Select(u => new UserBasicModel(u))
             .ToList();
-        JoinedRecentlyUsers = joinedRecentlyUsersResponseDto.Items?
-            .Select(u => new UserBasicModel(u))
-            .ToList();
-        UpcomingBirthdayUsers = incomingBirthdayUsersResponseDto.Items?
-            .Select(u => new UserBasicModel(u))
-            .ToList();
+        JoinedRecentlyUsers = new UserSecondaryListModel(
+            joinedRecentlyUsersResponseDto.Items,
+            UserSecondaryListType.JoinedRecently);
+        UpcomingBirthdayUsers = new UserSecondaryListModel(
+            incomingBirthdayUsersResponseDto.Items,
+            UserSecondaryListType.UpcomingBirthday);
         RoleOptions = roleOptionsResponseDtos
             .Select(dto => new RoleMinimalModel(dto))
             .ToList();

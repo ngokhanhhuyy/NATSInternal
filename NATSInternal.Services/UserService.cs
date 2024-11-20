@@ -120,12 +120,8 @@ internal class UserService : IUserService
         {
             query = query
                 .Where(u =>
-                    u.FullName.Contains(
-                        requestDto.Content,
-                        StringComparison.CurrentCultureIgnoreCase) ||
-                    u.UserName.Contains(
-                        requestDto.Content,
-                        StringComparison.CurrentCultureIgnoreCase));
+                    u.NormalizedFullName.Contains(requestDto.Content) ||
+                    u.NormalizedUserName.Contains(requestDto.Content.ToUpper()));
         }
 
         // Initialize response dto.

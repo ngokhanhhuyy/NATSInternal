@@ -162,6 +162,7 @@ builder.Services
 
 // Dependancy injections.
 builder.Services.AddScoped<INotifier, Notifier>();
+builder.Services.AddHttpClient();
 
 // Add CORS.
 builder.Services.AddCors(options =>

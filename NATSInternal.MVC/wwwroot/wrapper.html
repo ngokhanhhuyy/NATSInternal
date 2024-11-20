@@ -153,7 +153,7 @@
             refreshButton = document.getElementById("refreshButton");
             refreshButton.addEventListener("click", () => {
                 refreshButtonClickedTime = Date.now();
-                hubConnection.invoke("RequestGet", window.origin + model.pathName)
+                hubConnection.invoke("RequestGet", model.pathName)
             });
 
             loadConfigButton = document.getElementById("loadConfigButton");
@@ -164,7 +164,7 @@
             try {
                 await hubConnection.start();
                 console.log("Wrapper hub connected.");
-                hubConnection.invoke("RequestGet", window.origin + model.pathName);
+                hubConnection.invoke("RequestGet", model.pathName);
             } catch (error) {
                 console.log(error);
             }
@@ -247,7 +247,8 @@
                 event.preventDefault();
                 const /** @type {HTMLFormElement} */ form = event.target;
                 const formData = Object.fromEntries(new FormData(form).entries());
-                hubConnection.invoke("RequestPost", form.action, formData);
+                console.log(new URL(form.action).pathname);
+                hubConnection.invoke("RequestPost", new URL(form.action).pathname, formData);
                 return;
             }
         }
@@ -256,22 +257,19 @@
          * @param {{ pathName: string; template: string, statusCode: number, redirectTo: string | null }} responseMessage
          */
         async function onResponse(responseMessage) {
-            console.log(responseMessage.pathName, Date.now() - refreshButtonClickedTime);
-            console.log(responseMessage ?? "undefined");
+            console.log(responseMessage.redirectTo ?? responseMessage.pathName, Date.now() - refreshButtonClickedTime);
             model.pathName = responseMessage.pathName.replace(window.origin, "");
             addressInput.value = model.pathName;
             iframe.innerHTML = responseMessage.template;
 
             if (responseMessage.redirectTo) {
-                hubConnection.invoke("RequestGet", responseMessage.pathName);
+                model.pathName = responseMessage.redirectTo;
+                hubConnection.invoke("RequestGet", model.pathName);
                 return;
             }
 
-            console.log(Date.now() - refreshButtonClickedTime);
-
             const anchorElements = iframe.querySelectorAll("a");
             for (const anchor of anchorElements) {
-                console.log(anchor.href)
                 anchor.addEventListener("click", onAnchorClicked);
             }
 
