@@ -1,4 +1,4 @@
-@model List<UserBasicModel>
+@model UserSecondaryListModel
 @{
     Layout = "Layout/MainBlockLayout";
     ViewBag.BlockTitle = "Nhân viên mới gia nhập";
@@ -8,7 +8,7 @@
 @if (Model != null && Model.Count > 0)
 {
     <ul class="list-group list-group-flush joined-recently-user-list">
-        @foreach (UserBasicModel user in Model)
+        @foreach (UserBasicModel user in Model.Items)
         {
             <li class="list-group-item d-flex flex-row align-items-center
                         bg-transparent px-3 py-2">

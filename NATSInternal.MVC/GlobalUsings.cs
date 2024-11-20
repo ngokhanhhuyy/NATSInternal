@@ -7,7 +7,7 @@ global using Microsoft.AspNetCore.Identity;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Mvc.Rendering;
 global using Microsoft.AspNetCore.SignalR;
-
+global using NATSInternal.Enums;
 global using NATSInternal.Extensions;
 global using NATSInternal.Helpers;
 global using NATSInternal.Hubs;

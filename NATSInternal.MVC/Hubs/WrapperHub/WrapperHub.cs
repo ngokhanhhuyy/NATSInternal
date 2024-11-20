@@ -2,13 +2,20 @@ using System.Net;
 
 namespace NATSInternal.Hubs;
 
+[Authorize]
 public class WrapperHub : Hub
 {
     private static readonly Dictionary<string, HttpClient> _httpClients;
+    private readonly IHttpClientFactory _httpClientFactory;
 
     static WrapperHub()
     {
         _httpClients = new Dictionary<string, HttpClient>();
+    }
+
+    public WrapperHub(IHttpClientFactory httpClientFactory)
+    {
+        _httpClientFactory = httpClientFactory;
     }
 
     public override async Task OnConnectedAsync()
@@ -25,21 +32,10 @@ public class WrapperHub : Hub
 
     public async Task RequestGet(string pathName)
     {
-        HttpClient httpClient = _httpClients[Context.ConnectionId];
-        if (httpClient == null)
-        {
-            CookieContainer cookieContainer = new CookieContainer();
-            HttpClientHandler httpClientHandler = new HttpClientHandler
-            {
-                CookieContainer = cookieContainer,
-                AllowAutoRedirect = false
-            };
-            httpClient = new HttpClient(httpClientHandler);
-        }
-
-        
+        HttpClient httpClient = GetHttpClient();
         HttpResponseMessage httpResponseMessage;
-        httpResponseMessage = await httpClient.GetAsync(pathName);
+        Console.WriteLine("http://localhost:5000" + pathName);
+        httpResponseMessage = await httpClient.GetAsync("http://localhost:5000" + pathName);
         string template = await httpResponseMessage.Content.ReadAsStringAsync();
         bool isRedirected = IsRedirectResponseMessage(
             httpResponseMessage,
@@ -55,23 +51,16 @@ public class WrapperHub : Hub
 
     public async Task RequestPost(string pathName, Dictionary<string, string> formData)
     {
-        HttpClient httpClient = _httpClients[Context.ConnectionId];
-        if (httpClient == null)
-        {
-            CookieContainer cookieContainer = new CookieContainer();
-            HttpClientHandler httpClientHandler = new HttpClientHandler
-            {
-                CookieContainer = cookieContainer,
-                AllowAutoRedirect = false
-            };
-            httpClient = new HttpClient(httpClientHandler);
-        }
+        HttpClient httpClient = GetHttpClient();
 
         Console.WriteLine(JsonSerializer.Serialize(formData));
         FormUrlEncodedContent content = new FormUrlEncodedContent(formData);
         
         HttpResponseMessage httpResponseMessage;
-        httpResponseMessage = await httpClient.PostAsync(pathName, content);
+        Console.WriteLine("http://localhost:5000" + pathName);
+        httpResponseMessage = await httpClient.PostAsync(
+            "http://localhost:5000" +
+            pathName, content);
         string template = await httpResponseMessage.Content.ReadAsStringAsync();
         bool isRedirected = IsRedirectResponseMessage(
             httpResponseMessage,
@@ -85,6 +74,21 @@ public class WrapperHub : Hub
         });
     }
 
+    private HttpClient GetHttpClient()
+    {
+        HttpContext httpContext = Context.GetHttpContext()
+            ?? throw new InvalidOperationException("HttpContext doesn't exist (null)");
+
+        HttpClient httpClient = _httpClientFactory.CreateClient();
+        string cookieHeader = httpContext.Request.Cookies.ToString();
+        if (!string.IsNullOrEmpty(cookieHeader))
+        {
+            httpClient.DefaultRequestHeaders.Add("Cookie", cookieHeader);
+        }
+
+        return httpClient;
+    }
+
     private bool IsRedirectResponseMessage(HttpResponseMessage message, out string redirectedPath)
     {
         HttpStatusCode[] redirectStatusCodes = new[]
@@ -93,7 +97,7 @@ public class WrapperHub : Hub
             HttpStatusCode.Found,
             HttpStatusCode.TemporaryRedirect
         };
-        redirectedPath = message.Headers.Location?.AbsolutePath;
+        redirectedPath = message.Headers.Location?.ToString().Replace("http://localhost:5000", "");
         bool isRedirected = redirectStatusCodes.Contains(message.StatusCode);
         Console.WriteLine($"IsRedirected: {isRedirected}, RedirectedPath: {redirectedPath}");
         return isRedirected;
