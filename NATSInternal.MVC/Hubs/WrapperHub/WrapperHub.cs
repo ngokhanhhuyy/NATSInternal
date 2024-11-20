@@ -41,18 +41,15 @@ public class WrapperHub : Hub
         HttpResponseMessage httpResponseMessage;
         httpResponseMessage = await httpClient.GetAsync(pathName);
         string template = await httpResponseMessage.Content.ReadAsStringAsync();
-        bool isRedirected = new List<HttpStatusCode>
-        { 301, 302, 307 }
-        
-        .Contains(httpResponseMessage.StatusCode)
-            .TryGetValues("Location", out IEnumerable<string> redirectedUrl);
-        Console.WriteLine(isRedirected);
+        bool isRedirected = IsRedirectResponseMessage(
+            httpResponseMessage,
+            out string redirectedPath);
         await Clients.Caller.SendAsync("ResponsePost", new
         {
-            PathName = isRedirected ? redirectedUrl.First() : pathName,
+            PathName = pathName,
             httpResponseMessage.StatusCode,
             Template = template,
-            IsRedirected = redirectedUrl.First()
+            RedirectTo = isRedirected ? redirectedPath : null,
         });
     }
 
@@ -76,17 +73,29 @@ public class WrapperHub : Hub
         HttpResponseMessage httpResponseMessage;
         httpResponseMessage = await httpClient.PostAsync(pathName, content);
         string template = await httpResponseMessage.Content.ReadAsStringAsync();
-        bool isRedirected = httpResponseMessage.Headers
-            .TryGetValues("Location", out IEnumerable<string> redirectedUrl);
-        Console.WriteLine(isRedirected);
+        bool isRedirected = IsRedirectResponseMessage(
+            httpResponseMessage,
+            out string redirectedPath);
         await Clients.Caller.SendAsync("ResponsePost", new
         {
-            PathName = isRedirected ? redirectedUrl.First() : pathName,
+            PathName = pathName,
             httpResponseMessage.StatusCode,
             Template = template,
-            IsRedirected = redirectedUrl.First()
+            RedirectTo = isRedirected ? redirectedPath : null,
         });
     }
 
-    private bool
+    private bool IsRedirectResponseMessage(HttpResponseMessage message, out string redirectedPath)
+    {
+        HttpStatusCode[] redirectStatusCodes = new[]
+        {
+            HttpStatusCode.MovedPermanently,
+            HttpStatusCode.Found,
+            HttpStatusCode.TemporaryRedirect
+        };
+        redirectedPath = message.Headers.Location?.AbsolutePath;
+        bool isRedirected = redirectStatusCodes.Contains(message.StatusCode);
+        Console.WriteLine($"IsRedirected: {isRedirected}, RedirectedPath: {redirectedPath}");
+        return isRedirected;
+    }
 }

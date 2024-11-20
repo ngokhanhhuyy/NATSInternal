@@ -253,13 +253,20 @@
         }
 
         /**
-         * @param {{ pathName: string; template: string }} responseMessage
+         * @param {{ pathName: string; template: string, statusCode: number, redirectTo: string | null }} responseMessage
          */
         async function onResponse(responseMessage) {
+            console.log(responseMessage.pathName, Date.now() - refreshButtonClickedTime);
             console.log(responseMessage ?? "undefined");
             model.pathName = responseMessage.pathName.replace(window.origin, "");
             addressInput.value = model.pathName;
             iframe.innerHTML = responseMessage.template;
+
+            if (responseMessage.redirectTo) {
+                hubConnection.invoke("RequestGet", responseMessage.pathName);
+                return;
+            }
+
             console.log(Date.now() - refreshButtonClickedTime);
 
             const anchorElements = iframe.querySelectorAll("a");
@@ -273,9 +280,6 @@
             });
 
             optionsButton.textContent = window.location.origin + model.pathName;
-            if (responseMessage.isRedirected) {
-                hubConnection.invoke("RequestGet", responseMessage.pathName);
-            }
         }
 
         function resetHubConnnection() {
