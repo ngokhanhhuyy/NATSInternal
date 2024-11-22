@@ -39,4 +39,31 @@
             </span>
         </div>
     </div>
+
+    <style scoped>
+        .user-list-item .avatar-container {
+            width: 100px;
+            height: 100px;
+            overflow: hidden;
+            border-radius: 50%;
+        }
+
+        .user-list-item .avatar-container img {
+            object-fit: cover;
+            object-position: 50% 50%;
+            aspect-ratio: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        .user-list-item a:has(.fullname) {
+            color: inherit !important;
+            text-decoration: none;
+        }
+
+        .user-list-item a:has(.fullname):hover {
+            text-decoration: underline;
+        }
+
+    </style>
 </div>

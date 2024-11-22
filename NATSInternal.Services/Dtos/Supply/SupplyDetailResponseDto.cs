@@ -47,7 +47,7 @@ public class SupplyDetailResponseDto : IHasProductDetailResponseDto<
             .Select(p => new SupplyPhotoResponseDto(p)).ToList();
         CreatedUser = new UserBasicResponseDto(supply.CreatedUser);
         Authorization = authorization;
-        UpdateHistories = supply.UpdateHistories
+        UpdateHistories = supply.UpdateHistories?
             .Select(uh => new SupplyUpdateHistoryResponseDto(uh))
             .ToList();
     }

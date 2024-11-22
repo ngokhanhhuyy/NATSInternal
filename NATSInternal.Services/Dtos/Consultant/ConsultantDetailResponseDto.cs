@@ -29,7 +29,7 @@ public class ConsultantDetailResponseDto : IHasStatsDetailResponseDto<
         Customer = new CustomerBasicResponseDto(consultant.Customer);
         CreatedUser = new UserBasicResponseDto(consultant.CreatedUser);
         Authorization = authorization;
-        UpdateHistories = consultant.UpdateHistories
+        UpdateHistories = consultant.UpdateHistories?
             .Select(uh => new ConsultantUpdateHistoryResponseDto(uh))
             .ToList();
     }

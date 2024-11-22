@@ -59,7 +59,7 @@ public class TreatmentDetailResponseDto
         Items = treatment.Items?.Select(ti => new TreatmentItemResponseDto(ti)).ToList();
         Photos = treatment.Photos?.Select(tp => new TreatmentPhotoResponseDto(tp)).ToList();
         Authorization = authorization;
-        UpdateHistories = treatment.UpdateHistories
+        UpdateHistories = treatment.UpdateHistories?
             .Select(uh => new TreatmentUpdateHistoryResponseDto(uh))
             .ToList();
     }

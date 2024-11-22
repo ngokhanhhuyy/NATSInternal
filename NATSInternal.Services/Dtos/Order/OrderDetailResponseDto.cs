@@ -45,7 +45,7 @@ public class OrderDetailResponseDto : IExportProductDetailResponseDto<
         CreatedUser = new UserBasicResponseDto(order.CreatedUser);
         Photos = order.Photos?.Select(p => new OrderPhotoResponseDto(p)).ToList();
         Authorization = authorization;
-        UpdateHistories = order.UpdateHistories
+        UpdateHistories = order.UpdateHistories?
             .Select(uh => new OrderUpdateHistoryResponseDto(uh))
             .ToList();
     }

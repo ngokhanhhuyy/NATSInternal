@@ -26,7 +26,7 @@ body {
     overflow: auto;
     transition: color 0.5s, background-color 0.5s;
     line-height: 1.6;
-    font-size: 14px;
+    font-size: 16px;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -202,7 +202,7 @@ span.valid-feedback:after {
     content: "Hợp lệ";
 }
 
-a {
+a:not(:hover):not(:active) {
     text-decoration: none !important;
 }
 

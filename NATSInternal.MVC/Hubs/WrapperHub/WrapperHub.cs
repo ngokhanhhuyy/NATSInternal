@@ -34,7 +34,6 @@ public class WrapperHub : Hub
     {
         HttpClient httpClient = GetHttpClient();
         HttpResponseMessage httpResponseMessage;
-        Console.WriteLine("http://localhost:5000" + pathName);
         httpResponseMessage = await httpClient.GetAsync("http://localhost:5000" + pathName);
         string template = await httpResponseMessage.Content.ReadAsStringAsync();
         bool isRedirected = IsRedirectResponseMessage(
@@ -53,11 +52,9 @@ public class WrapperHub : Hub
     {
         HttpClient httpClient = GetHttpClient();
 
-        Console.WriteLine(JsonSerializer.Serialize(formData));
         FormUrlEncodedContent content = new FormUrlEncodedContent(formData);
         
         HttpResponseMessage httpResponseMessage;
-        Console.WriteLine("http://localhost:5000" + pathName);
         httpResponseMessage = await httpClient.PostAsync(
             "http://localhost:5000" +
             pathName, content);
@@ -99,7 +96,6 @@ public class WrapperHub : Hub
         };
         redirectedPath = message.Headers.Location?.ToString().Replace("http://localhost:5000", "");
         bool isRedirected = redirectStatusCodes.Contains(message.StatusCode);
-        Console.WriteLine($"IsRedirected: {isRedirected}, RedirectedPath: {redirectedPath}");
         return isRedirected;
     }
 }

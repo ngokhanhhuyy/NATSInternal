@@ -1,5 +1,3 @@
-using NATSInternal.MVC.Models;
-
 namespace NATSInternal.Models;
 
 public class UserListModel : IListModel<UserBasicModel>

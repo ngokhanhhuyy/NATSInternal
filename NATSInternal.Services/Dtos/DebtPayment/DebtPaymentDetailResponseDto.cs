@@ -18,8 +18,7 @@ public class DebtPaymentDetailResponseDto
 
     internal DebtPaymentDetailResponseDto(
             DebtPayment payment,
-            DebtPaymentExistingAuthorizationResponseDto authorization,
-            bool mapUpdateHistories = false)
+            DebtPaymentExistingAuthorizationResponseDto authorization)
     {
         Id = payment.Id;
         Amount = payment.Amount;
@@ -30,12 +29,8 @@ public class DebtPaymentDetailResponseDto
         Customer = new CustomerBasicResponseDto(payment.Customer);
         CreatedUser = new UserBasicResponseDto(payment.CreatedUser);
         Authorization = authorization;
-        
-        if (mapUpdateHistories)
-        {
-            UpdateHistories = payment.UpdateHistories
-                .Select(uh => new DebtPaymentUpdateHistoryResponseDto(uh))
-                .ToList();
-        }
+        UpdateHistories = payment.UpdateHistories?
+            .Select(uh => new DebtPaymentUpdateHistoryResponseDto(uh))
+            .ToList();
     }
 }

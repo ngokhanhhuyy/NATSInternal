@@ -24,6 +24,7 @@ public class ExpenseDetailResponseDto : IHasStatsDetailResponseDto<
         Id = expense.Id;
         AmountAfterVat = expense.Amount;
         StatsDateTime = expense.StatsDateTime;
+        CreatedDateTime = expense.CreatedDateTime;
         Category = expense.Category;
         Note = expense.Note;
         IsLocked = expense.IsLocked;

@@ -1,6 +1,4 @@
-using NATSInternal.Models;
-
-namespace NATSInternal.MVC.Models;
+namespace NATSInternal.Models;
 
 public class UserSecondaryListModel
 {

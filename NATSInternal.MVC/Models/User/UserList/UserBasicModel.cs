@@ -1,5 +1,3 @@
-using NATSInternal.Helpers;
-
 namespace NATSInternal.Models;
 
 public class UserBasicModel
