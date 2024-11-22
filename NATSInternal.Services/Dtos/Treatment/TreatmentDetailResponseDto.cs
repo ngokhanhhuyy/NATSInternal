@@ -55,7 +55,9 @@ public class TreatmentDetailResponseDto
         IsLocked = treatment.IsLocked;
         Customer = new CustomerBasicResponseDto(treatment.Customer);
         CreatedUser = new UserBasicResponseDto(treatment.CreatedUser);
-        Therapist = new UserBasicResponseDto(treatment.Therapist);
+        Therapist = treatment.Therapist != null
+            ? new UserBasicResponseDto(treatment.Therapist)
+            : null;
         Items = treatment.Items?.Select(ti => new TreatmentItemResponseDto(ti)).ToList();
         Photos = treatment.Photos?.Select(tp => new TreatmentPhotoResponseDto(tp)).ToList();
         Authorization = authorization;
