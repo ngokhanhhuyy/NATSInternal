@@ -86,7 +86,7 @@ public record CustomerDetailResponseDto
         }
 
         DebtOperations = DebtOperations?
-            .OrderBy(dp => dp.OperatedDateTime)
+            .OrderByDescending(dp => dp.OperatedDateTime)
             .ToList();
     }
 }

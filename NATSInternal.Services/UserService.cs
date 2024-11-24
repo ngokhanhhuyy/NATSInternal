@@ -140,7 +140,8 @@ internal class UserService : IUserService
             .Select(u => new UserBasicResponseDto(
                 u,
                 _authorizationService.GetUserBasicAuthorization(u)))
-            .ToListAsync();
+            .ToListAsync()
+            ?? new List<UserBasicResponseDto>();
 
         return responseDto;
     }
@@ -610,7 +611,7 @@ internal class UserService : IUserService
             DefaultFieldName = fieldOptions
                 .Single(i => i.Name == nameof(OrderByFieldOption.LastName))
                 .Name,
-            DefaultAscending = false
+            DefaultAscending = true
         };
     }
 

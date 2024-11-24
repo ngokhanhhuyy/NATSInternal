@@ -13,6 +13,8 @@ public class UserBasicModel
     public DateOnly? JoiningDate { get; set; }
     public string AvatarUrl { get; set; }
     public RoleMinimalModel Role { get; set; }
+    public string DetailRoute => $"/User/{Id}";
+    public string UpdateRoute => $"/User/{Id}/Update";
 
     public UserBasicModel(UserBasicResponseDto responseDto)
     {

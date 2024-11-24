@@ -60,6 +60,12 @@ internal class ConsultantService
                 throw new NotImplementedException();
         }
 
+        // Filter by customer id if specified.
+        if (requestDto.CustomerId.HasValue)
+        {
+            query = query.Where(e => e.CustomerId == requestDto.CustomerId);
+        }
+
         EntityListDto<Consultant> listDto = await GetListOfEntitiesAsync(query, requestDto);
 
         return new ConsultantListResponseDto

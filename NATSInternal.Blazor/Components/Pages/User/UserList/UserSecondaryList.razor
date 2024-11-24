@@ -2,25 +2,30 @@
 @inject IUserService UserService
 @rendermode InteractiveServer
 
-<MainBlock Title="blockTitle" BodyPadding="@((0, 0, 0, 0))">
-    <!-- Header -->
-    <Header>
+<MainBlock Title="@BlockTitle" BodyPadding="@((0, 0, 0, 0))">
+    <!-- HeaderContent -->
+    <BlockHeaderContent>
         <button class="btn btn-primary btn-sm" @click="reloadAsync"
                 :disabled="loadingState.isLoading">
             <i class="bi bi-arrow-counterclockwise"></i>
         </button>
-    </Header>
+    </BlockHeaderContent>
 
-    <!-- Body -->
-    <Body>
-        <ul class="list-group list-group-flush top-effective-users-list"
-                v-show="!loadingState.isLoading">
-            @if (Model.Items.Any())
+    <!-- ChildContent -->
+    <BlockBodyContent>
+        <ul class="list-group list-group-flush top-effective-users-list">
+            @if (Model.Count == 0)
             {
-                @foreach (UserBasicModel user in Model.Items)
+                <li class="d-flex align-items-center justify-content-center p-3 opacity-50">
+                    @ResultNotFoundText
+                </li>
+            }
+            else
+            {
+                foreach (UserBasicModel user in Model)
                 {
                     <li class="list-group-item d-flex flex-row align-items-center
-                                bg-transparent px-3 py-2">
+                                    bg-transparent px-3 py-2">
                         <NavLink href="/User/">
                             <img src="@user.AvatarUrl" class="rounded-circle me-2">
                         </NavLink>
@@ -29,26 +34,24 @@
                                 <span class="fw-bold">@user.FullName</span>
                             </NavLink>
                             <span class="badge bg-success-subtle border
-                                        border-success-subtle text-success my-1
-                                        rounded small handled-orders fw-bold">
-                                {{ getDetailText(user) }}
+                                            border-success-subtle text-success my-1
+                                            rounded small handled-orders fw-bold">
+                                @GetDetailText(user)
                             </span>
                         </div>
                     </li>
                 }
             }
-            <li class="d-flex align-items-center justify-content-center p-3
-                    opacity-50" v-else>
-                @ResultNotFoundText
-            </li>
         </ul>
-    </Body>
+    </BlockBodyContent>
 </MainBlock>
 
 @code {
+    [Parameter]
     public UserSecondaryListMode Mode { get; set; }
 
-    private UserListModel Model { get; set; }
+    [Parameter]
+    public List<UserBasicModel> Model { get; set; }
 
     private string BlockTitle => Mode == UserSecondaryListMode.JoinedRecently
         ? "Mới gia nhập"
@@ -66,31 +69,10 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (Mode == UserSecondaryListMode.JoinedRecently)
-        {
-            Model = new UserListModel
-            {
-                JoinedRencentlyOnly = true
-            };
-        }
-        else
-        {
-            Model = new UserListModel
-            {
-                UpcomingBirthdayOnly = true
-            };
-        }
-
-        UserListResponseDto responseDto = await UserService.GetListAsync(Model.ToRequestDto());
-        Model.MapFromResponseDto(responseDto);
-    }
-
     private string GetDetailText(UserBasicModel user) {
         string result = Mode == UserSecondaryListMode.JoinedRecently
             ? user.JoiningDate?.ToVietnameseString()
             : user.Birthday?.ToVietnameseString();
-        return result.Split(", ")[0];
+        return result!.Split(", ")[0];
     }
 }

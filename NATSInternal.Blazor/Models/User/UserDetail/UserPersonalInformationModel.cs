@@ -14,6 +14,8 @@ public class UserPersonalInformationModel
 
     public UserPersonalInformationModel(UserPersonalInformationResponseDto responseDto)
     {
+        AvatarHelper avatarHelper = new AvatarHelper();
+        
         FirstName = responseDto.FirstName;
         MiddleName = responseDto.MiddleName;
         LastName = responseDto.LastName;
@@ -22,6 +24,6 @@ public class UserPersonalInformationModel
         Birthday = responseDto.Birthday;
         PhoneNumber = responseDto.PhoneNumber;
         Email = responseDto.Email;
-        AvatarUrl = responseDto.AvatarUrl ?? AvatarHelper.GetDefaultAvatar(FullName);
+        AvatarUrl = responseDto.AvatarUrl ?? avatarHelper.GetDefaultAvatar(FullName);
     }
 }

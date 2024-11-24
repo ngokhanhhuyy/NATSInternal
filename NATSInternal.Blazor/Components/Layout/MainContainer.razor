@@ -1,10 +1,16 @@
 ﻿@namespace NATSInternal.Blazor.Components
 
 <div class="container-fluid d-flex flex-column px-2 pb-1">
-    @Body
+    @if (Render)
+    {
+        @ChildContent
+    }
 </div>
 
 @code {
     [Parameter]
-    public RenderFragment Body { get; set; }
+    public RenderFragment ChildContent { get; set; }
+    
+    [Parameter, EditorRequired]
+    public bool Render { get; set; }
 }

@@ -1,82 +1,78 @@
 ﻿@namespace NATSInternal.Blazor.Components
-@inject IRoleService RoleService
+@inject RoleHelper RoleHelper
 
-<MainBlock title="Danh sách nhân viên" body-padding="2">
-    <!-- Header -->
-    <Header>
-        @if (Model.CanCreate)
+<MainBlock Title="Danh sách nhân viên" BodyPadding="@((2, 2, 2, 2))">
+    <!-- HeaderContent -->
+    <BlockHeaderContent>
+        @if (Value.CanCreate)
         {
             <NavLink to="/User/Create" class="btn btn-primary btn-sm">
                 <i class="bi bi-plus-lg"></i>
                 <span>Tạo mới</span>
             </NavLink>
         }
-    </Header>
+    </BlockHeaderContent>
 
-    <!-- Body -->
-    <Body>
+    <!-- BodyContent -->
+    <BlockBodyContent>
         <div class="row g-3">
             <!-- Search content -->
             <div class="col @SearchContentColumnClass">
                 <div class="input-group">
-                    <InputText class="flex-fill border-end-0" type="text"
-                            maxlength="255" placeholder="Họ và tên, số điện thoại ..."
-                            @bind-Value="Model.Content" @onchange="OnSearchContentChanged" />
+                    @if (Value != null)
+                    {
+                        <TextInput class="flex-fill border-end-0"
+                            Type="@TextInputType.Text" @bind-Value="@Value.Content"
+                            maxlength="255" placeholder="Họ và tên, số điện thoại ..."/>
+                    }
+                    else
+                    {
+                        <input type="text" class="flex-fill border-end-0" disabled="@true"
+                            placeholder="Họ và tên, số điện thoại ..." />
+                    }
 
-                    <!-- Advance filters / collapse button -->        
+                    <!-- Advance filters / collapse button -->
                     <button class="btn btn-outline-primary" data-bs-toggle="collapse"
-                            href="#advanced-filters-container" aria-expanded="fPrestalse"
-                            role="button" aria-controls="advanced-filters-container">
+                        href="#advanced-filters-container" aria-expanded="false"
+                        role="button" aria-controls="advanced-filters-container"
+                        disabled="@(Value == null)">
                         <i class="bi bi-sliders"></i>
                     </button>
                 </div>
-                <span class="small opacity-50 @SearchContentValidationClass">
-                    * Nội dung tìm kiếm phải chứa ít nhất 3 ký tự.
-                </span>
+                
+                @if (!IsSearchContentValid)
+                {
+                    <span class="small opacity-50 text-danger">
+                        * Nội dung tìm kiếm phải chứa ít nhất 3 ký tự.
+                    </span>
+                }
             </div>
 
             <!-- Search button -->
             <div class="col col-auto">
-                <button class="btn btn-primary" @onclick="OnSearchButtonClicked"
-                        disabled="@IsSearchContentValid">
+                <button class="btn btn-primary" @onclick="SearchButtonClicked">
                     <i class="bi bi-search"></i>
                     <span class="d-sm-inline d-none ms-2">Tìm kiếm</span>
                 </button>
             </div>
         </div>
+        
         <div class="row g-3 collapse" id="advanced-filters-container">
             <!-- Order by field -->
             <div class="col col-sm-6 col-12">
-                <InputLabel Name="Trường sắp xếp" />
-                <SelectInput @bind-Value="Model.SortingByField">
-                    <option value="@OrderByFieldOption.Name">
-                        @DisplayNames.LastName
-                    </option>
-                    <option value="@OrderByFieldOption.FirstName">
-                        @DisplayNames.FirstName
-                    </option>
-                    <option value="@OrderByFieldOption.UserName">
-                        @DisplayNames.UserName
-                    </option>
-                    <option value="@OrderByFieldOption.Birthday">
-                        @DisplayNames.Birthday
-                    </option>
-                    <option value="@OrderByFieldOption.Age">
-                        @DisplayNames.Age
-                    </option>
-                    <option value="@OrderByFieldOption.CreatedDateTime">
-                        @DisplayNames.CreatedDateTime
-                    </option>
-                    <option value="@OrderByFieldOption.Role">
-                        @DisplayNames.Role
-                    </option>
+                <InputLabel Text="Trường sắp xếp" />
+                <SelectInput @bind-Value="Value!.SortingByField">
+                    @foreach (ListSortingByFieldModel option in Value.SortingByFieldOptions)
+                    {
+                        <option value="@option.Name">@option.DisplayName</option>
+                    }
                 </SelectInput>
             </div>
 
             <!-- Order by direction -->
             <div class="col col-sm-6 col-12">
-                <InputLabel name="Thứ tự sắp xếp" />
-                <SelectInput @bind-Value="Model.SortingByAscending">
+                <InputLabel Text="Thứ tự sắp xếp" />
+                <SelectInput @bind-Value="Value.SortingByAscending">
                     <option value="@true">Từ nhỏ đến lớn</option>
                     <option value="@false">Từ lớn đến nhỏ</option>
                 </SelectInput>
@@ -84,68 +80,95 @@
 
             <!-- Role options -->
             <div class="col col-12 pb-0">
-                <InputLabel name="Vị trí" />
+                <InputLabel Text="Vị trí" />
                 <div class="d-flex flex-row flex-wrap">
+                    <!-- All role button -->
+                    <div class="btn btn-sm me-2 mb-2 all-role-button"
+                            @click="onRoleButtonClicked(null)">
+                        <i class="bi bi-grid-3x3-gap me-1"></i>
+                        Tất cả
+                    </div>
+                    
                     <!-- Specific role button -->
-                    @foreach (RoleMinimalModel role in RoleOptions)
+                    @foreach (RoleMinimalModel role in Value.RoleOptions)
                     {
-                        <div class="btn btn-sm me-2 mb-2 @RoleButtonClassName(role.Name)"
-                                @onclick="@(e => OnRoleButtonClicked(role))">
-                            @if (role.Id == 1)
-                            {
-                                <i class="bi bi-wrench"></i>
-                            }
-                            else if (role.Id == 2)
-                            {  
-                                <i class="bi bi-wrench"></i>
-                            }
-                            else
-                            {
-                                <i class="bi bi-star"></i>
-                            }
+                        <div class="btn btn-sm me-2 mb-2 bg-opacity-10
+                                    @GetRoleButtonClass(role.Name)"
+                             @onclick="@(_ => OnRoleButtonClicked(role))">
+                            <i class="@RoleHelper.GetRoleBootstrapIcon(role.Name)"></i>
                             <span class="ms-1">@role.DisplayName</span>
                         </div>
                     }
                 </div>
             </div>
-        </div>
-    </Body>
-</MainBlock>
+        </div> 
+    </BlockBodyContent>
+</MainBlock> 
 
 @code {
+    [Parameter, EditorRequired]
+    public UserListModel Value { get; set; }
+    
     [Parameter]
-    public UserListModel Model { get; set; }
+    public EventCallback<UserListModel> ValueChanged { get; set; }
 
-    [Parameter]
-    public EventCallback OnSearchButtonClicked { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback SearchButtonClicked { get; set; }
+    
+    [Parameter, EditorRequired]
+    public EventCallback<RoleMinimalModel> RoleButtonClicked { get; set; }
 
     private List<RoleMinimalModel> RoleOptions { get; set; }
 
-    private bool IsSearchContentValid => Model.Content.Length == 0 ||
-        Model.Content.Length >= 3;
+    private bool IsSearchContentValid { get; set; } = true;
 
     private string SearchContentColumnClass => !IsSearchContentValid ? "pb-0" : null;
 
     private string SearchContentValidationClass => !IsSearchContentValid ? "d-none" : null;
 
-    protected override async Task OnInitializedAsync()
-    {
-        List<RoleMinimalResponseDto> responseDtos = await RoleService.GetAllAsync(); 
-        RoleOptions = responseDtos.Select(dto => new RoleMinimalModel(dto)).ToList();
-    }
-
-    private string RoleButtonClassName(string roleName) {
+    private string GetRoleButtonClass(string roleName) {
         string color = RoleHelper.GetRoleBootstrapColor(roleName);
-        return $"bg-{color} bg-opacity-10 border-{color}-subtle text-{color}";
+        List<string> classNames = new List<string>
+        {
+            $"bg-{color} border-{color}-subtle text-{color}"
+        };
+        
+        if (roleName == Value.Role?.Name)
+        {
+            classNames.Add("border-2");
+        }
+
+        return string.Join(" ", classNames);
     }
 
     private void OnSearchContentChanged(ChangeEventArgs _)
     {
-        Model.Page = 1;
+        Value.Page = 1;
+        ValueChanged.InvokeAsync(Value);
     }
 
-    private void OnRoleButtonClicked(RoleMinimalModel role)
+    private void OnSearchButtonClicked()
     {
-        Model.Role = role;
+        if (Value == null)
+        {
+            return;
+        }
+        
+        if (Value.Content.Length == 0 || Value.Content.Length >= 3)
+        {
+            IsSearchContentValid = true;
+            SearchButtonClicked.InvokeAsync();
+        }
+        else
+        {
+            IsSearchContentValid = false;
+        }
+    }
+
+    private async Task OnRoleButtonClicked(RoleMinimalModel role)
+    {
+        Value.Role = role;
+        await ValueChanged.InvokeAsync(Value);
+        await RoleButtonClicked.InvokeAsync(role);
     }
 }

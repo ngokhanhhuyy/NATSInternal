@@ -1,0 +1,45 @@
+﻿@page "/user/{UserId:int}"
+@namespace NATSInternal.Blazor.Components.User.Detail
+@inject IUserService Service
+
+<MainContainer Render="@(!IsInitialLoading)">
+    <div class="row g-3 position-relative">
+        <!-- Avatar and names -->
+        <div class="col col-12">
+            <AvatarAndNames Model="Model" />
+        </div>
+
+        <!-- Personal information -->
+        @if (Model.PersonalInformation != null)
+        {
+            <div class="col col-md-6 col-sm-12 col-12">
+                <PersonalInformation Model="Model.PersonalInformation" />
+            </div>
+        }
+
+        <!-- User information -->
+        @if (Model.UserInformation != null)
+        {
+            <div class="col col-md-6 col-sm-12 col-12">
+                <UserInformation Model="Model.UserInformation"
+                        Authorization="Model.Authorization" />
+            </div>
+        }
+    </div>
+</MainContainer>
+
+@code {
+    [Parameter]
+    public int UserId { get; set; }
+
+    private UserDetailModel Model { get; set; }
+
+    private bool IsInitialLoading { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        UserDetailResponseDto responseDto = await Service.GetDetailAsync(UserId);
+        Model = new UserDetailModel(responseDto);
+        IsInitialLoading = false;
+    }
+}

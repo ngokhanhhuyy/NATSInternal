@@ -1,10 +1,9 @@
 @namespace NATSInternal.Blazor.Components
-@using Microsoft.AspNetCore.Components.Routing;
+@inject RoleHelper RoleHelper;
 
 <div class="block bg-white d-flex flex-column bg-body rounded-3 h-100">
-    <div class="block-body flex-fill row
-                border border-bottom-0 border-default rounded-top"
-            :class="bodyClassName" style="--bs-border-opacity: .25">
+    <div class="block-body flex-fill row border border-bottom-0 rounded-top @BodyClass()"
+                style="--bs-border-opacity: .25">
         <div class="col col-12 d-flex justify-content-center p-3">
             <div class="avatar-container">
                 <NavLink href="@($"User/{Model.Id}")">
@@ -15,7 +14,7 @@
         <div class="col col-12 pb-3">
             <div class="identity-container d-flex flex-column
                         align-items-center text-center">
-                <NavLink href="@($"User/{Model.Id}")">
+                <NavLink href="@Model.DetailRoute">
                     <span class="fullname fw-bold text-center">
                         @Model.FullName
                     </span>
@@ -28,9 +27,9 @@
     </div>
     <div class="block-footer d-flex flex-row justify-content-center rounded-bottom p-0">
         <div class="d-flex h-100 w-100 p-1 justify-content-center
-                    rounded-bottom-3 border @FooterClass">
+                    rounded-bottom-3 border @FooterClass()">
             <span class="px-2">
-                <i :class="iconClassName"></i>
+                <i class="@IconClass()"></i>
             </span>
             <span>
                 @Model.Role.DisplayName
@@ -43,21 +42,20 @@
     [Parameter]
     public UserBasicModel Model { get; set; }
 
-    private string BodyClass
+    private string BodyClass()
     {
-        get
-        {
-            string color = RoleHelper.GetRoleBootstrapColor(Model.Role.Name);
-            return $"border-{color}";
-        }
+        string color = RoleHelper.GetRoleBootstrapColor(Model.Role.Name);
+        return $"border-{color}";
     }
 
-    private string FooterClass
+    private string FooterClass()
     {
-        get
-        {
-            string color = RoleHelper.GetRoleBootstrapColor(Model.Role.Name);
-            return $"text-{color} bg-{color} bg-opacity-10 border-{color}-subtle";
-        }
+        string color = RoleHelper.GetRoleBootstrapColor(Model.Role.Name);
+        return $"text-{color} bg-{color} bg-opacity-10 border-{color}-subtle";
+    }
+
+    private string IconClass()
+    {
+        return RoleHelper.GetRoleBootstrapIcon(Model.Role.Name);
     }
 }

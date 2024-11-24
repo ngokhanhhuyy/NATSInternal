@@ -1,10 +1,10 @@
 ﻿@namespace NATSInternal.Blazor.Components
 
-<label class="@Class">@Name</label>
+<label class="@Class">@Text</label>
 
 @code {
-    [Parameter]
-    public string Name { get; set; }
+    [Parameter, EditorRequired]
+    public string Text { get; set; }
 
     [Parameter]
     public bool Required { get; set; }

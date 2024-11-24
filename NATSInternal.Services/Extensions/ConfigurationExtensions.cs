@@ -15,6 +15,9 @@ public static class ConfigurationExtensions
     /// A <see cref="string"/> value representing the connection string for database
     /// connection.
     /// </param>
+    /// <param name="isForBlazor">
+    /// A <see cref="bool"/> value indicates if this service layer is consumed by Blazor app.
+    /// </param>
     /// <returns>
     /// An <see cref="IServiceCollection"/> interface containing the services for the
     /// application.
@@ -56,13 +59,14 @@ public static class ConfigurationExtensions
         if (isForBlazor)
         {
             services.AddTransient<DatabaseContext>();
+            services.AddTransient<IUserService, UserService>();
         }
         else
         {
             services.AddScoped<DatabaseContext>();
+            services.AddScoped<IUserService, UserService>();
         }
         services.AddScoped<IAuthenticationService, AuthenticationService>();
-        services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRoleService, RoleService>();
 
         // Photo services.

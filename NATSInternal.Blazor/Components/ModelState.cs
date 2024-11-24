@@ -48,7 +48,7 @@ public class ModelState : ComponentBase
         foreach (KeyValuePair<string, string> error in errors)
         {
             FieldIdentifier field = CurrentEditContext.Field(error.Key);
-            _messageStore.Add(field, error.Value);
+            _messageStore?.Add(field, error.Value);
         }
 
         CurrentEditContext.NotifyValidationStateChanged();
@@ -57,6 +57,6 @@ public class ModelState : ComponentBase
     private bool IsPropertyValid(string propertyName)
     {
         IEnumerable<string> messages = _messageStore[CurrentEditContext.Field(propertyName)];
-        return messages != null && !messages.Any();
+        return !messages.Any();
     }
 }

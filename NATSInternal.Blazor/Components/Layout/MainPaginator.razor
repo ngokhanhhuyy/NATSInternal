@@ -11,7 +11,9 @@
             i++)
     {
         <button class="btn mx-1 btn-outline-primary page-button @PaginationButtonClassName(i)"
-                @onclick="_ => OnPageClicked.InvokeAsync(i)">
+                @onclick="@(async () => { await PageClicked.InvokeAsync(i);
+                              Console.WriteLine(i);
+                          })">
         </button>
     }
     <button class="btn mx-1 btn-outline-primary page-button"
@@ -28,7 +30,7 @@
     public int PageCount { get; set; }
 
     [Parameter]
-    public EventCallback<int> OnPageClicked { get; set; }
+    public EventCallback<int> PageClicked { get; set; }
 
     private PaginationRangeModel LargeScreenPaginationRange => CalculateRange(5);
 

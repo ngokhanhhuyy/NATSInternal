@@ -1,0 +1,69 @@
+@using System.Text.RegularExpressions
+@namespace NATSInternal.Blazor.Components
+
+@if (Type == TextInputType.TextArea)
+{
+    <textarea class="form-control @Class" value="Value" name="@Name"
+              @attributes="FilteredAttributes"
+              @onchange="OnChange">
+    </textarea>
+}
+else
+{
+    <input class="form-control @Class" type="@Type.ToString().ToLower()"
+           name="@Name" value="@Value" @onchange="@OnChange"
+           @attributes="FilteredAttributes">
+}
+
+@code {
+    [Parameter]
+    public TextInputType Type { get; set; } = TextInputType.Text;
+    
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> Attributes { get; set; }
+
+    [Parameter]
+    public string Value { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+    
+    [Parameter]
+    public Regex RegexPattern { get; set; }
+    
+    [Parameter]
+    public string Name { get; set; }
+
+    private string Class => (string)Attributes.GetValueOrDefault("class");
+
+    private Dictionary<string, object> FilteredAttributes => Attributes
+        .Where(pair => pair.Key != "class")
+        .ToDictionary();
+
+    private void OnChange(ChangeEventArgs eventArgs)
+    {
+        if (eventArgs.Value == null)
+        {
+            return;
+        }
+        
+        if (RegexPattern != null)
+        {
+            eventArgs.Value = RegexPattern.Replace((string)eventArgs.Value, string.Empty);
+        }
+
+        if (Type == TextInputType.Tel)
+        {
+            RegexPattern = new Regex("[^$0-9_]");
+            eventArgs.Value = RegexPattern.Replace((string)eventArgs.Value, string.Empty);
+        }
+
+        if (Type == TextInputType.Email)
+        {
+            RegexPattern = new Regex("[^$a-zA-Z0-9!#$%&'*+/=?^_`{|}~@.\\\\-]");
+            eventArgs.Value = RegexPattern.Replace((string)eventArgs.Value, string.Empty);
+        }
+        
+        ValueChanged.InvokeAsync((string)eventArgs.Value);
+    }
+}

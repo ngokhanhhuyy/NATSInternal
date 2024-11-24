@@ -2,70 +2,70 @@
 
 <ul id="navbar" class='@(NavigationBarClassName + " w-100")'>
     <li class='@ItemClass("Home")'>
-        <a href="/home">
+        <NavLink  href="/home">
             <i class="bi bi-house"></i>
             <span>Trang chủ</span>
-        </a>
+        </NavLink>
     </li>
     <li class='@ItemClass("Customer")'>
-        <a href="/CustomerList">
+        <NavLink  href="/CustomerList">
             <i class="bi bi-person-circle"></i>
             <span>@DisplayNames.Customer</span>
-        </a>
+        </NavLink>
     </li>
     <li class='@ItemClass("Product")'>
-        <a href="/home">
+        <NavLink  href="/home">
             <i class="bi bi-box-seam"></i>
             <span>@DisplayNames.Product</span>
-        </a>
+        </NavLink>
     </li>
     <li class='@ItemClass("Supply")'>
-        <a href="/home">
+        <NavLink  href="/home">
             <i class="bi bi-truck"></i>
             <span>@DisplayNames.Supply</span>
-        </a>
+        </NavLink>
     </li>
     <li class='@ItemClass("Order")'>
-        <a href="/orders">
+        <NavLink  href="/orders">
             <i class="bi bi-cart4"></i>
             <span>@DisplayNames.Order</span>
-        </a>
+        </NavLink>
     </li>
     <li class='@ItemClass("Treatment")'>
-        <a href="/home">
+        <NavLink  href="/home">
             <i class="bi bi-magic"></i>
             <span>@DisplayNames.Treatment</span>
-        </a>
+        </NavLink>
     </li>
     <li class='@ItemClass("Consultant")'>
-        <a href="/Consultant">
+        <NavLink  href="/Consultant">
             <i class="bi bi-patch-question"></i>
             <span>Tư vấn</span>
-        </a>
+        </NavLink>
     </li>
     <li class='@ItemClass("Stock")'>
-        <a href="/home">
+        <NavLink  href="/home">
             <i class="bi bi-archive"></i>
             <span>Kho hàng</span>
-        </a>
+        </NavLink>
     </li>
     <li class='@ItemClass("Debt")'>
-        <a href="/Debt">
+        <NavLink  href="/Debt">
             <i class="bi bi-hourglass-bottom"></i>
             <span>Khoản nợ</span>
-        </a>
+        </NavLink>
     </li>
     <li class='@ItemClass("Expense")'>
-        <a href="/Expense">
+        <NavLink  href="/Expense">
             <i class="bi bi-cash-coin"></i>
             <span>@DisplayNames.Expense</span>
-        </a>
+        </NavLink>
     </li>
     <li class='@ItemClass("User")'>
-        <a asp-action="UserList" asp-controller="User">
+        <NavLink href="/User">
             <i class="bi bi-person-badge"></i>
             <span>@DisplayNames.User</span>
-        </a>
+        </NavLink>
     </li>
 </ul>
 
@@ -83,7 +83,6 @@
             .Split("/")
             .First()
             .ToLower();
-        Console.WriteLine(CurrentRouteName);
     }
 
     private string ItemClass(string itemName)

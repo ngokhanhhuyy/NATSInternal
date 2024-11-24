@@ -148,6 +148,10 @@ builder.Services
 // FluentValidations
 builder.Services.ConfigureFluentValidation(useCamelCase: false);
 
+// Additional dependency injection.
+builder.Services.AddTransient<RoleHelper>();
+builder.Services.AddTransient<AvatarHelper>();
+
 WebApplication app = builder.Build();
 DataInitializer dataInitializer;
 dataInitializer = new DataInitializer();

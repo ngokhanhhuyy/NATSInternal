@@ -1,8 +1,8 @@
 namespace NATSInternal.Blazor.Helpers;
 
-public static class RoleHelper
+public class RoleHelper
 {
-    public static string GetRoleBootstrapColor(string roleName)
+    public string GetRoleBootstrapColor(string roleName)
     {
         Dictionary<string, string> roleColors = new Dictionary<string, string>
         {
@@ -15,7 +15,7 @@ public static class RoleHelper
         return roleColors[roleName];
     }
 
-    public static string GetRoleBootstrapIcon(string roleName)
+    public string GetRoleBootstrapIcon(string roleName)
     {
         Dictionary<string, string> roleIcons = new Dictionary<string, string>
         {

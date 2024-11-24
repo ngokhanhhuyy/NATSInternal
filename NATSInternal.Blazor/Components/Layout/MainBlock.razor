@@ -1,29 +1,28 @@
 ﻿@namespace NATSInternal.Blazor.Components
 
 <div class="block bg-white rounded-3 p-0 d-flex flex-column">
-    <!-- Header -->
+    <!-- HeaderContent -->
     <div class="block-header bg-opacity-25 border ps-3 p-2 rounded-top-3 d-flex
-                align-items-center @HeaderComputedClass"
+                align-items-center @GetHeaderClass()"
             style="height: 45px">
-        <div class="small fw-bold flex-fill me-2 pt-1 text-@Color.ToString()">
+        <div class="small fw-bold flex-fill me-2 pt-1 text-@ComputedColor">
             @Title.ToUpper()
         </div>
-        @Header
-        <i class="bi bi-x-lg text-primary"></i>
+        @BlockHeaderContent
     </div>
         
-    <!-- Body -->
-    <div class="rounded-bottom-3 flex-fill @BodyComputedClass">
-        <slot name="body"></slot>
+    <!-- BodyContent -->
+    <div class="rounded-bottom-3 flex-fill @GetBodyClass()">
+        @BlockBodyContent
     </div>
 </div>
 
 @code {
-    [Parameter]
+    [Parameter, EditorRequired]
     public string Title { get; set; }
 
     [Parameter]
-    public MainBlockColor Color { get; set; }
+    public MainBlockColor Color { get; set; } = MainBlockColor.Primary;
 
     [Parameter]
     public string HeaderClass { get; set; }
@@ -35,50 +34,50 @@
     public bool BodyClass { get; set; }
 
     [Parameter]
-    public (int Top, int Right, int Bottom, int Left)? BodyPadding { get; set; }
+    public (int Top, int Right, int Bottom, int Left)? BodyPadding { get; set; } = null;
 
     [Parameter]
-    public bool BodyBorder { get; set; }
+    public bool BodyBorder { get; set; } = true;
 
     [Parameter]
-    public RenderFragment Header { get; set; }
+    public RenderFragment BlockHeaderContent { get; set; }
 
     [Parameter]
-    public RenderFragment Body { get; set; }
+    public RenderFragment BlockBodyContent { get; set; }
 
-    private string HeaderComputedClass
+    private string ComputedColor => Color.ToString().ToLower();
+
+    private string GetHeaderClass()
     {
-        get
+        string className = $"bg-{ComputedColor}-subtle border-{ComputedColor}-subtle";
+        if (HeaderClass != null)
         {
-            string color = Color.ToString();
-            string className = $"bg-{color}-subtle border-{color}-subtle";
-            if (HeaderClass != null)
-            {
-                className += $" {HeaderClass}";
-            }
-
-            return className;
+            className += $" {HeaderClass}";
         }
+
+        return className;
     }
 
-    private string BodyComputedClass
+    private string GetBodyClass()
     {
-        get
+        List<string> classNames = new List<string>();
+        
+        if (BodyPadding.HasValue)
         {
-            if (BodyPadding.HasValue)
+            classNames.AddRange(new string[] 
             {
-                string[] classNames = new[]
-                {
-                    $"pt-{BodyPadding.Value.Top}",
-                    $"pe-{BodyPadding.Value.Right}",
-                    $"pb-{BodyPadding.Value.Bottom}",
-                    $"ps-{BodyPadding.Value.Left}"
-                };
-
-                return string.Join(" ", classNames);
-            }
-
-            return null;
+                $"pt-{BodyPadding.Value.Top}",
+                $"pe-{BodyPadding.Value.Right}",
+                $"pb-{BodyPadding.Value.Bottom}",
+                $"ps-{BodyPadding.Value.Left}"
+            });
         }
+
+        if (BodyBorder)
+        {
+            classNames.Add("border border-top-0");
+        }
+
+        return string.Join(" ", classNames);
     }
 }

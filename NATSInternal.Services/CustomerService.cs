@@ -133,8 +133,10 @@ internal class CustomerService
         Customer customer = await _context.Customers
             .Include(customer => customer.Introducer)
             .Include(customer => customer.CreatedUser).ThenInclude(u => u.Roles)
-            .Include(customer => customer.DebtIncurrences)
-            .Include(customer => customer.DebtPayments)
+            .Include(customer => customer.DebtIncurrences
+                .OrderByDescending(di => di.StatsDateTime))
+            .Include(customer => customer.DebtPayments
+                .OrderByDescending(dp => dp.StatsDateTime))
             .Where(c => !c.IsDeleted && c.Id == id)
             .SingleOrDefaultAsync()
             ?? throw new ResourceNotFoundException(
