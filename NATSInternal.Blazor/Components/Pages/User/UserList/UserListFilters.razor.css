@@ -1,6 +1,20 @@
-.all-role-button {
-    --color: 111, 66, 193;
-    color: rgb(var(--color)) !important;
-    background-color: rgba(var(--color), 0.1) !important;
-    border-color: rgba(var(--color), 0.4);
+.role-button {
+    --purple-color: 111, 66, 193;
+    box-sizing: border-box;
+}
+
+.text-purple {
+    color: rgb(var(--purple-color)) !important;
+}
+
+.border-purple {
+    border-color: rgba(var(--purple-color), 1);
+}
+
+.border-purple-subtle {
+    border-color: rgba(var(--purple-color), 0.4);
+}
+
+.bg-purple {
+    background-color: rgba(var(--purple-color), 0.1) !important;
 }

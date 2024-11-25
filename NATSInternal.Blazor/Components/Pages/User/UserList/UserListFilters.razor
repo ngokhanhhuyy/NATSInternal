@@ -21,9 +21,9 @@
                 <div class="input-group">
                     @if (Value != null)
                     {
-                        <TextInput class="flex-fill border-end-0"
-                            Type="@TextInputType.Text" @bind-Value="@Value.Content"
-                            maxlength="255" placeholder="Họ và tên, số điện thoại ..."/>
+                        <TextInput class="flex-fill border-end-0" Type="@TextInputType.Text"
+                                @bind-Value="@Value.Content" maxlength="255"
+                                placeholder="Họ và tên, số điện thoại ..."/>
                     }
                     else
                     {
@@ -33,13 +33,13 @@
 
                     <!-- Advance filters / collapse button -->
                     <button class="btn btn-outline-primary" data-bs-toggle="collapse"
-                        href="#advanced-filters-container" aria-expanded="false"
-                        role="button" aria-controls="advanced-filters-container"
-                        disabled="@(Value == null)">
+                            href="#advanced-filters-container" aria-expanded="false"
+                            role="button" aria-controls="advanced-filters-container"
+                            disabled="@(Value == null)">
                         <i class="bi bi-sliders"></i>
                     </button>
                 </div>
-                
+
                 @if (!IsSearchContentValid)
                 {
                     <span class="small opacity-50 text-danger">
@@ -56,7 +56,7 @@
                 </button>
             </div>
         </div>
-        
+
         <div class="row g-3 collapse" id="advanced-filters-container">
             <!-- Order by field -->
             <div class="col col-sm-6 col-12">
@@ -83,18 +83,18 @@
                 <InputLabel Text="Vị trí" />
                 <div class="d-flex flex-row flex-wrap">
                     <!-- All role button -->
-                    <div class="btn btn-sm me-2 mb-2 all-role-button"
-                            @click="onRoleButtonClicked(null)">
+                    <div class="btn btn-sm me-2 mb-2 role-button @GetRoleButtonClass(null)"
+                            @onclick="() => OnRoleButtonClicked(null)">
                         <i class="bi bi-grid-3x3-gap me-1"></i>
                         Tất cả
                     </div>
-                    
+
                     <!-- Specific role button -->
                     @foreach (RoleMinimalModel role in Value.RoleOptions)
                     {
-                        <div class="btn btn-sm me-2 mb-2 bg-opacity-10
-                                    @GetRoleButtonClass(role.Name)"
-                             @onclick="@(_ => OnRoleButtonClicked(role))">
+                        <div class="btn btn-sm me-2 mb-2 bg-opacity-10 role-button
+                                @GetRoleButtonClass(role.Name)"
+                                @onclick="@(_ => OnRoleButtonClicked(role))">
                             <i class="@RoleHelper.GetRoleBootstrapIcon(role.Name)"></i>
                             <span class="ms-1">@role.DisplayName</span>
                         </div>
@@ -108,13 +108,13 @@
 @code {
     [Parameter, EditorRequired]
     public UserListModel Value { get; set; }
-    
+
     [Parameter]
     public EventCallback<UserListModel> ValueChanged { get; set; }
 
     [Parameter, EditorRequired]
     public EventCallback SearchButtonClicked { get; set; }
-    
+
     [Parameter, EditorRequired]
     public EventCallback<RoleMinimalModel> RoleButtonClicked { get; set; }
 
@@ -127,15 +127,23 @@
     private string SearchContentValidationClass => !IsSearchContentValid ? "d-none" : null;
 
     private string GetRoleButtonClass(string roleName) {
-        string color = RoleHelper.GetRoleBootstrapColor(roleName);
+        string color = "purple";
+        if (roleName != null)
+        {
+            color = RoleHelper.GetRoleBootstrapColor(roleName);
+        }
         List<string> classNames = new List<string>
         {
-            $"bg-{color} border-{color}-subtle text-{color}"
+            $"bg-{color} text-{color}"
         };
-        
+
         if (roleName == Value.Role?.Name)
         {
-            classNames.Add("border-2");
+            classNames.Add($"border-{color} border-2");
+        }
+        else
+        {
+            classNames.Add($"border-{color}-subtle");
         }
 
         return string.Join(" ", classNames);

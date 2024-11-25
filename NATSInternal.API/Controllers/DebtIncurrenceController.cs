@@ -70,7 +70,8 @@ public class DebtIncurrenceController : ControllerBase
         // Validate data from the request.
         requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto);
+        validationResult = _upsertValidator.Validate(requestDto, options =>
+            options.IncludeRuleSets("Create").IncludeRulesNotInRuleSet());
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -122,7 +123,8 @@ public class DebtIncurrenceController : ControllerBase
         // Validate data from the request.
         requestDto.TransformValues();
         ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto);
+        validationResult = _upsertValidator.Validate(requestDto, options =>
+            options.IncludeRuleSets("Update").IncludeRulesNotInRuleSet());
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
@@ -151,7 +153,7 @@ public class DebtIncurrenceController : ControllerBase
         catch (OperationException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
-            return UnprocessableEntity(exception);
+            return UnprocessableEntity(ModelState);
         }
         catch (ConcurrencyException)
         {

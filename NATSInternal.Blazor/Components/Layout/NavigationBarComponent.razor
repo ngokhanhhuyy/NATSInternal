@@ -1,72 +1,48 @@
+@namespace NATSInternal.Blazor.Components
 @inject NavigationManager NavigationManager
 
-<ul id="navbar" class='@(NavigationBarClassName + " w-100")'>
-    <li class='@ItemClass("Home")'>
-        <NavLink  href="/home">
-            <i class="bi bi-house"></i>
-            <span>Trang chủ</span>
-        </NavLink>
-    </li>
-    <li class='@ItemClass("Customer")'>
-        <NavLink  href="/CustomerList">
-            <i class="bi bi-person-circle"></i>
-            <span>@DisplayNames.Customer</span>
-        </NavLink>
-    </li>
-    <li class='@ItemClass("Product")'>
-        <NavLink  href="/home">
-            <i class="bi bi-box-seam"></i>
-            <span>@DisplayNames.Product</span>
-        </NavLink>
-    </li>
-    <li class='@ItemClass("Supply")'>
-        <NavLink  href="/home">
-            <i class="bi bi-truck"></i>
-            <span>@DisplayNames.Supply</span>
-        </NavLink>
-    </li>
-    <li class='@ItemClass("Order")'>
-        <NavLink  href="/orders">
-            <i class="bi bi-cart4"></i>
-            <span>@DisplayNames.Order</span>
-        </NavLink>
-    </li>
-    <li class='@ItemClass("Treatment")'>
-        <NavLink  href="/home">
-            <i class="bi bi-magic"></i>
-            <span>@DisplayNames.Treatment</span>
-        </NavLink>
-    </li>
-    <li class='@ItemClass("Consultant")'>
-        <NavLink  href="/Consultant">
-            <i class="bi bi-patch-question"></i>
-            <span>Tư vấn</span>
-        </NavLink>
-    </li>
-    <li class='@ItemClass("Stock")'>
-        <NavLink  href="/home">
-            <i class="bi bi-archive"></i>
-            <span>Kho hàng</span>
-        </NavLink>
-    </li>
-    <li class='@ItemClass("Debt")'>
-        <NavLink  href="/Debt">
-            <i class="bi bi-hourglass-bottom"></i>
-            <span>Khoản nợ</span>
-        </NavLink>
-    </li>
-    <li class='@ItemClass("Expense")'>
-        <NavLink  href="/Expense">
-            <i class="bi bi-cash-coin"></i>
-            <span>@DisplayNames.Expense</span>
-        </NavLink>
-    </li>
-    <li class='@ItemClass("User")'>
-        <NavLink href="/User">
-            <i class="bi bi-person-badge"></i>
-            <span>@DisplayNames.User</span>
-        </NavLink>
-    </li>
+<ul id="navbar" class="w-100 @NavigationBarClass">
+    <CascadingValue Value="CurrentRouteName">
+        <NavigationBarItem Href="/" IconClass="bi bi-house">
+            @DisplayNames.Home
+        </NavigationBarItem>
+
+        <NavigationBarItem Href="/customer" IconClass="bi bi-person-circle">
+            @DisplayNames.Customer
+        </NavigationBarItem>
+
+        <NavigationBarItem Href="/product" IconClass="bi bi-box-seam">
+            @DisplayNames.Product
+        </NavigationBarItem>
+
+        <NavigationBarItem Href="/supply" IconClass="bi bi-truck">
+            @DisplayNames.Supply
+        </NavigationBarItem>
+
+        <NavigationBarItem Href="/order" IconClass="bi bi-cart4">
+            @DisplayNames.Order
+        </NavigationBarItem>
+
+        <NavigationBarItem Href="/treatment" IconClass="bi bi-magic">
+            @DisplayNames.Treatment
+        </NavigationBarItem>
+
+        <NavigationBarItem Href="/consultant" IconClass="bi bi-patch-question">
+            @DisplayNames.Consultant
+        </NavigationBarItem>
+
+        <NavigationBarItem Href="/debt" IconClass="bi bi-hourglass-bottom">
+            @DisplayNames.Debt
+        </NavigationBarItem>
+
+        <NavigationBarItem Href="/expense" IconClass="bi bi-cash-coin">
+            @DisplayNames.Expense
+        </NavigationBarItem>
+
+        <NavigationBarItem Href="/user" IconClass="bi bi-person-badge">
+            @DisplayNames.User
+        </NavigationBarItem>
+    </CascadingValue>
 </ul>
 
 @code {
@@ -74,9 +50,21 @@
     public bool KeepExpanded { get; set; }
 
     private string CurrentRouteName { get; set; }
-    private string NavigationBarClassName => KeepExpanded ? "keep-expanded" : null;
+    private string NavigationBarClass => KeepExpanded ? "keep-expanded" : null;
 
     protected override void OnInitialized()
+    {
+        UpdateCurrentRoute();
+        NavigationManager.LocationChanged += OnCurrentRouteChanged;
+    }
+
+    private void OnCurrentRouteChanged(object sender, LocationChangedEventArgs eventArgs)
+    {
+        UpdateCurrentRoute();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void UpdateCurrentRoute()
     {
         CurrentRouteName = NavigationManager
             .ToBaseRelativePath(NavigationManager.Uri)
@@ -91,12 +79,17 @@
         {
             return "selected";
         }
-        
+
         if (CurrentRouteName == itemName.ToLower())
         {
             return "selected";
         }
-        
+
         return null;
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnCurrentRouteChanged;
     }
 }

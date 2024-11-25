@@ -1,0 +1,34 @@
+﻿@namespace NATSInternal.Blazor.Components
+
+<li class="@GetClass()">
+    <NavLink href="@Href">
+        <i class="@IconClass"></i>
+        <span>@ChildContent</span>
+    </NavLink>
+</li>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Href { get; set; }
+
+    [Parameter, EditorRequired]
+    public string IconClass { get; set; }
+
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; }
+
+    [CascadingParameter]
+    public string CurrentRouteName { get; set; }
+
+    private string RouteName => Href[1..];
+
+    private string GetClass()
+    {
+        if (CurrentRouteName == RouteName)
+        {
+            return "selected";
+        }
+
+        return null;
+    }
+}

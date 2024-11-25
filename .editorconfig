@@ -12,6 +12,10 @@ guidelines_style = 1px dashed 33ffffff
 [*]
 guidelines = 95
 
+[*.razor]
+indent_size = 2
+attribute_continuation_indent_size = 2
+
 #### Core EditorConfig Options ####
 
 # Indentation and spacing

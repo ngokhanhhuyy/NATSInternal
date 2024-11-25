@@ -120,6 +120,7 @@ public static class DisplayNames
     public const string RecordedMonthAndYear = "Tháng và năm thông kê";
     public const string IntervalInMinutes = "Số phút hiệu lực";
     public const string StatsDateTime = "Ngày thống kê";
+    public const string Home = "Trang chủ";
 
     private static readonly Dictionary<string, string> _names;
 

@@ -1,8 +1,8 @@
 ﻿@page "/user"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @namespace NATSInternal.Blazor.Components
 @inject IUserService UserService
 @inject IRoleService RoleService
-@rendermode InteractiveServer
 
 <MainContainer Render="@(!IsInitialLoading)">
     <div class="row g-0">
