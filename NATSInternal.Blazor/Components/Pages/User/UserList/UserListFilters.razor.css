@@ -16,5 +16,6 @@
 }
 
 .bg-purple {
-    background-color: rgba(var(--purple-color), 0.1) !important;
+    --bs-bg-opacity: 1;
+    background-color: rgb(var(--purple-color), var(--bs-bg-opacity)) !important;
 }

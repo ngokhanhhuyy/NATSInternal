@@ -92,7 +92,7 @@
                     <!-- Specific role button -->
                     @foreach (RoleMinimalModel role in Value.RoleOptions)
                     {
-                        <div class="btn btn-sm me-2 mb-2 bg-opacity-10 role-button
+                        <div class="btn btn-sm me-2 mb-2 role-button
                                 @GetRoleButtonClass(role.Name)"
                                 @onclick="@(_ => OnRoleButtonClicked(role))">
                             <i class="@RoleHelper.GetRoleBootstrapIcon(role.Name)"></i>
@@ -134,16 +134,16 @@
         }
         List<string> classNames = new List<string>
         {
-            $"bg-{color} text-{color}"
+            $"bg-{color}"
         };
 
         if (roleName == Value.Role?.Name)
         {
-            classNames.Add($"border-{color} border-2");
+            classNames.Add($"text-white");
         }
         else
         {
-            classNames.Add($"border-{color}-subtle");
+            classNames.Add($"border-{color}-subtle bg-opacity-10 text-{color}");
         }
 
         return string.Join(" ", classNames);
