@@ -22,7 +22,6 @@ public sealed class DataInitializer
         InitializeRoles();
         InitializeUsers();
         InitializeRoleClaims();
-        InitializeCustomers();
         InitializeCountries();
         InitializeBrands();
         InitializeProductCategories();
@@ -416,6 +415,7 @@ public sealed class DataInitializer
                     nameElements.MiddleName,
                     nameElements.FirstName);
                 string phoneNumber = faker.Phone.PhoneNumber();
+                Console.WriteLine(phoneNumber, phoneNumber.Length);
 
                 Customer customer = new Customer
                 {
@@ -441,9 +441,12 @@ public sealed class DataInitializer
                     Birthday = DateOnly.FromDateTime(faker.Date.Between(
                         DateTime.UtcNow.ToApplicationTime().AddYears(-20),
                         DateTime.UtcNow.ToApplicationTime().AddYears(-80))),
-                    PhoneNumber = phoneNumber,
+                    PhoneNumber = phoneNumber.Replace(" ", string.Empty),
                     ZaloNumber = new string[] { phoneNumber, faker.Phone.PhoneNumber() }
-                        .Skip(random.Next(3)).Take(1).SingleOrDefault(),
+                        .Skip(random.Next(3))
+                        .Take(1)
+                        .SingleOrDefault()
+                        ?.Replace(" ", string.Empty),
                     FacebookUrl = "https://facebook.com/" + faker.Internet.UserName().ToLower(),
                     Email = faker.Internet.Email(),
                     Address = faker.Address.FullAddress(),
@@ -854,7 +857,7 @@ public sealed class DataInitializer
     private void InitializeStats()
     {
         Console.WriteLine("Initializing stats ...");
-        DateOnly minimumDate = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime().AddMonths(-6));
+        DateOnly minimumDate = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime().AddMonths(-12));
         DateOnly maximumDate = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime().AddMonths(3));
 
         // Generating a list of date to check if there is any date not existing in the database.
@@ -932,6 +935,83 @@ public sealed class DataInitializer
         _context.SaveChanges();
     }
 
+    private int SelectOrGenerateCustomer(DateTime createdDateTime, List<int> customerIds,
+            List<int> userIds, Random random, Faker faker, bool logResult)
+    {
+        // Determine whether existing customer should be selected instead of generating.
+        if (customerIds.Any() && random.Next(0, 11) >= 2)
+        {
+            return customerIds.MinBy(_ => Guid.NewGuid());
+        }
+        
+        int genderInt = random.Next(2);
+        Bogus.DataSets.Name.Gender fakerGender;
+        fakerGender = genderInt == 0
+            ? Bogus.DataSets.Name.Gender.Male
+            : Bogus.DataSets.Name.Gender.Female;
+        string fullName = faker.Name.FullName(fakerGender);
+        PersonNameElementsDto nameElements = PersonNameUtility
+            .GetNameElementsFromFullName(fullName);
+        fullName = PersonNameUtility.GetFullNameFromNameElements(
+            nameElements.LastName,
+            nameElements.MiddleName,
+            nameElements.FirstName);
+        string phoneNumber = faker.Phone.PhoneNumber("##########");
+        int? introducerId = null;
+        if (customerIds.Any() && random.Next(0, 11) > 8)
+        {
+            introducerId = customerIds.MinBy(_ => Guid.NewGuid());
+        }
+
+        Customer customer = new Customer
+        {
+            FirstName = nameElements.LastName,
+            NormalizedFirstName = nameElements.LastName
+                .ToNonDiacritics()
+                .ToUpper(),
+            MiddleName = nameElements.MiddleName,
+            NormalizedMiddleName = nameElements.MiddleName?
+                .ToNonDiacritics()
+                .ToUpper(),
+            LastName = nameElements.FirstName,
+            NormalizedLastName = nameElements.FirstName
+                .ToNonDiacritics()
+                .ToUpper(),
+            FullName = fullName,
+            NormalizedFullName = fullName
+                .ToNonDiacritics()
+                .ToUpper(),
+            NickName = nameElements.LastName + " " +
+                       faker.Lorem.Word().CapitalizeFirstLetter(),
+            Gender = genderInt == 0 ? Gender.Male : Gender.Female,
+            Birthday = DateOnly.FromDateTime(faker.Date.Between(
+                DateTime.UtcNow.ToApplicationTime().AddYears(-20),
+                DateTime.UtcNow.ToApplicationTime().AddYears(-80))),
+            PhoneNumber = phoneNumber.Replace(" ", string.Empty),
+            ZaloNumber = new string[] { phoneNumber, faker.Phone.PhoneNumber("##########") }
+                .Skip(random.Next(3))
+                .Take(1)
+                .SingleOrDefault()
+                ?.Replace(" ", string.Empty),
+            FacebookUrl = "https://facebook.com/" + faker.Internet.UserName().ToLower(),
+            Email = faker.Internet.Email(),
+            Address = faker.Address.FullAddress(),
+            CreatedDateTime = createdDateTime,
+            Note = SliceIfTooLong(faker.Lorem.Paragraph(), 255),
+            IntroducerId = introducerId,
+            CreatedUserId = userIds.Skip(random.Next(userIds.Count)).Take(1).Single()
+        };
+        _context.Customers.Add(customer);
+        _context.SaveChanges();
+
+        if (logResult)
+        {
+            Console.WriteLine($"Initialized Order with id {customer.Id} at {createdDateTime}");
+        }
+
+        return customer.Id;
+    }
+
     private void GenerateLockableEntitiesData(bool logResult = false)
     {
         List<bool> conditions = new List<bool>
@@ -957,11 +1037,9 @@ public sealed class DataInitializer
         {
             Console.WriteLine("Initializing LockableEntities.");
             Random random = new Random();
-            Faker faker = new Faker();
+            Faker faker = new Faker("vi");
             DateTime maxStatsDateTime = DateTime.UtcNow.ToApplicationTime();
-            DateTime statsDateTime = maxStatsDateTime
-                .AddMonths(-6);
-            List<int> customerIds = _context.Customers.Select(c => c.Id).ToList();
+            DateTime statsDateTime = maxStatsDateTime.AddMonths(-12);
             List<Product> products = _context.Products.ToList();
 
             // Get the starting statsDateTime, based on the existing data in the database.
@@ -998,8 +1076,8 @@ public sealed class DataInitializer
                 statsDateTime = lastGeneratedStatsDateTime.Value;
             }
 
-            // Canculate the day differences between 2 ranges in order to calculate
-            // the process in percentage.
+            // Canculate the day differences between 2 ranges in order to calculate the process
+            // in percentage.
             int totalDaysDifferent = maxStatsDateTime.Subtract(statsDateTime).Days;
 
             // Function to check if the statsDateTime is still valid for the loop to continue.
@@ -1020,7 +1098,8 @@ public sealed class DataInitializer
                 CheckAndGenerateSupply(statsDateTime, random, faker, products);
                 do
                 {
-                    statsDateTime = statsDateTime.AddMinutes(random.Next(300, 420));
+                    // statsDateTime = statsDateTime.AddMinutes(random.Next(300, 420));
+                    statsDateTime = statsDateTime.AddMinutes(random.Next(15, 30));
                 }
                 while (!IsStatsDateTimeValid(statsDateTime));
 
@@ -1028,6 +1107,8 @@ public sealed class DataInitializer
                 {
                     break;
                 }
+                
+                List<int> customerIds = _context.Customers.Select(c => c.Id).ToList();
 
                 // Generate queueing DebtPayments.
                 GenerateDebtPayment(statsDateTime, logResult);
@@ -1044,11 +1125,23 @@ public sealed class DataInitializer
                 }
                 else if (randomNumber < 65)
                 {
-                    GenerateOrder(statsDateTime, customerIds, products, random, faker, logResult);
+                    GenerateOrder(
+                        statsDateTime,
+                        customerIds,
+                        products,
+                        random,
+                        faker,
+                        logResult);
                 }
                 else
                 {
-                    GenerateTreatment(statsDateTime, customerIds, products, random, faker, logResult);
+                    GenerateTreatment(
+                        statsDateTime,
+                        customerIds,
+                        products,
+                        random,
+                        faker,
+                        logResult);
                 }
 
                 // Calculate the process percentage.
@@ -1058,7 +1151,8 @@ public sealed class DataInitializer
                     completedTask.ContinueWith(_ =>
                     {
                         Console.SetCursorPosition(0, Console.CursorTop - 1);
-                        Console.Out.WriteLineAsync($"{remainingDaysDifferent}/{totalDaysDifferent} days.");
+                        Console.Out.WriteLineAsync($"{remainingDaysDifferent}" +
+                            $"/{totalDaysDifferent} days.");
                     });
                 }
                 oldRemainingDaysDifferent = remainingDaysDifferent;
@@ -1225,6 +1319,13 @@ public sealed class DataInitializer
                     .Contains(PermissionConstants.CreateOrder))
                     .Select(u => u.Id)
                     .ToList();
+            int customerId = SelectOrGenerateCustomer(
+                statsDateTime,
+                customerIds,
+                userIds,
+                random,
+                faker,
+                logResult);
 
             // Initialize order.
             Order order = new Order
@@ -1234,7 +1335,7 @@ public sealed class DataInitializer
                 Note = random.Next(0, 2) == 0
                     ? null
                     : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
-                CustomerId = customerIds.MinBy(_ => Guid.NewGuid()),
+                CustomerId = customerId,
                 CreatedUserId = userIds.MinBy(_ => Guid.NewGuid()),
                 Items = new List<OrderItem>()
             };
@@ -1324,6 +1425,14 @@ public sealed class DataInitializer
                 .OrderBy(_ => EF.Functions.Random())
                 .Select(u => u.Id)
                 .First();
+            
+            int customerId = SelectOrGenerateCustomer(
+                statsDateTime,
+                customerIds,
+                userIds,
+                random,
+                faker,
+                logResult);
 
             // Initialize treatment entity.
             long serviceAmountBeforeVat = random.Next(1_000, 2_000) * 1000;
@@ -1333,8 +1442,10 @@ public sealed class DataInitializer
                 CreatedDateTime = statsDateTime,
                 ServiceAmountBeforeVat = serviceAmountBeforeVat,
                 ServiceVatAmount = (int)Math.Round(serviceAmountBeforeVat * 0.1),
-                Note = random.Next(0, 2) == 0 ? null : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
-                CustomerId = customerIds.MinBy(_ => Guid.NewGuid()),
+                Note = random.Next(0, 2) == 0
+                    ? null
+                    : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
+                CustomerId = customerId,
                 CreatedUserId = userIds.MinBy(_ => Guid.NewGuid()),
                 TherapistId = therapistId,
                 Items = new List<TreatmentItem>()
@@ -1413,6 +1524,13 @@ public sealed class DataInitializer
                 .Contains(PermissionConstants.CreateConsultant))
                 .Select(u => u.Id)
                 .ToList();
+        int customerId = SelectOrGenerateCustomer(
+            statsDateTime,
+            customerIds,
+            userIds,
+            random,
+            faker,
+            logResult);
 
         // Initialize consultant entity.
         Consultant consultant = new Consultant
@@ -1423,7 +1541,7 @@ public sealed class DataInitializer
             Note = random.Next(0, 2) == 0
                 ? null
                 : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
-            CustomerId = customerIds.MinBy(_ => Guid.NewGuid()),
+            CustomerId = customerId,
             CreatedUserId = userIds.MinBy(_ => Guid.NewGuid())
         };
         _context.Consultants.Add(consultant);

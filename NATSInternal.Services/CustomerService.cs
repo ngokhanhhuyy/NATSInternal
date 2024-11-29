@@ -10,13 +10,16 @@ internal class CustomerService
         ICustomerService
 {
     private readonly DatabaseContext _context;
+    private readonly IDbContextFactory<DatabaseContext> _contextFactory;
     private readonly IAuthorizationInternalService _authorizationService;
 
     public CustomerService(
             DatabaseContext context,
+            IDbContextFactory<DatabaseContext> contextFactory,
             IAuthorizationInternalService authorizationService) : base(authorizationService)
     {
         _context = context;
+        _contextFactory = contextFactory;
         _authorizationService = authorizationService;
     }
 
@@ -334,6 +337,49 @@ internal class CustomerService
                 .Single(i => i.Name == nameof(OrderByFieldOption.LastName))
                 .Name,
             DefaultAscending = true
+        };
+    }
+
+    /// <inheritdoc cref="ICustomerService.GetNewStatsAsync" />
+    public async Task<NewCustomerCountResponseDto> GetNewStatsAsync()
+    {
+        using DatabaseContext context = _contextFactory.CreateDbContext();
+        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
+
+        var result = await context.Customers
+            .GroupBy(customer => 1)
+            .Select(group => new
+            {
+                ThisMonthCount = group.Count(customer =>
+                    customer.CreatedDateTime.Month == today.Month &&
+                    customer.CreatedDateTime.Year == today.Year),
+                LastMonthCount = group.Count(customer =>
+                    customer.CreatedDateTime.Month == today.AddMonths(-1).Month &&
+                    customer.CreatedDateTime.Year == today.AddMonths(-1).Year)
+            }).FirstOrDefaultAsync()
+            ?? new
+            {
+                ThisMonthCount = 0,
+                LastMonthCount = 0
+            };
+
+        decimal ratio;
+        int ratioInPercentage;
+        if (result.ThisMonthCount >= result.LastMonthCount)
+        {
+            ratio = (decimal)result.ThisMonthCount / result.LastMonthCount;
+            ratioInPercentage = (int)Math.Round(ratio * 100) - 100;
+        }
+        else
+        {
+            ratio = -(decimal)result.LastMonthCount / result.ThisMonthCount;
+            ratioInPercentage = (int)Math.Round(ratio * 100) + 100;
+        }
+
+        return new NewCustomerCountResponseDto
+        {
+            ThisMonthCount = result.ThisMonthCount,
+            PercentageComparedToLastMonth = ratioInPercentage
         };
     }
 }

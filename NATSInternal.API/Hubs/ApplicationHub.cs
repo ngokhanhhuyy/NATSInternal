@@ -199,6 +199,12 @@ public class ApplicationHub : Hub
             .Where(pair => pair.Value.Any(id => connectionIds.Contains(id)))
             .Select(pair => pair.Key)
             .ToList();
+
+        if (!connectingUserIds.Contains(UserId))
+        {
+            connectingUserIds.Add(UserId);
+        }
+        
         List<UserBasicResponseDto> responseDtos = await _userService
             .GetMultipleAsync(connectingUserIds);
 

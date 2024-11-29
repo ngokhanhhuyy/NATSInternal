@@ -124,4 +124,14 @@ public interface ICustomerService
     /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.
     /// </returns>
     bool GetCreatingPermission();
+
+    /// <summary>
+    /// Get statistics about the new customers this month and the ratio in percentage compared
+    /// to last month.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is a DTO
+    /// containing the statistics and ratio.
+    /// </returns>
+    Task<NewCustomerCountResponseDto> GetNewStatsAsync();
 }

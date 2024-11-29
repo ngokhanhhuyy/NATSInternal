@@ -27,7 +27,7 @@ public static class ConfigurationExtensions
             string connectionString, // connectionString
             bool isForBlazor = false)
     {
-        services.AddDbContext<DatabaseContext>(options => options
+        services.AddDbContextFactory<DatabaseContext>(options => options
             // .UseSqlite(
             //     "DataSource=database.db",
             //     x => x.MigrationsAssembly("NATSInternal.Services")));
@@ -66,6 +66,7 @@ public static class ConfigurationExtensions
             services.AddScoped<DatabaseContext>();
             services.AddScoped<IUserService, UserService>();
         }
+        
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IRoleService, RoleService>();
 

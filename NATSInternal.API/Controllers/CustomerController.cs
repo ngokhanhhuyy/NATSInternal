@@ -186,4 +186,11 @@ public class CustomerController : ControllerBase
     {
         return Ok(_service.GetCreatingPermission());
     }
+
+    [HttpGet("NewStatistics")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetNewStatistics()
+    {
+        return Ok(await _service.GetNewStatsAsync());
+    }
 }
