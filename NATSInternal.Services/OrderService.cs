@@ -27,7 +27,7 @@ internal class OrderService
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
             IMultiplePhotosService<Order, OrderPhoto> photoService,
-            IStatsInternalService<Order, OrderUpdateHistory> statsService)
+            IStatsInternalService statsService)
         : base(context, authorizationService, photoService, statsService)
     {
     }
@@ -75,7 +75,7 @@ internal class OrderService
     /// <inheritdoc />
     protected override async Task AdjustStatsAsync(
             Order order,
-            IStatsInternalService<Order, OrderUpdateHistory> statsService,
+            IStatsInternalService statsService,
             bool isIncrementing)
     {
         DateOnly paidDate = DateOnly.FromDateTime(order.StatsDateTime);

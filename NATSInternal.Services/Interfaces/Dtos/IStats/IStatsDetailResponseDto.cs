@@ -1,6 +1,6 @@
-namespace NATSInternal.Services.Dtos;
+namespace NATSInternal.Services.Interfaces.Dtos;
 
-public class StatsDetailResponseDto
+internal interface IStatsDetailResponseDto
 {
     public long RetailGrossRevenue { get; set; }
     public long TreatmentGrossRevenue { get; set; }
@@ -21,6 +21,7 @@ public class StatsDetailResponseDto
     public long GrossProfit { get; set; }
     public long NetProfit { get; set; }
     public long OperatingProfit { get; set; }
+    public int NewCustomers { get; set; }
     public DateTime? TemporarilyClosedDateTime { get; set; }
     public DateTime? OfficiallyClosedDateTime { get; set; }
 }

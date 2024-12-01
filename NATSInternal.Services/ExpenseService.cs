@@ -15,13 +15,13 @@ internal class ExpenseService
     private readonly DatabaseContext _context;
     private readonly IMultiplePhotosService<Expense, ExpensePhoto> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService<Expense, ExpenseUpdateHistory> _statsService;
+    private readonly IStatsInternalService _statsService;
 
     public ExpenseService(
             DatabaseContext context,
             IMultiplePhotosService<Expense, ExpensePhoto> photoService,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService<Expense, ExpenseUpdateHistory> statsService)
+            IStatsInternalService statsService)
         : base(context, authorizationService)
     {
         _context = context;

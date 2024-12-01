@@ -40,6 +40,9 @@ internal class MonthlyStats : IIdentifiableEntity<MonthlyStats>
 
     [Required]
     public long StaffExpense { get; set; }
+    
+    [Required]
+    public int NewCustomers { get; set; }
 
     [Required]
     public int RecordedMonth { get; set; }

@@ -14,12 +14,12 @@ internal class ConsultantService
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService<Consultant, ConsultantUpdateHistory> _statsService;
+    private readonly IStatsInternalService _statsService;
 
     public ConsultantService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService<Consultant, ConsultantUpdateHistory> statsService)
+            IStatsInternalService statsService)
         : base(context, authorizationService)
     {
         _context = context;

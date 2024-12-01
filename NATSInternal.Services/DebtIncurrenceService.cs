@@ -15,7 +15,7 @@ internal class DebtIncurrenceService
     public DebtIncurrenceService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService<DebtIncurrence, DebtIncurrenceUpdateHistory> statsService)
+            IStatsInternalService statsService)
         : base(context, authorizationService, statsService)
     {
     }
@@ -67,7 +67,7 @@ internal class DebtIncurrenceService
     /// <inheritdoc />
     protected override async Task AdjustStatsAsync(
             DebtIncurrence debtIncurrence,
-            IStatsInternalService<DebtIncurrence, DebtIncurrenceUpdateHistory> service,
+            IStatsInternalService service,
             bool isIncrement)
     {
         long amountToIncrement = isIncrement ? debtIncurrence.Amount : -debtIncurrence.Amount;

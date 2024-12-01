@@ -128,27 +128,7 @@ public static class ConfigurationExtensions
         services.AddScoped<StatsService>();
         services.AddScoped<IStatsService>(provider => provider
             .GetRequiredService<StatsService>());
-        services.AddScoped<
-            IStatsInternalService<Expense, ExpenseUpdateHistory>,
-            StatsInternalService<Expense, ExpenseUpdateHistory>>();
-        services.AddScoped<
-            IStatsInternalService<Supply, SupplyUpdateHistory>,
-            StatsInternalService<Supply, SupplyUpdateHistory>>();
-        services.AddScoped<
-            IStatsInternalService<Order, OrderUpdateHistory>,
-            StatsInternalService<Order, OrderUpdateHistory>>();
-        services.AddScoped<
-            IStatsInternalService<Treatment, TreatmentUpdateHistory>,
-            StatsInternalService<Treatment, TreatmentUpdateHistory>>();
-        services.AddScoped<
-            IStatsInternalService<Consultant, ConsultantUpdateHistory>,
-            StatsInternalService<Consultant, ConsultantUpdateHistory>>();
-        services.AddScoped<
-            IStatsInternalService<DebtIncurrence, DebtIncurrenceUpdateHistory>,
-            StatsInternalService<DebtIncurrence, DebtIncurrenceUpdateHistory>>();
-        services.AddScoped<
-            IStatsInternalService<DebtPayment, DebtPaymentUpdateHistory>,
-            StatsInternalService<DebtPayment, DebtPaymentUpdateHistory>>();
+        services.AddScoped<IStatsInternalService, StatsInternalService>();
 
         // Month-year services.
         services.AddScoped<

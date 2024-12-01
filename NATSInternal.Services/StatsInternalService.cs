@@ -1,17 +1,17 @@
 namespace NATSInternal.Services;
 
-/// <inheritdoc />
-internal class StatsInternalService<T, TUpdateHistory>
-    :
-        StatsService,
-        IStatsInternalService<T, TUpdateHistory>
-    where T : class, IHasStatsEntity<T, TUpdateHistory>, new()
-    where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
+/// <inheritdoc cref="IStatsInternalService" />
+internal class StatsInternalService : StatsService,  IStatsInternalService
 {
-    public StatsInternalService(DatabaseContext context) : base(context) { }
+    public StatsInternalService(IDbContextFactory<DatabaseContext> contextFactory)
+            : base(contextFactory)
+    {  
+    }
 
     /// <inheritdoc />
-    public void ValidateStatsDateTime(T entity, DateTime statsDateTime)
+    public void ValidateStatsDateTime<T, TUpdateHistory>(T entity, DateTime statsDateTime)
+        where T : class, IHasStatsEntity<T, TUpdateHistory>, new()
+        where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
     {
         string errorMessage;
         if (statsDateTime > entity.CreatedDateTime)
@@ -37,73 +37,81 @@ internal class StatsInternalService<T, TUpdateHistory>
     /// <inheritdoc />
     public async Task IncrementRetailGrossRevenueAsync(long value, DateOnly? date = null)
     {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.RetailGrossRevenue += value;
         dailyStats.Monthly.RetailGrossRevenue += value;
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
     
     /// <inheritdoc />
     public async Task IncrementTreatmentGrossRevenueAsync(long value, DateOnly? date = null)
     {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.TreatmentGrossRevenue += value;
         dailyStats.Monthly.TreatmentGrossRevenue += value;
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
 
     /// <inheritdoc />
     public async Task IncrementConsultantGrossRevenueAsync(long value, DateOnly? date = null)
     {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.ConsultantGrossRevenue += value;
         dailyStats.Monthly.ConsultantGrossRevenue += value;
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
     
     /// <inheritdoc />
     public async Task IncrementDebtIncurredAmountAsync(long value, DateOnly? date = null)
     {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.DebtIncurredAmount += value;
         dailyStats.Monthly.DebtIncurredAmount += value;
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
     
     /// <inheritdoc />
     public async Task IncrementDebtPaidAmountAsync(long value, DateOnly? date = null)
     {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.DebtPaidAmount += value;
         dailyStats.Monthly.DebtPaidAmount += value;
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
 
     /// <inheritdoc />
     public async Task IncrementVatCollectedAmountAsync(long amount, DateOnly? date = null)
     {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.VatCollectedAmount += amount;
         dailyStats.Monthly.VatCollectedAmount += amount;
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
 
     /// <inheritdoc />
     public async Task IncrementShipmentCostAsync(long value, DateOnly? date = null)
     {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.ShipmentCost += value;
         dailyStats.Monthly.ShipmentCost += value;
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
 
     /// <inheritdoc />
     public async Task IncrementSupplyCostAsync(long value, DateOnly? date = null)
     {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.SupplyCost += value;
         dailyStats.Monthly.SupplyCost += value;
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
     
     /// <inheritdoc />
@@ -112,6 +120,7 @@ internal class StatsInternalService<T, TUpdateHistory>
             ExpenseCategory category,
             DateOnly? date = null)
     {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
         switch (category)
         {
@@ -136,15 +145,26 @@ internal class StatsInternalService<T, TUpdateHistory>
                                 $"value ({category})";
                 throw new ArgumentException(message);
         }
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task IncrementNewCustomerAsync(int value = 1, DateOnly? date = null)
+    {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
+        dailyStats.NewCustomers += value;
+        dailyStats.Monthly.NewCustomers += value;
+        await context.SaveChangesAsync();
     }
 
     /// <inheritdoc />
     public async Task TemporarilyCloseAsync(DateOnly date)
     {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.TemporarilyClosedDateTime = DateTime.UtcNow.ToApplicationTime();
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
 
     /// <inheritdoc />
@@ -180,8 +200,11 @@ internal class StatsInternalService<T, TUpdateHistory>
     /// <returns>The DailyStats entity.</returns>
     protected async Task<DailyStats> FetchStatisticsEntitiesAsync(DateOnly? date = null)
     {
-        DateOnly dateValue = date ?? DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
-        DailyStats dailyStats = await _context.DailyStats
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        
+        DateOnly dateValue = date
+            ?? DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
+        DailyStats dailyStats = await context.DailyStats
             .Include(ds => ds.Monthly)
             .Where(ds => ds.RecordedDate == dateValue)
             .SingleOrDefaultAsync();
@@ -193,9 +216,9 @@ internal class StatsInternalService<T, TUpdateHistory>
                 RecordedDate = dateValue,
                 CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),
             };
-            _context.DailyStats.Add(dailyStats);
+            context.DailyStats.Add(dailyStats);
 
-            MonthlyStats monthlyStats = await _context.MonthlyStats
+            MonthlyStats monthlyStats = await context.MonthlyStats
                 .Where(ms => ms.RecordedYear == dateValue.Year)
                 .Where(ms => ms.RecordedMonth == dateValue.Month)
                 .SingleOrDefaultAsync();
@@ -206,11 +229,11 @@ internal class StatsInternalService<T, TUpdateHistory>
                     RecordedMonth = dateValue.Month,
                     RecordedYear = dateValue.Year
                 };
-                _context.MonthlyStats.Add(monthlyStats);
+                context.MonthlyStats.Add(monthlyStats);
             }
 
             dailyStats.Monthly = monthlyStats;
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
 
         return dailyStats;

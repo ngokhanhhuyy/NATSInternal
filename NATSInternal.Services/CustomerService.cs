@@ -9,24 +9,26 @@ internal class CustomerService
             CustomerExistingAuthorizationResponseDto>,
         ICustomerService
 {
-    private readonly DatabaseContext _context;
     private readonly IDbContextFactory<DatabaseContext> _contextFactory;
     private readonly IAuthorizationInternalService _authorizationService;
+    private readonly IStatsInternalService _statsService;
 
     public CustomerService(
-            DatabaseContext context,
             IDbContextFactory<DatabaseContext> contextFactory,
-            IAuthorizationInternalService authorizationService) : base(authorizationService)
+            IAuthorizationInternalService authorizationService,
+            IStatsInternalService statsService) : base(authorizationService)
     {
-        _context = context;
         _contextFactory = contextFactory;
         _authorizationService = authorizationService;
+        _statsService = statsService;
     }
 
     public async Task<CustomerListResponseDto> GetListAsync(CustomerListRequestDto requestDto)
     {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        
         // Initialize query.
-        IQueryable<Customer> query = _context.Customers
+        IQueryable<Customer> query = context.Customers
             .Include(c => c.CreatedUser).ThenInclude(u => u.Roles)
             .Include(c => c.DebtIncurrences)
             .Include(c => c.DebtPayments);
@@ -118,7 +120,9 @@ internal class CustomerService
     /// <inheritdoc />
     public async Task<CustomerBasicResponseDto> GetBasicAsync(int id)
     {
-        return await _context.Customers
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        
+        return await context.Customers
             .Include(c => c.DebtIncurrences)
             .Include(c => c.DebtPayments)
             .Where(c => c.Id == id)
@@ -133,7 +137,9 @@ internal class CustomerService
     /// <inheritdoc />
     public async Task<CustomerDetailResponseDto> GetDetailAsync(int id)
     {
-        Customer customer = await _context.Customers
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        
+        Customer customer = await context.Customers
             .Include(customer => customer.Introducer)
             .Include(customer => customer.CreatedUser).ThenInclude(u => u.Roles)
             .Include(customer => customer.DebtIncurrences
@@ -163,6 +169,10 @@ internal class CustomerService
     /// <inheritdoc />
     public async Task<int> CreateAsync(CustomerUpsertRequestDto requestDto)
     {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        await using IDbContextTransaction transaction = await context.Database
+            .BeginTransactionAsync();
+        
         string fullName = PersonNameUtility.GetFullNameFromNameElements(
             requestDto.FirstName,
             requestDto.MiddleName,
@@ -191,10 +201,13 @@ internal class CustomerService
             IntroducerId = null,
             CreatedUserId = _authorizationService.GetUserId()
         };
-        _context.Customers.Add(customer);
+        context.Customers.Add(customer);
+        
         try
         {
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
+            await _statsService.IncrementNewCustomerAsync(1);
+            await transaction.CommitAsync();
             return customer.Id;
         }
         catch (DbUpdateException exception)
@@ -217,6 +230,8 @@ internal class CustomerService
     /// <inheritdoc />
     public async Task UpdateAsync(int id, CustomerUpsertRequestDto requestDto)
     {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        
         string fullName = PersonNameUtility.GetFullNameFromNameElements(
             requestDto.FirstName,
             requestDto.MiddleName,
@@ -224,7 +239,7 @@ internal class CustomerService
 
         try
         {
-            int affactedRows = await _context.Customers
+            int affactedRows = await context.Customers
                 .Where(c => !c.IsDeleted && c.Id == id)
                 .ExecuteUpdateAsync(setters => setters
                     .SetProperty(c => c.FirstName, requestDto.FirstName)
@@ -281,20 +296,27 @@ internal class CustomerService
     /// <inheritdoc />
     public async Task DeleteAsync(int id)
     {
-        int affectedRows = await _context.Customers
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        await using IDbContextTransaction transaction = await context.Database
+            .BeginTransactionAsync();
+        
+        int affectedRows = await context.Customers
             .Where(c => !c.IsDeleted && c.Id == id)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(c => c.UpdatedDateTime, DateTime.UtcNow.ToApplicationTime())
                 .SetProperty(c => c.IntroducerId, (int?)null)
                 .SetProperty(c => c.IsDeleted, true));
 
-        if (affectedRows == 0)
+        if (affectedRows != 1)
         {
             throw new ResourceNotFoundException(
                 nameof(Customer),
                 nameof(id),
                 id.ToString());
         }
+
+        await _statsService.IncrementNewCustomerAsync(-1);
+        await transaction.CommitAsync();
     }
     
     /// <inheritdoc cref="ICustomerService.GetListSortingOptions" />
@@ -343,7 +365,7 @@ internal class CustomerService
     /// <inheritdoc cref="ICustomerService.GetNewStatsAsync" />
     public async Task<NewCustomerCountResponseDto> GetNewStatsAsync()
     {
-        using DatabaseContext context = _contextFactory.CreateDbContext();
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
 
         var result = await context.Customers

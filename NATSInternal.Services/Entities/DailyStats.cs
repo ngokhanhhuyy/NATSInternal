@@ -40,6 +40,9 @@ internal class DailyStats : IIdentifiableEntity<DailyStats>
 
     [Required]
     public long StaffExpense { get; set; }
+    
+    [Required]
+    public int NewCustomers { get; set; }
 
     [Required]
     public DateOnly RecordedDate { get; set; }

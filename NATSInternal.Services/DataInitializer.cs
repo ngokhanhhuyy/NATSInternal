@@ -66,10 +66,14 @@ public sealed class DataInitializer
             };
             foreach (Role role in roles)
             {
-                IdentityResult result = _roleManager.CreateAsync(role).GetAwaiter().GetResult();
+                IdentityResult result = _roleManager
+                    .CreateAsync(role)
+                    .GetAwaiter()
+                    .GetResult();
                 if (!result.Succeeded)
                 {
-                    throw new InvalidOperationException(result.Errors.FirstOrDefault()?.Description);
+                    string errorMessage = result.Errors.FirstOrDefault()?.Description;
+                    throw new InvalidOperationException(errorMessage);
                 }
                 _context.SaveChanges();
             }
@@ -374,90 +378,25 @@ public sealed class DataInitializer
                     .CreateAsync(pair.Key, pair.Value.Password)
                     .GetAwaiter()
                     .GetResult();
+                string errorMessage;
                 if (!result.Succeeded)
                 {
-                    throw new InvalidOperationException(result.Errors.FirstOrDefault()?.Description);
+                    errorMessage = result.Errors.FirstOrDefault()?.Description;
+                    throw new InvalidOperationException(errorMessage);
                 }
+
                 result = _userManager
                     .AddToRoleAsync(pair.Key, pair.Value.RoleName)
                     .GetAwaiter()
                     .GetResult();
                 if (!result.Succeeded)
                 {
-                    throw new InvalidOperationException(result.Errors.FirstOrDefault()?.Description);
+                    errorMessage = result.Errors.FirstOrDefault()?.Description;
+                    throw new InvalidOperationException(errorMessage);
                 }
             }
         }
         _context.SaveChanges();
-    }
-
-    private void InitializeCustomers()
-    {
-        if (!_context.Customers.Any())
-        {
-            Console.WriteLine("Initializing customers");
-            List<int> userIds = _context.Users.Select(u => u.Id).ToList();
-            DateTime creatingDateTime = DateTime.UtcNow.ToApplicationTime().AddYears(-5);
-            Faker faker = new Faker("vi");
-            Random random = new Random();
-            for (int i = 0; i < 100; i++)
-            {
-                int genderInt = random.Next(2);
-                Bogus.DataSets.Name.Gender fakerGender;
-                fakerGender = genderInt == 0
-                    ? Bogus.DataSets.Name.Gender.Male
-                    : Bogus.DataSets.Name.Gender.Female;
-                string fullName = faker.Name.FullName(fakerGender);
-                PersonNameElementsDto nameElements = PersonNameUtility
-                    .GetNameElementsFromFullName(fullName);
-                fullName = PersonNameUtility.GetFullNameFromNameElements(
-                    nameElements.LastName,
-                    nameElements.MiddleName,
-                    nameElements.FirstName);
-                string phoneNumber = faker.Phone.PhoneNumber();
-                Console.WriteLine(phoneNumber, phoneNumber.Length);
-
-                Customer customer = new Customer
-                {
-                    FirstName = nameElements.LastName,
-                    NormalizedFirstName = nameElements.LastName
-                        .ToNonDiacritics()
-                        .ToUpper(),
-                    MiddleName = nameElements.MiddleName,
-                    NormalizedMiddleName = nameElements.MiddleName?
-                        .ToNonDiacritics()
-                        .ToUpper(),
-                    LastName = nameElements.FirstName,
-                    NormalizedLastName = nameElements.FirstName
-                        .ToNonDiacritics()
-                        .ToUpper(),
-                    FullName = fullName,
-                    NormalizedFullName = fullName
-                        .ToNonDiacritics()
-                        .ToUpper(),
-                    NickName = nameElements.LastName + " " +
-                               faker.Lorem.Word().CapitalizeFirstLetter(),
-                    Gender = genderInt == 0 ? Gender.Male : Gender.Female,
-                    Birthday = DateOnly.FromDateTime(faker.Date.Between(
-                        DateTime.UtcNow.ToApplicationTime().AddYears(-20),
-                        DateTime.UtcNow.ToApplicationTime().AddYears(-80))),
-                    PhoneNumber = phoneNumber.Replace(" ", string.Empty),
-                    ZaloNumber = new string[] { phoneNumber, faker.Phone.PhoneNumber() }
-                        .Skip(random.Next(3))
-                        .Take(1)
-                        .SingleOrDefault()
-                        ?.Replace(" ", string.Empty),
-                    FacebookUrl = "https://facebook.com/" + faker.Internet.UserName().ToLower(),
-                    Email = faker.Internet.Email(),
-                    Address = faker.Address.FullAddress(),
-                    CreatedDateTime = creatingDateTime,
-                    Note = faker.Lorem.Paragraph(),
-                    CreatedUserId = userIds.Skip(random.Next(userIds.Count)).Take(1).Single()
-                };
-                _context.Customers.Add(customer);
-            }
-            _context.SaveChanges();
-        }
     }
 
     private void InitializeCountries()
@@ -857,10 +796,12 @@ public sealed class DataInitializer
     private void InitializeStats()
     {
         Console.WriteLine("Initializing stats ...");
-        DateOnly minimumDate = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime().AddMonths(-12));
-        DateOnly maximumDate = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime().AddMonths(3));
+        DateOnly minimumDate = DateOnly
+            .FromDateTime(DateTime.UtcNow.ToApplicationTime().AddMonths(-6));
+        DateOnly maximumDate = DateOnly
+            .FromDateTime(DateTime.UtcNow.ToApplicationTime().AddMonths(3));
 
-        // Generating a list of date to check if there is any date not existing in the database.
+        // Generate a list of date to check if there is any date not existing in the database.
         List<DateOnly> dateList = new List<DateOnly>();
         DateOnly generatingDate = minimumDate;
         while (generatingDate <= maximumDate)
@@ -870,7 +811,9 @@ public sealed class DataInitializer
         }
 
         // Fetch a list of existing dates in the database.
-        List<DateOnly> existingDates = _context.DailyStats.Select(ds => ds.RecordedDate).ToList();
+        List<DateOnly> existingDates = _context.DailyStats
+            .Select(ds => ds.RecordedDate)
+            .ToList();
 
         // Check if there is any date which doesn't exist in the database.
         IEnumerable<DateOnly> notExistingDates = dateList.Except(existingDates);
@@ -958,7 +901,7 @@ public sealed class DataInitializer
             nameElements.FirstName);
         string phoneNumber = faker.Phone.PhoneNumber("##########");
         int? introducerId = null;
-        if (customerIds.Any() && random.Next(0, 11) > 8)
+        if (customerIds.Count != 0 && random.Next(0, 11) > 8)
         {
             introducerId = customerIds.MinBy(_ => Guid.NewGuid());
         }
@@ -966,23 +909,16 @@ public sealed class DataInitializer
         Customer customer = new Customer
         {
             FirstName = nameElements.LastName,
-            NormalizedFirstName = nameElements.LastName
-                .ToNonDiacritics()
-                .ToUpper(),
+            NormalizedFirstName = nameElements.LastName.ToNonDiacritics().ToUpper(),
             MiddleName = nameElements.MiddleName,
             NormalizedMiddleName = nameElements.MiddleName?
                 .ToNonDiacritics()
                 .ToUpper(),
             LastName = nameElements.FirstName,
-            NormalizedLastName = nameElements.FirstName
-                .ToNonDiacritics()
-                .ToUpper(),
+            NormalizedLastName = nameElements.FirstName.ToNonDiacritics().ToUpper(),
             FullName = fullName,
-            NormalizedFullName = fullName
-                .ToNonDiacritics()
-                .ToUpper(),
-            NickName = nameElements.LastName + " " +
-                       faker.Lorem.Word().CapitalizeFirstLetter(),
+            NormalizedFullName = fullName.ToNonDiacritics().ToUpper(),
+            NickName = $"{nameElements.LastName} {faker.Lorem.Word().CapitalizeFirstLetter()}",
             Gender = genderInt == 0 ? Gender.Male : Gender.Female,
             Birthday = DateOnly.FromDateTime(faker.Date.Between(
                 DateTime.UtcNow.ToApplicationTime().AddYears(-20),
@@ -1001,8 +937,18 @@ public sealed class DataInitializer
             IntroducerId = introducerId,
             CreatedUserId = userIds.Skip(random.Next(userIds.Count)).Take(1).Single()
         };
+        
         _context.Customers.Add(customer);
         _context.SaveChanges();
+        customerIds.Add(customer.Id);
+
+        // Generating stats data.
+        DateOnly statsDate = DateOnly.FromDateTime(customer.CreatedDateTime);
+        DailyStats dailyStats = _context.DailyStats
+            .Include(ds => ds.Monthly)
+            .Single(ds => ds.RecordedDate == statsDate);
+        dailyStats.NewCustomers += 1;
+        dailyStats.Monthly.NewCustomers += 1;
 
         if (logResult)
         {
@@ -1039,8 +985,9 @@ public sealed class DataInitializer
             Random random = new Random();
             Faker faker = new Faker("vi");
             DateTime maxStatsDateTime = DateTime.UtcNow.ToApplicationTime();
-            DateTime statsDateTime = maxStatsDateTime.AddMonths(-12);
+            DateTime statsDateTime = maxStatsDateTime.AddMonths(-6);
             List<Product> products = _context.Products.ToList();
+            List<int> customerIds = _context.Customers.Select(c => c.Id).ToList();
 
             // Get the starting statsDateTime, based on the existing data in the database.
             IEnumerable<DateTime?> lastDateTimes = new List<DateTime?>
@@ -1081,7 +1028,7 @@ public sealed class DataInitializer
             int totalDaysDifferent = maxStatsDateTime.Subtract(statsDateTime).Days;
 
             // Function to check if the statsDateTime is still valid for the loop to continue.
-            bool IsStatsDateTimeValid(DateTime dateTime)
+            static bool IsStatsDateTimeValid(DateTime dateTime)
             {
                 bool isInBusinessHours = dateTime.Hour >= 8 && dateTime.Hour <= 17;
                 bool isInBusinessDaysOfWeek = dateTime.DayOfWeek != DayOfWeek.Saturday &&
@@ -1107,8 +1054,6 @@ public sealed class DataInitializer
                 {
                     break;
                 }
-                
-                List<int> customerIds = _context.Customers.Select(c => c.Id).ToList();
 
                 // Generate queueing DebtPayments.
                 GenerateDebtPayment(statsDateTime, logResult);
@@ -1183,7 +1128,8 @@ public sealed class DataInitializer
             {
                 SupplyItem item = new SupplyItem
                 {
-                    ProductAmountPerUnit = (int)Math.Round(product.DefaultPrice - product.DefaultPrice * 0.35),
+                    ProductAmountPerUnit = (int)Math
+                        .Round(product.DefaultPrice - product.DefaultPrice * 0.35),
                     Quantity = 100 - product.StockingQuantity,
                     ProductId = product.Id,
                 };
@@ -1199,8 +1145,10 @@ public sealed class DataInitializer
             {
                 StatsDateTime = statsDateTime,
                 CreatedDateTime = statsDateTime,
-                ShipmentFee = random.Next(200_000, 500_000),
-                Note = random.Next(0, 2) == 0 ? null : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
+                ShipmentFee = random.Next(200, 500) * 1000,
+                Note = random.Next(0, 2) == 0
+                    ? null
+                    : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
                 CreatedUserId = userIds.Skip(random.Next(userIds.Count)).Take(1).Single(),
                 Items = items
             };
@@ -1219,7 +1167,8 @@ public sealed class DataInitializer
             _context.SaveChanges();
             if (logResult)
             {
-                Console.WriteLine($"Initialized supply with id {supply.Id} at {statsDateTime}");
+                Console.WriteLine($"Initialized supply with id {supply.Id}" +
+                    $"at {statsDateTime}");
             }
         }
     }
@@ -1245,7 +1194,8 @@ public sealed class DataInitializer
 
         // Generating company name.
         string companyName = faker.Company.CompanyName();
-        ExpensePayee payee = _context.ExpensePayees.SingleOrDefault(e => e.Name == companyName);
+        ExpensePayee payee = _context.ExpensePayees
+            .SingleOrDefault(e => e.Name == companyName);
         if (payee is null)
         {
             payee = new ExpensePayee
@@ -1262,7 +1212,9 @@ public sealed class DataInitializer
             StatsDateTime = statsDateTime,
             CreatedDateTime = statsDateTime,
             Category = category,
-            Note = random.Next(0, 2) == 0 ? null : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
+            Note = random.Next(0, 2) == 0
+                ? null
+                : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
             CreatedUserId = userIds.Skip(random.Next(userIds.Count)).Take(1).Single(),
             Payee = payee
         };
@@ -1672,6 +1624,7 @@ public sealed class DataInitializer
                 ? null
                 : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
             StatsDateTime = statsDateTime.AddMinutes(5),
+            CreatedDateTime = statsDateTime.AddMinutes(5),
             CustomerId = customerId,
             CreatedUserId = userId
         };
@@ -1696,10 +1649,11 @@ public sealed class DataInitializer
 
     private void GenerateDebtPayment(DateTime statsDateTime, bool logResult)
     {
-        while (_queueingDebtPayments.Any(dp => dp.StatsDateTime < statsDateTime))
+        while (_queueingDebtPayments.Count > 0 &&
+                _queueingDebtPayments.Peek().StatsDateTime < statsDateTime)
         {
             DebtPayment debtPayment = _queueingDebtPayments.Dequeue();
-            _context.Add(debtPayment);
+            _context.DebtPayments.Add(debtPayment);
 
             // Generating stats data.
             DateOnly statsDate = DateOnly.FromDateTime(debtPayment.StatsDateTime);
@@ -1726,7 +1680,8 @@ public sealed class DataInitializer
         // For value types, handle nullable explicitly
         if (typeof(T).IsValueType)
         {
-            if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>))
+            if (typeof(T).IsGenericType &&
+                typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 // T is already a nullable value type (e.g., int?)
                 return random.Next(2) == 0 ? value : default;
@@ -1797,7 +1752,8 @@ public sealed class DataInitializer
             2, 30, 0);
 
         // Check if the closing operation in this month has been executed.
-        // If it HASN'T, closing all stats of the months which are equal to or earlier than 2 months ago.
+        // If it HASN'T, closing all stats of the months which are equal to or earlier than 2
+        // months ago.
         if (currentDateTime < closingDateTime)
         {
             if (recordedDate.Year < currentDateTime.AddMonths(-2).Year)
@@ -1814,8 +1770,8 @@ public sealed class DataInitializer
             return false;
         }
 
-        // If the closing operation HAS been executed, closing all stats of the months which are
-        // equal to or earlier than 1 month ago.
+        // If the closing operation HAS been executed, closing all stats of the months which
+        // are equal to or earlier than 1 month ago.
         if (recordedDate.Year < currentDateTime.AddMonths(-1).Year)
         {
             return true;
@@ -1838,7 +1794,8 @@ public sealed class DataInitializer
             2, 30, 0);
 
         // Check if the closing operation in this month has been executed.
-        // If it HASN'T, closing all stats of the months which are equal to or earlier than 3 months ago.
+        // If it HASN'T, closing all stats of the months which are equal to or earlier than 3
+        // months ago.
         if (currentDateTime < closingDateTime)
         {
             if (recordedDate.Year < currentDateTime.AddMonths(-3).Year)
@@ -1855,8 +1812,8 @@ public sealed class DataInitializer
             return false;
         }
 
-        // If the closing operation HAS been executed, closing all stats of the months which are
-        // equal to or earlier than 2 month ago.
+        // If the closing operation HAS been executed, closing all stats of the months which
+        // are equal to or earlier than 2 month ago.
         if (recordedDate.Year < currentDateTime.AddMonths(-2).Year)
         {
             return true;

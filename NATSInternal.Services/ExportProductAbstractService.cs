@@ -133,13 +133,13 @@ internal abstract class ExportProductAbstractService<
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IMultiplePhotosService<T, TPhoto> _photoService;
-    private readonly IStatsInternalService<T, TUpdateHistory> _statsService;
+    private readonly IStatsInternalService _statsService;
 
     protected ExportProductAbstractService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
             IMultiplePhotosService<T, TPhoto> photoService,
-            IStatsInternalService<T, TUpdateHistory> statsService)
+            IStatsInternalService statsService)
         : base(context, authorizationService)
     {
         _context = context;
@@ -316,8 +316,9 @@ internal abstract class ExportProductAbstractService<
                 // Validate the specified StatsDateTime value from the request.
                 try
                 {
-                    _statsService
-                        .ValidateStatsDateTime(entity, requestDto.StatsDateTime.Value);
+                    _statsService.ValidateStatsDateTime<T, TUpdateHistory>(
+                        entity,
+                        requestDto.StatsDateTime.Value);
                     entity.StatsDateTime = requestDto.StatsDateTime.Value;
                 }
                 catch (ValidationException exception)
@@ -756,6 +757,6 @@ internal abstract class ExportProductAbstractService<
     /// </returns>
     protected abstract Task AdjustStatsAsync(
             T entity,
-            IStatsInternalService<T, TUpdateHistory> statsService,
+            IStatsInternalService statsService,
             bool isIncrementing);
 }

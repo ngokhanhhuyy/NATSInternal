@@ -83,6 +83,20 @@ Cookie: {{accessCookie}}
 }
 
 ###
+# @name Stats-LastestMonthlyBasic
+# @no-log
+GET {{host}}/stats/lastestMonthlyBasic?monthCount=1&includeThisMonth=false
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name Stats-LastestDailyBasic
+# @no-log
+GET {{host}}/stats/lastestDailyBasic?dayCount=61&includeToday=false
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
 # @name HealthCheck
 // @no-log
 GET {{host}}/healthcheck/ping
@@ -93,7 +107,7 @@ Content-Type: application/json
 // @no-log
 GET {{host}}/resourceAccess/accessingUsers?type=Customer&primaryId=11&mode=0
 Content-Type: application/json
-Cookie: {{accessCookie}}
+Cookie: {{accessCookie}}s
 
 ###
 # @name ResourceAccess-Status

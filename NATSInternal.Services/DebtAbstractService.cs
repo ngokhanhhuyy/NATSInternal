@@ -86,12 +86,12 @@ internal abstract class DebtAbstractService<
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService<T, TUpdateHistory> _statsService;
+    private readonly IStatsInternalService _statsService;
 
     protected DebtAbstractService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService<T, TUpdateHistory> statsService)
+            IStatsInternalService statsService)
         : base(context, authorizationService)
     {
         _context = context;
@@ -374,7 +374,7 @@ internal abstract class DebtAbstractService<
                 // Validate the specified StatsDateTime from the request.
                 try
                 {
-                    _statsService.ValidateStatsDateTime(
+                    _statsService.ValidateStatsDateTime<T, TUpdateHistory>(
                         entity,
                         requestDto.StatsDateTime.Value);
                 }
@@ -598,6 +598,6 @@ internal abstract class DebtAbstractService<
     /// </returns>
     protected abstract Task AdjustStatsAsync(
             T entity,
-            IStatsInternalService<T, TUpdateHistory> service,
+            IStatsInternalService service,
             bool isIncrementing);
 }

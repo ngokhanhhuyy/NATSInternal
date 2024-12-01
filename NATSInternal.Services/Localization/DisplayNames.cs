@@ -112,6 +112,8 @@ public static class DisplayNames
     public const string DebtRemainingAmount = "Số nợ còn lại";
     public const string MonthlyStats = "Thống kê tháng";
     public const string Month = "Tháng";
+    public const string MonthCount = "Số lượng tháng";
+    public const string DayCount = "Số lượng ngày";
     public const string Year = "Năm";
     public const string DailyStats = "Thống kê theo ngày";
     public const string RecordedDate = "Ngày thống kê";
@@ -127,7 +129,8 @@ public static class DisplayNames
     static DisplayNames()
     {
         _names = new Dictionary<string, string>();
-        FieldInfo[] fields = typeof(DisplayNames).GetFields(BindingFlags.Public | BindingFlags.Static);
+        FieldInfo[] fields = typeof(DisplayNames)
+            .GetFields(BindingFlags.Public | BindingFlags.Static);
         foreach (var field in fields)
         {
             _names.Add(field.Name, (string)field.GetValue(null));
