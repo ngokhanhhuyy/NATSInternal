@@ -641,7 +641,7 @@ namespace NATSInternal.Services.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long>("Amount")
+                    b.Property<long>("PurchasedAmount")
                         .HasColumnType("bigint")
                         .HasColumnName("amount");
 
@@ -749,7 +749,7 @@ namespace NATSInternal.Services.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long>("Amount")
+                    b.Property<long>("PurchasedAmount")
                         .HasColumnType("bigint")
                         .HasColumnName("amount");
 
@@ -857,7 +857,7 @@ namespace NATSInternal.Services.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<long>("Amount")
+                    b.Property<long>("PurchasedAmount")
                         .HasColumnType("bigint")
                         .HasColumnName("amount");
 
@@ -1267,7 +1267,7 @@ namespace NATSInternal.Services.Migrations
                         .HasColumnType("int")
                         .HasColumnName("product_id");
 
-                    b.Property<int>("Quantity")
+                    b.Property<int>("PurchasedAmount")
                         .HasColumnType("int")
                         .HasColumnName("quantity");
 
@@ -1658,7 +1658,7 @@ namespace NATSInternal.Services.Migrations
                         .HasColumnType("int")
                         .HasColumnName("product_id");
 
-                    b.Property<int>("Quantity")
+                    b.Property<int>("PurchasedAmount")
                         .HasColumnType("int")
                         .HasColumnName("quantity");
 
@@ -1860,7 +1860,7 @@ namespace NATSInternal.Services.Migrations
                         .HasColumnType("int")
                         .HasColumnName("product_id");
 
-                    b.Property<int>("Quantity")
+                    b.Property<int>("PurchasedAmount")
                         .HasColumnType("int")
                         .HasColumnName("quantity");
 

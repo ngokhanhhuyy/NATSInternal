@@ -51,7 +51,7 @@ internal class Order
     public long AmountBeforeVat => ProductAmountBeforeVat;
 
     [NotMapped]
-    public long AfterVatAmount => ProductAmountBeforeVat + ProductVatAmount;
+    public long AmountAfterVat => ProductAmountBeforeVat + ProductVatAmount;
 
     [NotMapped]
     public long VatAmount => ProductVatAmount;

@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Services.Enums;
 
-public enum TopSellingProductCriteria
+public enum TopSoldProductCriteria
 {
     Quantity,
     Amount

@@ -22,6 +22,7 @@ public class UtilityController : ControllerBase
     private readonly ISupplyService _supplyService;
     private readonly ITreatmentService _treatmentService;
     private readonly IUserService _userService;
+    private readonly IStatsService _statsService;
 
     public UtilityController(
             IAnnouncementService announcementService,
@@ -39,7 +40,8 @@ public class UtilityController : ControllerBase
             IRoleService roleService,
             ISupplyService supplyService,
             ITreatmentService treatmentService,
-            IUserService userService)
+            IUserService userService,
+            IStatsService statsService)
     {
         _announcementService = announcementService;
         _authorizationService = authorizationService;
@@ -57,9 +59,11 @@ public class UtilityController : ControllerBase
         _supplyService = supplyService;
         _treatmentService = treatmentService;
         _userService = userService;
+        _statsService = statsService;
     }
 
     [HttpGet("InitialData")]
+    [ResponseCache(Duration = 60 * 60 * 24)]
     [Authorize]
     public async Task<IActionResult> GetInitialData()
     {
@@ -148,10 +152,25 @@ public class UtilityController : ControllerBase
                 ListSortingOptions = _userService.GetListSortingOptions(),
                 CreatingPermission = _userService.GetCreatingPermission()
             },
+            Stats = new StatsInitialResponseDto
+            {
+                TopSoldProduct = new TopSoldProductInitialResponseDto
+                {
+                    RangeTypeOptionList = _statsService.GetTopSoldProductRangeTypeOptions(),
+                    CriteriaOptionList = _statsService.GetTopSoldProductCriteriaOptions()
+                },
+                TopPurchasedCustomer = new TopPurchasedInitialResponseDto
+                {
+                    RangeTypeOptionList = _statsService
+                        .GetTopPuschasedCustomerRangeTypeOptions(),
+                    CriteriaOptionList = _statsService.GetTopPurchasedCustomerCriteriaOptions()
+                },
+            }
         });
     }
 
     [HttpGet("DisplayNames")]
+    [ResponseCache(Duration = 60 * 60 * 24)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetDisplayNames()
     {

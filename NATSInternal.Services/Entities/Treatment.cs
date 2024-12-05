@@ -78,7 +78,7 @@ internal class Treatment
     public long AmountBeforeVat => ProductAmountBeforeVat + ServiceAmountBeforeVat;
 
     [NotMapped]
-    public long AmountAfterVat => AmountBeforeVat + ServiceVatAmount;
+    public long AmountAfterVat => AmountBeforeVat + VatAmount;
 
     [NotMapped]
     public long VatAmount => ProductVatAmount + ServiceVatAmount;

@@ -97,6 +97,27 @@ Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
+# @name Stats-TopSoldProductList
+# @no-log
+GET {{host}}/stats/topSoldProductList?creteria=Quantity
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name Stats-TopPurchasedCustomerList
+# @no-log
+GET {{host}}/stats/topPurchasedCustomerList?creteria=PurchasedTransactionCount
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name Stats-LastestTransactions
+# @no-log
+GET {{host}}/stats/lastestTransactions
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
 # @name HealthCheck
 // @no-log
 GET {{host}}/healthcheck/ping
@@ -107,7 +128,7 @@ Content-Type: application/json
 // @no-log
 GET {{host}}/resourceAccess/accessingUsers?type=Customer&primaryId=11&mode=0
 Content-Type: application/json
-Cookie: {{accessCookie}}s
+Cookie: {{accessCookie}}
 
 ###
 # @name ResourceAccess-Status
@@ -122,9 +143,3 @@ Cookie: {{accessCookie}}
 GET {{host}}/utility/initialData
 Content-Type: application/json
 Cookie: {{accessCookie}}
-
-###
-# @name Utility-InitialData
-// @no-log
-GET http://localhost:5000/healthcheck/ping
-Content-Type: application/json

@@ -18,4 +18,5 @@ public class InitialDataResponseDto
     public required SupplyInitialResponseDto Supply { get; set; }
     public required TreatmentInitialResponseDto Treatment { get; set; }
     public required UserInitialResponseDto User { get; set; }
+    public required StatsInitialResponseDto Stats { get; set; }
 }

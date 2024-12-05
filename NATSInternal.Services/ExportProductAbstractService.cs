@@ -99,7 +99,7 @@ internal abstract class ExportProductAbstractService<
         TCreatingAuthorizationResponseDto,
         TExistingAuthorizationResponseDto>
     where T : class, IExportProductEntity<T, TItem, TPhoto, TUpdateHistory>, new()
-    where TItem : class, IHasProductExportableItemEntity<TItem>, new()
+    where TItem : class, IExportProductItemEntity<TItem>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
     where TListRequestDto : IProductExportableListRequestDto

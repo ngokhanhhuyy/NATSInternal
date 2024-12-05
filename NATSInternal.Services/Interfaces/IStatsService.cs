@@ -86,4 +86,86 @@ public interface IStatsService
     /// </returns>
     Task<List<MonthlyStatsBasicResponseDto>> GetLastestMonthlyAsync(
             LastestMonthlyStatsRequestDto requestDto);
+
+    /// <summary>
+    /// Retrieves the top of the sold products with basic information, based on the creteria
+    /// and count in a lastest time-range specified in the request DTO.
+    /// </summary>
+    /// <param name="requestDto">
+    /// A DTO instance containing the conditions for the results.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is a DTO
+    /// containing the results and range information.
+    /// </returns>
+    Task<TopSoldProductListResponseDto> GetTopSoldProductListAsync(
+            TopSoldProductListRequestDto requestDto);
+
+    /// <summary>
+    /// Retrieves the range type options which can be used as conditions for top sold product
+    /// retrieving operation.
+    /// </summary>
+    /// <returns>
+    /// A DTO containing a <see cref="List{T}"/> of options with display names and the default
+    /// option if the request DTO for the operation doesn't include one.
+    /// </returns>
+    StatsRangeTypeOptionListResponseDto GetTopSoldProductRangeTypeOptions();
+
+    /// <summary>
+    /// Retrieves the criteria options which can be used as conditions for top sold product
+    /// retrieving operation.
+    /// </summary>
+    /// <returns>
+    /// A DTO containing a <see cref="List{T}"/> of options with display names and the default
+    /// option if the request DTO for the operation doesn't include one.
+    /// </returns>
+    StatsCriteriaOptionListResponseDto GetTopSoldProductCriteriaOptions();
+
+    /// <summary>
+    /// Retrieves the top of the purchased customers with basic information, based on the
+    /// creteria and count in a lastest time-range specified in the request DTO.
+    /// </summary>
+    /// <param name="requestDto">
+    /// A DTO instance containing the conditions for the results.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is a DTO
+    /// containing the results and range information.
+    /// </returns>
+    Task<TopPurchasedCustomerListResponseDto> GetTopPurchasedCustomerListAsync(
+            TopPurchasedCustomerListRequestDto requestDto);
+
+    /// <summary>
+    /// Retrieves the range type options which can be used as conditions for top purchased
+    /// customer retrieving operation.
+    /// </summary>
+    /// <returns>
+    /// A DTO containing a <see cref="List{T}"/> of options with display names and the default
+    /// option if the request DTO for the operation doesn't include one.
+    /// </returns>
+    StatsRangeTypeOptionListResponseDto GetTopPuschasedCustomerRangeTypeOptions();
+
+    /// <summary>
+    /// Retrieves the criteria options which can be used as conditions for top purchased
+    /// customer retrieving operation.
+    /// </summary>
+    /// <returns>
+    /// A DTO containing a <see cref="List{T}"/> of options with display names and the default
+    /// option if the request DTO for the operation doesn't include one.
+    /// </returns>
+    StatsCriteriaOptionListResponseDto GetTopPurchasedCustomerCriteriaOptions();
+
+    /// <summary>
+    /// Retrieves the lastest transactions, based on the transaction count specified in the
+    /// request DTO.
+    /// </summary>
+    /// <param name="requestDto">
+    /// A DTO containing the conditions for the results.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is a
+    /// <see cref="List{T}"/> of DTOs, containing the results.
+    /// </returns>
+    Task<List<LastestTransactionResponseDto>> GetLastestTransactionsAsync(
+            LastestTransactionsRequestDto requestDto);
 }

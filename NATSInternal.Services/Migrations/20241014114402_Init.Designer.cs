@@ -1270,7 +1270,7 @@ namespace NATSInternal.Services.Migrations
                         .HasColumnType("int")
                         .HasColumnName("product_id");
 
-                    b.Property<int>("Quantity")
+                    b.Property<int>("PurchasedAmount")
                         .HasColumnType("int")
                         .HasColumnName("quantity");
 
@@ -1655,7 +1655,7 @@ namespace NATSInternal.Services.Migrations
                         .HasColumnType("int")
                         .HasColumnName("product_id");
 
-                    b.Property<int>("Quantity")
+                    b.Property<int>("PurchasedAmount")
                         .HasColumnType("int")
                         .HasColumnName("quantity");
 
@@ -1857,7 +1857,7 @@ namespace NATSInternal.Services.Migrations
                         .HasColumnType("int")
                         .HasColumnName("product_id");
 
-                    b.Property<int>("Quantity")
+                    b.Property<int>("PurchasedAmount")
                         .HasColumnType("int")
                         .HasColumnName("quantity");
 

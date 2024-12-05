@@ -104,6 +104,8 @@ public static class DisplayNames
     public const string SocialMediaUrl = "Địa chỉ mạng xã hội";
     public const string RangeFrom = "Khoảng bắt đầu";
     public const string RangeTo = "Khoảng kết thúc";
+    public const string RangeType = "Kiểu khoảng";
+    public const string RangeLength = "Độ dài khoảng";
     public const string File = "File";
     public const string Reason = "Lý do";
     public const string Debt = "Khoản nợ";
@@ -123,6 +125,12 @@ public static class DisplayNames
     public const string IntervalInMinutes = "Số phút hiệu lực";
     public const string StatsDateTime = "Ngày thống kê";
     public const string Home = "Trang chủ";
+    public const string Creteria = "Tiêu chí";
+    public const string Count = "Số lượng";
+    public const string Date = "Ngày";
+    public const string PurchasedAmount = "Số tiền đã mua";
+    public const string PurchasedTransactionCount = "Số lượng giao dịch mua";
+    public const string Quantity = "Số lượng";
 
     private static readonly Dictionary<string, string> _names;
 
@@ -143,7 +151,9 @@ public static class DisplayNames
         return _names
             .Where(pair => pair.Key == objectName.CapitalizeFirstLetter())
             .Select(pair => pair.Value)
-            .Single();
+            .SingleOrDefault()
+            ?? throw new InvalidOperationException(
+                $"There is no display name for {objectName}");
     }
 
     public static string Get(object[] objectName)

@@ -218,6 +218,7 @@ else
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseDeveloperExceptionPage();
 app.UseRouting();
+app.UseResponseCaching();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

@@ -9,17 +9,26 @@ public class StatsController : ControllerBase
     private readonly IValidator<MonthlyStatsRequestDto> _monthlyValidator;
     private readonly IValidator<LastestMonthlyStatsRequestDto> _lastestMonthlyStatsValidator;
     private readonly IValidator<LastestDailyStatsRequestDto> _lastestDailyStatsValidator;
+    private readonly IValidator<TopSoldProductListRequestDto> _topSoldProductListValidator;
+    private readonly IValidator<TopPurchasedCustomerListRequestDto> _topPurchasedCustomerListValidator;
+    private readonly IValidator<LastestTransactionsRequestDto> _lastestTransactionsValidator;
 
     public StatsController(
             IStatsService service,
             IValidator<MonthlyStatsRequestDto> monthlyValidator,
             IValidator<LastestMonthlyStatsRequestDto> lastestMonthlyStatsValidator,
-            IValidator<LastestDailyStatsRequestDto> lastestDailyStatsValidator)
+            IValidator<LastestDailyStatsRequestDto> lastestDailyStatsValidator,
+            IValidator<TopSoldProductListRequestDto> topSoldProductListValidator,
+            IValidator<TopPurchasedCustomerListRequestDto> topPurchasedCustomerListValidator,
+            IValidator<LastestTransactionsRequestDto> lastestTransactionsValidator)
     {
         _service = service;
         _monthlyValidator = monthlyValidator;
         _lastestMonthlyStatsValidator = lastestMonthlyStatsValidator;
         _lastestDailyStatsValidator = lastestDailyStatsValidator;
+        _topSoldProductListValidator = topSoldProductListValidator;
+        _topPurchasedCustomerListValidator = topPurchasedCustomerListValidator;
+        _lastestTransactionsValidator = lastestTransactionsValidator;
     }
 
     [HttpGet("Daily")]
@@ -120,5 +129,70 @@ public class StatsController : ControllerBase
         }
 
         return Ok(await _service.GetLastestDailyDetailAsync(requestDto));
+    }
+
+    [HttpGet("TopSoldProductList")]
+    [ResponseCache(Duration=300)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetTopSoldProductList(
+            [FromQuery] TopSoldProductListRequestDto requestDto)
+    {
+        // Validate data from the request.
+        ValidationResult validationResult;
+        validationResult = _topSoldProductListValidator.Validate(requestDto.TransformValues());
+        if (!validationResult.IsValid)
+        {
+            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
+            return BadRequest(ModelState);
+        }
+
+        return Ok(await _service.GetTopSoldProductListAsync(requestDto));
+    }
+
+    [HttpGet("TopPurchasedCustomerList")]
+    [ResponseCache(Duration=300)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetTopPurchasedCustomerList(
+            [FromQuery] TopPurchasedCustomerListRequestDto requestDto)
+    {
+        // Validate data from the request.
+        ValidationResult validationResult = _topPurchasedCustomerListValidator
+            .Validate(requestDto.TransformValues());
+        if (!validationResult.IsValid)
+        {
+            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
+            return BadRequest(ModelState);
+        }
+
+        return Ok(await _service.GetTopPurchasedCustomerListAsync(requestDto));
+    }
+
+    [HttpGet("LastestTransactions")]
+    [ResponseCache(Duration=60)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetLastestTransactionsAsync(
+            [FromQuery] LastestTransactionsRequestDto requestDto)
+    {
+        // Validate data from the request.
+        ValidationResult validationResult;
+        validationResult = _lastestTransactionsValidator.Validate(requestDto);
+        if (!validationResult.IsValid)
+        {
+            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
+            return BadRequest(ModelState);
+        }
+
+        return Ok(await _service.GetLastestTransactionsAsync(requestDto));
+    }
+
+    [HttpGet("TopSoldProductRangeTypeOptions")]
+    [ResponseCache(Duration=60 * 60 * 24)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetTopSoldProductRangeTypeOptions()
+    {
+        return Ok(_service.GetTopSoldProductRangeTypeOptions());
     }
 }

@@ -1,6 +1,6 @@
 namespace NATSInternal.Services.Entities;
 
-internal class TreatmentItem : IHasProductExportableItemEntity<TreatmentItem>
+internal class TreatmentItem : IExportProductItemEntity<TreatmentItem>
 {
     [Key]
     public int Id { get; set; }
