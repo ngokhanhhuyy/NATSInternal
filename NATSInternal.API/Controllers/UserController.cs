@@ -207,14 +207,13 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpPut("{id:int}/ChangePassword")]
+    [HttpPut("ChangePassword")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> ChangeUserPassword(
-            int id,
             [FromBody] UserPasswordChangeRequestDto requestDto)
     {
         // Validate data from the request.
@@ -230,7 +229,7 @@ public class UserController : ControllerBase
         // Perform the password change operation.
         try
         {
-            await _userService.ChangePasswordAsync(id, requestDto);
+            await _userService.ChangePasswordAsync(requestDto);
             return Ok();
         }
         catch (ResourceNotFoundException exception)

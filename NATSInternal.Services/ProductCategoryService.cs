@@ -55,14 +55,15 @@ internal class ProductCategoryService
     /// <inheritdoc />
     public async Task<ProductCategoryResponseDto> GetDetailAsync(int id)
     {
-        return await _context.ProductCategories
+        ProductCategory category = await _context.ProductCategories
             .Where(pc => pc.Id == id)
-            .Select(pc => new ProductCategoryResponseDto(pc, GetExistingAuthorization(pc)))
             .SingleOrDefaultAsync()
             ?? throw new ResourceNotFoundException(
                 nameof(ProductCategory),
                 nameof(id),
                 id.ToString());
+
+        return new ProductCategoryResponseDto(category, GetExistingAuthorization(category));
     }
 
     /// <inheritdoc />

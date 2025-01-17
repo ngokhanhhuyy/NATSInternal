@@ -55,15 +55,13 @@ internal class BrandService
     /// <inheritdoc />
     public async Task<BrandDetailResponseDto> GetDetailAsync(int id)
     {
-        return await _context.Brands
+        Brand brand = await _context.Brands
             .Include(b => b.Country)
             .Where(b => b.Id == id)
-            .Select(b => new BrandDetailResponseDto(b, GetExistingAuthorization(b)))
             .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException(
-                nameof(Brand),
-                nameof(id),
-                id.ToString());
+            ?? throw new ResourceNotFoundException(nameof(Brand), nameof(id), id.ToString());
+
+        return new BrandDetailResponseDto(brand, GetExistingAuthorization(brand));
     }
 
     /// <inheritdoc />

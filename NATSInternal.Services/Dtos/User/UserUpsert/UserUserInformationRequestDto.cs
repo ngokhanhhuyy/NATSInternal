@@ -5,10 +5,11 @@ public class UserUserInformationRequestDto
 {
     public DateOnly? JoiningDate { get; set; }
     public string Note { get; set; }
-    public RoleRequestDto Role { get; set; }
+    public string RoleName { get; set; }
 
     public void TransformValues()
     {
         Note = Note?.ToNullIfEmpty();
+        RoleName = RoleName?.ToNullIfEmpty();
     }
 }

@@ -145,11 +145,8 @@ public interface IUserService
     Task UpdateAsync(int id, UserUpdateRequestDto requestDto);
 
     /// <summary>
-    /// Changes the password of the user with the specified id.
+    /// Changes the password of the requested user.
     /// </summary>
-    /// <param name="id">
-    /// An <see cref="int"/> representing the id of the target user.
-    /// </param>
     /// <param name="requestDto">
     /// An instance of the <see cref="UserPasswordChangeRequestDto"/> class, contaning the
     /// current password, the new password and the confirmation password for the operation.
@@ -159,16 +156,13 @@ public interface IUserService
     /// The requesting user and the user whose id is specified by the value of the `id`
     /// argument must be the same one.
     /// </remarks>
-    /// <exception cref="ResourceNotFoundException">
-    /// Throws when the user with the specified id doens't exist or has already been deleted.
-    /// </exception>
     /// <exception cref="AuthorizationException">
     /// Throws when the requesting user isn't the target user.
     /// </exception>
     /// <exception cref="OperationException">
     /// Throws when the current password, provided in the <c>requestDto</c> is incorrect.
     /// </exception>
-    Task ChangePasswordAsync(int id, UserPasswordChangeRequestDto requestDto);
+    Task ChangePasswordAsync(UserPasswordChangeRequestDto requestDto);
 
     /// <summary>
     /// Resets the password of the user, specified by the id, without the need of providing

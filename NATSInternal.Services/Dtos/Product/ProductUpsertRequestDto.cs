@@ -11,8 +11,8 @@ public class ProductUpsertRequestDto : IRequestDto
     public bool IsDiscontinued { get; set; }
     public byte[] ThumbnailFile { get; set; }
     public bool ThumbnailChanged { get; set; }
-    public int CategoryId { get; set; }
-    public int BrandId { get; set; }
+    public int? CategoryId { get; set; }
+    public int? BrandId { get; set; }
     public List<ProductPhotoRequestDto> Photos { get; set; }
 
     public void TransformValues()

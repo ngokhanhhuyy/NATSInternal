@@ -309,11 +309,11 @@ internal class UserService : IUserService
         {
             // Checking if the role name from the request exist
             Role role = await _context.Roles
-                .SingleOrDefaultAsync(r => r.Name == requestDto.UserInformation.Role.Name)
+                .SingleOrDefaultAsync(r => r.Name == requestDto.UserInformation.RoleName)
                 ?? throw new ResourceNotFoundException(
                     nameof(Role),
-                    nameof(requestDto.UserInformation.Role.Name),
-                    requestDto.UserInformation.Role.Name);
+                    nameof(requestDto.UserInformation.RoleName),
+                    requestDto.UserInformation.RoleName);
 
             // Ensure the desired role's power level cannot be greater than
             // the requested user's power level.
@@ -325,7 +325,7 @@ internal class UserService : IUserService
             // Adding user to role
             IdentityResult result = await _userManager.AddToRoleAsync(
             user,
-            requestDto.UserInformation.Role.Name);
+            requestDto.UserInformation.RoleName);
             if (result.Errors.Any())
             {
                 throw new InvalidOperationException(result.Errors
@@ -430,16 +430,16 @@ internal class UserService : IUserService
             user.Note = requestDto.UserInformation.Note;
 
             // Update user's role if needed.
-            if (requestDto.UserInformation.Role.Name != user.Role.Name)
+            if (requestDto.UserInformation.RoleName != user.Role.Name)
             {
                 // Ensure the desired role's power level cannot be greater than
                 // the requested user's power level.
                 Role role = await _context.Roles
-                    .SingleOrDefaultAsync(r => r.Name == requestDto.UserInformation.Role.Name)
+                    .SingleOrDefaultAsync(r => r.Name == requestDto.UserInformation.RoleName)
                     ?? throw new ResourceNotFoundException(
                         nameof(Role),
                         "role.name",
-                        requestDto.UserInformation.Role.Name);
+                        requestDto.UserInformation.RoleName);
                 if (!_authorizationService.CanAssignToRole(role))
                 {
                     throw new AuthorizationException();
@@ -457,11 +457,10 @@ internal class UserService : IUserService
     }
 
     /// <inheritdoc />
-    public async Task ChangePasswordAsync(
-            int id,
-            UserPasswordChangeRequestDto requestDto)
+    public async Task ChangePasswordAsync(UserPasswordChangeRequestDto requestDto)
     {
         // Fetch the entity with given id and ensure the entity exists.
+        int id = _authorizationService.GetUserId();
         User user = await _context.Users
             .SingleOrDefaultAsync(u => u.Id == id && !u.IsDeleted)
             ?? throw new ResourceNotFoundException(nameof(User), nameof(id), id.ToString());

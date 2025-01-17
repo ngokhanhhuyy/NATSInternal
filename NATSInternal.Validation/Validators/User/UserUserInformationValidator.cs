@@ -12,8 +12,8 @@ public class UserUserInformationValidator : Validator<UserUserInformationRequest
         RuleFor(dto => dto.Note)
             .MaximumLength(255)
             .WithName(dto => DisplayNames.Get(nameof(dto.Note)));
-        RuleFor(dto => dto.Role)
-            .NotNull()
-            .SetValidator(new RoleValidator());
+        RuleFor(dto => dto.RoleName)
+            .NotEmpty()
+            .WithName(dto => dto.RoleName);
     }
 }

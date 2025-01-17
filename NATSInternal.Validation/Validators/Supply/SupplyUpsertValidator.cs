@@ -13,6 +13,9 @@ public class SupplyUpsertValidator : Validator<SupplyUpsertRequestDto>
         RuleFor(dto => dto.Note)
             .MaximumLength(255)
             .WithName(DisplayNames.Note);
+        RuleFor(dto => dto.Items)
+            .NotEmpty()
+            .WithName(DisplayNames.SupplyItem);
         RuleForEach(dto => dto.Items)
             .SetValidator(new SupplyItemValidator());
 

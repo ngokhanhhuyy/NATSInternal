@@ -8,7 +8,7 @@ public class ConsultantUpsertValidator : Validator<ConsultantUpsertRequestDto>
             .IsValidStatsDateTime()
             .WithName(DisplayNames.StatsDateTime);
         RuleFor(dto => dto.AmountBeforeVat)
-            .GreaterThanOrEqualTo(0)
+            .GreaterThan(0)
             .WithName(DisplayNames.AmountBeforeVat);
         RuleFor(dto => dto.VatAmount)
             .GreaterThanOrEqualTo(0)
