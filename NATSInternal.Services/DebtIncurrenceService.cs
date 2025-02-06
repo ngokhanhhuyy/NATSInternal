@@ -1,4 +1,6 @@
-﻿namespace NATSInternal.Services;
+﻿using System.Threading.Tasks;
+
+namespace NATSInternal.Services;
 
 /// <inheritdoc cref="IDebtIncurrenceService" />
 internal class DebtIncurrenceService
@@ -73,5 +75,13 @@ internal class DebtIncurrenceService
         long amountToIncrement = isIncrement ? debtIncurrence.Amount : -debtIncurrence.Amount;
         DateOnly date = DateOnly.FromDateTime(debtIncurrence.StatsDateTime);
         await service.IncrementDebtIncurredAmountAsync(amountToIncrement, date);
+    }
+
+    /// <inheritdoc />
+    protected override void AdjustCustomerCachedDebtAmount(
+            Customer customer,
+            long differentAmount)
+    {
+        customer.CachedIncurredDebtAmount -= differentAmount;
     }
 }

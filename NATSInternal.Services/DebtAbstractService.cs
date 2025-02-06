@@ -227,6 +227,10 @@ internal abstract class DebtAbstractService<
     /// </exception>
     public virtual async Task<int> CreateAsync(TUpsertRequestDto requestDto)
     {
+        // Fetch the customer entity with the specified id.
+        Customer customer = await _context.Customers.FindAsync(requestDto.CustomerId)
+            ?? throw new OperationException(ErrorMessages.NotFound);
+
         // Determining the stats datetime.
         DateTime statsDateTime = DateTime.UtcNow.ToApplicationTime();
         if (requestDto.StatsDateTime.HasValue)
@@ -251,6 +255,9 @@ internal abstract class DebtAbstractService<
         };
 
         GetRepository(_context).Add(entity);
+
+        // Update the cached debt amount.
+        AdjustCustomerCachedDebtAmount(customer, requestDto.Amount);
         
         // Using transaction for atomic operations.
         await using IDbContextTransaction transaction = await _context.Database
@@ -399,9 +406,16 @@ internal abstract class DebtAbstractService<
             const string amountErrorMessage = ErrorMessages.NegativeRemainingDebtAmount;
             throw new OperationException(nameof(requestDto.Amount), amountErrorMessage);
         }
+
+        // Update debt amount and adjust cached amount.
+        if (entity.Amount != requestDto.Amount)
+        {
+            long differentAmount = requestDto.Amount - entity.Amount;
+            AdjustCustomerCachedDebtAmount(entity.Customer, differentAmount);
+            entity.Amount = requestDto.Amount;
+        }
         
-        // Update other properties.
-        entity.Amount = requestDto.Amount;
+        // Update note.
         entity.Note = requestDto.Note;
         
         // Store new data for update history logging.
@@ -580,7 +594,7 @@ internal abstract class DebtAbstractService<
     protected abstract TUpdateHistoryDataDto InitializeUpdateHistoryDataDto(T entity);
 
     /// <summary>
-    /// Increments the statistics amounts with the <typeparamref name="T"/> entity's amounts.
+    /// Adjusts the statistics amounts with the <typeparamref name="T"/> entity's amounts.
     /// </summary>
     /// <param name="entity">
     /// The instance of the entity with which the associated statistics is to be incremented.
@@ -600,4 +614,19 @@ internal abstract class DebtAbstractService<
             T entity,
             IStatsInternalService service,
             bool isIncrementing);
+
+    /// <summary>
+    /// Adjusts the cached total debt amount (debt incurrences or debt payments) of the
+    /// specified customer.
+    /// </summary>
+    /// <param name="customer">
+    /// The customer entity with the cached debt amount to be adjusted.
+    /// </param>
+    /// <param name="differentAmount">
+    /// The amount representing the difference between the old and the new debt amount to be
+    /// adjusted.
+    /// </param>
+    protected abstract void AdjustCustomerCachedDebtAmount(
+            Customer customer,
+            long differentAmount);
 }

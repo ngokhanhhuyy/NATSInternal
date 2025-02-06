@@ -69,13 +69,20 @@ internal class Customer : IUpsertableEntity<Customer>
     [Required]
     public bool IsDeleted { get; set; }
 
+    // Cached properties.
+    [Required]
+    public long CachedIncurredDebtAmount { get; set; } = 0;
+
+    [Required]
+    public long CachedPaidDebtAmount { get; set; } = 0;
+
     // Foreign keys
     public int? IntroducerId { get; set; }
 
     [Required]
     public int CreatedUserId { get; set; }
 
-    // Concurrency operation tracking field
+    // Concurrency operation tracking field.
     [Timestamp]
     public byte[] RowVersion { get; set; }
 
@@ -89,11 +96,11 @@ internal class Customer : IUpsertableEntity<Customer>
     public virtual List<DebtIncurrence> DebtIncurrences { get; set; }
     public virtual List<DebtPayment> DebtPayments { get; set; }
 
-    // Property for convinience.
+    // Properties for convinience.
     [NotMapped]
     public long DebtIncurredAmount => DebtIncurrences
-        .Where(d => !d.IsDeleted)
-        .Sum(d => d.Amount);
+        .Where(di => !di.IsDeleted)
+        .Sum(di => di.Amount);
 
     [NotMapped]
     public long DebtPaidAmount => DebtPayments
@@ -102,6 +109,9 @@ internal class Customer : IUpsertableEntity<Customer>
 
     [NotMapped]
     public long DebtAmount =>  DebtIncurredAmount - DebtPaidAmount;
+
+    [NotMapped]
+    public long CachedDebtAmount => CachedIncurredDebtAmount - CachedPaidDebtAmount;
 
     public static void ConfigureModel(EntityTypeBuilder<Customer> entityBuilder)
     {

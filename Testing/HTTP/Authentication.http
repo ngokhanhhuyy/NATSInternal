@@ -14,6 +14,13 @@ Content-Type: application/json
 @accessCookie = {{GetAccessCookie.response.headers.Set-Cookie}}
 
 ###
+# @name CustomerList
+// @no-log
+GET {{host}}/customer?sortingByField=FirstName&sortingByAscending=False&hasRemainingDebtAmountOnly=True&page=2
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
 # @name CustomerNewStatstics
 // @no-log
 GET {{host}}/customer/newStatistics

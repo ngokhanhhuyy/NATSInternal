@@ -1045,8 +1045,8 @@ public sealed class DataInitializer
                 CheckAndGenerateSupply(statsDateTime, random, faker, products);
                 do
                 {
-                    // statsDateTime = statsDateTime.AddMinutes(random.Next(300, 420));
-                    statsDateTime = statsDateTime.AddMinutes(random.Next(15, 30));
+                    statsDateTime = statsDateTime.AddMinutes(random.Next(300, 420));
+                    // statsDateTime = statsDateTime.AddMinutes(random.Next(15, 30));
                 }
                 while (!IsStatsDateTimeValid(statsDateTime));
 
@@ -1543,6 +1543,9 @@ public sealed class DataInitializer
                 .Select(u => u.Id)
                 .ToList();
 
+        // Fetch the customer with the given id.
+        Customer customer = _context.Customers.Single(c => c.Id == customerId);
+
         // Determine the count of payments.
         int paymentCount = random.Next(1, 3);
 
@@ -1630,6 +1633,9 @@ public sealed class DataInitializer
         };
         _context.DebtIncurrences.Add(debtIncurrence);
 
+        // Adjust customer's debt incurred amounts.
+        customer.CachedIncurredDebtAmount += debtIncurrence.Amount;
+
         // Generating stats data.
         DateOnly statsDate = DateOnly.FromDateTime(debtIncurrence.StatsDateTime);
         DailyStats dailyStats = _context.DailyStats
@@ -1654,6 +1660,12 @@ public sealed class DataInitializer
         {
             DebtPayment debtPayment = _queueingDebtPayments.Dequeue();
             _context.DebtPayments.Add(debtPayment);
+
+            // Fetch the customer with the given id.
+            Customer customer = _context.Customers.Single(c => c.Id == debtPayment.CustomerId);
+
+            // Adjust customer's debt paid amounts.
+            customer.CachedPaidDebtAmount += debtPayment.Amount;
 
             // Generating stats data.
             DateOnly statsDate = DateOnly.FromDateTime(debtPayment.StatsDateTime);

@@ -33,10 +33,6 @@ public class CustomerBasicResponseDto
         Gender = customer.Gender;
         Birthday = customer.Birthday;
         PhoneNumber = customer.PhoneNumber;
-
-        if (customer.DebtIncurrences != null && customer.DebtPayments != null)
-        {
-            DebtAmount = customer.DebtAmount;
-        }
+        DebtAmount = customer.CachedDebtAmount;
     }
 }

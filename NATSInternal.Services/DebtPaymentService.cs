@@ -75,4 +75,12 @@ internal class DebtPaymentService
         DateOnly date = DateOnly.FromDateTime(debtPayment.StatsDateTime);
         await service.IncrementDebtPaidAmountAsync(amountToIncrement, date);
     }
+
+    /// <inheritdoc />
+    protected override void AdjustCustomerCachedDebtAmount(
+            Customer customer,
+            long differentAmount)
+    {
+        customer.CachedPaidDebtAmount -= differentAmount;
+    }
 }

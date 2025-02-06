@@ -17,7 +17,7 @@ internal class CustomerService
             IDbContextFactory<DatabaseContext> contextFactory,
             IAuthorizationInternalService authorizationService,
             IStatsInternalService statsService) : base(authorizationService)
-    {
+    { 
         _contextFactory = contextFactory;
         _authorizationService = authorizationService;
         _statsService = statsService;
@@ -32,6 +32,30 @@ internal class CustomerService
             .Include(c => c.CreatedUser).ThenInclude(u => u.Roles)
             .Include(c => c.DebtIncurrences)
             .Include(c => c.DebtPayments);
+
+        // Filter by search content.
+        if (requestDto.SearchByContent != null)
+        {
+            bool isValidBirthday = DateOnly.TryParse(
+                requestDto.SearchByContent,
+                out DateOnly birthday);
+            query = query.Where(c =>
+                c.NormalizedFullName
+                    .ToLower()
+                    .Contains(requestDto.SearchByContent.ToLower()) ||
+                c.PhoneNumber.Contains(requestDto.SearchByContent) ||
+                (isValidBirthday && c.Birthday.HasValue && c.Birthday.Value == birthday));
+        }
+
+        // Filter by remaining debt amount.
+        if (requestDto.HasRemainingDebtAmountOnly)
+        {
+            query = query.Where(c => c.DebtIncurrences
+                .Where(di => !di.IsDeleted)
+                .Sum(di => di.Amount) - c.DebtPayments
+                .Where(dp => !dp.IsDeleted)
+                .Sum(dp => dp.Amount) > 0);
+        }
 
         // Determine the field and the direction the sort.
         string sortingByField = requestDto.SortingByField
@@ -79,30 +103,6 @@ internal class CustomerService
             default:
                 throw new NotImplementedException();
 
-        }
-
-        // Filter by search content.
-        if (requestDto.SearchByContent != null)
-        {
-            bool isValidBirthday = DateOnly.TryParse(
-                requestDto.SearchByContent,
-                out DateOnly birthday);
-            query = query.Where(c =>
-                c.NormalizedFullName
-                    .ToLower()
-                    .Contains(requestDto.SearchByContent.ToLower()) ||
-                c.PhoneNumber.Contains(requestDto.SearchByContent) ||
-                (isValidBirthday && c.Birthday.HasValue && c.Birthday.Value == birthday));
-        }
-
-        // Filter by remaining debt amount.
-        if (requestDto.HasRemainingDebtAmountOnly)
-        {
-            query = query.Where(c => c.DebtIncurrences
-                .Where(d => !d.IsDeleted)
-                .Sum(d => d.Amount) > c.DebtPayments
-                .Where(dp => !dp.IsDeleted)
-                .Sum(dp => dp.Amount));
         }
 
         // Fetch the list of the entities.
@@ -199,7 +199,7 @@ internal class CustomerService
             CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),
             Note = requestDto.Note,
             IntroducerId = null,
-            CreatedUserId = _authorizationService.GetUserId()
+            CreatedUserId = _authorizationService.GetUserId(),
         };
         context.Customers.Add(customer);
         
