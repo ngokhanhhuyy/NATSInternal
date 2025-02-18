@@ -25,7 +25,7 @@ public interface ICustomerService
     /// </summary>
     /// <param name="id">
     /// A <see cref="int"/> representing the id of the customer to retrieve.
-    /// </param>
+    /// </param>`
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is
     /// an instance of the <see cref="CustomerBasicResponseDto"/> class, containing the basic

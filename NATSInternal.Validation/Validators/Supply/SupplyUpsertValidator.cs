@@ -28,6 +28,7 @@ public class SupplyUpsertValidator : Validator<SupplyUpsertRequestDto>
         RuleSet("Update", () =>
         {
             RuleFor(dto => dto.UpdatedReason)
+                .NotEmpty()
                 .MaximumLength(255)
                 .WithName(DisplayNames.Reason);
             RuleForEach(dto => dto.Photos)

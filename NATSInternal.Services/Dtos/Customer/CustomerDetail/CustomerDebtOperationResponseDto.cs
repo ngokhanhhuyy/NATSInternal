@@ -2,6 +2,7 @@ namespace NATSInternal.Services.Dtos;
 
 public class CustomerDebtOperationResponseDto
 {
+    public int Id { get; set; }
     public DebtOperationType Operation { get; set; }
     public long Amount { get; set; }
     public DateTime OperatedDateTime { get; set; }
@@ -12,6 +13,7 @@ public class CustomerDebtOperationResponseDto
             DebtIncurrence debtIncurrence,
             DebtIncurrenceExistingAuthorizationResponseDto authorization)
     {
+        Id = debtIncurrence.Id;
         Operation = DebtOperationType.DebtIncurrence;
         Amount = debtIncurrence.Amount;
         OperatedDateTime = debtIncurrence.StatsDateTime;
@@ -23,6 +25,7 @@ public class CustomerDebtOperationResponseDto
             DebtPayment debtPayment,
             DebtPaymentExistingAuthorizationResponseDto authorization)
     {
+        Id = debtPayment.Id;
         Operation = DebtOperationType.DebtPayment;
         Amount = debtPayment.Amount;
         OperatedDateTime = debtPayment.StatsDateTime;

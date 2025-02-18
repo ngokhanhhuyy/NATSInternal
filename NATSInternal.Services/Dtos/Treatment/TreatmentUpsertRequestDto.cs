@@ -8,7 +8,7 @@ public class TreatmentUpsertRequestDto
     public long ServiceVatAmount { get; set; }
     public string Note { get; set; }
     public int CustomerId { get; set; }
-    public int TherapistId { get; set; }
+    public int? TherapistId { get; set; }
     public List<TreatmentItemRequestDto> Items { get; set; }
     public List<TreatmentPhotoRequestDto> Photos { get; set; }
     public string UpdatedReason { get; set; }

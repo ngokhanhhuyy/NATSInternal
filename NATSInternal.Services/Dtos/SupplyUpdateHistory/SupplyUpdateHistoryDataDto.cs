@@ -6,6 +6,8 @@ public class SupplyUpdateHistoryDataDto
     public long ShipmentFee { get; set; }
     public string Note { get; set; }
     public List<SupplyItemUpdateHistoryDataDto> Items { get; set; }
+
+    public SupplyUpdateHistoryDataDto() { }
     
     internal SupplyUpdateHistoryDataDto(Supply supply)
     {

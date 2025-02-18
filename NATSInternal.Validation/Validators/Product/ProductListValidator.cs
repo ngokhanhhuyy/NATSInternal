@@ -14,5 +14,8 @@ public class ProductListValidator : Validator<ProductListRequestDto>
             .GreaterThanOrEqualTo(5)
             .LessThanOrEqualTo(50)
             .WithName(DisplayNames.ResultsPerPage);
+        RuleFor(dto => dto.ProductName)
+            .MaximumLength(255)
+            .WithName(DisplayNames.Product);
     }
 }

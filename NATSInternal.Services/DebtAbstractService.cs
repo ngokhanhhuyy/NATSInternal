@@ -401,7 +401,7 @@ internal abstract class DebtAbstractService<
 
         // Verify that with the new paid amount, the customer's remaining debt amount will
         // not be negative.
-        if (entity.Customer.DebtAmount < requestDto.Amount)
+        if (entity.Customer.DebtAmount < 0)
         {
             const string amountErrorMessage = ErrorMessages.NegativeRemainingDebtAmount;
             throw new OperationException(nameof(requestDto.Amount), amountErrorMessage);

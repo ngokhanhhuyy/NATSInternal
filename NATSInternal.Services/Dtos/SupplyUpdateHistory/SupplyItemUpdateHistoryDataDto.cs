@@ -6,6 +6,8 @@ public class SupplyItemUpdateHistoryDataDto : IHasProductItemUpdateHistoryDataDt
     public long ProductAmountPerUnit { get; set; }
     public int Quantity { get; set; }
     public string ProductName { get; set; }
+
+    public SupplyItemUpdateHistoryDataDto() { }
     
     internal SupplyItemUpdateHistoryDataDto(SupplyItem item)
     {

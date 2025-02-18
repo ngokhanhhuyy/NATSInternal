@@ -19,9 +19,6 @@ public class TreatmentUpsertValidator : Validator<TreatmentUpsertRequestDto>
         RuleFor(dto => dto.CustomerId)
             .NotEmpty()
             .WithName(DisplayNames.Customer);
-        RuleFor(dto => dto.TherapistId)
-            .NotEmpty()
-            .WithName(DisplayNames.Therapist);
         RuleFor(dto => dto.UpdatedReason)
             .MaximumLength(255)
             .WithName(DisplayNames.Reason);

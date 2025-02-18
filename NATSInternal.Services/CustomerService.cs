@@ -26,7 +26,7 @@ internal class CustomerService
     public async Task<CustomerListResponseDto> GetListAsync(CustomerListRequestDto requestDto)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        
+
         // Initialize query.
         IQueryable<Customer> query = context.Customers
             .Include(c => c.CreatedUser).ThenInclude(u => u.Roles)
@@ -56,6 +56,9 @@ internal class CustomerService
                 .Where(dp => !dp.IsDeleted)
                 .Sum(dp => dp.Amount) > 0);
         }
+
+        // Filter by not deleted.
+        query = query.Where(c => !c.IsDeleted);
 
         // Determine the field and the direction the sort.
         string sortingByField = requestDto.SortingByField
@@ -236,6 +239,7 @@ internal class CustomerService
             requestDto.FirstName,
             requestDto.MiddleName,
             requestDto.LastName);
+        DateTime updatedDateTime = DateTime.UtcNow.ToApplicationTime();
 
         try
         {
@@ -266,7 +270,7 @@ internal class CustomerService
                     .SetProperty(c => c.FacebookUrl, requestDto.FacebookUrl)
                     .SetProperty(c => c.Email, requestDto.Email)
                     .SetProperty(c => c.Address, requestDto.Address)
-                    .SetProperty(c => c.UpdatedDateTime, DateTime.UtcNow.ToApplicationTime())
+                    .SetProperty(c => c.UpdatedDateTime, updatedDateTime)
                     .SetProperty(c => c.Note, requestDto.Note)
                     .SetProperty(c => c.IntroducerId, requestDto.IntroducerId));
             
@@ -299,11 +303,13 @@ internal class CustomerService
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         await using IDbContextTransaction transaction = await context.Database
             .BeginTransactionAsync();
+
+        DateTime updatedDateTime = DateTime.UtcNow.ToApplicationTime();
         
         int affectedRows = await context.Customers
             .Where(c => !c.IsDeleted && c.Id == id)
             .ExecuteUpdateAsync(setters => setters
-                .SetProperty(c => c.UpdatedDateTime, DateTime.UtcNow.ToApplicationTime())
+                .SetProperty(c => c.UpdatedDateTime, updatedDateTime)
                 .SetProperty(c => c.IntroducerId, (int?)null)
                 .SetProperty(c => c.IsDeleted, true));
 

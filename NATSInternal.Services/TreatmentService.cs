@@ -81,13 +81,13 @@ internal class TreatmentService
             IStatsInternalService statsService,
             bool isIncrementing)
     {
-        DateOnly paidDate = DateOnly.FromDateTime(treatment.StatsDateTime);
+        DateOnly statsDate = DateOnly.FromDateTime(treatment.StatsDateTime);
         await statsService.IncrementRetailGrossRevenueAsync(
             isIncrementing ? treatment.AmountBeforeVat : -treatment.AmountBeforeVat,
-            paidDate);
+            statsDate);
         await statsService.IncrementVatCollectedAmountAsync(
             isIncrementing ? treatment.VatAmount : -treatment.VatAmount,
-            paidDate);
+            statsDate);
     }
 
     /// <inheritdoc />

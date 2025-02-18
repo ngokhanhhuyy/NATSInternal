@@ -71,6 +71,7 @@ public static class DisplayNames
     public const string Amount = "Số tiền";
     public const string AmountBeforeVat = "Số tiền trước thuế";
     public const string ProductAmount = "Giá tiền sản phẩm";
+    public const string ProductName = "Tên sản phẩm";
     public const string VatAmount = "Thuế VAT";
     public const string Quatity = "Số lượng";
     public const string ServiceAmount = "Tiền công";

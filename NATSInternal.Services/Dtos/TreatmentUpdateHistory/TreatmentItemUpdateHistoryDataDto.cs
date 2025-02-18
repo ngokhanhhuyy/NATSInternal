@@ -8,6 +8,8 @@ public class TreatmentItemUpdateHistoryDataDto : IProductExportableItemUpdateHis
     public int Quantity { get; set; }
     public string ProductName { get; set; }
 
+    public TreatmentItemUpdateHistoryDataDto() { }
+
     internal TreatmentItemUpdateHistoryDataDto(TreatmentItem item)
     {
         Id = item.Id;

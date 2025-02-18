@@ -19,7 +19,7 @@ public static class ErrorMessages
     public const string EarlierThan = "{PropertyName} phải đại diện cho thời gian sớm hơn \"{ComparisonValue}\"";
     public const string EarlierThanOrEqual = "{PropertyName} phải đại diện cho thời gian sớm hơn hoặc bằng \"{ComparisonValue}\"";
     public const string LaterThan = "{PropertyName} phải đại diện cho thời gian muộn hơn \"{ComparisonValue}\"";
-    public const string LaterThanOrEqual = "{PropertyName} phải đại diện cho thời gian sớm hơn hoặc bằng \"{ComparisonValue}\"";
+    public const string LaterThanOrEqual = "{PropertyName} phải đại diện cho thời gian muộn hơn hoặc bằng \"{ComparisonValue}\"";
     public const string Invalid = "{PropertyName} không hợp lệ.";
     public const string EarlierThanOrEqualToNow = "{PropertyName} phải là ngày giờ trước hoặc trùng với thời điểm hiện tại ({ComparisonValue}).";
     public const string EarlierThanOrEqualToToday = "{PropertyName} phải là ngày trước hoặc trùng với ngày hôm nay ({ComparisonValue}).";

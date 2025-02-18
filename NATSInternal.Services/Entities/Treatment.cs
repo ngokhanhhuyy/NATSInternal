@@ -31,8 +31,7 @@ internal class Treatment
     [Required]
     public int CreatedUserId { get; set; }
 
-    [Required]
-    public int TherapistId { get; set; }
+    public int? TherapistId { get; set; }
 
     [Required]
     public int CustomerId { get; set; }

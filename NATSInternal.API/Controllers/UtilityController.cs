@@ -63,7 +63,6 @@ public class UtilityController : ControllerBase
     }
 
     [HttpGet("InitialData")]
-    [ResponseCache(Duration = 60 * 60 * 24)]
     [Authorize]
     public async Task<IActionResult> GetInitialData()
     {

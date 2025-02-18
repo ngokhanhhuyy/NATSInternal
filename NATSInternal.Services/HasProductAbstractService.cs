@@ -124,7 +124,7 @@ internal abstract class HasProductAbstractService<
         {
             TItemRequestDto itemRequestDto = requestDtos[i];
             // Get the product with the specified id from pre-fetched list.
-            Product product = products.SingleOrDefault(p => p.Id == itemRequestDto.Id);
+            Product product = products.SingleOrDefault(p => p.Id == itemRequestDto.ProductId);
 
             // Ensure the product exists.
             if (product == null)
@@ -302,7 +302,7 @@ internal abstract class HasProductAbstractService<
     /// repository, based on the specified engagement operation type.
     /// </summary>
     /// <param name="itemEntities">
-    /// A collection of item entities that act as the connection with the products.
+    /// A list of item entities that act as the connection with the products.
     /// </param>
     /// <param name="repositorySelector">
     /// A function that is used to select the <typeparamref name="TItem"/> repository from the given
@@ -315,12 +315,14 @@ internal abstract class HasProductAbstractService<
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
     protected void DeleteItems(
-            ICollection<TItem> itemEntities,
+            List<TItem> itemEntities,
             Func<DatabaseContext, DbSet<TItem>> repositorySelector,
             ProductEngagementType engagementType)
     {
-        foreach (TItem item in itemEntities)
+        for (int i = itemEntities.Count - 1; i >= 0; i--)
         {
+            TItem item = itemEntities[i];
+
             // Revert the stocking quantity of the product associated to the item.
             if (engagementType == ProductEngagementType.Import)
             {

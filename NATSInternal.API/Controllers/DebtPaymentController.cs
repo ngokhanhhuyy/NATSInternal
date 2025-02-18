@@ -124,7 +124,7 @@ public class DebtPaymentController : ControllerBase
         requestDto.TransformValues();
         ValidationResult validationResult;
         validationResult = _upsertValidator.Validate(requestDto, options =>
-            options.IncludeRuleSets("Create").IncludeRulesNotInRuleSet());
+            options.IncludeRuleSets("Update").IncludeRulesNotInRuleSet());
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);

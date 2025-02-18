@@ -424,6 +424,7 @@ internal abstract class ExportProductAbstractService<
     {
         // Fetch the entity from the database and ensure it exists.
         T entity = await GetRepository(_context)
+            .Include(e => e.Items).ThenInclude(i => i.Product)
             .SingleOrDefaultAsync(o => o.Id == id && !o.IsDeleted)
             ?? throw new ResourceNotFoundException(
                 typeof(T).Name,
@@ -440,12 +441,20 @@ internal abstract class ExportProductAbstractService<
         await using IDbContextTransaction transaction = await _context.Database
             .BeginTransactionAsync();
 
+        // Delete all the items.
         DeleteItems(entity.Items, GetItemRepository, ProductEngagementType.Export);
 
-        // Perform the deleting operation.
+        // Delete the entity.
+        GetRepository(_context).Remove(entity);
+
         try
         {
             await _context.SaveChangesAsync();
+
+            // The entity has been deleted successfully, decrement the stats.
+            await AdjustStatsAsync(entity, _statsService, false);
+
+            // Commit the transaction and finishing the operations.
             await transaction.CommitAsync();
         }
         catch (DbUpdateException exception)

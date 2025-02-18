@@ -110,23 +110,23 @@ internal class SupplyService
         await using IDbContextTransaction transaction = await _context.Database
             .BeginTransactionAsync();
 
-        // Determine the SupplyDateTime.
-        DateTime paidDateTime = DateTime.UtcNow.ToApplicationTime();
+        // Determine the StatsDateTime.
+        DateTime statsDateTime = DateTime.UtcNow.ToApplicationTime();
         if (requestDto.StatsDateTime.HasValue)
         {
-            // Check if the current user has permission to specify the SupplyDateTime.
+            // Check if the current user has permission to specify the StatsDateTime.
             if (!CanSetStatsDateTimeWhenCreating())
             {
                 throw new AuthorizationException();
             }
 
-            paidDateTime = requestDto.StatsDateTime.Value;
+            statsDateTime = requestDto.StatsDateTime.Value;
         }
 
         // Initialize entity.
         Supply supply = new Supply
         {
-            StatsDateTime = paidDateTime,
+            StatsDateTime = statsDateTime,
             ShipmentFee = requestDto.ShipmentFee,
             Note = requestDto.Note,
             CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),
