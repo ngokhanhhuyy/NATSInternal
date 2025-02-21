@@ -7,6 +7,8 @@ public class ExpenseUpdateHistoryDataDto : IDebtUpdateHistoryDataDto
     public ExpenseCategory Category { get; set; }
     public string Note { get; set; }
     public string PayeeName { get; set; }
+
+    public ExpenseUpdateHistoryDataDto() { }
     
     internal ExpenseUpdateHistoryDataDto(Expense expense)
     {

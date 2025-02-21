@@ -278,7 +278,7 @@ internal abstract class HasProductAbstractService<
                     {
                         ProductAmountPerUnit = itemRequestDto.ProductAmountPerUnit,
                         Quantity = itemRequestDto.Quantity,
-                        ProductId = itemRequestDto.ProductId
+                        Product = product
                     };
                     itemInitializer?.Invoke(item, itemRequestDto);
                     itemEntities.Add(item);

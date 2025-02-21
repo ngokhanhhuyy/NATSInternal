@@ -8,6 +8,8 @@ public class TreatmentUpdateHistoryDataDto
     public string Note { get; set; }
     public TreatmentTherapistUpdateHistoryDataDto Therapist { get; set; }
     public List<TreatmentItemUpdateHistoryDataDto> Items { get; set; }
+
+    public TreatmentUpdateHistoryDataDto() { }
     
     internal TreatmentUpdateHistoryDataDto(Treatment treatment)
     {
@@ -15,7 +17,9 @@ public class TreatmentUpdateHistoryDataDto
         ServiceAmount = treatment.ServiceAmountBeforeVat;
         ServiceVatAmount = treatment.ServiceVatAmount;
         Note = treatment.Note;
-        Therapist = new TreatmentTherapistUpdateHistoryDataDto(treatment.Therapist);
+        Therapist = treatment.Therapist != null
+            ? new TreatmentTherapistUpdateHistoryDataDto(treatment.Therapist)
+            : null;
         Items = treatment.Items
             .Select(i => new TreatmentItemUpdateHistoryDataDto(i))
             .ToList();

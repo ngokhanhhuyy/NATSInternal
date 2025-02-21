@@ -570,7 +570,7 @@ internal class UserService : IUserService
             new ListSortingByFieldResponseDto
             {
                 Name = nameof(OrderByFieldOption.FirstName),
-                DisplayName = DisplayNames.Amount
+                DisplayName = DisplayNames.FirstName
             },
             new ListSortingByFieldResponseDto
             {

@@ -28,7 +28,7 @@ public class TreatmentUpdateHistoryResponseDto
         _newData.Therapist;
 
     public List<TreatmentItemUpdateHistoryDataDto> OldItems => _oldData.Items;
-    public List<TreatmentItemUpdateHistoryDataDto> NewItems => _oldData.Items;
+    public List<TreatmentItemUpdateHistoryDataDto> NewItems => _newData.Items;
 
     internal TreatmentUpdateHistoryResponseDto(TreatmentUpdateHistory updateHistory)
     {

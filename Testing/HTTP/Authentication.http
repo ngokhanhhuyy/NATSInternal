@@ -72,9 +72,16 @@ Cookie: {{accessCookie}}
 
 ###
 # @name DebtPaymentList
-GET {{host}}/debtPayment
+GET {{host}}/debtPayment?sortingByField=StatsDateTime&sortingByAscending=False
 Content-Type: application/json
 Cookie: {{accessCookie}}
+
+###
+# @name DebtPaymentDetail
+GET {{host}}/debtPayment/37
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
 
 ###
 # @name DebtPaymentCreate
@@ -85,8 +92,22 @@ Cookie: {{accessCookie}}
 {
     "amount": 2000000,  
     "note": null,
-    "paidDateTime": null,
-    "customerId": 2
+    "statsDateTime": null,
+    "customerId": 10
+}
+
+###
+# @name DebtPaymentUpdate
+PUT {{host}}/debtPayment/39
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+{
+    "amount": 1900000,  
+    "note": null,
+    "statsDateTime": null,
+    "customerId": 2,
+    "updatedReason": "Removed note"
 }
 
 ###

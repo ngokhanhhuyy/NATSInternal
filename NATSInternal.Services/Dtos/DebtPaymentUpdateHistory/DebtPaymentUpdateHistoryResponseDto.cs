@@ -16,7 +16,7 @@ public class DebtPaymentUpdateHistoryResponseDto : IDebtUpdateHistoryResponseDto
     public long NewAmount => _newData.Amount;
     
     public string OldNote => _oldData.Note;
-    public string NewNote => _oldData.Note;
+    public string NewNote => _newData.Note;
     
     internal DebtPaymentUpdateHistoryResponseDto(DebtPaymentUpdateHistory updateHistory)
     {
