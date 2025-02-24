@@ -15,9 +15,7 @@ internal class StatsService : IStatsService
             MonthlyStatsRequestDto requestDto)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        IQueryable<MonthlyStats> query = InitializeMonthlyStatsQuery(context, requestDto);
-
-        return await query
+        return await context.MonthlyStats
            .Select(ms => new MonthlyStatsBasicResponseDto(ms))
            .SingleOrDefaultAsync()
            ?? throw new ResourceNotFoundException();
@@ -28,13 +26,64 @@ internal class StatsService : IStatsService
             MonthlyStatsRequestDto requestDto)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        IQueryable<MonthlyStats> query = InitializeMonthlyStatsQuery(context, requestDto);
-
-        return await query
+        MonthlyStats monthlyStats = await context.MonthlyStats
             .Include(ms => ms.DailyStats)
-            .Select(ms => new MonthlyStatsDetailResponseDto(ms))
-            .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException();
+            .Where(ms =>
+                ms.RecordedYear == requestDto.RecordedYear &&
+                ms.RecordedMonth == requestDto.RecordedMonth)
+            .SingleOrDefaultAsync();
+
+        int daysInMonth = DateTime
+            .DaysInMonth(requestDto.RecordedYear, requestDto.RecordedMonth);
+
+        if (monthlyStats != null)
+        {
+            List<int> recordedDays = monthlyStats.DailyStats
+                .Select(ds => ds.RecordedDate.Day)
+                .ToList();
+            for (int day = 1; day <= daysInMonth; day++)
+            {
+                if (!recordedDays.Contains(day))
+                {
+                    monthlyStats.DailyStats.Add(new DailyStats
+                    {
+                        RecordedDate = new DateOnly(
+                            requestDto.RecordedYear,
+                            requestDto.RecordedMonth,
+                            day)
+                    });
+                }
+            }
+
+            monthlyStats.DailyStats = monthlyStats.DailyStats
+                .OrderBy(ds => ds.RecordedDate.Day)
+                .ToList();
+        }
+        else
+        {
+
+            // Generate an empty stats when the stats with the sppecified date doesn't exist.
+            monthlyStats = new MonthlyStats
+            {
+                DailyStats = new List<DailyStats>(),
+                RecordedMonth = requestDto.RecordedMonth,
+                RecordedYear = requestDto.RecordedYear
+            };
+
+            for (int day = 1; day <= daysInMonth; day++)
+            {
+                DailyStats dailyStats = new DailyStats
+                {
+                    RecordedDate = new DateOnly(
+                        requestDto.RecordedYear,
+                        requestDto.RecordedMonth,
+                        day)
+                };
+                monthlyStats.DailyStats.Add(dailyStats);
+            }
+        }
+
+        return new MonthlyStatsDetailResponseDto(monthlyStats);
     }
 
     /// <inheritdoc />
@@ -523,44 +572,28 @@ internal class StatsService : IStatsService
             TopPurchasedCustomerCriteria.PurchasedAmount);
     }
 
-    /// <summary>
-    /// Initialize a query instance for monthly stats retriving operation based on the month
-    /// and year specified in the request DTO.
-    /// </summary>
-    /// <param name="context">
-    /// An instance of the <see cref="DatabaseContext"/>
-    /// </param>
-    /// <param name="requestDto">
-    /// A DTO containing the specified month and year.
-    /// </param>
-    /// <returns>
-    /// The query instance for the operation.
-    /// </returns>
-    private static IQueryable<MonthlyStats> InitializeMonthlyStatsQuery(
-            DatabaseContext context,
-            MonthlyStatsRequestDto requestDto)
+    /// <inheritdoc />
+    public async Task<List<DateOnly>> GetStatsDateOptionsAsync()
     {
-        int recordedMonth;
-        int recordedYear;
-        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
-        if (requestDto == null)
+        DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        DateOnly? startingDate = await context.DailyStats
+            .OrderBy(ds => ds.RecordedDate)
+            .Select(ds => (DateOnly?)ds.RecordedDate)
+            .FirstOrDefaultAsync();
+
+        List<DateOnly> dateOptions = new List<DateOnly>();
+        if (startingDate.HasValue)
         {
-            recordedMonth = today.Month;
-            recordedYear = today.Year;
-        }
-        else
-        {
-            recordedMonth = requestDto.RecordedMonth == 0
-                ? today.Month
-                : requestDto.RecordedMonth;
-            recordedYear = requestDto.RecordedYear == 0
-                ? today.Year
-                : requestDto.RecordedYear;
+            DateOnly endingDate = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
+            DateOnly evaluatingDate = startingDate.Value;
+            while (evaluatingDate <= endingDate)
+            {
+                dateOptions.Add(evaluatingDate);
+                evaluatingDate = evaluatingDate.AddDays(1);
+            }
         }
 
-        return context.MonthlyStats.Where(ms =>
-            ms.RecordedYear == recordedYear &&
-            ms.RecordedMonth == recordedMonth);
+        return dateOptions;
     }
 
     /// <summary>

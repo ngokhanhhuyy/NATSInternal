@@ -6,7 +6,7 @@ public class MonthlyStatsDetailResponseDto : IStatsDetailResponseDto
     public long TreatmentGrossRevenue { get; set; }
     public long ConsultantGrossRevenue { get; set; }
     public long VatCollectedAmount { get; set; }
-    public long DebtAmount { get; set; }
+    public long DebtIncurredAmount { get; set; }
     public long DebtPaidAmount { get; set; }
     public long ShipmentCost { get; set; }
     public long SupplyCost { get; set; }
@@ -28,13 +28,15 @@ public class MonthlyStatsDetailResponseDto : IStatsDetailResponseDto
     public int RecordedMonth { get; set; }
     public List<DailyStatsBasicResponseDto> DailyStats { get; set; }
 
+    internal MonthlyStatsDetailResponseDto() { }
+
     internal MonthlyStatsDetailResponseDto(MonthlyStats monthlyStats)
     {
         RetailGrossRevenue = monthlyStats.RetailGrossRevenue;
         TreatmentGrossRevenue = monthlyStats.TreatmentGrossRevenue;
         ConsultantGrossRevenue = monthlyStats.ConsultantGrossRevenue;
         VatCollectedAmount = monthlyStats.VatCollectedAmount;
-        DebtAmount = monthlyStats.DebtIncurredAmount;
+        DebtIncurredAmount = monthlyStats.DebtIncurredAmount;
         DebtPaidAmount = monthlyStats.DebtPaidAmount;
         ShipmentCost = monthlyStats.ShipmentCost;
         SupplyCost = monthlyStats.SupplyCost;
@@ -46,7 +48,7 @@ public class MonthlyStatsDetailResponseDto : IStatsDetailResponseDto
         Expenses = monthlyStats.Expenses;
         GrossRevenue = monthlyStats.GrossRevenue;
         NetRevenue = monthlyStats.NetRevenue;
-        DebtAmount = monthlyStats.DebtAmount;
+        DebtIncurredAmount = monthlyStats.DebtAmount;
         GrossProfit = monthlyStats.GrossProfit;
         NetProfit = monthlyStats.NetProfit;
         OperatingProfit = monthlyStats.OperatingProfit;

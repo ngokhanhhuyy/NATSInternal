@@ -7,5 +7,22 @@ public class MonthlyStatsRequestDto : IRequestDto
 
     public void TransformValues()
     {
+        DateOnly currentDate = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
+        if (RecordedYear == 0)
+        {
+            RecordedYear = currentDate.Year;
+        }
+
+        if (RecordedMonth == 0)
+        {
+            if (RecordedYear == currentDate.Year)
+            {
+                RecordedMonth = currentDate.Month;
+            }
+            else
+            {
+                RecordedMonth = 12;
+            }
+        }
     }
 }

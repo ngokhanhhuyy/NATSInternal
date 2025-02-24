@@ -131,6 +131,13 @@ public class StatsController : ControllerBase
         return Ok(await _service.GetLastestDailyDetailAsync(requestDto));
     }
 
+    [HttpGet("StatsDateOptions")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetStatsDateOptions()
+    {
+        return Ok(await _service.GetStatsDateOptionsAsync());
+    }
+
     [HttpGet("TopSoldProductList")]
     [ResponseCache(Duration=300)]
     [ProducesResponseType(StatusCodes.Status200OK)]

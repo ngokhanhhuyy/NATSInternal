@@ -12,6 +12,11 @@ public class DailyStatsBasicResponseDto : IStatsBasicResponseDto
     public bool IsOfficiallyClosed { get; set; }
     public DateOnly RecordedDate { get; set; }
 
+    internal DailyStatsBasicResponseDto(DateOnly recordedDate)
+    {
+        RecordedDate = recordedDate;
+    }
+
     internal DailyStatsBasicResponseDto(DailyStats stats)
     {
         Cost = stats.Cost;

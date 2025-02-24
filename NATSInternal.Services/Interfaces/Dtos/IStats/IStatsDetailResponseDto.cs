@@ -6,7 +6,7 @@ internal interface IStatsDetailResponseDto
     public long TreatmentGrossRevenue { get; set; }
     public long ConsultantGrossRevenue { get; set; }
     public long VatCollectedAmount { get; set; }
-    public long DebtAmount { get; set; }
+    public long DebtIncurredAmount { get; set; }
     public long DebtPaidAmount { get; set; }
     public long ShipmentCost { get; set; }
     public long SupplyCost { get; set; }

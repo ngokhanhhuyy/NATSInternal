@@ -111,6 +111,13 @@ Cookie: {{accessCookie}}
 }
 
 ###
+# @name Stats-MonthlyDetail
+# @no-log
+GET {{host}}/stats/monthly?recordedYear=2025&recordedMonth=4
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
 # @name Stats-LastestMonthlyBasic
 # @no-log
 GET {{host}}/stats/lastestMonthlyBasic?monthCount=1&includeThisMonth=false
@@ -142,6 +149,13 @@ Cookie: {{accessCookie}}
 # @name Stats-LastestTransactions
 # @no-log
 GET {{host}}/stats/lastestTransactions
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name Stats-StatsDateOptions
+# @no-log
+GET {{host}}/stats/statsDateOptions
 Content-Type: application/json
 Cookie: {{accessCookie}}
 

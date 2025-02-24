@@ -129,6 +129,7 @@ public static class DisplayNames
     public const string Creteria = "Tiêu chí";
     public const string Count = "Số lượng";
     public const string Date = "Ngày";
+    public const string Day = "Ngày";
     public const string PurchasedAmount = "Số tiền đã mua";
     public const string PurchasedTransactionCount = "Số lượng giao dịch mua";
     public const string Quantity = "Số lượng";

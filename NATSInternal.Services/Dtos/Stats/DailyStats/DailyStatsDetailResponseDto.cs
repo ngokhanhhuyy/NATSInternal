@@ -6,7 +6,7 @@ public class DailyStatsDetailResponseDto : IStatsDetailResponseDto
     public long TreatmentGrossRevenue { get; set; }
     public long ConsultantGrossRevenue { get; set; }
     public long VatCollectedAmount { get; set; }
-    public long DebtAmount { get; set; }
+    public long DebtIncurredAmount { get; set; }
     public long DebtPaidAmount { get; set; }
     public long ShipmentCost { get; set; }
     public long SupplyCost { get; set; }
@@ -32,7 +32,7 @@ public class DailyStatsDetailResponseDto : IStatsDetailResponseDto
         TreatmentGrossRevenue = dailyStats.TreatmentGrossRevenue;
         ConsultantGrossRevenue = dailyStats.ConsultantGrossRevenue;
         VatCollectedAmount = dailyStats.VatCollectedAmount;
-        DebtAmount = dailyStats.DebtIncurredAmount;
+        DebtIncurredAmount = dailyStats.DebtIncurredAmount;
         DebtPaidAmount = dailyStats.DebtPaidAmount;
         ShipmentCost = dailyStats.ShipmentCost;
         SupplyCost = dailyStats.SupplyCost;
@@ -44,7 +44,7 @@ public class DailyStatsDetailResponseDto : IStatsDetailResponseDto
         Expenses = dailyStats.Expenses;
         GrossRevenue = dailyStats.GrossRevenue;
         NetRevenue = dailyStats.NetRevenue;
-        DebtAmount = dailyStats.DebtAmount;
+        DebtIncurredAmount = dailyStats.DebtAmount;
         GrossProfit = dailyStats.GrossProfit;
         NetProfit = dailyStats.NetProfit;
         OperatingProfit = dailyStats.OperatingProfit;

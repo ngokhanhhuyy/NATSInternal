@@ -168,4 +168,13 @@ public interface IStatsService
     /// </returns>
     Task<List<LastestTransactionResponseDto>> GetLastestTransactionsAsync(
             LastestTransactionsRequestDto requestDto);
+
+    /// <summary>
+    /// Retrieves the statistics date as options.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is a
+    /// <see cref="List{T}"/> of <see cref="DateOnly"/>, representing the dates.
+    /// </returns>
+    Task<List<DateOnly>> GetStatsDateOptionsAsync();
 }
