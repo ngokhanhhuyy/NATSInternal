@@ -33,8 +33,17 @@ internal class StatsService : IStatsService
                 ms.RecordedMonth == requestDto.RecordedMonth)
             .SingleOrDefaultAsync();
 
-        int daysInMonth = DateTime
-            .DaysInMonth(requestDto.RecordedYear, requestDto.RecordedMonth);
+        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
+        int daysInMonth;
+        if (requestDto.RecordedYear == today.Year && requestDto.RecordedMonth == today.Month)
+        {
+            daysInMonth = today.Day;
+        }
+        else
+        {
+             daysInMonth = DateTime
+                .DaysInMonth(requestDto.RecordedYear, requestDto.RecordedMonth);
+        }
 
         if (monthlyStats != null)
         {
@@ -56,12 +65,12 @@ internal class StatsService : IStatsService
             }
 
             monthlyStats.DailyStats = monthlyStats.DailyStats
+                .Where(ds => ds.RecordedDate <= today)
                 .OrderBy(ds => ds.RecordedDate.Day)
                 .ToList();
         }
         else
         {
-
             // Generate an empty stats when the stats with the sppecified date doesn't exist.
             monthlyStats = new MonthlyStats
             {
