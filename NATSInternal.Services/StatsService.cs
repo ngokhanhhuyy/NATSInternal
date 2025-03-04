@@ -114,7 +114,7 @@ internal class StatsService : IStatsService
 
     /// <inheritdoc />
     public async Task<List<MonthlyStatsBasicResponseDto>> GetLastestMonthlyAsync(
-            LastestMonthlyStatsRequestDto requestDto)
+            LatestMonthlyStatsRequestDto requestDto)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         DateOnly startingDate = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
@@ -157,7 +157,7 @@ internal class StatsService : IStatsService
 
     /// <inheritdoc />
     public async Task<List<DailyStatsBasicResponseDto>> GetLastestDailyBasicAsync(
-            LastestDailyStatsRequestDto requestDto)
+            LatestDailyStatsRequestDto requestDto)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         DateOnly evaluatingDate = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
@@ -196,7 +196,7 @@ internal class StatsService : IStatsService
 
     /// <inheritdoc />
     public async Task<List<DailyStatsDetailResponseDto>> GetLastestDailyDetailAsync(
-            LastestDailyStatsRequestDto requestDto)
+            LatestDailyStatsRequestDto requestDto)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         DateOnly evaluatingDate = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
@@ -474,8 +474,8 @@ internal class StatsService : IStatsService
     }
 
     /// <inheritdoc />
-    public async Task<List<LastestTransactionResponseDto>> GetLastestTransactionsAsync(
-            LastestTransactionsRequestDto requestDto)
+    public async Task<List<LastestTransactionResponseDto>> GetLatestTransactionsAsync(
+            LatestTransactionsRequestDto requestDto)
     {
         await using DatabaseContext supplyContext = await _contextFactory
             .CreateDbContextAsync();

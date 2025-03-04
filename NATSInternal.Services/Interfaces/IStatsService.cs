@@ -37,7 +37,7 @@ public interface IStatsService
     /// containing the basic information of the dates' stats.
     /// </returns>
     Task<List<DailyStatsBasicResponseDto>> GetLastestDailyBasicAsync(
-            LastestDailyStatsRequestDto requestDto);
+            LatestDailyStatsRequestDto requestDto);
 
     /// <summary>
     /// Retrieves the stats of lastest dates with details, specified by the count of dates,
@@ -51,7 +51,7 @@ public interface IStatsService
     /// containing the basic information of the dates' stats.
     /// </returns>
     Task<List<DailyStatsDetailResponseDto>> GetLastestDailyDetailAsync(
-            LastestDailyStatsRequestDto requestDto);
+            LatestDailyStatsRequestDto requestDto);
 
     /// <summary>
     /// Retrieves monthly stats with details by a given recorded month and year. If the date is
@@ -85,7 +85,7 @@ public interface IStatsService
     /// containing the basic information of the months' stats.
     /// </returns>
     Task<List<MonthlyStatsBasicResponseDto>> GetLastestMonthlyAsync(
-            LastestMonthlyStatsRequestDto requestDto);
+            LatestMonthlyStatsRequestDto requestDto);
 
     /// <summary>
     /// Retrieves the top of the sold products with basic information, based on the creteria
@@ -156,7 +156,7 @@ public interface IStatsService
     StatsCriteriaOptionListResponseDto GetTopPurchasedCustomerCriteriaOptions();
 
     /// <summary>
-    /// Retrieves the lastest transactions, based on the transaction count specified in the
+    /// Retrieves the latest transactions, based on the transaction count specified in the
     /// request DTO.
     /// </summary>
     /// <param name="requestDto">
@@ -166,8 +166,8 @@ public interface IStatsService
     /// A <see cref="Task"/> representing the asynchronous operation, which result is a
     /// <see cref="List{T}"/> of DTOs, containing the results.
     /// </returns>
-    Task<List<LastestTransactionResponseDto>> GetLastestTransactionsAsync(
-            LastestTransactionsRequestDto requestDto);
+    Task<List<LastestTransactionResponseDto>> GetLatestTransactionsAsync(
+            LatestTransactionsRequestDto requestDto);
 
     /// <summary>
     /// Retrieves the statistics date as options.

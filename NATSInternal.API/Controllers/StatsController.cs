@@ -7,20 +7,20 @@ public class StatsController : ControllerBase
 {
     private readonly IStatsService _service;
     private readonly IValidator<MonthlyStatsRequestDto> _monthlyValidator;
-    private readonly IValidator<LastestMonthlyStatsRequestDto> _lastestMonthlyStatsValidator;
-    private readonly IValidator<LastestDailyStatsRequestDto> _lastestDailyStatsValidator;
+    private readonly IValidator<LatestMonthlyStatsRequestDto> _lastestMonthlyStatsValidator;
+    private readonly IValidator<LatestDailyStatsRequestDto> _lastestDailyStatsValidator;
     private readonly IValidator<TopSoldProductListRequestDto> _topSoldProductListValidator;
     private readonly IValidator<TopPurchasedCustomerListRequestDto> _topPurchasedCustomerListValidator;
-    private readonly IValidator<LastestTransactionsRequestDto> _lastestTransactionsValidator;
+    private readonly IValidator<LatestTransactionsRequestDto> _latestTransactionValidator;
 
     public StatsController(
             IStatsService service,
             IValidator<MonthlyStatsRequestDto> monthlyValidator,
-            IValidator<LastestMonthlyStatsRequestDto> lastestMonthlyStatsValidator,
-            IValidator<LastestDailyStatsRequestDto> lastestDailyStatsValidator,
+            IValidator<LatestMonthlyStatsRequestDto> lastestMonthlyStatsValidator,
+            IValidator<LatestDailyStatsRequestDto> lastestDailyStatsValidator,
             IValidator<TopSoldProductListRequestDto> topSoldProductListValidator,
             IValidator<TopPurchasedCustomerListRequestDto> topPurchasedCustomerListValidator,
-            IValidator<LastestTransactionsRequestDto> lastestTransactionsValidator)
+            IValidator<LatestTransactionsRequestDto> lastestTransactionsValidator)
     {
         _service = service;
         _monthlyValidator = monthlyValidator;
@@ -28,7 +28,7 @@ public class StatsController : ControllerBase
         _lastestDailyStatsValidator = lastestDailyStatsValidator;
         _topSoldProductListValidator = topSoldProductListValidator;
         _topPurchasedCustomerListValidator = topPurchasedCustomerListValidator;
-        _lastestTransactionsValidator = lastestTransactionsValidator;
+        _latestTransactionValidator = lastestTransactionsValidator;
     }
 
     [HttpGet("Daily")]
@@ -77,11 +77,11 @@ public class StatsController : ControllerBase
         }
     }
 
-    [HttpGet("LastestMonthly")]
+    [HttpGet("LatestMonthly")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetLastestMonthly(
-            [FromQuery] LastestMonthlyStatsRequestDto requestDto)
+    public async Task<IActionResult> GetLatestMonthly(
+            [FromQuery] LatestMonthlyStatsRequestDto requestDto)
     {
         // Validate data from the request.
         ValidationResult validationResult;
@@ -95,11 +95,11 @@ public class StatsController : ControllerBase
         return Ok(await _service.GetLastestMonthlyAsync(requestDto));
     }
 
-    [HttpGet("LastestDailyBasic")]
+    [HttpGet("LatestDailyBasic")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetLastestDailyBasic(
-            [FromQuery] LastestDailyStatsRequestDto requestDto)
+    public async Task<IActionResult> GetLatestDailyBasic(
+            [FromQuery] LatestDailyStatsRequestDto requestDto)
     {
         // Validate data from the request.
         ValidationResult validationResult;
@@ -113,11 +113,11 @@ public class StatsController : ControllerBase
         return Ok(await _service.GetLastestDailyBasicAsync(requestDto));
     }
 
-    [HttpGet("LastestDailyDetail")]
+    [HttpGet("LatestDailyDetail")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetLastestDailyDetail(
-            [FromQuery] LastestDailyStatsRequestDto requestDto)
+    public async Task<IActionResult> GetLatestDailyDetail(
+            [FromQuery] LatestDailyStatsRequestDto requestDto)
     {
         // Validate data from the request.
         ValidationResult validationResult;
@@ -176,23 +176,23 @@ public class StatsController : ControllerBase
         return Ok(await _service.GetTopPurchasedCustomerListAsync(requestDto));
     }
 
-    [HttpGet("LastestTransactions")]
+    [HttpGet("LatestTransactions")]
     [ResponseCache(Duration=60)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetLastestTransactionsAsync(
-            [FromQuery] LastestTransactionsRequestDto requestDto)
+            [FromQuery] LatestTransactionsRequestDto requestDto)
     {
         // Validate data from the request.
         ValidationResult validationResult;
-        validationResult = _lastestTransactionsValidator.Validate(requestDto);
+        validationResult = _latestTransactionValidator.Validate(requestDto);
         if (!validationResult.IsValid)
         {
             ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
             return BadRequest(ModelState);
         }
 
-        return Ok(await _service.GetLastestTransactionsAsync(requestDto));
+        return Ok(await _service.GetLatestTransactionsAsync(requestDto));
     }
 
     [HttpGet("TopSoldProductRangeTypeOptions")]
