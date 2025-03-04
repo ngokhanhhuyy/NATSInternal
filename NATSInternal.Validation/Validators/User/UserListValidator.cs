@@ -8,9 +8,7 @@ public class UserListValidator : Validator<UserListRequestDto>
             .IsOneOfFieldOptions(service.GetListSortingOptions().FieldOptions)
             .WithName(DisplayNames.SortingByField);
         RuleFor(dto => dto.Content)
-            .MinimumLength(3)
             .MaximumLength(255)
-            .When(dto => dto.Content?.Length > 0)
             .WithName(DisplayNames.Content);
         RuleFor(dto => dto.Page)
             .GreaterThanOrEqualTo(Rules.PageMinimumValue)

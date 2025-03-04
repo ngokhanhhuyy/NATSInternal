@@ -14,5 +14,8 @@ public class CustomerListValidator : Validator<CustomerListRequestDto>
             .GreaterThanOrEqualTo(10)
             .LessThanOrEqualTo(50)
             .WithName(dto => DisplayNames.Get(nameof(dto.ResultsPerPage)));
+        RuleFor(dto => dto.SearchByContent)
+            .MaximumLength(255)
+            .WithName(DisplayNames.SearchByContent);
     }
 }
