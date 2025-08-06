@@ -3,13 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NATSInternal.Services", "NATSInternal.Services\NATSInternal.Services.csproj", "{8F66EE8E-0420-4127-BAD1-C94E785E27DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NATSInternal.Core", "NATSInternal.Core\NATSInternal.Core.csproj", "{8F66EE8E-0420-4127-BAD1-C94E785E27DB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NATSInternal.Validation", "NATSInternal.Validation\NATSInternal.Validation.csproj", "{A8566B46-AC7D-494D-922E-0E6D476C98CC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NATSInternal.API", "NATSInternal.API\NATSInternal.API.csproj", "{1FF86FBA-A18C-4A7D-8917-E7135359BCD7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal.MVC", "NATSInternal.MVC\NATSInternal.MVC.csproj", "{95A7E65E-298F-4629-927B-25168D34C404}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

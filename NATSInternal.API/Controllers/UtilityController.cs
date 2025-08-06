@@ -1,4 +1,4 @@
-﻿using NATSInternal.Services.Localization;
+﻿using NATSInternal.Core.Localization;
 
 namespace NATSInternal.API.Controllers;
 

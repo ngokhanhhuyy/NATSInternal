@@ -1,0 +1,14 @@
+﻿namespace NATSInternal.Core.Dtos;
+
+public class BrandListRequestDto : ISortableListRequestDto
+{
+    public bool? SortingByAscending { get; set; }
+    public string SortingByField { get; set; }
+    public int Page { get; set; } = 1;
+    public int ResultsPerPage { get; set; } = 15;
+
+    public void TransformValues()
+    {
+        SortingByField = SortingByField.ToNullIfEmpty();
+    }
+}

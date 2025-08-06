@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Identity;
 using NATSInternal.Middlewares;
 using System.Globalization;
-using System.Security.Claims;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR();
 
 // Connection string - EF Core.
 string connectionString = builder.Configuration.GetConnectionString("Mysql");
+
 // Configure services from Services package/library.
 builder.Services.ConfigureServices(connectionString);
 
@@ -189,8 +189,8 @@ builder.Services.AddCors(options =>
 });
 
 WebApplication app = builder.Build();
-DataInitializer dataInitializer;
-dataInitializer = new DataInitializer();
+DataSeedingService dataInitializer;
+dataInitializer = new DataSeedingService();
 dataInitializer.InitializeData(app);
 
 app.UseCors("LocalhostDevelopment");
