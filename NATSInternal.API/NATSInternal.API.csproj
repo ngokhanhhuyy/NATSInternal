@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NATSInternal.Core\NATSInternal.Services.csproj" />
+    <ProjectReference Include="..\NATSInternal.Core\NATSInternal.Core.csproj" />
     <ProjectReference Include="..\NATSInternal.Validation\NATSInternal.Validation.csproj" />
   </ItemGroup>
 </Project>

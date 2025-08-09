@@ -34,18 +34,9 @@ public class StatsController : ControllerBase
     [HttpGet("Daily")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DailyStats([FromQuery] DateOnly? recordedDate)
     {
-        try
-        {
-            return Ok(await _service.GetDailyDetailAsync(recordedDate));
-        }
-        catch (ResourceNotFoundException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return NotFound(ModelState);
-        }
+        return Ok(await _service.GetDailyDetailAsync(recordedDate));
     }
 
     [HttpGet("Monthly")]

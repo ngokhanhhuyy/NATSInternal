@@ -189,9 +189,8 @@ builder.Services.AddCors(options =>
 });
 
 WebApplication app = builder.Build();
-DataSeedingService dataInitializer;
-dataInitializer = new DataSeedingService();
-dataInitializer.InitializeData(app);
+await app.Services.EnsureDatabaseCreatedAsync();
+await app.Services.SeedDataAsync();
 
 app.UseCors("LocalhostDevelopment");
 app.Use(async (context, next) =>
