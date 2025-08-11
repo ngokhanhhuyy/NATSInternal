@@ -19,9 +19,6 @@ public interface IStatsService
     /// A <see cref="Task"/> representing the asynchonous operation, which result is a DTO
     /// containing the detail information of the daily stats.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
-    /// Thrown when the stats recorded at the specified date doesn't exist.
-    /// </exception>
     Task<DailyStatsDetailResponseDto> GetDailyDetailAsync(DateOnly? recordedDate);
 
     /// <summary>

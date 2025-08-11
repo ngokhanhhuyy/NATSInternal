@@ -41,8 +41,9 @@ internal class StatsService : IStatsService
         }
         else
         {
-             daysInMonth = DateTime
-                .DaysInMonth(requestDto.RecordedYear, requestDto.RecordedMonth);
+            daysInMonth = DateTime.DaysInMonth(
+                requestDto.RecordedYear,
+                requestDto.RecordedMonth);
         }
 
         if (monthlyStats != null)
@@ -50,6 +51,7 @@ internal class StatsService : IStatsService
             List<int> recordedDays = monthlyStats.DailyStats
                 .Select(ds => ds.RecordedDate.Day)
                 .ToList();
+
             for (int day = 1; day <= daysInMonth; day++)
             {
                 if (!recordedDays.Contains(day))
@@ -88,6 +90,7 @@ internal class StatsService : IStatsService
                         requestDto.RecordedMonth,
                         day)
                 };
+
                 monthlyStats.DailyStats.Add(dailyStats);
             }
         }
@@ -99,17 +102,15 @@ internal class StatsService : IStatsService
     public async Task<DailyStatsDetailResponseDto> GetDailyDetailAsync(DateOnly? recordedDate)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        
+
         DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
         DateOnly date = recordedDate ?? DateOnly.FromDateTime(currentDateTime);
-        return await context.DailyStats
+        DailyStats dailyStats = await context.DailyStats
             .Where(d => d.RecordedDate == date)
-            .Select(d => new DailyStatsDetailResponseDto(d))
             .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException(
-                nameof(DailyStats),
-                nameof(date),
-                date.ToVietnameseString());
+            ?? new DailyStats { RecordedDate = date };
+
+        return new DailyStatsDetailResponseDto(dailyStats);
     }
 
     /// <inheritdoc />
@@ -222,12 +223,8 @@ internal class StatsService : IStatsService
         return dateSeries.Select(seriesDate =>
         {
             DailyStats stats = dailyStatsList
-                .SingleOrDefault(ds => ds.RecordedDate == seriesDate);
-
-            if (stats == null)
-            {
-                return null;
-            }
+                .SingleOrDefault(ds => ds.RecordedDate == seriesDate)
+                ?? new DailyStats { RecordedDate = seriesDate };
 
             return new DailyStatsDetailResponseDto(stats);
         }).ToList();

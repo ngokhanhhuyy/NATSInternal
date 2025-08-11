@@ -15,17 +15,13 @@ public static class ConfigurationExtensions
     /// A <see cref="string"/> value representing the connection string for database
     /// connection.
     /// </param>
-    /// <param name="isForBlazor">
-    /// A <see cref="bool"/> value indicates if this service layer is consumed by Blazor app.
-    /// </param>
     /// <returns>
     /// An <see cref="IServiceCollection"/> interface containing the services for the
     /// application.
     /// </returns>
     public static IServiceCollection ConfigureServices(
             this IServiceCollection services,
-            string connectionString, // connectionString
-            bool isForBlazor = false)
+            string connectionString)
     {
         services.AddDbContextFactory<DatabaseContext>(options => options
             // .UseSqlite(
@@ -53,20 +49,11 @@ public static class ConfigurationExtensions
 
         services.AddHttpContextAccessor();
 
+        services.AddScoped<DatabaseContext>();
         services.AddScoped<SignInManager<User>>();
         services.AddScoped<RoleManager<Role>>();
+        services.AddScoped<IUserService, UserService>();
 
-        if (isForBlazor)
-        {
-            services.AddTransient<DatabaseContext>();
-            services.AddTransient<IUserService, UserService>();
-        }
-        else
-        {
-            services.AddScoped<DatabaseContext>();
-            services.AddScoped<IUserService, UserService>();
-        }
-        
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IRoleService, RoleService>();
 
@@ -153,6 +140,35 @@ public static class ConfigurationExtensions
             IMonthYearService<DebtPayment, DebtPaymentUpdateHistory>,
             MonthYearService<DebtPayment, DebtPaymentUpdateHistory>>();
 
+        // Data seeding.
+        services.AddScoped<DataSeedingService>();
+
         return services;
+    }
+
+    public static async Task EnsureDatabaseCreatedAsync(this IServiceProvider serviceProvider)
+    {
+        IServiceScopeFactory serviceScopeFactory;
+        serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using IServiceScope serviceScope = serviceScopeFactory.CreateScope();
+        DatabaseContext context = serviceScope.ServiceProvider
+            .GetService<DatabaseContext>()
+            ?? throw new InvalidOperationException(
+                $"{nameof(DatabaseContext)} dependency cannot be resolved.");
+
+        await context.Database.OpenConnectionAsync();
+        await context.Database.EnsureCreatedAsync();
+        await context.Database.CloseConnectionAsync();
+    }
+
+    public static async Task SeedDataAsync(this IServiceProvider serviceProvider)
+    {
+        IServiceScopeFactory serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using IServiceScope serviceScope = serviceScopeFactory.CreateScope();
+        DataSeedingService service = serviceScope.ServiceProvider
+            .GetService<DataSeedingService>()
+            ?? throw new InvalidOperationException(
+                $"{nameof(DataSeedingService)} dependency cannot be resolved.");
+        await service.SeedAsync();
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Hosting;
 
 namespace NATSInternal.Core;
 
-internal sealed class DataSeedingService : IDataSeedingService
+internal sealed class DataSeedingService
 {
     private readonly DatabaseContext _context;
     private readonly UserManager<User> _userManager;
@@ -23,21 +24,27 @@ internal sealed class DataSeedingService : IDataSeedingService
         _environment = environment;
     }
 
-    public async Task SeedDataAsync()
+    public async Task SeedAsync()
     {
         Randomizer.Seed = new Random(8675309);
-        using var transaction = _context.Database.BeginTransaction();
+        await using IDbContextTransaction transaction = await _context.Database
+            .BeginTransactionAsync();
+
         List<Role> roles = await SeedRolesAsync();
         await SeedRoleClaimsAsync(roles);
-        List<User> users = await SeedUsersAsync(roles);
+        List<User> users = await SeedUsersAsync();
         List<Country> countries = await SeedCountriesAsync();
-        List<Brand> brands = await SeedBrandsAsync();
-        List<ProductCategory> productCategories = await SeedProductCategoriesAsync();
-        List<Product> products = await SeedProductsAsync(productCategories, brands);
-        InitializeStats();
-        GenerateLockableEntitiesData();
-        _context.SaveChanges();
-        transaction.Commit();
+
+        if (_environment.IsDevelopment())
+        {
+            List<Brand> brands = await SeedBrandsAsync();
+            List<ProductCategory> productCategories = await SeedProductCategoriesAsync();
+            List<Product> products = await SeedProductsAsync(productCategories, brands);
+            await SeedLockableEntitiesDataAsync(products);
+        }
+
+        await _context.SaveChangesAsync();
+        await transaction.CommitAsync();
     }
 
     private async Task<List<Role>> SeedRolesAsync()
@@ -85,7 +92,6 @@ internal sealed class DataSeedingService : IDataSeedingService
                 string errorMessage = result.Errors.FirstOrDefault()?.Description;
                 throw new InvalidOperationException(errorMessage);
             }
-            _context.SaveChanges();
         }
 
         return roles;
@@ -293,17 +299,21 @@ internal sealed class DataSeedingService : IDataSeedingService
             string[] permissions = permissionsByRoles[role.Name!];
             foreach (string permission in permissions)
             {
-                _roleManager
-                    .AddClaimAsync(role, new Claim("Permission", permission))
-                    .GetAwaiter()
-                    .GetResult();
+                Claim claim = new Claim("Permission", permission);
+                IdentityResult identityResult = await _roleManager.AddClaimAsync(role, claim);
+                if (!identityResult.Succeeded)
+                {
+                    string message = identityResult.Errors
+                        .Select(e => e.Description)
+                        .SingleOrDefault();
+
+                    throw new InvalidOperationException(message);
+                }
             }
         }
-
-        _context.SaveChanges();
     }
 
-    private async Task<List<User>> SeedUsersAsync(List<Role> roles)
+    private async Task<List<User>> SeedUsersAsync()
     {
         List<User> users = await _userManager.Users.ToListAsync();
         if (users.Count > 0)
@@ -395,8 +405,8 @@ internal sealed class DataSeedingService : IDataSeedingService
         foreach (var pair in usersWithPasswords)
         {
             User user = pair.Key;
-            string password = pair.Value.Item1;
-            string roleName = pair.Value.Item2;
+            string password = pair.Value.Password;
+            string roleName = pair.Value.RoleName;
             IdentityResult result = await _userManager.CreateAsync(user, password);
 
             string errorMessage;
@@ -824,102 +834,16 @@ internal sealed class DataSeedingService : IDataSeedingService
         return products;
     }
 
-    private async Task SeedStatsAsync(List<Product> products)
-    {
-        Console.WriteLine("Initializing stats ...");
-        DateOnly minimumDate = DateOnly.FromDateTime(
-            DateTime.UtcNow.ToApplicationTime().AddMonths(-6));
-        DateOnly maximumDate = DateOnly.FromDateTime(
-            DateTime.UtcNow.ToApplicationTime().AddMonths(3));
-
-        // Generate a list of date to check if there is any date not existing in the database.
-        List<DateOnly> dateList = new List<DateOnly>();
-        DateOnly generatingDate = minimumDate;
-        while (generatingDate <= maximumDate)
-        {
-            dateList.Add(generatingDate);
-            generatingDate = generatingDate.AddDays(1);
-        }
-
-        // Fetch a list of existing dates in the database.
-        List<DateOnly> existingDates = _context.DailyStats
-            .Select(ds => ds.RecordedDate)
-            .ToList();
-
-        // Check if there is any date which doesn't exist in the database.
-        IEnumerable<DateOnly> notExistingDates = dateList.Except(existingDates);
-
-        // Generating stats of dates which doesn't exist in the database.
-        foreach (DateOnly date in notExistingDates)
-        {
-            // Determining temporarily closed datetime.
-            DateTime? temporarilyClosedDateTime = null;
-            if (ShouldTemporarilyCloseStats(date))
-            {
-                temporarilyClosedDateTime = new DateTime(date, new TimeOnly(2, 30, 0));
-            }
-
-            // Determining officially closed datetime.
-            DateTime? officiallyClosedDateTime = null;
-            if (ShouldOfficiallyCloseStats(date))
-            {
-                officiallyClosedDateTime = new DateTime(date, new TimeOnly(2, 30, 0));
-            }
-
-            // Initialize daily stats.
-            DailyStats dailyStats = new DailyStats
-            {
-                RecordedDate = date,
-                TemporarilyClosedDateTime = temporarilyClosedDateTime,
-                OfficiallyClosedDateTime = officiallyClosedDateTime
-            };
-
-            // Initialize monthly stats if not exists.
-            MonthlyStats monthlyStats = _context.MonthlyStats
-                .SingleOrDefault(ms => ms.RecordedYear == date.Year &&
-                                       ms.RecordedMonth == date.Month);
-                                       
-            if (monthlyStats == null)
-            {
-                monthlyStats = new MonthlyStats
-                {
-                    RecordedYear = date.Year,
-                    RecordedMonth = date.Month,
-                    DailyStats = new List<DailyStats>()
-                };
-
-                _context.MonthlyStats.Add(monthlyStats);
-            }
-
-            // Link the daily stats to the monthly stats.
-            monthlyStats.DailyStats ??= new List<DailyStats>();
-            monthlyStats.DailyStats.Add(dailyStats);
-
-            // Close the monthly stats if the daily stats is closed.
-            if (dailyStats.TemporarilyClosedDateTime.HasValue)
-            {
-                monthlyStats.TemporarilyClosedDateTime = dailyStats.TemporarilyClosedDateTime;
-            }
-
-            if (dailyStats.OfficiallyClosedDateTime.HasValue)
-            {
-                monthlyStats.OfficiallyClosedDateTime = dailyStats.OfficiallyClosedDateTime;
-            }
-        }
-
-        await _context.SaveChangesAsync();
-    }
-
-    private async Task SelectOrSeedCustomerAsync(
-        DateTime createdDateTime,
-        List<int> customerIds,
-        List<int> userIds,
-        Random random,
-        Faker faker,
-        bool logResult)
+    private async Task<int> SelectCustomerIdOrSeedCustomerAsync(
+            DateTime createdDateTime,
+            List<int> customerIds,
+            List<int> userIds,
+            Random random,
+            Faker faker,
+            bool logResult)
     {
         // Determine whether existing customer should be selected instead of generating.
-        if (customerIds.Any() && random.Next(0, 11) >= 2)
+        if (customerIds.Count > 0 && random.Next(0, 11) >= 2)
         {
             return customerIds.MinBy(_ => Guid.NewGuid());
         }
@@ -975,15 +899,12 @@ internal sealed class DataSeedingService : IDataSeedingService
             CreatedUserId = userIds.Skip(random.Next(userIds.Count)).Take(1).Single()
         };
         
-        await _context.Customers.AddAsync(customer);
+        _context.Customers.Add(customer);
         await _context.SaveChangesAsync();
         customerIds.Add(customer.Id);
 
         // Generating stats data.
-        DateOnly statsDate = DateOnly.FromDateTime(customer.CreatedDateTime);
-        DailyStats dailyStats = _context.DailyStats
-            .Include(ds => ds.Monthly)
-            .Single(ds => ds.RecordedDate == statsDate);
+        DailyStats dailyStats = await SelectOrSeedDailyStatsAsync(createdDateTime);
         dailyStats.NewCustomers += 1;
         dailyStats.Monthly.NewCustomers += 1;
 
@@ -995,28 +916,63 @@ internal sealed class DataSeedingService : IDataSeedingService
         return customer.Id;
     }
 
-    private void GenerateLockableEntitiesData(List<Product> products, bool logResult = false)
+    private async Task<DailyStats> SelectOrSeedDailyStatsAsync(DateTime statsDateTime)
+    {
+        DateOnly statsDate = DateOnly.FromDateTime(statsDateTime);
+
+        DailyStats dailyStats = await _context.DailyStats
+            .Include(ds => ds.Monthly)
+            .SingleOrDefaultAsync(ds => ds.RecordedDate == statsDate);
+
+        if (dailyStats is not null)
+        {
+            return dailyStats;
+        }
+
+        MonthlyStats monthlyStats = await _context.MonthlyStats
+            .SingleOrDefaultAsync(ms =>
+                ms.RecordedMonth == statsDate.Month &&
+                ms.RecordedYear == statsDate.Year);
+
+        if (monthlyStats is null)
+        {
+            monthlyStats = new MonthlyStats
+            {
+                CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),
+                RecordedMonth = statsDate.Month,
+                RecordedYear = statsDate.Year,
+                DailyStats = new List<DailyStats>()
+            };
+            _context.MonthlyStats.Add(monthlyStats);
+        }
+
+        dailyStats = new DailyStats
+        {
+            RecordedDate = statsDate,
+            CreatedDateTime = DateTime.UtcNow.ToApplicationTime()
+        };
+        monthlyStats.DailyStats.Add(dailyStats);
+        _context.DailyStats.Add(dailyStats);
+
+        await _context.SaveChangesAsync();
+
+        return dailyStats;
+    }
+
+    private async Task SeedLockableEntitiesDataAsync(
+            List<Product> products,
+            bool logResult = false)
     {
         List<bool> conditions = new List<bool>
         {
-            _context.Supplies.Any(),
-            _context.Expenses.Any(),
-            _context.Orders.Any(),
-            _context.Treatments.Any(),
-            _context.Consultants.Any()
+            await _context.Supplies.AnyAsync(),
+            await _context.Expenses.AnyAsync(),
+            await _context.Orders.AnyAsync(),
+            await _context.Treatments.AnyAsync(),
+            await _context.Consultants.AnyAsync()
         };
 
-        bool shouldGenerate = false;
-        foreach (bool condition in conditions)
-        {
-            if (!condition)
-            {
-                shouldGenerate = true;
-                break;
-            }
-        }
-
-        if (shouldGenerate)
+        if (!conditions.Where(c => c).Any())
         {
             Console.WriteLine("Initializing LockableEntities.");
             Random random = new Random();
@@ -1028,31 +984,33 @@ internal sealed class DataSeedingService : IDataSeedingService
             // Get the starting statsDateTime, based on the existing data in the database.
             IEnumerable<DateTime?> lastDateTimes = new List<DateTime?>
             {
-                _context.Supplies
+                await _context.Supplies
                     .OrderByDescending(supply => supply.CreatedDateTime)
                     .Select(supply => (DateTime?)supply.CreatedDateTime)
-                    .FirstOrDefault(),
-                _context.Expenses
+                    .FirstOrDefaultAsync(),
+                await _context.Expenses
                     .OrderByDescending(expense => expense.CreatedDateTime)
                     .Select(expense => (DateTime?)expense.CreatedDateTime)
-                    .FirstOrDefault(),
-                _context.Orders
+                    .FirstOrDefaultAsync(),
+                await _context.Orders
                     .OrderByDescending(order => order.CreatedDateTime)
                     .Select(order => (DateTime?)order.CreatedDateTime)
-                    .FirstOrDefault(),
-                _context.Treatments
+                    .FirstOrDefaultAsync(),
+                await _context.Treatments
                     .OrderByDescending(treatment => treatment.CreatedDateTime)
                     .Select(treatment => (DateTime?)treatment.CreatedDateTime)
-                    .FirstOrDefault(),
-                _context.Consultants
+                    .FirstOrDefaultAsync(),
+                await _context.Consultants
                     .OrderByDescending(consultant => consultant.CreatedDateTime)
                     .Select(consultant => (DateTime?)consultant.CreatedDateTime)
-                    .FirstOrDefault(),
+                    .FirstOrDefaultAsync(),
             };
+
             DateTime? lastGeneratedStatsDateTime = lastDateTimes
                 .Where(dateTime => dateTime.HasValue)
                 .OrderByDescending(dateTime => dateTime)
                 .FirstOrDefault();
+
             if (lastGeneratedStatsDateTime.HasValue &&
                 lastGeneratedStatsDateTime > statsDateTime)
             {
@@ -1078,11 +1036,11 @@ internal sealed class DataSeedingService : IDataSeedingService
             while (true)
             {
                 // Determine datetime
-                CheckAndGenerateSupply(statsDateTime, random, faker, products);
+                await CheckAndSeedSuppliesAsync(statsDateTime, random, faker, products);
                 do
                 {
-                    statsDateTime = statsDateTime.AddMinutes(random.Next(300, 420));
-                    // statsDateTime = statsDateTime.AddMinutes(random.Next(15, 30));
+                    // statsDateTime = statsDateTime.AddMinutes(random.Next(300, 420));
+                    statsDateTime = statsDateTime.AddMinutes(random.Next(15, 30));
                 }
                 while (!IsStatsDateTimeValid(statsDateTime));
 
@@ -1092,21 +1050,26 @@ internal sealed class DataSeedingService : IDataSeedingService
                 }
 
                 // Generate queueing DebtPayments.
-                GenerateDebtPayment(statsDateTime, logResult);
+                await SeedDebtPaymentAsync(statsDateTime, logResult);
 
                 // Determine type of entity that is to be created.
                 int randomNumber = random.Next(1, 101);
                 if (randomNumber < 20)
                 {
-                    GenerateExpense(statsDateTime, random, faker, logResult);
+                    await SeedExpenseAsync(statsDateTime, random, faker, logResult);
                 }
                 else if (randomNumber < 35)
                 {
-                    GenerateConsultant(statsDateTime, customerIds, random, faker, logResult);
+                    await SeedConsultantAsync(
+                        statsDateTime,
+                        customerIds,
+                        random,
+                        faker,
+                        logResult);
                 }
                 else if (randomNumber < 65)
                 {
-                    GenerateOrder(
+                    await SeedOrderAsync(
                         statsDateTime,
                         customerIds,
                         products,
@@ -1116,7 +1079,7 @@ internal sealed class DataSeedingService : IDataSeedingService
                 }
                 else
                 {
-                    GenerateTreatment(
+                    await SeedTreatmentAsync(
                         statsDateTime,
                         customerIds,
                         products,
@@ -1129,20 +1092,22 @@ internal sealed class DataSeedingService : IDataSeedingService
                 int remainingDaysDifferent = maxStatsDateTime.Subtract(statsDateTime).Days;
                 if (remainingDaysDifferent != oldRemainingDaysDifferent)
                 {
-                    completedTask.ContinueWith(_ =>
-                    {
-                        Console.SetCursorPosition(0, Console.CursorTop - 1);
-                        Console.Out.WriteLineAsync($"{remainingDaysDifferent}" +
-                            $"/{totalDaysDifferent} days.");
-                    });
+                    Console.SetCursorPosition(0, Console.CursorTop - 1);
+                    await Console.Out.WriteLineAsync($"{remainingDaysDifferent}" +
+                        $"/{totalDaysDifferent} days.");
                 }
+
                 oldRemainingDaysDifferent = remainingDaysDifferent;
             }
         }
     }
 
-    private void CheckAndGenerateSupply(DateTime statsDateTime, Random random,
-            Faker faker, List<Product> products, bool logResult = false)
+    private async Task CheckAndSeedSuppliesAsync(
+            DateTime statsDateTime,
+            Random random,
+            Faker faker,
+            List<Product> products,
+            bool logResult = false)
     {
         // Fetch a list of users who have permission to create supply.
         List<int> userIds = _context.Users
@@ -1191,16 +1156,13 @@ internal sealed class DataSeedingService : IDataSeedingService
             _context.Supplies.Add(supply);
 
             // Generate stats data.
-            DateOnly statsDate = DateOnly.FromDateTime(statsDateTime);
-            DailyStats dailyStats = _context.DailyStats
-                .Include(ds => ds.Monthly)
-                .Single(ds => ds.RecordedDate == statsDate);
+            DailyStats dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
             dailyStats.SupplyCost += supply.ItemAmount;
             dailyStats.ShipmentCost += supply.ShipmentFee;
             dailyStats.Monthly.SupplyCost += supply.ItemAmount;
             dailyStats.Monthly.ShipmentCost += supply.ShipmentFee;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             if (logResult)
             {
                 Console.WriteLine($"Initialized supply with id {supply.Id}" +
@@ -1209,22 +1171,25 @@ internal sealed class DataSeedingService : IDataSeedingService
         }
     }
 
-    private void GenerateExpense(DateTime statsDateTime, Random random,
-            Faker faker, bool logResult = false)
+    private async Task SeedExpenseAsync(
+            DateTime statsDateTime,
+            Random random,
+            Faker faker,
+            bool logResult = false)
     {
         // Fetch a list of users who have permission to create expense.
-        List<int> userIds = _context.Users
-            .Include(u => u.Roles).ThenInclude(r => r.Claims)
+        List<int> canCreateExpenseUserIds = await _context.Users
             .Where(u => u.Roles
                 .Single()
                 .Claims
                 .Select(c => c.ClaimValue)
                 .Contains(PermissionConstants.CreateExpense))
                 .Select(u => u.Id)
-                .ToList();
+                .ToListAsync();
 
         // Generating category.
-        ExpenseCategory category = Enum.GetValues(typeof(ExpenseCategory))
+        ExpenseCategory category = Enum
+            .GetValues(typeof(ExpenseCategory))
             .OfType<ExpenseCategory>()
             .MinBy(_ => Guid.NewGuid());
 
@@ -1232,12 +1197,14 @@ internal sealed class DataSeedingService : IDataSeedingService
         string companyName = faker.Company.CompanyName();
         ExpensePayee payee = _context.ExpensePayees
             .SingleOrDefault(e => e.Name == companyName);
+
         if (payee is null)
         {
             payee = new ExpensePayee
             {
                 Name = companyName
             };
+
             _context.ExpensePayees.Add(payee);
         }
 
@@ -1251,16 +1218,17 @@ internal sealed class DataSeedingService : IDataSeedingService
             Note = random.Next(0, 2) == 0
                 ? null
                 : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
-            CreatedUserId = userIds.Skip(random.Next(userIds.Count)).Take(1).Single(),
+            CreatedUserId = canCreateExpenseUserIds
+                .Skip(random.Next(canCreateExpenseUserIds.Count))
+                .Take(1)
+                .Single(),
             Payee = payee
         };
         _context.Expenses.Add(expense);
 
         // Generating stats data.
-        DateOnly statsDate = DateOnly.FromDateTime(statsDateTime);
-        DailyStats dailyStats = _context.DailyStats
-            .Include(ds => ds.Monthly)
-            .Single(ds => ds.RecordedDate == statsDate);
+        DailyStats dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
+
         switch (expense.Category)
         {
             case ExpenseCategory.Utilities:
@@ -1281,7 +1249,7 @@ internal sealed class DataSeedingService : IDataSeedingService
                 break;
         }
 
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         if (logResult)
         {
@@ -1289,8 +1257,13 @@ internal sealed class DataSeedingService : IDataSeedingService
         }
     }
 
-    private void GenerateOrder(DateTime statsDateTime, List<int> customerIds,
-            List<Product> products, Random random, Faker faker, bool logResult)
+    private async Task SeedOrderAsync(
+            DateTime statsDateTime,
+            List<int> customerIds,
+            List<Product> products,
+            Random random,
+            Faker faker,
+            bool logResult)
     {
         // Calculate the count of the products which are still in stock.
         int productsInStockCount = _context.Products.Count(p => p.StockingQuantity > 0);
@@ -1298,7 +1271,7 @@ internal sealed class DataSeedingService : IDataSeedingService
         if (productsInStockCount > 0)
         {
             // Fetch a list of users who have permission to create order.
-            List<int> userIds = _context.Users
+            List<int> userIdsWhoCanCreateOrders = await _context.Users
                 .Include(u => u.Roles).ThenInclude(r => r.Claims)
                 .Where(u => u.Roles
                     .Single()
@@ -1306,11 +1279,12 @@ internal sealed class DataSeedingService : IDataSeedingService
                     .Select(c => c.ClaimValue)
                     .Contains(PermissionConstants.CreateOrder))
                     .Select(u => u.Id)
-                    .ToList();
-            int customerId = SelectOrSeedCustomerAsync(
+                    .ToListAsync();
+
+            int customerId = await SelectCustomerIdOrSeedCustomerAsync(
                 statsDateTime,
                 customerIds,
-                userIds,
+                userIdsWhoCanCreateOrders,
                 random,
                 faker,
                 logResult);
@@ -1324,9 +1298,10 @@ internal sealed class DataSeedingService : IDataSeedingService
                     ? null
                     : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
                 CustomerId = customerId,
-                CreatedUserId = userIds.MinBy(_ => Guid.NewGuid()),
+                CreatedUserId = userIdsWhoCanCreateOrders.MinBy(_ => Guid.NewGuid()),
                 Items = new List<OrderItem>()
             };
+
             _context.Orders.Add(order);
 
             // Initialize order items.
@@ -1356,16 +1331,13 @@ internal sealed class DataSeedingService : IDataSeedingService
             }
 
             // Generating stats data.
-            DateOnly statsDate = DateOnly.FromDateTime(statsDateTime);
-            DailyStats dailyStats = _context.DailyStats
-                .Include(ds => ds.Monthly)
-                .Single(ds => ds.RecordedDate == statsDate);
+            DailyStats dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
             dailyStats.RetailGrossRevenue += order.ProductAmountBeforeVat;
             dailyStats.VatCollectedAmount += order.ProductVatAmount;
             dailyStats.Monthly.RetailGrossRevenue += order.ProductAmountBeforeVat;
             dailyStats.Monthly.VatCollectedAmount += order.ProductVatAmount;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             if (logResult)
             {
@@ -1376,7 +1348,7 @@ internal sealed class DataSeedingService : IDataSeedingService
             long orderAmount = order.AmountBeforeVat + order.VatAmount;
             if (orderAmount > 1_000_000 && random.Next(0, 5) == 4)
             {
-                GenerateDebtIncurrence(
+                await SeedDebtIncurrenceAsync(
                     order.StatsDateTime.AddMinutes(5),
                     order.CustomerId,
                     order.CreatedUserId,
@@ -1388,19 +1360,25 @@ internal sealed class DataSeedingService : IDataSeedingService
         }
 
         // Check the stocking quantities of products.
-        CheckAndGenerateSupply(statsDateTime, random, faker, products, logResult);
+        await CheckAndSeedSuppliesAsync(statsDateTime, random, faker, products, logResult);
     }
 
-    private void GenerateTreatment(DateTime statsDateTime, List<int> customerIds,
-            List<Product> products, Random random, Faker faker, bool logResult = false)
+    private async Task SeedTreatmentAsync(
+            DateTime statsDateTime,
+            List<int> customerIds,
+            List<Product> products,
+            Random random,
+            Faker faker,
+            bool logResult = false)
     {
         // Calculate the count of the products which are still in stock.
-        int productsInStockCount = _context.Products.Count(p => p.StockingQuantity > 0);
+        int productsInStockCount = await _context.Products
+            .CountAsync(p => p.StockingQuantity > 0);
 
         if (productsInStockCount > 0)
         {
             // Fetch a list of users who have permission to create treatment.
-            List<int> userIds = _context.Users
+            List<int> userIdsWhoCanCreateTreatments = await _context.Users
                 .Include(u => u.Roles).ThenInclude(r => r.Claims)
                 .Where(u => u.Roles
                     .Single()
@@ -1408,16 +1386,17 @@ internal sealed class DataSeedingService : IDataSeedingService
                     .Select(c => c.ClaimValue)
                     .Contains(PermissionConstants.CreateTreatment))
                     .Select(u => u.Id)
-                    .ToList();
-            int therapistId = _context.Users
+                    .ToListAsync();
+
+            int therapistId = await _context.Users
                 .OrderBy(_ => EF.Functions.Random())
                 .Select(u => u.Id)
-                .First();
+                .FirstAsync();
             
-            int customerId = SelectOrSeedCustomerAsync(
+            int customerId = await SelectCustomerIdOrSeedCustomerAsync(
                 statsDateTime,
                 customerIds,
-                userIds,
+                userIdsWhoCanCreateTreatments,
                 random,
                 faker,
                 logResult);
@@ -1434,10 +1413,11 @@ internal sealed class DataSeedingService : IDataSeedingService
                     ? null
                     : SliceIfTooLong(faker.Lorem.Sentences(4), 255),
                 CustomerId = customerId,
-                CreatedUserId = userIds.MinBy(_ => Guid.NewGuid()),
+                CreatedUserId = userIdsWhoCanCreateTreatments.MinBy(_ => Guid.NewGuid()),
                 TherapistId = therapistId,
                 Items = new List<TreatmentItem>()
             };
+
             _context.Treatments.Add(treatment);
 
             // Initialize treatment item entities.
@@ -1464,21 +1444,18 @@ internal sealed class DataSeedingService : IDataSeedingService
             }
 
             // Generating stats data.
-            DateOnly statsDate = DateOnly.FromDateTime(statsDateTime);
-            DailyStats dailyStats = _context.DailyStats
-                .Include(ds => ds.Monthly)
-                .Single(ds => ds.RecordedDate == statsDate);
+            DailyStats dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
             dailyStats.TreatmentGrossRevenue += treatment.AmountBeforeVat;
             dailyStats.VatCollectedAmount += treatment.ProductVatAmount;
             dailyStats.Monthly.TreatmentGrossRevenue += treatment.AmountBeforeVat;
             dailyStats.Monthly.VatCollectedAmount += treatment.ProductVatAmount;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             // Generate debt incurrence.
             if (treatment.AmountAfterVat > 1_000_000 && random.Next(0, 4) == 3)
             {
-                GenerateDebtIncurrence(
+                await SeedDebtIncurrenceAsync(
                     treatment.StatsDateTime.AddMinutes(5),
                     treatment.CustomerId,
                     treatment.CreatedUserId,
@@ -1496,11 +1473,15 @@ internal sealed class DataSeedingService : IDataSeedingService
         }
 
         // Check the stocking quantities of products.
-        CheckAndGenerateSupply(statsDateTime, random, faker, products, logResult);
+        await CheckAndSeedSuppliesAsync(statsDateTime, random, faker, products, logResult);
     }
 
-    private void GenerateConsultant(DateTime statsDateTime, List<int> customerIds,
-            Random random, Faker faker, bool logResult = false)
+    private async Task SeedConsultantAsync(
+            DateTime statsDateTime,
+            List<int> customerIds,
+            Random random,
+            Faker faker,
+            bool logResult = false)
     {
         // Fetch a list of users who have permission to create consultant.
         List<int> userIds = _context.Users
@@ -1512,7 +1493,8 @@ internal sealed class DataSeedingService : IDataSeedingService
                 .Contains(PermissionConstants.CreateConsultant))
                 .Select(u => u.Id)
                 .ToList();
-        int customerId = SelectOrSeedCustomerAsync(
+
+        int customerId = await SelectCustomerIdOrSeedCustomerAsync(
             statsDateTime,
             customerIds,
             userIds,
@@ -1535,20 +1517,17 @@ internal sealed class DataSeedingService : IDataSeedingService
         _context.Consultants.Add(consultant);
 
         // Generating stats data.
-        DateOnly statsDate = DateOnly.FromDateTime(statsDateTime);
-        DailyStats dailyStats = _context.DailyStats
-            .Include(ds => ds.Monthly)
-            .Single(ds => ds.RecordedDate == statsDate);
+        DailyStats dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
         dailyStats.ConsultantGrossRevenue += consultant.AmountBeforeVat;
         dailyStats.Monthly.ConsultantGrossRevenue += consultant.AmountBeforeVat;
 
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         // Generate debt incurrence.
         long consultantAmount = consultant.AmountBeforeVat + consultant.VatAmount;
         if (consultantAmount > 1_000_000 && random.Next(0, 5) == 4)
         {
-            GenerateDebtIncurrence(
+            await SeedDebtIncurrenceAsync(
                 consultant.StatsDateTime.AddMinutes(5),
                 consultant.CustomerId,
                 consultant.CreatedUserId,
@@ -1565,11 +1544,17 @@ internal sealed class DataSeedingService : IDataSeedingService
         }
     }
 
-    private void GenerateDebtIncurrence(DateTime statsDateTime, int customerId, int userId,
-            long revenueAmount, Random random, Faker faker, bool logResult = false)
+    private async Task SeedDebtIncurrenceAsync(
+            DateTime statsDateTime,
+            int customerId,
+            int userId,
+            long revenueAmount,
+            Random random,
+            Faker faker,
+            bool logResult = false)
     {
         // Fetch a list of users who have permission to create debt payment.
-        List<int> userIds = _context.Users
+        List<int> userIdsWhoCanCreateDebtPayments = await _context.Users
             .Include(u => u.Roles).ThenInclude(r => r.Claims)
             .Where(u => u.Roles
                 .Single()
@@ -1577,10 +1562,10 @@ internal sealed class DataSeedingService : IDataSeedingService
                 .Select(c => c.ClaimValue)
                 .Contains(PermissionConstants.CreateDebtPayment))
                 .Select(u => u.Id)
-                .ToList();
+                .ToListAsync();
 
         // Fetch the customer with the given id.
-        Customer customer = _context.Customers.Single(c => c.Id == customerId);
+        Customer customer = await _context.Customers.SingleAsync(c => c.Id == customerId);
 
         // Determine the count of payments.
         int paymentCount = random.Next(1, 3);
@@ -1623,7 +1608,7 @@ internal sealed class DataSeedingService : IDataSeedingService
                 StatsDateTime = paymentStatsDateTime,
                 CreatedDateTime = paymentStatsDateTime,
                 CustomerId = customerId,
-                CreatedUserId = userIds.MinBy(_ => Guid.NewGuid())
+                CreatedUserId = userIdsWhoCanCreateDebtPayments.MinBy(_ => Guid.NewGuid())
             });
         }
         else
@@ -1650,7 +1635,7 @@ internal sealed class DataSeedingService : IDataSeedingService
                     StatsDateTime = dateTimeAndAmount.DateTime,
                     CreatedDateTime = dateTimeAndAmount.DateTime,
                     CustomerId = customerId,
-                    CreatedUserId = userIds.MinBy(_ => Guid.NewGuid())
+                    CreatedUserId = userIdsWhoCanCreateDebtPayments.MinBy(_ => Guid.NewGuid())
                 });
             }
         }
@@ -1673,14 +1658,11 @@ internal sealed class DataSeedingService : IDataSeedingService
         customer.CachedIncurredDebtAmount += debtIncurrence.Amount;
 
         // Generating stats data.
-        DateOnly statsDate = DateOnly.FromDateTime(debtIncurrence.StatsDateTime);
-        DailyStats dailyStats = _context.DailyStats
-            .Include(ds => ds.Monthly)
-            .Single(ds => ds.RecordedDate == statsDate);
+        DailyStats dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
         dailyStats.DebtIncurredAmount += debtIncurrence.Amount;
         dailyStats.Monthly.DebtIncurredAmount += debtIncurrence.Amount;
 
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         if (logResult)
         {
@@ -1689,7 +1671,7 @@ internal sealed class DataSeedingService : IDataSeedingService
         }
     }
 
-    private void GenerateDebtPayment(DateTime statsDateTime, bool logResult)
+    private async Task SeedDebtPaymentAsync(DateTime statsDateTime, bool logResult)
     {
         while (_queueingDebtPayments.Count > 0 &&
                 _queueingDebtPayments.Peek().StatsDateTime < statsDateTime)
@@ -1698,20 +1680,19 @@ internal sealed class DataSeedingService : IDataSeedingService
             _context.DebtPayments.Add(debtPayment);
 
             // Fetch the customer with the given id.
-            Customer customer = _context.Customers.Single(c => c.Id == debtPayment.CustomerId);
+            Customer customer = await _context.Customers
+                .Where(c => c.Id == debtPayment.CustomerId)
+                .SingleAsync();
 
             // Adjust customer's debt paid amounts.
             customer.CachedPaidDebtAmount += debtPayment.Amount;
 
             // Generating stats data.
-            DateOnly statsDate = DateOnly.FromDateTime(debtPayment.StatsDateTime);
-            DailyStats dailyStats = _context.DailyStats
-                .Include(ds => ds.Monthly)
-                .Single(ds => ds.RecordedDate == statsDate);
+            DailyStats dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
             dailyStats.DebtPaidAmount += debtPayment.Amount;
             dailyStats.Monthly.DebtPaidAmount += debtPayment.Amount;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             if (logResult)
             {
