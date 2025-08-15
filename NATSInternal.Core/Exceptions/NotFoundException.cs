@@ -1,8 +1,10 @@
 ﻿namespace NATSInternal.Core.Exceptions;
 
-public class ResourceNotFoundException : Exception
+public class ResourceNotFoundException : CoreException
 {
     public ResourceNotFoundException() { }
+    
+    public
     
     public ResourceNotFoundException(string message) : base(message) { }
 

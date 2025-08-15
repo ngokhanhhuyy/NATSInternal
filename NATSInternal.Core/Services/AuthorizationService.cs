@@ -1,28 +1,13 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
-
-namespace NATSInternal.Core;
+﻿namespace NATSInternal.Core;
 
 internal class AuthorizationService : IAuthorizationInternalService
 {
     private readonly DatabaseContext _context;
     private User _user;
 
-    public AuthorizationService(
-            DatabaseContext context,
-            IHttpContextAccessor httpContextAccessor)
+    public AuthorizationService(DatabaseContext context)
     {
         _context = context;
-        ClaimsPrincipal user = httpContextAccessor.HttpContext?.User;
-        
-        string userIdAsString = user?.FindFirstValue(ClaimTypes.NameIdentifier);
-        bool parsable = int.TryParse(userIdAsString, out int userId);
-        if (!parsable)
-        {
-            throw new AuthenticationException();
-        }
-        
-        SetUserId(userId);
     }
 
     public void SetUserId(int id)
@@ -34,11 +19,21 @@ internal class AuthorizationService : IAuthorizationInternalService
     
     public int GetUserId()
     {
+        if (_user is null)
+        {
+            throw new InvalidOperationException("User has not been loaded yet.");
+        }
+        
         return _user.Id;
     }
 
     public UserDetailResponseDto GetUserDetail()
     {
+        if (_user is null)
+        {
+            throw new InvalidOperationException("User has not been loaded yet.");
+        }
+        
         return new UserDetailResponseDto(_user);
     }
 
@@ -57,18 +52,6 @@ internal class AuthorizationService : IAuthorizationInternalService
 
     public UserDetailAuthorizationResponseDto GetUserDetailAuthorization(User targetUser)
     {
-        UserDetailAuthorizationResponseDto dto = new UserDetailAuthorizationResponseDto
-        {
-            CanGetNote = CanGetNote(targetUser.PowerLevel),
-            CanEdit = CanEditUserPersonalInformation(targetUser) ||
-                CanEditUserUserInformation(targetUser),
-            CanEditUserPersonalInformation = CanEditUserPersonalInformation(targetUser),
-            CanEditUserUserInformation = CanEditUserUserInformation(targetUser),
-            CanAssignRole = CanAssignRole(),
-            CanChangePassword = CanChangeUserPassword(targetUser),
-            CanResetPassword = CanResetUserPassword(targetUser),
-            CanDelete = CanDeleteUser(targetUser)
-        };
         return new UserDetailAuthorizationResponseDto
         {
             CanGetNote = CanGetNote(targetUser.PowerLevel),
@@ -133,20 +116,20 @@ internal class AuthorizationService : IAuthorizationInternalService
     // Permissions to interact with users.
     public bool CanCreateUser()
     {
-        return _user.HasPermission(PermissionConstants.CreateUser);
+        return _user.HasPermission(PermissionNameConstants.CreateUser);
     }
     
     public bool CanEditUserPersonalInformation(User targetUser)
     {
         // Check permission when the user is editing himself.
         if (_user.Id == targetUser.Id &&
-            _user.HasPermission(PermissionConstants.EditSelfPersonalInformation))
+            _user.HasPermission(PermissionNameConstants.EditSelfPersonalInformation))
         {
             return true;
         }
 
         // Check permission when the user is editing another user.
-        else if (_user.HasPermission(PermissionConstants.EditOtherUserPersonalInformation) &&
+        else if (_user.HasPermission(PermissionNameConstants.EditOtherUserPersonalInformation) &&
                 _user.PowerLevel > targetUser.PowerLevel)
         {
             return true;
@@ -159,13 +142,13 @@ internal class AuthorizationService : IAuthorizationInternalService
     {
         // Check permission when the user is editing himself.
         if (_user.Id == targetUser.Id &&
-            _user.HasPermission(PermissionConstants.EditSelfUserInformation))
+            _user.HasPermission(PermissionNameConstants.EditSelfUserInformation))
         {
             return true;
         }
 
         // Check permission when the user is editing another user.
-        else if (_user.HasPermission(PermissionConstants.EditOtherUserUserInformation) &&
+        else if (_user.HasPermission(PermissionNameConstants.EditOtherUserUserInformation) &&
                 _user.PowerLevel > targetUser.PowerLevel)
         {
             return true;
@@ -182,14 +165,14 @@ internal class AuthorizationService : IAuthorizationInternalService
     public bool CanResetUserPassword(User targetUser)
     {
         return _user.Id != targetUser.Id &&
-            _user.HasPermission(PermissionConstants.ResetOtherUserPassword) &&
+            _user.HasPermission(PermissionNameConstants.ResetOtherUserPassword) &&
             _user.PowerLevel > targetUser.PowerLevel;
     }
 
     public bool CanDeleteUser(User targetUser)
     {
         return _user.Id != targetUser.Id &&
-            _user.HasPermission(PermissionConstants.DeleteUser) &&
+            _user.HasPermission(PermissionNameConstants.DeleteUser) &&
             !_user.IsDeleted &&
             _user.PowerLevel > targetUser.PowerLevel;
     }
@@ -198,24 +181,24 @@ internal class AuthorizationService : IAuthorizationInternalService
     {
         return _user.Id != targetUser.Id &&
                 _user.IsDeleted &&
-                _user.HasPermission(PermissionConstants.RestoreUser);
+                _user.HasPermission(PermissionNameConstants.RestoreUser);
     }
 
     public bool CanAssignToRole(Role role)
     {
-        return _user.Role.Name == RoleConstants.Developer ||
-            _user.Role.Name == RoleConstants.Manager ||
+        return _user.Role.Name == RoleNameConstants.Developer ||
+            _user.Role.Name == RoleNameConstants.Manager ||
             _user.PowerLevel > role.PowerLevel;
     }
 
     public bool CanAssignRole()
     {
-        return _user.HasPermission(PermissionConstants.AssignRole);
+        return _user.HasPermission(PermissionNameConstants.AssignRole);
     }
 
     public bool CanGetNote(int powerLevel)
     {
-        return _user.HasPermission(PermissionConstants.GetOtherUserNote) &&
+        return _user.HasPermission(PermissionNameConstants.GetOtherUserNote) &&
             _user.PowerLevel > powerLevel;
     }
 
