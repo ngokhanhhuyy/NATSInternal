@@ -1,4 +1,4 @@
-namespace NATSInternal.Core.Interfaces;
+namespace NATSInternal.Core.Interfaces.Services;
 
 /// <summary>
 /// A service to handle notifications.
@@ -32,7 +32,7 @@ public interface INotificationService
     /// instance of the <see cref="NotificationResponseDto"/> class, containing the information
     /// of the notification.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the notification with the specified id cannot be found.
     /// </exception>
     Task<NotificationResponseDto> GetSingleAsync(int id);
@@ -46,7 +46,7 @@ public interface INotificationService
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the notification with the specified id which belongs to the requesting user
     /// cannot be found.
     /// </exception>

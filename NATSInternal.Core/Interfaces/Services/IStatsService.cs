@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core.Interfaces;
+﻿namespace NATSInternal.Core.Interfaces.Services;
 
 /// <summary>
 /// A service to handle the operations which are related to statistics.
@@ -62,7 +62,7 @@ public interface IStatsService
     /// A <see cref="Task" /> representing the asynchronous operation, which result is a DTO
     /// containing the detail information of the monthly stats.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Thrown when the stats recorded at the specified month and year doesn't exist.
     /// </exception>
     Task<MonthlyStatsDetailResponseDto> GetMonthlyDetailAsync(

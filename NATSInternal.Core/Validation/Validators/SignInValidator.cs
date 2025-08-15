@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class SignInValidator : Validator<SignInRequestDto>
+internal class SignInValidator : Validator<SignInRequestDto>
 {
     public SignInValidator()
     {

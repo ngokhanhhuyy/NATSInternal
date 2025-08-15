@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class SupplyItemValidator : Validator<SupplyItemRequestDto>
+internal class SupplyItemValidator : Validator<SupplyItemRequestDto>
 {
     public SupplyItemValidator()
     {

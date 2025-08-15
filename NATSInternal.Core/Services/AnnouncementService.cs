@@ -1,4 +1,4 @@
-namespace NATSInternal.Core;
+namespace NATSInternal.Core.Services;
 
 /// <inheritdoc cref="IAnnouncementService" />
 internal class AnnouncementService
@@ -52,7 +52,7 @@ internal class AnnouncementService
             .Where(a => a.Id == id)
             .Select(a => new AnnouncementResponseDto(a, GetExistingAuthorization(a)))
             .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException();
+            ?? throw new NotFoundException();
     }
 
     /// <inheritdoc />
@@ -94,7 +94,7 @@ internal class AnnouncementService
         // Fetch the entity from the database and ensure it exists.
         Announcement announcement = await _context.Announcements
             .SingleOrDefaultAsync(a => a.Id == id)
-            ?? throw new ResourceNotFoundException();
+            ?? throw new NotFoundException();
 
         // Updating the entity's properties.
         announcement.Category = requestDto.Category;
@@ -132,7 +132,7 @@ internal class AnnouncementService
 
         if (affectedRows == 0)
         {
-            throw new ResourceNotFoundException();
+            throw new NotFoundException();
         }
     }
     

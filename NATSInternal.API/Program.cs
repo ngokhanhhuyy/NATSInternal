@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 using NATSInternal.Middlewares;
-using System.Globalization;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR();
@@ -9,7 +8,7 @@ builder.Services.AddSignalR();
 string connectionString = builder.Configuration.GetConnectionString("Mysql");
 
 // Configure services from Services package/library.
-builder.Services.ConfigureServices(connectionString);
+builder.Services.UseCoreServices(connectionString);
 
 // Cookie.
 builder.Services.ConfigureApplicationCookie(options =>
@@ -44,124 +43,111 @@ builder.Services
 
     // Users.
     .AddPolicy("CanCreateUser", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.CreateUser))
+        policy.RequireClaim("Permission", PermissionNameConstants.CreateUser))
     .AddPolicy("CanResetPassword", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.ResetOtherUserPassword))
+        policy.RequireClaim("Permission", PermissionNameConstants.ResetOtherUserPassword))
     .AddPolicy("CanDeleteUser", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.DeleteUser))
+        policy.RequireClaim("Permission", PermissionNameConstants.DeleteUser))
     .AddPolicy("CanRestoreUser", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.RestoreUser))
+        policy.RequireClaim("Permission", PermissionNameConstants.RestoreUser))
 
     // Customers.
     .AddPolicy("CanGetCustomerDetail", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.GetCustomerDetail))
+        policy.RequireClaim("Permission", PermissionNameConstants.GetCustomerDetail))
     .AddPolicy("CanCreateCustomer", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.CreateCustomer))
+        policy.RequireClaim("Permission", PermissionNameConstants.CreateCustomer))
     .AddPolicy("CanEditCustomer", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.EditCustomer))
+        policy.RequireClaim("Permission", PermissionNameConstants.EditCustomer))
     .AddPolicy("CanDeleteCustomer", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.DeleteCustomer))
+        policy.RequireClaim("Permission", PermissionNameConstants.DeleteCustomer))
 
     // Brands.
     .AddPolicy("CanCreateBrand", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.CreateBrand))
+        policy.RequireClaim("Permission", PermissionNameConstants.CreateBrand))
     .AddPolicy("CanEditBrand", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.EditBrand))
+        policy.RequireClaim("Permission", PermissionNameConstants.EditBrand))
     .AddPolicy("CanDeleteBrand", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.DeleteBrand))
+        policy.RequireClaim("Permission", PermissionNameConstants.DeleteBrand))
 
     // Products.
     .AddPolicy("CanCreateProduct", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.CreateProduct))
+        policy.RequireClaim("Permission", PermissionNameConstants.CreateProduct))
     .AddPolicy("CanEditProduct", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.EditProduct))
+        policy.RequireClaim("Permission", PermissionNameConstants.EditProduct))
     .AddPolicy("CanDeleteProduct", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.DeleteProduct))
+        policy.RequireClaim("Permission", PermissionNameConstants.DeleteProduct))
 
     // ProductCategory.
     .AddPolicy("CanCreateProductCategory", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.CreateProductCategory))
+        policy.RequireClaim("Permission", PermissionNameConstants.CreateProductCategory))
     .AddPolicy("CanEditProductCategory", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.EditProductCategory))
+        policy.RequireClaim("Permission", PermissionNameConstants.EditProductCategory))
     .AddPolicy("CanDeleteProductCategory", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.DeleteProductCategory))
+        policy.RequireClaim("Permission", PermissionNameConstants.DeleteProductCategory))
 
     // Supplies.
     .AddPolicy("CanCreateSupply", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.CreateSupply))
+        policy.RequireClaim("Permission", PermissionNameConstants.CreateSupply))
     .AddPolicy("CanEditSupply", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.EditSupply))
+        policy.RequireClaim("Permission", PermissionNameConstants.EditSupply))
     .AddPolicy("CanDeleteSupply", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.DeleteSupply))
+        policy.RequireClaim("Permission", PermissionNameConstants.DeleteSupply))
 
     // Expenses.
     .AddPolicy("CanCreateExpense", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.CreateExpense))
+        policy.RequireClaim("Permission", PermissionNameConstants.CreateExpense))
     .AddPolicy("CanEditExpense", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.EditExpense))
+        policy.RequireClaim("Permission", PermissionNameConstants.EditExpense))
     .AddPolicy("CanDeleteExpense", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.DeleteExpense))
+        policy.RequireClaim("Permission", PermissionNameConstants.DeleteExpense))
 
     // Orders.
     .AddPolicy("CanCreateOrder", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.CreateOrder))
+        policy.RequireClaim("Permission", PermissionNameConstants.CreateOrder))
     .AddPolicy("CanEditOrder", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.EditOrder))
+        policy.RequireClaim("Permission", PermissionNameConstants.EditOrder))
     .AddPolicy("CanDeleteOrder", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.DeleteOrder))
+        policy.RequireClaim("Permission", PermissionNameConstants.DeleteOrder))
 
     // Treatments.
     .AddPolicy("CanCreateTreatment", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.CreateTreatment))
+        policy.RequireClaim("Permission", PermissionNameConstants.CreateTreatment))
     .AddPolicy("CanEditTreatment", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.EditTreatment))
+        policy.RequireClaim("Permission", PermissionNameConstants.EditTreatment))
     .AddPolicy("CanDeleteTreatment", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.DeleteTreatment))
+        policy.RequireClaim("Permission", PermissionNameConstants.DeleteTreatment))
 
     // DebtIncurrence.
     .AddPolicy("CanCreateDebtIncurrence", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.CreateDebtIncurrence))
+        policy.RequireClaim("Permission", PermissionNameConstants.CreateDebtIncurrence))
     .AddPolicy("CanEditDebtIncurrence", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.EditDebtIncurrence))
+        policy.RequireClaim("Permission", PermissionNameConstants.EditDebtIncurrence))
     .AddPolicy("CanDeleteDebtIncurrence", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.DeleteDebtIncurrence))
+        policy.RequireClaim("Permission", PermissionNameConstants.DeleteDebtIncurrence))
 
     // DebtPayments.
     .AddPolicy("CanCreateDebtPayment", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.CreateDebtPayment))
+        policy.RequireClaim("Permission", PermissionNameConstants.CreateDebtPayment))
     .AddPolicy("CanEditDebtPayment", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.EditDebtPayment))
+        policy.RequireClaim("Permission", PermissionNameConstants.EditDebtPayment))
     .AddPolicy("CanDeleteDebtPayment", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.DeleteDebtPayment))
+        policy.RequireClaim("Permission", PermissionNameConstants.DeleteDebtPayment))
 
     // Consultants.
     .AddPolicy("CanCreateConsultant", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.CreateConsultant))
+        policy.RequireClaim("Permission", PermissionNameConstants.CreateConsultant))
     .AddPolicy("CanEditConsultant", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.EditConsultant))
+        policy.RequireClaim("Permission", PermissionNameConstants.EditConsultant))
     .AddPolicy("CanDeleteConsultant", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.DeleteConsultant))
+        policy.RequireClaim("Permission", PermissionNameConstants.DeleteConsultant))
 
     // Announcements.
     .AddPolicy("CanCreateAnnouncement", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.CreateAnnouncement))
+        policy.RequireClaim("Permission", PermissionNameConstants.CreateAnnouncement))
     .AddPolicy("CanEditAnnouncement", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.EditAnnouncement))
+        policy.RequireClaim("Permission", PermissionNameConstants.EditAnnouncement))
     .AddPolicy("CanDeleteAnnouncement", policy =>
-        policy.RequireClaim("Permission", PermissionConstants.DeleteAnnouncement));
-
-
-// FluentValidation
-builder.Services.AddValidatorsFromAssemblyContaining<SignInValidator>();
-ValidatorOptions.Global.LanguageManager.Enabled = true;
-ValidatorOptions.Global.LanguageManager = new ValidatorLanguageManager
-{
-    Culture = new CultureInfo("vi")
-};
-ValidatorOptions.Global.PropertyNameResolver = (_, b, _) => b.Name
-    .First()
-    .ToString()
-    .ToLower() + b.Name[1..];
+        policy.RequireClaim("Permission", PermissionNameConstants.DeleteAnnouncement));
 
 // Add controllers with json serialization policy.
 builder.Services
@@ -172,7 +158,7 @@ builder.Services
         options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
     });
 
-// Dependancy injection
+// Dependency injection
 builder.Services.AddScoped<INotifier, Notifier>();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -197,9 +183,9 @@ app.Use(async (context, next) =>
 {
     if (context.Request.Headers.ContainsKey("Origin"))
     {
-        string origin = context.Request.Headers["Origin"].ToString();
-        context.Response.Headers["Access-Control-Allow-Origin"] = origin;
-        context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
+        string origin = context.Request.Headers.Origin.ToString();
+        context.Response.Headers.AccessControlAllowOrigin = origin;
+        context.Response.Headers.AccessControlAllowCredentials = "true";
     }
 
     await next();

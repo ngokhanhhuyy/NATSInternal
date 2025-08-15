@@ -1,6 +1,6 @@
-namespace NATSInternal.Validation.Validators;
+namespace NATSInternal.Core.Validation.Validators;
 
-public class ConsultantUpsertValidator : Validator<ConsultantUpsertRequestDto>
+internal class ConsultantUpsertValidator : Validator<ConsultantUpsertRequestDto>
 {
     public ConsultantUpsertValidator()
     {

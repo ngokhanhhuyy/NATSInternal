@@ -1,3 +1,4 @@
+global using System.Text;
 global using System.Text.Json;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Mvc;
@@ -12,11 +13,10 @@ global using NATSInternal.Core.Dtos;
 global using NATSInternal.Core.Enums;
 global using NATSInternal.Core.Exceptions;
 global using NATSInternal.Core.Interfaces;
-global using NATSInternal.Validation;
-global using NATSInternal.Validation.Validators;
+global using NATSInternal.Core.Interfaces.Services;
 
-global using IAuthorizationService = NATSInternal.Core.Interfaces.IAuthorizationService;
+global using IAuthorizationService = NATSInternal.Core.Interfaces.Services.IAuthorizationService;
 global using FluentValidation;
 global using FluentValidation.Results;
 global using ValidationResult = FluentValidation.Results.ValidationResult;
-global using ValidationException = System.ComponentModel.DataAnnotations.ValidationException;
+global using ValidationException = FluentValidation.ValidationException;

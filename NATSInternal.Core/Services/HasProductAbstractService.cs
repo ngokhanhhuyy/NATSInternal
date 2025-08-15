@@ -1,4 +1,4 @@
-namespace NATSInternal.Core;
+namespace NATSInternal.Core.Services;
 
 /// <summary>
 /// An abstract service to handle operations which interact with the product-engageable

@@ -1,6 +1,6 @@
-namespace NATSInternal.Validation.Validators;
+namespace NATSInternal.Core.Validation.Validators;
 
-public class DebtPaymentUpsertValidator : Validator<DebtPaymentUpsertRequestDto>
+internal class DebtPaymentUpsertValidator : Validator<DebtPaymentUpsertRequestDto>
 {
     public DebtPaymentUpsertValidator(IStatsService statsService)
     {

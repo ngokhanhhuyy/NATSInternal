@@ -1,4 +1,4 @@
-namespace NATSInternal.Core.Interfaces;
+namespace NATSInternal.Core.Interfaces.Services;
 
 /// <summary>
 /// A service to handle orders related operations.
@@ -30,7 +30,7 @@ public interface IOrderService
     /// instance of the <see cref="OrderDetailResponseDto"/> class, contaning the detailed
     /// information of the order.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the order with the specified id doesn't exist or has already been deleted.
     /// </exception>
     Task<OrderDetailResponseDto> GetDetailAsync(int id);
@@ -69,7 +69,7 @@ public interface IOrderService
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the order with the specified id doesn't exist or has already been deleted.
     /// </exception>
     /// <exception cref="AuthorizationException">
@@ -95,7 +95,7 @@ public interface IOrderService
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the order with the specified id doesn't exist or has already been deleted.
     /// </exception>
     /// <exception cref="AuthorizationException">

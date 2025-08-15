@@ -1,6 +1,6 @@
-namespace NATSInternal.Validation.Validators;
+namespace NATSInternal.Core.Validation.Validators;
 
-public class NotificationListValidator : Validator<NotificationListRequestDto>
+internal class NotificationListValidator : Validator<NotificationListRequestDto>
 {
     public NotificationListValidator(INotificationService service)
     {

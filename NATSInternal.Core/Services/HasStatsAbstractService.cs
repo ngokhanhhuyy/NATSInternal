@@ -1,4 +1,4 @@
-namespace NATSInternal.Core;
+namespace NATSInternal.Core.Services;
 
 /// <summary>
 /// An abstract service to handle financial engagement related operations.
@@ -196,7 +196,7 @@ internal abstract class HasStatsAbstractService<
     /// <returns>
     /// An instance of the <typeparamref name="T"/> entity with the specified id.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the entity with the specified id doesn't exist or has already been deleted.
     /// </exception>
     protected virtual async Task<T> GetEntityAsync(IQueryable<T> query, int id)
@@ -208,7 +208,7 @@ internal abstract class HasStatsAbstractService<
         }
 
         return await includedQuery.SingleOrDefaultAsync(e => e.Id == id && !e.IsDeleted)
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 typeof(T).Name,
                 GetPropertyName<T>(e => e.Id),
                 id.ToString());

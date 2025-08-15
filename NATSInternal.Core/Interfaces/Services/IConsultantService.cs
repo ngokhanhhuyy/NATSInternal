@@ -28,7 +28,7 @@ public interface IConsultantService
     /// instance of the <see cref="ConsultantDetailResponseDto"/> class, containing the
     /// details of the consultant.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the consultant with the specified id doesn't exist or has already been
     /// deleted.
     /// </exception>
@@ -74,7 +74,7 @@ public interface IConsultantService
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Thrown when the consultant with the specified id doens't exist or has already been
     /// deleted.
     /// </exception>
@@ -104,7 +104,7 @@ public interface IConsultantService
     /// A <see cref="int"/> representing the id of the consultant to delete.
     /// </param>
     /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the consultant with the specified id doesn't exist or has already been
     /// deleted.
     /// </exception>

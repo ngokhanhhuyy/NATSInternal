@@ -23,7 +23,7 @@ public class ApplicationHub : Hub
     /// <remarks>
     /// The keys are the instances of <see cref="Resource"/>.<br/>
     /// The values are the <see cref="HashSet{T}"/> where <c>T</c> is <see cref="string"/>,
-    /// contanining all the connection ids of the users connecting to the each resource.
+    /// contanining all the connection ids of the users connecting to each resource.
     /// </remarks>
     private static readonly Dictionary<Resource, HashSet<string>> _resourceConnections;
 

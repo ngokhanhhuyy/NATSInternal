@@ -5,8 +5,13 @@ internal class Supply
         HasStatsAbstractEntity,
         IHasProductEntity<Supply, SupplyItem, SupplyPhoto, SupplyUpdateHistory>
 {
+    #region Fields
+    private User? _createdUser;
+    #endregion
+
+    #region Properties
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; private set; } = Guid.NewGuid();
 
     [Required]
     public DateTime StatsDateTime { get; set; }
@@ -15,28 +20,39 @@ internal class Supply
     public long ShipmentFee { get; set; } = 0;
 
     [StringLength(255)]
-    public string Note { get; set; }
+    public string? Note { get; set; }
 
     [Required]
     public bool IsDeleted { get; set; }
+    #endregion
 
-    // Foreign keys
+    #region ForeignKeyProperties
     [Required]
     public int CreatedUserId { get; set; }
+    #endregion
 
-    // Concurrency operation tracking field
+    #region ConcurrencyOperationTrackingProperty
     [Timestamp]
-    public byte[] RowVersion { get; set; }
+    public byte[]? RowVersion { get; set; }
+    #endregion
 
-    // Relationships
-    public virtual User CreatedUser { get; set; }
-    public virtual List<SupplyItem> Items { get; set; }
-    public virtual List<SupplyPhoto> Photos { get; set; }
-    public virtual List<SupplyUpdateHistory> UpdateHistories { get; set; }
+    #region NavigationProperty
+    [BackingField(nameof(_createdUser))]
+    public User CreatedUser
+    {
+        get => _createdUser ?? throw new InvalidOperationException(
+            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(CreatedUser)));
+        set => _createdUser = value;
+    }
 
-    // Properties for convinience.
+    public List<SupplyItem> Items { get; private set; } = new();
+    public List<SupplyPhoto> Photos { get; private set; } = new();
+    public List<SupplyUpdateHistory> UpdateHistories { get; private set; } = new();
+    #endregion
+
+    #region ComputedProperties
     [NotMapped]
-    public string ThumbnailUrl => Photos?
+    public string? ThumbnailUrl => Photos?
         .OrderBy(p => p.Id)
         .Select(p => p.Url)
         .FirstOrDefault();
@@ -61,12 +77,13 @@ internal class Supply
         .LastOrDefault();
 
     [NotMapped]
-    public User LastUpdatedUser => UpdateHistories
+    public User? LastUpdatedUser => UpdateHistories
         .OrderBy(uh => uh.UpdatedDateTime)
         .Select(uh => uh.UpdatedUser)
         .LastOrDefault();
+    #endregion
 
-    // Model configurations.
+    #region StaticMethods
     public static void ConfigureModel(EntityTypeBuilder<Supply> entityBuilder)
     {
         entityBuilder.HasKey(s => s.Id);
@@ -80,4 +97,5 @@ internal class Supply
         entityBuilder.Property(c => c.RowVersion)
             .IsRowVersion();
     }
+    #endregion
 }

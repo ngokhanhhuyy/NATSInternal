@@ -5,6 +5,6 @@ internal interface ICustomerEngageableEntity<T, TUpdateHistory>
     where T : class, IUpsertableEntity<T>, new()
     where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
 {
-    int CustomerId { get; set; }
+    Guid CustomerId { get; set; }
     Customer Customer { get; set; }
 }

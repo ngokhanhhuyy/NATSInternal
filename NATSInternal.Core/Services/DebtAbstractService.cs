@@ -1,4 +1,4 @@
-namespace NATSInternal.Core;
+namespace NATSInternal.Core.Services;
 
 /// <summary>
 /// An abstract service to handle both debt incurrence and debt payment related operations.
@@ -183,7 +183,7 @@ internal abstract class DebtAbstractService<
     /// <returns>
     /// An instance of the <typeparamref name="T"/> entity with the specified id.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the entity with the specified id doesn't exist or has already been deleted.
     /// </exception>
     protected async Task<T> GetEntityAsync(int id)
@@ -296,7 +296,7 @@ internal abstract class DebtAbstractService<
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the debt payment specified by the <paramref name="id"/> argument doesn't
     /// exist or has already been deleted.
     /// </exception>
@@ -337,7 +337,7 @@ internal abstract class DebtAbstractService<
 
         // Fetch the entity.
         T entity = await query.SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException();
+            ?? throw new NotFoundException();
         
         // Check if the current user has permission to edit the debt payment.
         if (!CanEdit(entity))
@@ -461,7 +461,7 @@ internal abstract class DebtAbstractService<
     /// <exception cref="AuthorizationException">
     /// Throws when the user doesn't have permission to delete the specifed debt entity.
     /// </exception>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the debt entity with the specified id doens't exist or has already been
     /// deleted.
     /// </exception>
@@ -480,7 +480,7 @@ internal abstract class DebtAbstractService<
             .Include(d => d.Customer).ThenInclude(c => c.DebtPayments)
             .Where(dp => dp.Id == id && !dp.IsDeleted)
             .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException();
+            ?? throw new NotFoundException();
         
         // Ensure the user has permission to delete this debt entity.
         if (!CanDelete(entity))

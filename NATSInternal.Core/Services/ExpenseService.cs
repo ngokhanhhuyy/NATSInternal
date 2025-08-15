@@ -1,4 +1,4 @@
-namespace NATSInternal.Core;
+namespace NATSInternal.Core.Services;
 
 /// <inheritdoc cref="IExpenseService" />
 internal class ExpenseService
@@ -100,7 +100,7 @@ internal class ExpenseService
         Expense expense = await query
             .AsSingleQuery()
             .SingleOrDefaultAsync(e => e.Id == id)
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 nameof(Expense),
                 nameof(id),
                 id.ToString());
@@ -204,7 +204,7 @@ internal class ExpenseService
             .Include(e => e.Photos)
             .AsSplitQuery()
             .SingleOrDefaultAsync(e => e.Id == id && !e.IsDeleted)
-            ?? throw new ResourceNotFoundException(nameof(Expense), nameof(id), id.ToString());
+            ?? throw new NotFoundException(nameof(Expense), nameof(id), id.ToString());
 
         // Ensure the expense is editable by the requester.
         if (!CanEdit(expense))
@@ -347,7 +347,7 @@ internal class ExpenseService
             .Include(e => e.Payee)
             .Include(e => e.Photos)
             .SingleOrDefaultAsync(e => e.Id == id)
-            ?? throw new ResourceNotFoundException(nameof(Expense), nameof(id), id.ToString());
+            ?? throw new NotFoundException(nameof(Expense), nameof(id), id.ToString());
 
         // Ensure the user has permission to delete this expense.
         if (!CanDelete(expense))

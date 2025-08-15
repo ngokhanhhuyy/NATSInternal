@@ -1,4 +1,4 @@
-namespace NATSInternal.Core.Interfaces;
+namespace NATSInternal.Core.Interfaces.Services;
 
 /// <summary>
 /// A service to handle update history logging related operations.

@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace NATSInternal.Validation.Extensions;
+namespace NATSInternal.Core.Validation.Extensions;
 
 public static class ConfigurationExtensions
 {

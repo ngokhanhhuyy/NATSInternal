@@ -22,6 +22,6 @@ public class UserPersonalInformationResponseDto
         Birthday = user.Birthday;
         PhoneNumber = user.PhoneNumber;
         Email = user.Email;
-        AvatarUrl = user.AvatarUrl;
+        AvatarUrl = user.ProfilePictureUrl;
     }
 }

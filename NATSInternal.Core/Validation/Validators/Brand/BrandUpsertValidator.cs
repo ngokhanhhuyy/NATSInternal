@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators.Brand;
+﻿namespace NATSInternal.Core.Validation.Validators.Brand;
 
-public class BrandUpsertValidator : Validator<BrandUpsertRequestDto>
+internal class BrandUpsertValidator : Validator<BrandUpsertRequestDto>
 {
     public BrandUpsertValidator()
     {

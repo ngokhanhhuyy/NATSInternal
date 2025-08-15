@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators.Treatment;
+﻿namespace NATSInternal.Core.Validation.Validators.Treatment;
 
-public class TreatmentUpsertValidator : Validator<TreatmentUpsertRequestDto>
+internal class TreatmentUpsertValidator : Validator<TreatmentUpsertRequestDto>
 {
     public TreatmentUpsertValidator()
     {

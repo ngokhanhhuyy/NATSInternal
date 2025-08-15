@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core;
+﻿namespace NATSInternal.Core.Services;
 
 /// <inheritdoc cref="IProductCategoryService" />
 internal class ProductCategoryService
@@ -58,7 +58,7 @@ internal class ProductCategoryService
         ProductCategory category = await _context.ProductCategories
             .Where(pc => pc.Id == id)
             .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 nameof(ProductCategory),
                 nameof(id),
                 id.ToString());
@@ -108,7 +108,7 @@ internal class ProductCategoryService
         // Fetch the entity with the specified id from the database.
         ProductCategory productCategory = await _context.ProductCategories
             .SingleOrDefaultAsync(pc => pc.Id == id)
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 nameof(ProductCategory),
                 nameof(id),
                 id.ToString());
@@ -146,7 +146,7 @@ internal class ProductCategoryService
         // Fetch the entity with the specified id from the database.
         ProductCategory productCategory = await _context.ProductCategories
             .SingleOrDefaultAsync(pc => pc.Id == id)
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 nameof(ProductCategory),
                 nameof(id),
                 id.ToString());
@@ -222,7 +222,7 @@ internal class ProductCategoryService
         
         if (exceptionHandler.IsUniqueConstraintViolated)
         {
-            errorMessage = ErrorMessages.UniqueDuplicated
+            errorMessage = ErrorMessages.Duplicated
                 .ReplacePropertyName(DisplayNames.Get(nameof(ProductCategory.Name)));
             throw new OperationException(errorMessage);
         }

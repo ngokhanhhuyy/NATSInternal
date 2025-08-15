@@ -2,7 +2,7 @@ namespace NATSInternal.Core.Localization;
 
 public static class ErrorMessages
 {
-    // Error messages for validation
+    #region MessagesForValidation
     public const string NotNull = "{PropertyName} không được để trống.";
     public const string NotEmpty = "{PropertyName} không được để trống.";
     public const string NotEqual = "{PropertyName} phải bằng {ComparisonValue}.";
@@ -24,10 +24,11 @@ public static class ErrorMessages
     public const string EarlierThanOrEqualToNow = "{PropertyName} phải là ngày giờ trước hoặc trùng với thời điểm hiện tại ({ComparisonValue}).";
     public const string EarlierThanOrEqualToToday = "{PropertyName} phải là ngày trước hoặc trùng với ngày hôm nay ({ComparisonValue}).";
     public const string Null = "{PropertyName} phải chứa giá trị null.";
-
-    // Error messages for business operations
+    #endregion
+    
+    #region MessagesForBusinessOperations
     public const string Undefined = "Đã xảy ra lỗi không xác định.";
-    public const string UniqueDuplicated = "{PropertyName} đã tồn tại.";
+    public const string Duplicated = "{PropertyName} đã tồn tại.";
     public const string NotFound = "{ResourceName} không tồn tại.";
     public const string NotFoundByProperty = "{ResourceName} có {PropertyName} '{AttemptedValue}' không tồn tại.";
     public const string ImageFormatNotAllowed = "Hình ảnh có định dạng không được hỗ trợ.";
@@ -43,4 +44,9 @@ public static class ErrorMessages
     public const string NegativeRemainingDebtAmount = "Với giá trị đã nhập, khoản nợ còn lại của khách hàng này sẽ trở thành số âm.";
     public const string NegativeProductStockingQuantity = "Với giá trị đã nhập, số lượng còn lại trong kho của sản phẩm sẽ trở thành số âm";
     public const string CannotSetDateTimeAfterLocked = "{ResourceName} đã bị khoá, không thể chỉnh sửa {PropertyName}.";
+    #endregion
+    
+    #region MessagesForQueries
+    public const string NavigationPropertyHasNotBeenLoaded = "Navigation property \"{PropertyName}\" hasn't been loaded yet.";
+    #endregion
 }

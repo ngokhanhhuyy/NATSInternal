@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class RoleValidator : Validator<RoleRequestDto>
+internal class RoleValidator : Validator<RoleRequestDto>
 {
     public RoleValidator()
     {

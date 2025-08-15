@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class DebtPaymentListValidator : Validator<DebtPaymentListRequestDto>
+internal class DebtPaymentListValidator : Validator<DebtPaymentListRequestDto>
 {
     public DebtPaymentListValidator(IDebtPaymentService service)
     {

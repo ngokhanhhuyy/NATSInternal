@@ -53,7 +53,7 @@ public class ProductController : ControllerBase
             responseDto = await _service.GetDetailAsync(id, requestDto);
             return Ok(responseDto);
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);
@@ -130,7 +130,7 @@ public class ProductController : ControllerBase
 
             return Ok();
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);
@@ -158,7 +158,7 @@ public class ProductController : ControllerBase
 
             return NoContent();
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);

@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Core.Constants;
 
-public static class PermissionConstants
+public static class PermissionNameConstants
 {
     // Permissions to interact with users.
     public const string CreateUser = "CreateUser";

@@ -50,7 +50,7 @@ public class AnnouncementController : ControllerBase
         {
             return Ok(await _service.GetDetailAsync(id));
         }
-        catch (ResourceNotFoundException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -130,7 +130,7 @@ public class AnnouncementController : ControllerBase
 
             return Ok();
         }
-        catch (ResourceNotFoundException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -157,7 +157,7 @@ public class AnnouncementController : ControllerBase
 
             return Ok();
         }
-        catch (ResourceNotFoundException)
+        catch (NotFoundException)
         {
             return NotFound();
         }

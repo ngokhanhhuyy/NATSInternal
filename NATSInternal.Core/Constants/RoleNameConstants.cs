@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Core.Constants;
 
-public static class RoleConstants
+public static class RoleNameConstants
 {
     public const string Developer = "Developer";
     public const string Manager = "Manager";

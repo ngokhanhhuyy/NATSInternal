@@ -1,4 +1,4 @@
-namespace NATSInternal.Core.Interfaces;
+namespace NATSInternal.Core.Interfaces.Services;
 
 /// <summary>
 /// A service class to handle user-related operations.
@@ -31,7 +31,7 @@ public interface IUserService
     /// A <see cref="List{T}"/>>of the <see cref="UserListResponseDto"/> class instances,
     /// containing the results.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when there is any user with the specified id doesn't exist or has already been
     /// deleted.
     /// </exception>
@@ -75,7 +75,7 @@ public interface IUserService
     /// An instance of the <see cref="UserBasicResponseDto"/> class, containing the
     /// basic information of the retrieving user.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the user with the specified <c>id</c> doesn't exist or has already been
     /// deleted.
     /// </exception>
@@ -91,7 +91,7 @@ public interface IUserService
     /// An instance of the <see cref="UserDetailResponseDto"/> class, containing the details
     /// of the user.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the user with the specified id doesn't exist or has already been deleted.
     /// </exception>
     Task<UserDetailResponseDto> GetDetailAsync(int id);
@@ -108,7 +108,7 @@ public interface IUserService
     /// Throws when the username specified in the argument for the
     /// <paramref name="requestDto"/> already exists.
     /// </exception>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the name of the role, specified by the value of the property
     /// <c>UserInformation.Role.Name</c> in the argument for the <paramref name="requestDto"/>
     /// doesn't exist.
@@ -135,7 +135,7 @@ public interface IUserService
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the user with the specified id doesn't exist or has already been deleted.
     /// </exception>
     /// <exception cref="AuthorizationException">
@@ -176,7 +176,7 @@ public interface IUserService
     /// new password and the confirmation password for the operation.
     /// </param>
     /// <returns>A <see cref="Task"/> representing the operation.</returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the user with the specified id doesn't exist or has already been deleted.
     /// </exception>
     /// <exception cref="AuthorizationException">
@@ -195,7 +195,7 @@ public interface IUserService
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the user with the specified id doesn't exist or has already been deleted.
     /// </exception>
     /// <exception cref="AuthorizationException">
@@ -209,7 +209,7 @@ public interface IUserService
     /// </summary>
     /// <param name="id">An <see cref="int"/> representing the id of the target user.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the user with the specified id hasn't been soft-deleted or has already
     /// been deleted entirely from the database.
     /// </exception>

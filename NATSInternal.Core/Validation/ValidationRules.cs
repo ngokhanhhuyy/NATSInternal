@@ -1,4 +1,4 @@
-namespace NATSInternal.Validation;
+namespace NATSInternal.Core.Validation;
 
 public static class ValidationRules
 {

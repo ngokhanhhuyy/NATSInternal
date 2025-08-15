@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core;
+﻿namespace NATSInternal.Core.Services;
 
 /// <inheritdoc />
 internal class StatsService : IStatsService
@@ -18,7 +18,7 @@ internal class StatsService : IStatsService
         return await context.MonthlyStats
            .Select(ms => new MonthlyStatsBasicResponseDto(ms))
            .SingleOrDefaultAsync()
-           ?? throw new ResourceNotFoundException();
+           ?? throw new NotFoundException();
     }
 
     /// <inheritdoc />

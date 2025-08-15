@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class UserPasswordResetValidator : Validator<UserPasswordResetRequestDto>
+internal class UserPasswordResetValidator : Validator<UserPasswordResetRequestDto>
 {
     public UserPasswordResetValidator()
     {

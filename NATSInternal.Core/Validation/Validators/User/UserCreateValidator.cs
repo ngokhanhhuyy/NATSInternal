@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class UserCreateValidator : Validator<UserCreateRequestDto>
+internal class UserCreateValidator : Validator<UserCreateRequestDto>
 {
     public UserCreateValidator()
     {

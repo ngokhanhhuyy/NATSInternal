@@ -2,34 +2,54 @@
 
 internal class ConsultantUpdateHistory : IUpdateHistoryEntity<ConsultantUpdateHistory>
 {
+    #region Fields
+    private Consultant? _consultant;
+    private User? _updatedUser;
+    #endregion
+
+    #region Properties
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [Required]
     public DateTime UpdatedDateTime { get; set; }
 
     [StringLength(255)]
-    public string Reason { get; set; }
+    public required string Reason { get; set; }
 
     [StringLength(1000)]
-    public string OldData { get; set; }
+    public required string OldData { get; set; }
 
     [Required]
     [StringLength(1000)]
-    public string NewData { get; set; }
+    public required string NewData { get; set; }
 
     // Foreign keys
     [Required]
-    public int ConsultantId { get; set; }
+    public Guid ConsultantId { get; set; }
 
     [Required]
-    public int UpdatedUserId { get; set; }
+    public Guid UpdatedUserId { get; set; }
+    #endregion
 
-    // Navigation properties
-    public virtual Consultant Consultant { get; set; }
-    public virtual User UpdatedUser { get; set; }
+    #region NavigationProperties
+    [BackingField(nameof(_consultant))]
+    public Consultant Consultant
+    {
+        get => _consultant ?? throw new InvalidOperationException(
+            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(Consultant)));
+        set => _consultant = value;
+    }
 
-    // Model configurations.
+    public User UpdatedUser
+    {
+        get => _updatedUser ?? throw new InvalidOperationException(
+            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(UpdatedUser)));
+        set => _updatedUser = value;
+    }
+    #endregion
+
+    #region StaticMethods
     public static void ConfigureModel(EntityTypeBuilder<ConsultantUpdateHistory> entityBuilder)
     {
         entityBuilder.HasKey(cuh => cuh.Id);
@@ -45,4 +65,5 @@ internal class ConsultantUpdateHistory : IUpdateHistoryEntity<ConsultantUpdateHi
         entityBuilder.Property(cuh => cuh.OldData).HasColumnType("JSON");
         entityBuilder.Property(cuh => cuh.NewData).HasColumnType("JSON");
     }
+    #endregion
 }

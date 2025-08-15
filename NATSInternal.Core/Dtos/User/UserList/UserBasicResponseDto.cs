@@ -43,7 +43,7 @@ public class UserBasicResponseDto
         Gender = user.Gender;
         Birthday = user.Birthday;
         JoiningDate = user.JoiningDate;
-        AvatarUrl = user.AvatarUrl;
+        AvatarUrl = user.ProfilePictureUrl;
         Role = new RoleMinimalResponseDto(user.Role);
     }
 }

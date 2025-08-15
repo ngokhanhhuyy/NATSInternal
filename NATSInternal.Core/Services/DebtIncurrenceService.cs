@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core;
+﻿namespace NATSInternal.Core.Services;
 
 /// <inheritdoc cref="IDebtIncurrenceService" />
 internal class DebtIncurrenceService

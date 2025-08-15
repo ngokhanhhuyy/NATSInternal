@@ -46,7 +46,7 @@ public class NotificationController : ControllerBase
             NotificationResponseDto responseDto = await _service.GetSingleAsync(id);
             return Ok(responseDto);
         }
-        catch (ResourceNotFoundException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -62,7 +62,7 @@ public class NotificationController : ControllerBase
             await _service.MarkAsReadAsync(id);
             return Ok();
         }
-        catch (ResourceNotFoundException)
+        catch (NotFoundException)
         {
             return NotFound();
         }

@@ -50,7 +50,7 @@ public class ExpenseController : ControllerBase
         {
             return Ok(await _service.GetDetailAsync(id));
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);
@@ -133,7 +133,7 @@ public class ExpenseController : ControllerBase
 
             return Ok();
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);
@@ -165,7 +165,7 @@ public class ExpenseController : ControllerBase
 
             return Ok();
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);

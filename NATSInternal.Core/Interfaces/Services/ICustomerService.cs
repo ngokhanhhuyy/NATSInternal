@@ -1,4 +1,4 @@
-namespace NATSInternal.Core.Interfaces;
+namespace NATSInternal.Core.Interfaces.Services;
 
 /// <summary>
 /// A service to handle customer-related operations.
@@ -31,7 +31,7 @@ public interface ICustomerService
     /// an instance of the <see cref="CustomerBasicResponseDto"/> class, containing the basic
     /// information of the customer.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the customer with the specified id doesn't exist or has already been
     /// deleted.
     /// </exception>
@@ -48,7 +48,7 @@ public interface ICustomerService
     /// an instance of the <see cref="CustomerBasicResponseDto"/> class, containing the details
     /// of the customer.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the customer with the specified id doesn't exist or has already been
     /// deleted.
     /// </exception>
@@ -83,7 +83,7 @@ public interface ICustomerService
     /// for the customer to be updated.
     /// </param>
     /// <returns></returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// The customer with the specified id doesn't exist or has already been deleted.
     /// </exception>
     /// <exception cref="OperationException">
@@ -102,7 +102,7 @@ public interface ICustomerService
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// The customer with the specified id doesn't exist or has already been deleted.
     /// </exception>
     Task DeleteAsync(int id);

@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core;
+﻿namespace NATSInternal.Core.Services;
 
 /// <inheritdoc cref="ICustomerService" />
 internal class CustomerService
@@ -131,7 +131,7 @@ internal class CustomerService
             .Where(c => c.Id == id)
             .Select(c => new CustomerBasicResponseDto(c, GetExistingAuthorization(c)))
             .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 nameof(Customer),
                 nameof(id),
                 id.ToString());
@@ -151,7 +151,7 @@ internal class CustomerService
                 .OrderByDescending(dp => dp.StatsDateTime))
             .Where(c => !c.IsDeleted && c.Id == id)
             .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 nameof(Customer),
                 nameof(id),
                 id.ToString());
@@ -277,7 +277,7 @@ internal class CustomerService
             // Check if the c has been updated.
             if (affactedRows == 0)
             {
-                throw new ResourceNotFoundException(
+                throw new NotFoundException(
                     nameof(Customer),
                     nameof(id),
                     id.ToString());
@@ -315,7 +315,7 @@ internal class CustomerService
 
         if (affectedRows != 1)
         {
-            throw new ResourceNotFoundException(
+            throw new NotFoundException(
                 nameof(Customer),
                 nameof(id),
                 id.ToString());

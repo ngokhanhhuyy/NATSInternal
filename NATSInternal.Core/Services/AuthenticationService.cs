@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace NATSInternal.Core;
+namespace NATSInternal.Core.Services;
 
 /// <inheritdoc cref="IAuthenticationService" />
 internal class AuthenticationService : IAuthenticationService
@@ -50,9 +50,9 @@ internal class AuthenticationService : IAuthenticationService
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.UserName!),
             new Claim(ClaimTypes.Role, user.Role.Name!),
-            .. user.Role.Claims.Select(c => new Claim("Permission", c.ClaimValue!))
+            .. user.Role.Permissions.Select(c => new Claim("Permission", c.ClaimValue!))
         ];
-        claims.AddRange(user.Role.Claims
+        claims.AddRange(user.Role.Permissions
             .Where(c => c.ClaimType == "Permission")
             .Select(c => new Claim("Permission", c.ClaimValue!)));
 

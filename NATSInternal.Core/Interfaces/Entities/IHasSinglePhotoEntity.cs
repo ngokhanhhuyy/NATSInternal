@@ -1,7 +1,6 @@
 namespace NATSInternal.Core.Interfaces.Entities;
 
-internal interface IHasSinglePhotoEntity<T> : IUpsertableEntity<T>
-    where T : class, IUpsertableEntity<T>, new()
+internal interface IHasSinglePhotoEntity<T> : IUpsertableEntity<T> where T : class, IUpsertableEntity<T>
 {
-    string ThumbnailUrl { get; }
+    string? ThumbnailUrl { get; }
 }

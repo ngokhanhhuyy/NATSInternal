@@ -1,5 +1,6 @@
-﻿namespace NATSInternal.Core;
+﻿namespace NATSInternal.Core.Services;
 
+/// <inheritdoc cref="IAuthorizationInternalService"/>
 internal class AuthorizationService : IAuthorizationInternalService
 {
     private readonly DatabaseContext _context;
@@ -10,6 +11,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         _context = context;
     }
 
+    /// <inheritdoc />
     public void SetUserId(int id)
     {
         _user = _context.Users
@@ -17,6 +19,7 @@ internal class AuthorizationService : IAuthorizationInternalService
             .Single(u => u.Id == id);
     }
     
+    /// <inheritdoc />
     public int GetUserId()
     {
         if (_user is null)
@@ -27,6 +30,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         return _user.Id;
     }
 
+    /// <inheritdoc />
     public UserDetailResponseDto GetUserDetail()
     {
         if (_user is null)
@@ -80,6 +84,7 @@ internal class AuthorizationService : IAuthorizationInternalService
         };
     }
 
+    /// <inheritdoc />
     public TResponseDto GetExistingAuthorization<TEntity, TResponseDto>()
             where TEntity : class, IUpsertableEntity<TEntity>, new()
             where TResponseDto : IUpsertableExistingAuthorizationResponseDto, new()

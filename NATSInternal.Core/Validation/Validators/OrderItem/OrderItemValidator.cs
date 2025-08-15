@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class OrderItemValidator : Validator<OrderItemRequestDto>
+internal class OrderItemValidator : Validator<OrderItemRequestDto>
 {
     public OrderItemValidator()
     {

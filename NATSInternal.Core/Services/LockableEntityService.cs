@@ -1,13 +1,11 @@
-﻿namespace NATSInternal.Core;
+﻿namespace NATSInternal.Core.Services;
 
 public class LockableEntityService
 {
     protected static List<ListMonthYearResponseDto> GenerateMonthYearOptions(
             ListMonthYearResponseDto earliestRecordedMonthYear)
     {
-        DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
-        int currentYear = currentDateTime.Year;
-        int currentMonth = currentDateTime.Month;
+        (int currentYear, int currentMonth, _) = DateTime.UtcNow.ToApplicationTime();
         List<ListMonthYearResponseDto> monthYearOptions = new List<ListMonthYearResponseDto>();
         if (earliestRecordedMonthYear != null)
         {

@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace NATSInternal.Validation.Validators;
+namespace NATSInternal.Core.Validation.Validators;
 
 public partial class Validator<TRequestDto> : AbstractValidator<TRequestDto>
         where TRequestDto : IRequestDto

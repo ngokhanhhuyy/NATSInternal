@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core.Interfaces;
+﻿namespace NATSInternal.Core.Interfaces.Services;
 
 /// <summary>
 /// A service to handle announcements.
@@ -29,7 +29,7 @@ public interface IAnnouncementService
     /// An instance of the <see cref="AnnouncementResponseDto"/> class, containing the details
     /// of the announcement.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the announcement with the specified doesn't exist or has already been
     /// deleted.
     /// </exception>
@@ -60,7 +60,7 @@ public interface IAnnouncementService
     /// An instance of the <see cref="AnnouncementUpsertRequestDto"/> class, containing the
     /// data for the updating operation.
     /// </param>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the announcement with the specified id doesn't exist or has already been
     /// deleted.
     /// </exception>
@@ -75,7 +75,7 @@ public interface IAnnouncementService
     /// <param name="id">
     /// An <see cref="int"/> representing the id of the announcement to delete.
     /// </param>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the announcement with the specified id doesn't exist or has already been
     /// deleted.
     /// </exception>

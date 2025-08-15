@@ -1,6 +1,6 @@
-namespace NATSInternal.Validation.Validators;
+namespace NATSInternal.Core.Validation.Validators;
 
-public class ExpenseListValidator : Validator<ExpenseListRequestDto>
+internal class ExpenseListValidator : Validator<ExpenseListRequestDto>
 {
     public ExpenseListValidator(IExpenseService service)
     {

@@ -2,42 +2,57 @@ namespace NATSInternal.Core.Entities;
 
 internal class Brand : IHasSinglePhotoEntity<Brand>
 {
+    #region Fields
+    private Country? _country;
+    #endregion
+
+    #region Properties
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [Required]
-    [StringLength(50)]
-    public string Name { get; set; }
+    [StringLength(BrandContracts.NameMaxLength)]
+    public required string Name { get; set; }
 
-    [StringLength(255)]
-    public string Website { get; set; }
+    [StringLength(BrandContracts.WebsiteMaxLength)]
+    public string? Website { get; set; }
 
-    [StringLength(1000)]
-    public string SocialMediaUrl { get; set; }
+    [StringLength(BrandContracts.SocialMediaUrlMaxLength)]
+    public string? SocialMediaUrl { get; set; }
 
-    [StringLength(15)]
-    public string PhoneNumber { get; set; }
+    [StringLength(BrandContracts.PhoneNumberMaxLength)]
+    public string? PhoneNumber { get; set; }
 
-    [StringLength(255)]
-    public string Email { get; set; }
+    [StringLength(BrandContracts.EmailMaxLength)]
+    public string? Email { get; set; }
 
-    [StringLength(255)]
-    public string Address { get; set; }
+    [StringLength(BrandContracts.AddressMaxLength)]
+    public string? Address { get; set; }
 
-    [StringLength(255)]
-    public string ThumbnailUrl { get; set; }
+    [StringLength(BrandContracts.ThumbnailUrlMaxLength)]
+    public string? ThumbnailUrl { get; set; }
 
     [Required]
     public DateTime CreatedDateTime { get; set; }
+    #endregion
 
-    // Foreign keys
+    #region ForeignKeyProperties
     public int? CountryId { get; set; }
+    #endregion
 
-    // Relationships
-    public virtual List<Product> Products { get; set; }
-    public virtual Country Country { get; set; }
+    #region NavigationProperties
+    public List<Product> Products { get; private set; } = new();
 
-    // Model configurations.
+    [BackingField(nameof(_country))]
+    public Country Country
+    {
+        get => _country ?? throw new InvalidOperationException(
+            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(Country)));
+        set => _country = value;
+    }
+    #endregion
+
+    #region StaticMethods
     public static void ConfigureModel(EntityTypeBuilder<Brand> entityBuilder)
     {
         entityBuilder.HasKey(b => b.Id);
@@ -45,7 +60,7 @@ internal class Brand : IHasSinglePhotoEntity<Brand>
             .WithMany(c => c.Brands)
             .HasForeignKey(b => b.CountryId)
             .OnDelete(DeleteBehavior.SetNull);
-        entityBuilder.HasIndex(b => b.Name)
-            .IsUnique();
+        entityBuilder.HasIndex(b => b.Name).IsUnique();
     }
+    #endregion
 }

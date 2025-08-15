@@ -1,3 +1,3 @@
 ﻿namespace NATSInternal.Core.Exceptions;
 
-public class AuthorizationException : Exception;
+public class AuthorizationException : CoreException;

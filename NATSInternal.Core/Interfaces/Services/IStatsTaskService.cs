@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core.Interfaces;
+﻿namespace NATSInternal.Core.Interfaces.Services;
 
 public interface IStatsTaskService
 {

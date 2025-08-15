@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Interfaces.Entities;
 
-internal interface IUpsertableEntity<T> : IIdentifiableEntity<T> where T : class, new()
+internal interface IUpsertableEntity<T> : IHasIdEntity<T> where T : class
 {
     DateTime CreatedDateTime { get; set; }
 }

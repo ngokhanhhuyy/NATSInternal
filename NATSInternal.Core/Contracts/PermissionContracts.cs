@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Contracts;
 
-public class PermissionContracts
+internal static class PermissionContracts
 {
-    
+    public const int NameMaxLength = 100;
 }

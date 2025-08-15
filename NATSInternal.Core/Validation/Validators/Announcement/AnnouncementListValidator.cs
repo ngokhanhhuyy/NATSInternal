@@ -1,6 +1,6 @@
-namespace NATSInternal.Validation.Validators;
+namespace NATSInternal.Core.Validation.Validators;
 
-public class AnnouncementListValidator : Validator<AnnouncementListRequestDto>
+internal class AnnouncementListValidator : Validator<AnnouncementListRequestDto>
 {
     public AnnouncementListValidator(IAnnouncementService service)
     {

@@ -1,6 +1,6 @@
-namespace NATSInternal.Validation.Validators;
+namespace NATSInternal.Core.Validation.Validators;
 
-public class LastestTransactionsValidator : Validator<LatestTransactionsRequestDto>
+internal class LastestTransactionsValidator : Validator<LatestTransactionsRequestDto>
 {
     public LastestTransactionsValidator()
     {

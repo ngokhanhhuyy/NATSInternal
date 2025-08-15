@@ -1,6 +1,6 @@
-namespace NATSInternal.Validation.Validators;
+namespace NATSInternal.Core.Validation.Validators;
 
-public class DebtIncurrenceUpsertValidator : Validator<DebtIncurrenceUpsertRequestDto>
+internal class DebtIncurrenceUpsertValidator : Validator<DebtIncurrenceUpsertRequestDto>
 {
     public DebtIncurrenceUpsertValidator()
     {

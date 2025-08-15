@@ -1,28 +1,30 @@
 namespace NATSInternal.Core.Entities;
 
-internal class Country : IIdentifiableEntity<Country>
+internal class Country : IHasIdEntity<Country>
 {
+    #region Properties
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; private set; } = Guid.NewGuid();
 
     [Required]
     [StringLength(40)]
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     [Required]
     [StringLength(3)]
-    public string Code { get; set; }
+    public required string Code { get; set; }
+    #endregion
 
-    // Relationships
-    public virtual List<Brand> Brands { get; set; }
+    #region NavigationProperties
+    public List<Brand> Brands { get; private set; } = new();
+    #endregion
 
-    // Model configurations.
+    #region StaticMethods
     public static void ConfigureModel(EntityTypeBuilder<Country> entityBuilder)
     {
         entityBuilder.HasKey(c => c.Id);
-        entityBuilder.HasIndex(c => c.Name)
-            .IsUnique();
-        entityBuilder.HasIndex(c => c.Code)
-            .IsUnique();
+        entityBuilder.HasIndex(c => c.Name).IsUnique();
+        entityBuilder.HasIndex(c => c.Code).IsUnique();
     }
+    #endregion
 }

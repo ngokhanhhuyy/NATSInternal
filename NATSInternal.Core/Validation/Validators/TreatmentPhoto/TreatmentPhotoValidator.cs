@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class TreatmentPhotoValidator : Validator<TreatmentPhotoRequestDto>
+internal class TreatmentPhotoValidator : Validator<TreatmentPhotoRequestDto>
 {
     public TreatmentPhotoValidator()
     {

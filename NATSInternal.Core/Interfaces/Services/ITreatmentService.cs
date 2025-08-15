@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core.Interfaces;
+﻿namespace NATSInternal.Core.Interfaces.Services;
 
 /// <summary>
 /// A service to handle treatments.
@@ -31,7 +31,7 @@ public interface ITreatmentService
     /// instance of the <see cref="TreatmentDetailResponseDto"/> class, containing the details
     /// of the treatment.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the treatment with the specified id doesn't exist or has already been
     /// deleted.
     /// </exception>
@@ -76,7 +76,7 @@ public interface ITreatmentService
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the treatment with the specified id doesn't exist or has already been
     /// deleted.
     /// </exception>
@@ -108,7 +108,7 @@ public interface ITreatmentService
     /// If the treatment cannot be deleted entirely due to the existence of some related data,
     /// it will be soft-deleted instead.
     /// </remarks>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the treatment with the specified id doesn't exist or has already been
     /// deleted.
     /// </exception>

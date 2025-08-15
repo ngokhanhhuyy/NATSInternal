@@ -2,34 +2,55 @@
 
 internal class DebtIncurrenceUpdateHistory : IUpdateHistoryEntity<DebtIncurrenceUpdateHistory>
 {
+    #region Fields
+    private DebtIncurrence? _debtIncurrence;
+    private User? _updatedUser;
+    #endregion
+
+    #region Properties
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; private set; } = Guid.NewGuid();
 
     [Required]
     public DateTime UpdatedDateTime { get; set; }
 
+    [Required]
     [StringLength(255)]
-    public string Reason { get; set; }
+    public required string Reason { get; set; }
 
     [StringLength(1000)]
-    public string OldData { get; set; }
+    public required DebtIncurrenceUpdateHistoryData OldData { get; set; }
 
     [Required]
     [StringLength(1000)]
-    public string NewData { get; set; }
+    public required DebtIncurrenceUpdateHistoryData NewData { get; set; }
+    #endregion
 
-    // Foreign keys
+    #region ForeignKeyProperties
     [Required]
-    public int DebtIncurrenceId { get; set; }
+    public Guid DebtIncurrenceId { get; set; }
 
     [Required]
-    public int UpdatedUserId { get; set; }
+    public Guid UpdatedUserId { get; set; }
+    #endregion
 
-    // Navigation properties
-    public virtual DebtIncurrence DebtIncurrence { get; set; }
-    public virtual User UpdatedUser { get; set; }
-    
-    // Model configurations.
+    #region NavigationProperties
+    public DebtIncurrence DebtIncurrence
+    {
+        get => _debtIncurrence ?? throw new InvalidOperationException(
+            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(DebtIncurrence)));
+        set => _debtIncurrence = value;
+    }
+
+    public User UpdatedUser
+    {
+        get => _updatedUser ?? throw new InvalidOperationException(
+            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(UpdatedUser)));
+        set => _updatedUser = value;
+    }
+    #endregion
+
+    #region StaticMethods
     public static void ConfigureModel(EntityTypeBuilder<DebtIncurrenceUpdateHistory> builder)
     {
         builder.HasKey(duh => duh.Id);
@@ -42,7 +63,13 @@ internal class DebtIncurrenceUpdateHistory : IUpdateHistoryEntity<DebtIncurrence
             .HasForeignKey(duh => duh.UpdatedUserId)
             .OnDelete(DeleteBehavior.Restrict);
         builder.HasIndex(duh => duh.UpdatedDateTime);
-        builder.Property(duh => duh.OldData).HasColumnType("JSON");
+        builder.Property(duh => duh.OldData)
+            .HasColumnType("JSON")
+            .HasConversion(
+                data => JsonSerializer.Serialize(data),
+                json => JsonSerializer.Deserialize<DebtIncurrenceUpdateHistoryData>(json)!
+            );
         builder.Property(duh => duh.NewData).HasColumnType("JSON");
     }
+    #endregion
 }

@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core;
+﻿namespace NATSInternal.Core.Services;
 
 /// <inheritdoc />
 internal class RoleService : IRoleService

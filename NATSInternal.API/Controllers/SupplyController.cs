@@ -51,7 +51,7 @@ public class SupplyController : ControllerBase
             SupplyDetailResponseDto responseDto = await _service.GetDetailAsync(id);
             return Ok(responseDto);
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);
@@ -137,7 +137,7 @@ public class SupplyController : ControllerBase
         {
             return Forbid();
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);
@@ -171,7 +171,7 @@ public class SupplyController : ControllerBase
         {
             return Forbid();
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);

@@ -33,7 +33,7 @@ public class ResourceAccessController : ControllerBase
         {
             return Ok(await _userService.GetMultipleAsync(userIds));
         }
-        catch (ResourceNotFoundException)
+        catch (NotFoundException)
         {
             return NotFound();
         }

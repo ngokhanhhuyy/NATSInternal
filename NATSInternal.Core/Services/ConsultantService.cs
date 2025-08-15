@@ -1,4 +1,4 @@
-namespace NATSInternal.Core;
+namespace NATSInternal.Core.Services;
 
 /// <inheritdoc cref="IConsultantService" />
 internal class ConsultantService
@@ -165,7 +165,7 @@ internal class ConsultantService
             .Where(c => c.Id == id && !c.IsDeleted)
             .AsSplitQuery()
             .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 nameof(Expense),
                 nameof(id),
                 id.ToString());
@@ -262,7 +262,7 @@ internal class ConsultantService
         // Fetch the consultant from the database and ensure it exists.
         Consultant consultant = await _context.Consultants
             .SingleOrDefaultAsync(c => c.Id == id && !c.IsDeleted)
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 nameof(Consultant),
                 nameof(id),
                 id.ToString());

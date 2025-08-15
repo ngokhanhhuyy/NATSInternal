@@ -1,6 +1,6 @@
-namespace NATSInternal.Validation.Validators;
+namespace NATSInternal.Core.Validation.Validators;
 
-public class AnnouncementUpsertValidator : Validator<AnnouncementUpsertRequestDto>
+internal class AnnouncementUpsertValidator : Validator<AnnouncementUpsertRequestDto>
 {
     public AnnouncementUpsertValidator()
     {

@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class TreatmentItemValidator : Validator<TreatmentItemRequestDto>
+internal class TreatmentItemValidator : Validator<TreatmentItemRequestDto>
 {
     public TreatmentItemValidator()
     {

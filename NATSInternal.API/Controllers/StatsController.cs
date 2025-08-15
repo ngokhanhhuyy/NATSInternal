@@ -61,7 +61,7 @@ public class StatsController : ControllerBase
         {
             return Ok(await _service.GetMonthlyDetailAsync(requestDto));
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);

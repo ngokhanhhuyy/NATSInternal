@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 
-namespace NATSInternal.Core;
+namespace NATSInternal.Core.Services;
 
 /// <summary>
 /// A service to handle single-photo-related operations.
@@ -82,7 +82,7 @@ internal class SinglePhotoService<T> : ISinglePhotoService<T>
 
         if (!File.Exists(path))
         {
-            throw new ResourceNotFoundException(relativePath);
+            throw new NotFoundException(relativePath);
         }
 
         File.Delete(path);

@@ -1,4 +1,4 @@
-namespace NATSInternal.Validation.Rules;
+namespace NATSInternal.Core.Validation.Rules;
 
 internal static class RuleValidators
 {

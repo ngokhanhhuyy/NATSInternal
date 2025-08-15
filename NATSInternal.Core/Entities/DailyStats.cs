@@ -1,9 +1,14 @@
 ﻿namespace NATSInternal.Core.Entities;
 
-internal class DailyStats : IIdentifiableEntity<DailyStats>
+internal class DailyStats : IHasIdEntity<DailyStats>
 {
+    #region Fields
+    private MonthlyStats? _monthly;
+    #endregion
+
+    #region Properties
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; private set; } = Guid.NewGuid();
 
     [Required]
     public long RetailGrossRevenue { get; set; }
@@ -40,7 +45,7 @@ internal class DailyStats : IIdentifiableEntity<DailyStats>
 
     [Required]
     public long StaffExpense { get; set; }
-    
+
     [Required]
     public int NewCustomers { get; set; }
 
@@ -53,15 +58,23 @@ internal class DailyStats : IIdentifiableEntity<DailyStats>
     public DateTime? TemporarilyClosedDateTime { get; set; }
 
     public DateTime? OfficiallyClosedDateTime { get; set; }
+    #endregion
 
-    // Foreign key.
+    #region ForeignKeyProperties
     [Required]
-    public int MonthlyStatsId { get; set; }
+    public Guid MonthlyStatsId { get; set; }
+    #endregion
 
-    // Navigation properties.
-    public virtual MonthlyStats Monthly { get; set; }
+    #region NavigationProperties
+    public MonthlyStats Monthly
+    {
+        get => _monthly ?? throw new InvalidOperationException(
+            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(Monthly)));
+        set => _monthly = value;
+    }
+    #endregion
 
-    // Properties for convinience.
+    #region ComputedProperties
     [NotMapped]
     public long Cost => SupplyCost + ShipmentCost;
 
@@ -91,8 +104,9 @@ internal class DailyStats : IIdentifiableEntity<DailyStats>
 
     [NotMapped]
     public bool IsOfficiallyClosed => OfficiallyClosedDateTime.HasValue;
-    
-    // Model configurations.
+    #endregion
+
+    #region StaticMethods
     public static void ConfigureModel(EntityTypeBuilder<DailyStats> entityBuilder)
     {
         entityBuilder.HasOne(dfs => dfs.Monthly)
@@ -102,4 +116,5 @@ internal class DailyStats : IIdentifiableEntity<DailyStats>
         entityBuilder.HasIndex(dfs => dfs.RecordedDate)
             .IsUnique();
     }
+    #endregion
 }

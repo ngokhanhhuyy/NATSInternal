@@ -1,4 +1,4 @@
-namespace NATSInternal.Core.Interfaces;
+namespace NATSInternal.Core.Interfaces.Services;
 
 /// <summary>
 /// A service to handle the expense-related operations.
@@ -32,7 +32,7 @@ public interface IExpenseService
     /// instance of the <see cref="ExpenseDetailResponseDto"/> class, containing the details
     /// of the expense.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the expense with the specified id doesn't exist or has already been
     /// deleted.
     /// </exception>
@@ -74,7 +74,7 @@ public interface IExpenseService
     /// <returns>
     /// A task that represents the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the expense with the specified id doens't exist or has already been
     /// deleted.
     /// </exception>
@@ -98,7 +98,7 @@ public interface IExpenseService
     /// <exception cref="AuthorizationException">
     /// Throws when the user doesn't have permission to delete the specifed expense.
     /// </exception>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the expense with the specified id doens't exist or has already been
     /// deleted.
     /// </exception>

@@ -52,7 +52,7 @@ public class CustomerController : ControllerBase
             CustomerBasicResponseDto responseDto = await _service.GetBasicAsync(id);
             return Ok(responseDto);
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);
@@ -70,7 +70,7 @@ public class CustomerController : ControllerBase
             CustomerDetailResponseDto responseDto = await _service.GetDetailAsync(id);
             return Ok(responseDto);
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);
@@ -166,7 +166,7 @@ public class CustomerController : ControllerBase
 
             return Ok();
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);

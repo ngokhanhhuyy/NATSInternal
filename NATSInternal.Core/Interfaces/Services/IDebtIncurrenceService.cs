@@ -1,4 +1,4 @@
-namespace NATSInternal.Core.Interfaces;
+namespace NATSInternal.Core.Interfaces.Services;
 
 /// <summary>
 /// A service to handle the operations which are related to debt incurrence.
@@ -31,7 +31,7 @@ public interface IDebtIncurrenceService
     /// instance of the <see cref="DebtIncurrenceDetailResponseDto"/>, containing the details
     /// of the debt incurrence.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the debt incurrence, specified by the value of the <paramref name="id"/>,
     /// doesn't exist or has already been deleted.
     /// </exception>
@@ -77,7 +77,7 @@ public interface IDebtIncurrenceService
     /// <exception cref="ValidationException">
     /// Throws when the specified value for the <c>StatsDateTime</c> property is invalid.
     /// </exception>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the debt incurrence, specified by the value of the <paramref name="id"/>,
     /// doesn't exist or has already been deleted.
     /// </exception>
@@ -110,7 +110,7 @@ public interface IDebtIncurrenceService
     /// An <see cref="int"/> value representing the id of the debt incurrence to delete.
     /// </param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the debt incurrence with the id specified by the <paramref name="id"/>
     /// doesn't exist or has already been deleted.
     /// </exception>

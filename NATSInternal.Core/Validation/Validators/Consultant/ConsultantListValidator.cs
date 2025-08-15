@@ -1,6 +1,6 @@
-namespace NATSInternal.Validation.Validators;
+namespace NATSInternal.Core.Validation.Validators;
 
-public class ConsultantListValidator : Validator<ConsultantListRequestDto>
+internal class ConsultantListValidator : Validator<ConsultantListRequestDto>
 {
     public ConsultantListValidator(IConsultantService service)
     {

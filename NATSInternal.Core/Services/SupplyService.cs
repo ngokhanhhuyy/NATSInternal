@@ -1,4 +1,4 @@
-namespace NATSInternal.Core;
+namespace NATSInternal.Core.Services;
 
 /// <inheritdoc cref="ISupplyService" />
 internal class SupplyService
@@ -185,7 +185,7 @@ internal class SupplyService
             .Where(s => s.Id == id)
             .AsSplitQuery()
             .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 nameof(Supply),
                 nameof(id),
                 id.ToString());
@@ -312,7 +312,7 @@ internal class SupplyService
             .Include(s => s.Items).ThenInclude(si => si.Product)
             .Include(s => s.Photos)
             .SingleOrDefaultAsync(s => s.Id == id)
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 nameof(Supply),
                 nameof(id),
                 id.ToString());

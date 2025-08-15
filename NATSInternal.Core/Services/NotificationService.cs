@@ -1,4 +1,4 @@
-namespace NATSInternal.Core;
+namespace NATSInternal.Core.Services;
 
 /// <inheritdoc cref="INotificationService" />
 internal class NotificationService
@@ -66,7 +66,7 @@ internal class NotificationService
             .Where(n => n.Id == id)
             .Select(n => new NotificationResponseDto(n, currentUserId))
             .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException();
+            ?? throw new NotFoundException();
     }
 
     /// <inheritdoc />
@@ -82,7 +82,7 @@ internal class NotificationService
             .Where(n => n.Id == id)
             .Where(n => n.ReceivedUsers.Select(u => u.Id).Contains(currentUser.Id))
             .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException();
+            ?? throw new NotFoundException();
 
         // Add the current user to the notification's read user list.
         if (!notification.ReadUsers.Select(u => u.Id).Contains(currentUser.Id))
@@ -157,6 +157,7 @@ internal class NotificationService
             ResourceIds = resourceIds,
             CreatedUserId = createdUserId
         };
+        
         _context.Notifications.Add(notification);
 
         // Initialize the relationship between all users (as notification receivers)

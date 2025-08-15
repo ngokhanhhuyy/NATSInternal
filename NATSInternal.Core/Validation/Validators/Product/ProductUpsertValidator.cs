@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators.Product;
+﻿namespace NATSInternal.Core.Validation.Validators.Product;
 
-public class ProductUpsertValidator : Validator<ProductUpsertRequestDto>
+internal class ProductUpsertValidator : Validator<ProductUpsertRequestDto>
 {
     public ProductUpsertValidator()
     {

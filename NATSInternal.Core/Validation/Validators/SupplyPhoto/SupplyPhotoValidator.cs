@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class SupplyPhotoValidator : Validator<SupplyPhotoRequestDto>
+internal class SupplyPhotoValidator : Validator<SupplyPhotoRequestDto>
 {
     public SupplyPhotoValidator()
     {

@@ -1,4 +1,4 @@
-namespace NATSInternal.Core;
+namespace NATSInternal.Core.Services;
 
 /// <inheritdoc />
 internal sealed class MonthYearService<T, TUpdateHistory>

@@ -14,7 +14,7 @@ public class RoleDetailResponseDto
         Name = role.Name;
         DisplayName = role.DisplayName;
         PowerLevel = role.PowerLevel;
-        Permissions = role.Claims
+        Permissions = role.Permissions
             .Where(c => c.ClaimType == "Permission")
             .Select(c => c.ClaimValue)
             .ToList();

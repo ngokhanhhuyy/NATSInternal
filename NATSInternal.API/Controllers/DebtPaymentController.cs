@@ -51,7 +51,7 @@ public class DebtPaymentController : ControllerBase
         {
             return Ok(await _service.GetDetailAsync(id));
         }
-        catch (ResourceNotFoundException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -97,7 +97,7 @@ public class DebtPaymentController : ControllerBase
         {
             return Forbid();
         }
-        catch (ResourceNotFoundException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -146,7 +146,7 @@ public class DebtPaymentController : ControllerBase
         {
             return Forbid();
         }
-        catch (ResourceNotFoundException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -184,7 +184,7 @@ public class DebtPaymentController : ControllerBase
         {
             return Forbid();
         }
-        catch (ResourceNotFoundException)
+        catch (NotFoundException)
         {
             return NotFound();
         }

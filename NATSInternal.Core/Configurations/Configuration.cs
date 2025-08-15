@@ -19,14 +19,11 @@ public static class ConfigurationExtensions
     /// An <see cref="IServiceCollection"/> interface containing the services for the
     /// application.
     /// </returns>
-    public static IServiceCollection ConfigureServices(
+    public static IServiceCollection UseCoreServices(
             this IServiceCollection services,
             string connectionString)
     {
         services.AddDbContextFactory<DatabaseContext>(options => options
-            // .UseSqlite(
-            //     "DataSource=database.db",
-            //     x => x.MigrationsAssembly("NATSInternal.Core")));
             .UseMySql(
                 connectionString,
                 ServerVersion.AutoDetect(connectionString),
@@ -142,14 +139,26 @@ public static class ConfigurationExtensions
 
         // Data seeding.
         services.AddScoped<DataSeedingService>();
+        
+        // Fluent validation.
+        services.AddValidatorsFromAssemblyContaining<SignInValidator>();
+        ValidatorOptions.Global.LanguageManager.Enabled = true;
+        ValidatorOptions.Global.LanguageManager = new ValidatorLanguageManager
+        {
+            Culture = new System.Globalization.CultureInfo("vi")
+        };
+        ValidatorOptions.Global.PropertyNameResolver = (_, b, _) => b.Name
+            .First()
+            .ToString()
+            .ToLower() + b.Name[1..];
 
         return services;
     }
 
     public static async Task EnsureDatabaseCreatedAsync(this IServiceProvider serviceProvider)
     {
-        IServiceScopeFactory serviceScopeFactory;
-        serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        IServiceScopeFactory serviceScopeFactory = serviceProvider
+            .GetRequiredService<IServiceScopeFactory>();
         using IServiceScope serviceScope = serviceScopeFactory.CreateScope();
         DatabaseContext context = serviceScope.ServiceProvider
             .GetService<DatabaseContext>()
@@ -163,12 +172,14 @@ public static class ConfigurationExtensions
 
     public static async Task SeedDataAsync(this IServiceProvider serviceProvider)
     {
-        IServiceScopeFactory serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        IServiceScopeFactory serviceScopeFactory = serviceProvider
+            .GetRequiredService<IServiceScopeFactory>();
         using IServiceScope serviceScope = serviceScopeFactory.CreateScope();
         DataSeedingService service = serviceScope.ServiceProvider
             .GetService<DataSeedingService>()
             ?? throw new InvalidOperationException(
                 $"{nameof(DataSeedingService)} dependency cannot be resolved.");
+        
         await service.SeedAsync();
     }
 }

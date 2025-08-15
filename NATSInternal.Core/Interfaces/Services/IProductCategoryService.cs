@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core.Interfaces;
+﻿namespace NATSInternal.Core.Interfaces.Services;
 
 /// <summary>
 /// A service to handle the product-category-related operations.
@@ -40,7 +40,7 @@ public interface IProductCategoryService
     /// an instance of the <see cref="ProductCategoryResponseDto"/> class, containing the
     /// details of the product category.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the product category with the specified id doesn't exist or has already
     /// been deleted.
     /// </exception>
@@ -79,7 +79,7 @@ public interface IProductCategoryService
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the product category with the specfied id doens't exist or has already been
     /// deleted.
     /// </exception>
@@ -101,7 +101,7 @@ public interface IProductCategoryService
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the product category with the specified id doesn't exist or has already
     /// been deleted.
     /// </exception>

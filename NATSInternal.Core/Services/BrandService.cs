@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core;
+﻿namespace NATSInternal.Core.Services;
 
 /// <inheritdoc cref="IBrandService" />
 internal class BrandService
@@ -59,7 +59,7 @@ internal class BrandService
             .Include(b => b.Country)
             .Where(b => b.Id == id)
             .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException(nameof(Brand), nameof(id), id.ToString());
+            ?? throw new NotFoundException(nameof(Brand), nameof(id), id.ToString());
 
         return new BrandDetailResponseDto(brand, GetExistingAuthorization(brand));
     }
@@ -107,7 +107,7 @@ internal class BrandService
     {
         // Fetch the b from the database and ensure it exists.
         Brand brand = await _context.Brands.SingleOrDefaultAsync(b => b.Id == id)
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 nameof(Brand),
                 nameof(id),
                 id.ToString());
@@ -170,7 +170,7 @@ internal class BrandService
     public async Task DeleteAsync(int id)
     {
         Brand brand = await _context.Brands.FindAsync(id)
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 nameof(Brand),
                 nameof(id),
                 id.ToString());
@@ -230,7 +230,7 @@ internal class BrandService
         
         if (exceptionHandler.IsUniqueConstraintViolated)
         {
-            errorMessage = ErrorMessages.UniqueDuplicated
+            errorMessage = ErrorMessages.Duplicated
                 .ReplaceResourceName(DisplayNames.Name);
             throw new OperationException("name", errorMessage);
         }

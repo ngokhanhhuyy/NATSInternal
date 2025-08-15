@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class LastestDailyStatsValidator : Validator<LatestDailyStatsRequestDto>
+internal class LastestDailyStatsValidator : Validator<LatestDailyStatsRequestDto>
 {
     public LastestDailyStatsValidator()
     {

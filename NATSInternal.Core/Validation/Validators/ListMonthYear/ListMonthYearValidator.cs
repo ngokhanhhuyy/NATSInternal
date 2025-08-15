@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class ListMonthYearValidator : Validator<ListMonthYearRequestDto>
+internal class ListMonthYearValidator : Validator<ListMonthYearRequestDto>
 {
     public ListMonthYearValidator()
     {

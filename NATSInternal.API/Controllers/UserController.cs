@@ -79,7 +79,7 @@ public class UserController : ControllerBase
         {
             return Ok(await _userService.GetRoleAsync(id));
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(exception);
@@ -97,7 +97,7 @@ public class UserController : ControllerBase
             responseDto = await _userService.GetDetailAsync(id);
             return Ok(responseDto);
         }
-        catch (ResourceNotFoundException)
+        catch (NotFoundException)
         {
             return NotFound();
         }
@@ -147,7 +147,7 @@ public class UserController : ControllerBase
             ModelState.AddModelErrorsFromServiceException(exception);
             return Conflict(ModelState);
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);
@@ -191,7 +191,7 @@ public class UserController : ControllerBase
 
             return Ok();
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);
@@ -232,7 +232,7 @@ public class UserController : ControllerBase
             await _userService.ChangePasswordAsync(requestDto);
             return Ok();
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);
@@ -275,7 +275,7 @@ public class UserController : ControllerBase
             await _userService.ResetPasswordAsync(id, requestDto);
             return Ok();
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);
@@ -308,7 +308,7 @@ public class UserController : ControllerBase
             await _notifier.Notify(NotificationType.UserDeletion, id);
             return Ok();
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);
@@ -336,7 +336,7 @@ public class UserController : ControllerBase
             await _userService.RestoreAsync(id);
             return Ok();
         }
-        catch (ResourceNotFoundException exception)
+        catch (NotFoundException exception)
         {
             ModelState.AddModelErrorsFromServiceException(exception);
             return NotFound(ModelState);

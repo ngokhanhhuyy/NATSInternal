@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class BrandListValidator : Validator<BrandListRequestDto>
+internal class BrandListValidator : Validator<BrandListRequestDto>
 {
     public BrandListValidator(IBrandService service)
     {

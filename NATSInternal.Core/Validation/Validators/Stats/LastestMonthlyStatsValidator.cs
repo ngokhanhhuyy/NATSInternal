@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class LastestMonthlyStatsValidator : Validator<LatestMonthlyStatsRequestDto>
+internal class LastestMonthlyStatsValidator : Validator<LatestMonthlyStatsRequestDto>
 {
     public LastestMonthlyStatsValidator()
     {

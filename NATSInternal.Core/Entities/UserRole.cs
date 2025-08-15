@@ -1,10 +1,19 @@
 namespace NATSInternal.Core.Entities;
 
-internal class UserRole : IdentityUserRole<int>, IEntity<UserRole>
+internal class UserRole : IEntity<UserRole>
 {
+    // Property.
+    [Key]
+    [Required]
+    public required Guid UserId { get; set; }
+    
+    [Key]
+    [Required]
+    public required Guid RoleId { get; set; }
+    
     // Navigation properties
-    public virtual User User { get; set; }
-    public virtual Role Role { get; set; }
+    public virtual User User { get; set; } = null!;
+    public virtual Role Role { get; set; } = null!;
     
     // Model configurations.
     public static void ConfigureModel(EntityTypeBuilder<UserRole> entityBuilder)

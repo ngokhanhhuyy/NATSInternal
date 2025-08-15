@@ -1,4 +1,4 @@
-namespace NATSInternal.Core.Interfaces;
+namespace NATSInternal.Core.Interfaces.Services;
 
 /// <summary>
 /// A service to handle the operations which are related to debt payment.
@@ -31,7 +31,7 @@ public interface IDebtPaymentService
     /// instance of the <see cref="DebtPaymentDetailResponseDto"/> class, containing the
     /// details of the debt payment.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the debt payment with the specified <paramref name="id"/>s doesn't exist or
     /// has already been deleted.
     /// </exception>
@@ -78,7 +78,7 @@ public interface IDebtPaymentService
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the debt payment specified by the <paramref name="id"/> doesn't exist or
     /// has already been deleted.
     /// </exception>
@@ -118,7 +118,7 @@ public interface IDebtPaymentService
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the debt payment specified by the <c>customerId</c> and the
     /// <paramref name="id"/> doesn't exist.
     /// </exception>

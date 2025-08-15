@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core;
+﻿namespace NATSInternal.Core.Services;
 
 /// <inheritdoc />
 internal class UserService : IUserService
@@ -159,7 +159,7 @@ internal class UserService : IUserService
         // Ensure all of the ids exist.
         if (ids.Except(users.Select(u => u.Id)).Any())
         {
-            throw new ResourceNotFoundException();
+            throw new NotFoundException();
         }
 
         return users.Select(u => new UserBasicResponseDto(u)).ToList();
@@ -220,7 +220,7 @@ internal class UserService : IUserService
             .Include(ur => ur.Role).ThenInclude(r => r.Claims)
             .Where(ur => ur.UserId == id)
             .Select(ur => new RoleDetailResponseDto(ur.Role)).SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException(nameof(User), nameof(id), id.ToString());
+            ?? throw new NotFoundException(nameof(User), nameof(id), id.ToString());
         return responseDto;
     }
 
@@ -232,7 +232,7 @@ internal class UserService : IUserService
             .Where(u => u.Id == id)
             .Select(u => new UserBasicResponseDto(u))
             .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException();
+            ?? throw new NotFoundException();
     }
 
     /// <inheritdoc />
@@ -241,7 +241,7 @@ internal class UserService : IUserService
         User user = await _context.Users
             .Include(u => u.Roles).ThenInclude(r => r.Claims)
             .SingleOrDefaultAsync(u => u.Id == id && !u.IsDeleted)
-            ?? throw new ResourceNotFoundException(nameof(User), nameof(id), id.ToString());
+            ?? throw new NotFoundException(nameof(User), nameof(id), id.ToString());
 
         return new UserDetailResponseDto(
             user,
@@ -310,7 +310,7 @@ internal class UserService : IUserService
             // Checking if the role name from the request exist
             Role role = await _context.Roles
                 .SingleOrDefaultAsync(r => r.Name == requestDto.UserInformation.RoleName)
-                ?? throw new ResourceNotFoundException(
+                ?? throw new NotFoundException(
                     nameof(Role),
                     nameof(requestDto.UserInformation.RoleName),
                     requestDto.UserInformation.RoleName);
@@ -338,7 +338,7 @@ internal class UserService : IUserService
             // Save avatar if included in the request.
             if (requestDto.PersonalInformation.AvatarFile != null)
             {
-                user.AvatarUrl = await _photoService
+                user.ProfilePictureUrl = await _photoService
                     .CreateAsync(requestDto.PersonalInformation.AvatarFile, true);
             }
 
@@ -362,7 +362,7 @@ internal class UserService : IUserService
         User user = await _context.Users
             .Include(u => u.Roles).ThenInclude(r => r.Claims)
             .SingleOrDefaultAsync(u => u.Id == id && !u.IsDeleted)
-                ?? throw new ResourceNotFoundException(
+                ?? throw new NotFoundException(
                     nameof(User),
                     nameof(id),
                     id.ToString());
@@ -379,16 +379,16 @@ internal class UserService : IUserService
             if (requestDto.PersonalInformation.AvatarChanged)
             {
                 // Delete old avatar if there is any.
-                if (user.AvatarUrl != null)
+                if (user.ProfilePictureUrl != null)
                 {
-                    _photoService.Delete(user.AvatarUrl);
-                    user.AvatarUrl = null;
+                    _photoService.Delete(user.ProfilePictureUrl);
+                    user.ProfilePictureUrl = null;
                 }
 
                 // Create new avatar if the request data contains it.
                 if (requestDto.PersonalInformation.AvatarFile != null)
                 {
-                    user.AvatarUrl = await _photoService
+                    user.ProfilePictureUrl = await _photoService
                         .CreateAsync(requestDto.PersonalInformation.AvatarFile, true);
                 }
             }
@@ -436,7 +436,7 @@ internal class UserService : IUserService
                 // the requested user's power level.
                 Role role = await _context.Roles
                     .SingleOrDefaultAsync(r => r.Name == requestDto.UserInformation.RoleName)
-                    ?? throw new ResourceNotFoundException(
+                    ?? throw new NotFoundException(
                         nameof(Role),
                         "role.name",
                         requestDto.UserInformation.RoleName);
@@ -463,7 +463,7 @@ internal class UserService : IUserService
         int id = _authorizationService.GetUserId();
         User user = await _context.Users
             .SingleOrDefaultAsync(u => u.Id == id && !u.IsDeleted)
-            ?? throw new ResourceNotFoundException(nameof(User), nameof(id), id.ToString());
+            ?? throw new NotFoundException(nameof(User), nameof(id), id.ToString());
 
         // Ensure having permission to change password of the fetched user.
         if (!_authorizationService.CanChangeUserPassword(user))
@@ -493,7 +493,7 @@ internal class UserService : IUserService
         User user = await _context.Users
             .Include(u => u.Roles).ThenInclude(u => u.Claims)
             .SingleOrDefaultAsync(u => u.Id == id && !u.IsDeleted)
-            ?? throw new ResourceNotFoundException(nameof(User), nameof(id), id.ToString());
+            ?? throw new NotFoundException(nameof(User), nameof(id), id.ToString());
 
         // Check if having permission to reset password of the fetched user.
         if (!_authorizationService.CanResetUserPassword(user))
@@ -522,7 +522,7 @@ internal class UserService : IUserService
         User user = await _context.Users
             .Include(u => u.Roles).ThenInclude(r => r.Claims)
             .SingleOrDefaultAsync(u => u.Id == id && !u.IsDeleted)
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 nameof(User),
                 nameof(id),
                 id.ToString());
@@ -546,7 +546,7 @@ internal class UserService : IUserService
         // Fetch the user entity from the database and ensure the entity exists.
         User user = await _context.Users
             .SingleOrDefaultAsync(u => u.Id == id && u.IsDeleted)
-            ?? throw new ResourceNotFoundException(nameof(User), nameof(id), id.ToString());
+            ?? throw new NotFoundException(nameof(User), nameof(id), id.ToString());
 
         // Ensure having permission to restore the user.
         if (!_authorizationService.CanRestoreUser(user))
@@ -626,7 +626,7 @@ internal class UserService : IUserService
         User user = await _context.Users
             .Include(u => u.Roles)
             .SingleOrDefaultAsync(u => u.Id == id)
-            ?? throw new ResourceNotFoundException();
+            ?? throw new NotFoundException();
         return _authorizationService.CanResetUserPassword(user);
     }
 }

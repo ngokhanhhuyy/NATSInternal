@@ -1,4 +1,4 @@
-namespace NATSInternal.Core;
+namespace NATSInternal.Core.Services;
 
 /// <inheritdoc cref="IStatsInternalService" />
 internal class StatsInternalService : StatsService, IStatsInternalService

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Hosting;
 
-namespace NATSInternal.Core;
+namespace NATSInternal.Core.Services;
 
 internal sealed class DataSeedingService
 {
@@ -295,7 +295,7 @@ internal sealed class DataSeedingService
 
         foreach (Role role in roles)
         {
-            role.Claims = new List<IdentityRoleClaim<int>>();
+            role.Permissions = new List<IdentityRoleClaim<int>>();
             string[] permissions = permissionsByRoles[role.Name!];
             foreach (string permission in permissions)
             {

@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core.Interfaces;
+﻿namespace NATSInternal.Core.Interfaces.Services;
 
 /// <summary>
 /// A service to handle supplies.
@@ -27,7 +27,7 @@ public interface ISupplyService
     /// An instance of the <see cref="SupplyDetailResponseDto"/> containing the detailed
     /// information of the supply.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the supply which has the specified <c>id</c> doesn't exist or has already
     /// been deleted.
     /// </exception>
@@ -62,7 +62,7 @@ public interface ISupplyService
     /// Throws when the requesting user doesn't have enough permissions to perform the
     /// operation.
     /// </exception>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the supply with the specified <c>id</c> doesn't exist or has already been
     /// deleted.
     /// </exception>
@@ -81,7 +81,7 @@ public interface ISupplyService
     /// <param name="id">
     /// An <see cref="int"/> representing the id of the supply to be deleted.
     /// </param>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the supply with the specified <c>id</c> doesn't exist or has already been
     /// deleted.
     /// </exception>

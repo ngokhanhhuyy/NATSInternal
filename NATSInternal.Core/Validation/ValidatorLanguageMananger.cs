@@ -1,4 +1,4 @@
-namespace NATSInternal.Validation;
+namespace NATSInternal.Core.Validation;
 
 public class ValidatorLanguageManager : FluentValidation.Resources.LanguageManager
 {

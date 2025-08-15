@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class UserPasswordChangeValidator : Validator<UserPasswordChangeRequestDto>
+internal class UserPasswordChangeValidator : Validator<UserPasswordChangeRequestDto>
 {
     public UserPasswordChangeValidator()
     {

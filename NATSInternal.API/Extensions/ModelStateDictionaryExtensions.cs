@@ -34,7 +34,7 @@ public static class ModelStateDictionaryExtensions
 
     public static void AddModelErrorsFromServiceException(
             this ModelStateDictionary modelState,
-            ResourceNotFoundException exception)
+            NotFoundException exception)
     {
         ClearModelState(modelState);
         modelState.AddModelError(exception.PropertyName ?? string.Empty, exception.Message);

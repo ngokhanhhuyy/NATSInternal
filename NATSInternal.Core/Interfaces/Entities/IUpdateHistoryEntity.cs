@@ -1,12 +1,11 @@
 namespace NATSInternal.Core.Interfaces.Entities;
 
-internal interface IUpdateHistoryEntity<T> : IIdentifiableEntity<T>
-    where T : class, new()
+internal interface IUpdateHistoryEntity<T> : IHasIdEntity<T> where T : class
 {
     DateTime UpdatedDateTime { get; set; }
     string Reason { get; set; }
     string OldData { get; set; }
     string NewData { get; set; }
-    int UpdatedUserId { get; set; }
+    Guid UpdatedUserId { get; set; }
     User UpdatedUser { get; set; }
 }

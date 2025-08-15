@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class TopPurchasedCustomerListValidator : Validator<TopPurchasedCustomerListRequestDto>
+internal class TopPurchasedCustomerListValidator : Validator<TopPurchasedCustomerListRequestDto>
 {
     public TopPurchasedCustomerListValidator()
     {

@@ -1,8 +1,7 @@
 namespace NATSInternal.Core.Interfaces.Entities;
 
-internal interface ICreatorTrackableEntity<T> : IUpsertableEntity<T>
-    where T : class, new()
+internal interface ICreatorTrackableEntity<T> : IUpsertableEntity<T> where T : class
 {
-    int CreatedUserId { get; set; }
+    Guid CreatedUserId { get; set; }
     User CreatedUser { get; set; }
 }

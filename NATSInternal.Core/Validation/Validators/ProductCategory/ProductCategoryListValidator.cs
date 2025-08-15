@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class ProductCategoryListValidator : Validator<ProductCategoryListRequestDto>
+internal class ProductCategoryListValidator : Validator<ProductCategoryListRequestDto>
 {
     public ProductCategoryListValidator(IProductCategoryService service)
     {

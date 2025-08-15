@@ -2,19 +2,24 @@
 
 internal class Announcement : IUpsertableEntity<Announcement>
 {
+    #region Fields
+    private User? _createdUser;
+    #endregion
+
+    #region Properties
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [Required]
     public AnnouncementCategory Category { get; set; } = AnnouncementCategory.Announcement;
 
     [Required]
-    [StringLength(80)]
-    public string Title { get; set; }
+    [StringLength(AnnouncementContracts.TitleMaxLength)]
+    public required string Title { get; set; }
 
     [Required]
-    [StringLength(5000)]
-    public string Content { get; set; }
+    [StringLength(AnnouncementContracts.ContentMaxLength)]
+    public required string Content { get; set; }
 
     [Required]
     public DateTime StartingDateTime { get; set; }
@@ -24,26 +29,36 @@ internal class Announcement : IUpsertableEntity<Announcement>
 
     [Required]
     public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
+    #endregion
 
-    // Foreign keys
-    public int CreatedUserId { get; set; }
+    #region ForeignKeyProperties
+    public Guid CreatedUserId { get; set; }
+    #endregion
 
-    // Concurrency operation tracking field
+    #region ConcurrencyOperationTrackingField
     [Timestamp]
-    public byte[] RowVersion { get; set; }
+    public byte[]? RowVersion { get; set; }
+    #endregion
 
-    // Navigation properties
-    public virtual User CreatedUser { get; set; }
+    #region NavigationProperties
+    public User CreatedUser
+    {
+        get => _createdUser ?? throw new InvalidOperationException(
+            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(CreatedUser)));
+        set => _createdUser = value;
+    }
+    #endregion
 
-    // Configurations.
+    #region StaticMethods
     public static void ConfigureModel(EntityTypeBuilder<Announcement> entity)
     {
         entity.HasKey(a => a.Id);
         entity.HasOne(a => a.CreatedUser)
             .WithMany(u => u.CreatedAnnouncements)
             .HasForeignKey(a => a.CreatedUserId)
-            .OnDelete(DeleteBehavior.Cascade);
-        entity.Property(c => c.RowVersion)
-            .IsRowVersion();
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+        entity.Property(c => c.RowVersion).IsRowVersion();
     }
+    #endregion
 }

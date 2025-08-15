@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core;
+﻿namespace NATSInternal.Core.Services;
 
 /// <inheritdoc cref="IProductService" />
 internal class ProductService
@@ -100,7 +100,7 @@ internal class ProductService
             .Include(p => p.Category)
             .Where(p => p.Id == id)
             .SingleOrDefaultAsync()
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 nameof(Product),
                 nameof(id),
                 id.ToString());
@@ -190,7 +190,7 @@ internal class ProductService
     {
         // Fetch the entity with given id from the database and ensure that it exists.
         Product product = await _context.Products.FindAsync(id)
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 nameof(Product),
                 nameof(id),
                 id.ToString());
@@ -283,7 +283,7 @@ internal class ProductService
         Product product = await _context.Products
             .Include(p => p.Photos)
             .SingleOrDefaultAsync(p => p.Id == id && !p.IsDeleted)
-            ?? throw new ResourceNotFoundException();
+            ?? throw new NotFoundException();
 
         // Remove the product and all associated photos.
         _context.Products.Remove(product);
@@ -397,7 +397,7 @@ internal class ProductService
         // Handle unique conflict exception.
         if (exceptionHandler.IsUniqueConstraintViolated)
         {
-            string errorMessage = ErrorMessages.UniqueDuplicated
+            string errorMessage = ErrorMessages.Duplicated
                 .ReplacePropertyName(DisplayNames.Get(nameof(Product.Name)));
             throw new OperationException(nameof(Product.Name), errorMessage);
         }

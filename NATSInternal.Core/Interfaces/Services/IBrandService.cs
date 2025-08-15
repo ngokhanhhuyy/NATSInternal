@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core.Interfaces;
+﻿namespace NATSInternal.Core.Interfaces.Services;
 
 /// <summary>
 /// A service to perform the brand-related operations.
@@ -36,7 +36,7 @@ public interface IBrandService
     /// instance of the <see cref="BrandDetailResponseDto"/>, containing the details of the
     /// brand.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the brand with the specified id doesn't exist or has already been deleted.
     /// </exception>
     Task<BrandDetailResponseDto> GetDetailAsync(int id);
@@ -73,7 +73,7 @@ public interface IBrandService
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the brand with the specified id doesn't exist or has already been deleted.
     /// </exception>
     /// <exception cref="OperationException">
@@ -92,7 +92,7 @@ public interface IBrandService
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the brand with the specified id doesn't exist or has already been deleted.
     /// </exception>
     Task DeleteAsync(int id);

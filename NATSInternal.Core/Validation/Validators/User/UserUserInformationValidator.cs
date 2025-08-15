@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class UserUserInformationValidator : Validator<UserUserInformationRequestDto>
+internal class UserUserInformationValidator : Validator<UserUserInformationRequestDto>
 {
     public UserUserInformationValidator()
     {

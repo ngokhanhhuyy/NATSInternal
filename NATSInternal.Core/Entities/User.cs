@@ -1,92 +1,57 @@
 namespace NATSInternal.Core.Entities;
 
-internal class User : IdentityUser<int>, IIdentifiableEntity<User>, IHasSinglePhotoEntity<User>
+internal class User : IHasSinglePhotoEntity<User>
 {
-    [Required]
-    [StringLength(10)]
-    public string FirstName { get; set; }
+    #region Properties
+    [Key]
+    public Guid Id { get; private set; }
 
     [Required]
-    [StringLength(10)]
-    public string NormalizedFirstName { get; set; }
-
-    [StringLength(20)]
-    public string MiddleName { get; set; }
-
-    [StringLength(20)]
-    public string NormalizedMiddleName { get; set; }
-
-    [Required]
-    [StringLength(10)]
-    public string LastName { get; set; }
-
-    [Required]
-    [StringLength(10)]
-    public string NormalizedLastName { get; set; }
-
-    [Required]
-    [StringLength(45)]
-    public string FullName { get; set; }
-
-    [Required]
-    [StringLength(45)]
-    public string NormalizedFullName { get; set; }
-
-    [Required]
-    public Gender Gender { get; set; }
-
-    public DateOnly? Birthday { get; set; }
-
-    public DateOnly? JoiningDate { get; set; }
+    [StringLength(UserContracts.UserNameMaxLength)]
+    public string UserName { get; set; } = string.Empty;
 
     [Required]
     public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
 
-    public DateTime? UpdatedDateTime { get; set; }
-
-    [StringLength(255)]
-    public string Note { get; set; }
-
-    [StringLength(255)]
-    public string AvatarUrl { get; set; }
+    [StringLength(UserContracts.ProfilePictureUrlMaxLength)]
+    public string? ProfilePictureUrl { get; set; }
 
     [Required]
     public bool IsDeleted { get; set; }
+    #endregion
 
+    #region ConcurrencyOperationTrackingProperty
     [Timestamp]
-    public byte[] RowVersion { get; set; }
+    public byte[]? RowVersion { get; set; }
+    #endregion
 
-    // Navigation properties.
-    public virtual List<Role> Roles { get; set; }
-    public virtual List<Customer> CreatedCustomers { get; set; }
-    public virtual List<Supply> Supplies { get; set; }
-    public virtual List<SupplyUpdateHistory> SupplyUpdateHistories { get; set; }
-    public virtual List<Order> Orders { get; set; }
-    public virtual List<OrderUpdateHistory> OrderUpdateHistories { get; set; }
-    public virtual List<Treatment> CreatedTreatments { get; set; }
-    public virtual List<Treatment> TreatmentsInCharge { get; set; }
-    public virtual List<TreatmentUpdateHistory> TreatmentUpdateHistories { get; set; }
-    public virtual List<Consultant> Consultants { get; set; }
-    public virtual List<ConsultantUpdateHistory> ConsultantUpdateHistories { get; set; }
-    public virtual List<Expense> Expenses { get; set; }
-    public virtual List<ExpenseUpdateHistory> ExpenseUpdateHistories { get; set; }
-    public virtual List<DebtIncurrence> Debts { get; set; }
-    public virtual List<DebtIncurrenceUpdateHistory> DebtUpdateHistories { get; set; }
-    public virtual List<DebtPayment> DebtPayments { get; set; }
-    public virtual List<DebtPaymentUpdateHistory> DebtPaymentUpdateHistories { get; set; }
-    public virtual List<Announcement> CreatedAnnouncements { get; set; }
-    public virtual List<Notification> CreatedNotifications { get; set; }
-    public virtual List<Notification> ReceivedNotifications { get; set; }
-    public virtual List<Notification> ReadNotifications { get; set; }
+    #region NavigationProperties
+    public List<Role> Roles { get; private set; } = new();
+    public List<Customer> CreatedCustomers { get; private set; } = new();
+    public List<Supply> Supplies { get; private set; } = new();
+    public List<SupplyUpdateHistory> SupplyUpdateHistories { get; private set; } = new();
+    public List<Order> Orders { get; private set; } = new();
+    public List<OrderUpdateHistory> OrderUpdateHistories { get; private set; } = new();
+    public List<Treatment> CreatedTreatments { get; private set; } = new();
+    public List<Treatment> TreatmentsInCharge { get; private set; } = new();
+    public List<TreatmentUpdateHistory> TreatmentUpdateHistories { get; private set; } = new();
+    public List<Consultant> Consultants { get; private set; } = new();
+    public List<ConsultantUpdateHistory> ConsultantUpdateHistories { get; private set; } = new();
+    public List<Expense> Expenses { get; private set; } = new();
+    public List<ExpenseUpdateHistory> ExpenseUpdateHistories { get; private set; } = new();
+    public List<DebtIncurrence> Debts { get; private set; } = new();
+    public List<DebtIncurrenceUpdateHistory> DebtUpdateHistories { get; private set; } = new();
+    public List<DebtPayment> DebtPayments { get; private set; } = new();
+    public List<DebtPaymentUpdateHistory> DebtPaymentUpdateHistories { get; private set; } = new();
+    public List<Announcement> CreatedAnnouncements { get; private set; } = new();
+    public List<Notification> CreatedNotifications { get; private set; } = new();
+    public List<Notification> ReceivedNotifications { get; private set; } = new();
+    public List<Notification> ReadNotifications { get; private set; } = new();
+    #endregion
 
-    // Properties for convinience.
+    #region ComputedProperties
     [NotMapped]
-    public Role Role => Roles
-        .OrderByDescending(r => r.PowerLevel)
-        .SingleOrDefault();
-
-    [NotMapped]
-    public int PowerLevel => Role.PowerLevel;
+    public int PowerLevel => Roles.Max(r => r.PowerLevel);
 
     [NotMapped]
     public List<Supply> UpdatedSupplies => SupplyUpdateHistories
@@ -119,19 +84,23 @@ internal class User : IdentityUser<int>, IIdentifiableEntity<User>, IHasSinglePh
         .ToList();
 
     [NotMapped]
-    public string ThumbnailUrl
+    public string? ThumbnailUrl
     {
-        get => AvatarUrl;
-        set => AvatarUrl = value;
+        get => ProfilePictureUrl;
+        set => ProfilePictureUrl = value;
     }
-    
+    #endregion
+
+    #region Methods
     public bool HasPermission(string permissionName)
     {
-        return Role.Claims
-            .Any(r => r.ClaimType == "Permission" && r.ClaimValue == permissionName);
+        return Roles
+            .SelectMany(r => r.Permissions)
+            .Any(p => p.Name == permissionName);
     }
-    
-    // Model configurations.
+    #endregion
+
+    #region StaticMethods
     public static void ConfigureModel(EntityTypeBuilder<User> entityBuilder)
     {
         entityBuilder.HasKey(u => u.Id);
@@ -141,15 +110,16 @@ internal class User : IdentityUser<int>, IIdentifiableEntity<User>, IHasSinglePh
                 userRole => userRole
                     .HasOne(ur => ur.Role)
                     .WithMany()
-                    .HasForeignKey(ur => ur.RoleId),
+                    .HasForeignKey(ur => ur.RoleId)
+                    .IsRequired(),
                 userRole => userRole
                     .HasOne(ur => ur.User)
                     .WithMany()
-                    .HasForeignKey(ur => ur.UserId));
-        entityBuilder.HasIndex(u => u.UserName)
-            .IsUnique();
-        entityBuilder.HasKey(u => u.Id);
-        entityBuilder.Property(c => c.RowVersion)
-            .IsRowVersion();
+                    .HasForeignKey(ur => ur.UserId)
+                    .IsRequired());
+        entityBuilder.HasIndex(u => u.UserName).IsUnique();
+        entityBuilder.Property(u => u.RowVersion).IsRowVersion();
+        entityBuilder.HasQueryFilter(u => !u.IsDeleted);
     }
+    #endregion
 }

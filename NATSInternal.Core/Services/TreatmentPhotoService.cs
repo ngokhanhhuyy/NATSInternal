@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 
-namespace NATSInternal.Core;
+namespace NATSInternal.Core.Services;
 
 /// <inheritdoc cref="ITreatmentPhotoService" />
 internal class TreatmentPhotoService

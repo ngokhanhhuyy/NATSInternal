@@ -9,5 +9,5 @@ internal interface IHasProductEntity<T, TItem, TPhoto, TUpdateHistory>
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
     where TUpdateHistory :class, IUpdateHistoryEntity<TUpdateHistory>, new()
 {
-    List<TItem> Items { get; set; }
+    List<TItem> Items { get; }
 }

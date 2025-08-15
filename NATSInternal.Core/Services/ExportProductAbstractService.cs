@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core;
+﻿namespace NATSInternal.Core.Services;
 
 /// <summary>
 /// An abstract service to handle financial engagement related operations.
@@ -256,7 +256,7 @@ internal abstract class ExportProductAbstractService<
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the entity with the specified id doesn't exist or has already been deleted.
     /// </exception>
     /// <exception cref="AuthorizationException">
@@ -280,7 +280,7 @@ internal abstract class ExportProductAbstractService<
             .Include(o => o.Items).ThenInclude(oi => oi.Product)
             .Include(o => o.Photos)
             .SingleOrDefaultAsync(o => o.Id == id && !o.IsDeleted)
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 nameof(entity),
                 nameof(id),
                 id.ToString());
@@ -406,7 +406,7 @@ internal abstract class ExportProductAbstractService<
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the entity with the specified id doesn't exist or has already been deleted.
     /// </exception>
     /// <exception cref="AuthorizationException">
@@ -426,7 +426,7 @@ internal abstract class ExportProductAbstractService<
         T entity = await GetRepository(_context)
             .Include(e => e.Items).ThenInclude(i => i.Product)
             .SingleOrDefaultAsync(o => o.Id == id && !o.IsDeleted)
-            ?? throw new ResourceNotFoundException(
+            ?? throw new NotFoundException(
                 typeof(T).Name,
                 nameof(id),
                 id.ToString());
@@ -590,7 +590,7 @@ internal abstract class ExportProductAbstractService<
     /// <returns>
     /// An instance of the <typeparamref name="T"/> entity with the specified id.
     /// </returns>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the entity with the specified id doesn't exist or has already been deleted.
     /// </exception>
     protected async Task<T> GetEntityAsync(int id)
@@ -709,7 +709,7 @@ internal abstract class ExportProductAbstractService<
     /// The exception handler that captured the exception and provides the information of the
     /// exception.
     /// </param>
-    /// <exception cref="ResourceNotFoundException">
+    /// <exception cref="NotFoundException">
     /// Throws when the customer with the id specified by the value of the <c>CustomerId</c>
     /// in the request DTO doesn't exist or has already been deleted.
     /// </exception>
@@ -722,7 +722,7 @@ internal abstract class ExportProductAbstractService<
             string violatedFieldName = handler.ViolatedFieldName;
             if (violatedFieldName == GetPropertyName<T>(e => e.CustomerId))
             {
-                throw new ResourceNotFoundException(
+                throw new NotFoundException(
                     nameof(Customer),
                     nameof(Customer.Id),
                     requestDto.CustomerId.ToString());

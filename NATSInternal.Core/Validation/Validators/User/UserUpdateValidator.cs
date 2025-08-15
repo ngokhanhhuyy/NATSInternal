@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation.Validators;
+﻿namespace NATSInternal.Core.Validation.Validators;
 
-public class UserUpdateValidator : Validator<UserUpdateRequestDto>
+internal class UserUpdateValidator : Validator<UserUpdateRequestDto>
 {
     public UserUpdateValidator()
     {

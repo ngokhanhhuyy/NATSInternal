@@ -1,6 +1,6 @@
-namespace NATSInternal.Validation.Validators;
+namespace NATSInternal.Core.Validation.Validators;
 
-public class DebtIncurrenceListValidator : Validator<DebtIncurrenceListRequestDto>
+internal class DebtIncurrenceListValidator : Validator<DebtIncurrenceListRequestDto>
 {
     public DebtIncurrenceListValidator(IDebtIncurrenceService service)
     {

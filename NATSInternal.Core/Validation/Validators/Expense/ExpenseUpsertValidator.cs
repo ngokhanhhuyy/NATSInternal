@@ -1,6 +1,6 @@
-﻿namespace NATSInternal.Validation;
+﻿namespace NATSInternal.Core.Validation;
 
-public class ExpenseUpsertValidator : Validator<ExpenseUpsertRequestDto>
+internal class ExpenseUpsertValidator : Validator<ExpenseUpsertRequestDto>
 {
     public ExpenseUpsertValidator()
     {
