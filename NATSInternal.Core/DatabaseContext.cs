@@ -2,20 +2,22 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace NATSInternal.Core;
 
-internal class DatabaseContext
-    : IdentityDbContext<User, Role, int, IdentityUserClaim<int>, UserRole,
-        IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
-        
+internal class DatabaseContext : DbContext
 {
-    public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
-    {
-    }
+    #region StaticFields
+    private static readonly JsonSerializerOptions _serializerOptions = new();
+    #endregion
 
+    #region Constructors
+    public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }
+    #endregion
+
+    #region Properties
     public DbSet<Country> Countries { get; set; }
     public DbSet<Brand> Brands { get; set; }
     public DbSet<ProductCategory> ProductCategories { get; set; }
     public DbSet<Product> Products { get; set; }
-    public DbSet<ProductPhoto> ProductPhotos { get; set; } 
+    public DbSet<ProductPhoto> ProductPhotos { get; set; }
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Supply> Supplies { get; set; }
     public DbSet<SupplyUpdateHistory> SupplyUpdateHistories { get; set; }
@@ -33,70 +35,75 @@ internal class DatabaseContext
     public DbSet<ExpensePayee> ExpensePayees { get; set; }
     public DbSet<ExpensePhoto> ExpensePhotos { get; set; }
     public DbSet<ExpenseUpdateHistory> ExpenseUpdateHistories { get; set; }
-    public DbSet<DebtIncurrence> DebtIncurrences { get; set; }
-    public DbSet<DebtIncurrenceUpdateHistory> DebtIncurrenceUpdateHistories { get; set; }
+    public DbSet<Debt> DebtIncurrences { get; set; }
+    public DbSet<DebtUpdateHistory> DebtIncurrenceUpdateHistories { get; set; }
     public DbSet<DebtPayment> DebtPayments { get; set; }
     public DbSet<DebtPaymentUpdateHistory> DebtPaymentUpdateHistories { get; set; }
     public DbSet<Announcement> Announcements { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<NotificationReceivedUser> NotificationReceivedUsers { get; set; }
     public DbSet<NotificationReadUser> NotificationReadUsers { get; set; }
-    public DbSet<DailyStats> DailyStats { get; set; }
-    public DbSet<MonthlyStats> MonthlyStats { get; set; }
+    public DbSet<DailySummary> DailyStats { get; set; }
+    public DbSet<MonthlySummary> MonthlyStats { get; set; }
+    #endregion
 
+    #region Methods
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ConfigureEntity<Customer>();
+        Customer.ConfigureModel(modelBuilder.Entity<Customer>());
 
-        modelBuilder.ConfigureEntity<ProductCategory>();
-        modelBuilder.ConfigureEntity<Product>();
-        modelBuilder.ConfigureEntity<ProductPhoto>();
+        ProductCategory.ConfigureModel(modelBuilder.Entity<ProductCategory>());
+        Product.ConfigureModel(modelBuilder.Entity<Product>());
+        ProductPhoto.ConfigureModel(modelBuilder.Entity<ProductPhoto>());
 
-        modelBuilder.ConfigureEntity<Country>();
-        modelBuilder.ConfigureEntity<Brand>();
+        Country.ConfigureModel(modelBuilder.Entity<Country>());
+        Brand.ConfigureModel(modelBuilder.Entity<Brand>());
 
-        modelBuilder.ConfigureEntity<Supply>();
-        modelBuilder.ConfigureEntity<SupplyItem>();
-        modelBuilder.ConfigureEntity<SupplyPhoto>();
-        modelBuilder.ConfigureEntity<SupplyUpdateHistory>();
+        Supply.ConfigureModel(modelBuilder.Entity<Supply>());
+        SupplyItem.ConfigureModel(modelBuilder.Entity<SupplyItem>());
+        SupplyPhoto.ConfigureModel(modelBuilder.Entity<SupplyPhoto>());
+        SupplyUpdateHistory.ConfigureModel(modelBuilder.Entity<SupplyUpdateHistory>());
 
-        modelBuilder.ConfigureEntity<Order>();
-        modelBuilder.ConfigureEntity<OrderItem>();
-        modelBuilder.ConfigureEntity<OrderPhoto>();
-        modelBuilder.ConfigureEntity<OrderUpdateHistory>();
+        Order.ConfigureModel(modelBuilder.Entity<Order>());
+        OrderItem.ConfigureModel(modelBuilder.Entity<OrderItem>());
+        Photo.ConfigureModel(modelBuilder.Entity<Photo>());
+        OrderUpdateHistory.ConfigureModel(modelBuilder.Entity<OrderUpdateHistory>());
 
-        modelBuilder.ConfigureEntity<Treatment>();
-        modelBuilder.ConfigureEntity<TreatmentItem>();
-        modelBuilder.ConfigureEntity<TreatmentPhoto>();
-        modelBuilder.ConfigureEntity<TreatmentUpdateHistory>();
+        Treatment.ConfigureModel(modelBuilder.Entity<Treatment>());
+        TreatmentItem.ConfigureModel(modelBuilder.Entity<TreatmentItem>());
+        TreatmentPhoto.ConfigureModel(modelBuilder.Entity<TreatmentPhoto>());
+        TreatmentUpdateHistory.ConfigureModel(modelBuilder.Entity<TreatmentUpdateHistory>());
 
-        modelBuilder.ConfigureEntity<Consultant>();
-        modelBuilder.ConfigureEntity<ConsultantUpdateHistory>();
-        
-        modelBuilder.ConfigureEntity<Expense>();
-        modelBuilder.ConfigureEntity<ExpensePayee>();
-        modelBuilder.ConfigureEntity<ExpensePhoto>();
-        modelBuilder.ConfigureEntity<ExpenseUpdateHistory>();
-        
-        modelBuilder.ConfigureEntity<DebtIncurrence>();
-        modelBuilder.ConfigureEntity<DebtIncurrenceUpdateHistory>();
-        
-        modelBuilder.ConfigureEntity<DebtPayment>();
-        modelBuilder.ConfigureEntity<DebtPaymentUpdateHistory>();
-        
-        modelBuilder.ConfigureEntity<Announcement>();
-        
-        modelBuilder.ConfigureEntity<Notification>();
-        modelBuilder.ConfigureEntity<NotificationReceivedUser>();
-        modelBuilder.ConfigureEntity<NotificationReadUser>();
+        Consultant.ConfigureModel(modelBuilder.Entity<Consultant>());
+        ConsultantUpdateHistory.ConfigureModel(modelBuilder.Entity<ConsultantUpdateHistory>());
 
-        modelBuilder.ConfigureEntity<DailyStats>();
-        modelBuilder.ConfigureEntity<MonthlyStats>();
+        Expense.ConfigureModel(modelBuilder.Entity<Expense>());
+        ExpensePayee.ConfigureModel(modelBuilder.Entity<ExpensePayee>());
+        ExpensePhoto.ConfigureModel(modelBuilder.Entity<ExpensePhoto>());
+        ExpenseUpdateHistory.ConfigureModel(modelBuilder.Entity<ExpenseUpdateHistory>());
+
+        Debt.ConfigureModel(modelBuilder.Entity<Debt>());
+        DebtUpdateHistory.ConfigureModel(
+            modelBuilder.Entity<DebtUpdateHistory>(),
+            _serializerOptions
+        );
+
+        DebtPayment.ConfigureModel(modelBuilder.Entity<DebtPayment>());
+        DebtPaymentUpdateHistory.ConfigureModel(modelBuilder.Entity<DebtPaymentUpdateHistory>());
+
+        Announcement.ConfigureModel(modelBuilder.Entity<Announcement>());
+
+        Notification.ConfigureModel(modelBuilder.Entity<Notification>());
+        NotificationReceivedUser.ConfigureModel(modelBuilder.Entity<NotificationReceivedUser>());
+        NotificationReadUser.ConfigureModel(modelBuilder.Entity<NotificationReadUser>());
+
+        DailyStats.ConfigureModel(modelBuilder.Entity<DailySummary>());
+        MonthlyStats.ConfigureModel(modelBuilder.Entity<MonthlySummary>());
 
         // Identity entities
-        modelBuilder.ConfigureEntity<User>();
-        modelBuilder.ConfigureEntity<Role>();
-        modelBuilder.ConfigureEntity<UserRole>();
+        User.ConfigureModel(modelBuilder.Entity<User>());
+        Role.ConfigureModel(modelBuilder.Entity<Role>());
+        UserRole.ConfigureModel(modelBuilder.Entity<UserRole>());
 
         modelBuilder.Entity<IdentityUserClaim<int>>(e => e.HasKey(uc => uc.Id));
         modelBuilder.Entity<IdentityUserLogin<int>>(e => e.HasKey(ul => ul.UserId));
@@ -183,4 +190,5 @@ internal class DatabaseContext
             }
         }
     }
+    #endregion
 }

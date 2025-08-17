@@ -28,13 +28,13 @@ public class ProductDetailResponseDto
         Name = product.Name;
         Description = product.Description;
         Unit = product.Unit;
-        DefaultPrice = product.DefaultPrice;
+        DefaultPrice = product.DefaultAmountBeforeVatPerUnit;
         DefaultVatPercentage = product.DefaultVatPercentage;
         StockingQuantity = product.StockingQuantity;
         IsForRetail = product.IsForRetail;
         IsDiscontinued = product.IsDiscontinued;
         CreatedDateTime = product.CreatedDateTime;
-        UpdatedDateTime = product.UpdatedDateTime;
+        UpdatedDateTime = product.LastUpdatedDateTime;
         ThumbnailUrl = product.ThumbnailUrl;
 
         if (product.Category != null)

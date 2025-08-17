@@ -160,7 +160,7 @@ public interface IDebtIncurrenceService
 
     /// <summary>
     /// Check if the requesting user has permission to create a new
-    /// <see cref="DebtIncurrence"/> and retrieve the authorization information for creating
+    /// <see cref="Debt"/> and retrieve the authorization information for creating
     /// operation.
     /// </summary>
     /// <returns>

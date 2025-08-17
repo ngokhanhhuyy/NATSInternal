@@ -2,7 +2,7 @@ namespace NATSInternal.Core.Entities;
 
 internal class Supply
     :
-        HasStatsAbstractEntity,
+        AbstractHasStatsEntity,
         IHasProductEntity<Supply, SupplyItem, SupplyPhoto, SupplyUpdateHistory>
 {
     #region Fields

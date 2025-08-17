@@ -2,7 +2,8 @@ using Bogus.Extensions;
 
 namespace NATSInternal.Core.Entities;
 
-internal class Customer : IUpsertableEntity<Customer>
+[Table("customers")]
+internal class Customer : AbstractEntity<Customer>, IUpsertableEntity<Customer>
 {
     #region Fields
     private string _firstName = string.Empty;
@@ -13,9 +14,11 @@ internal class Customer : IUpsertableEntity<Customer>
     #endregion
 
     #region Properties
+    [Column("id")]
     [Key]
     public Guid Id { get; private set; } = Guid.NewGuid();
 
+    [Column("first_name")]
     [BackingField(nameof(_firstName))]
     [Required]
     [StringLength(CustomerContracts.FirstNameMaxLength)]
@@ -30,10 +33,12 @@ internal class Customer : IUpsertableEntity<Customer>
         }
     }
 
+    [Column("normalized_first_name")]
     [Required]
     [StringLength(CustomerContracts.FirstNameMaxLength)]
     public string NormalizedFirstName { get; private set; } = string.Empty;
 
+    [Column("middle_name")]
     [BackingField(nameof(_middleName))]
     [StringLength(CustomerContracts.MiddleNameMaxLength)]
     public string? MiddleName
@@ -47,9 +52,11 @@ internal class Customer : IUpsertableEntity<Customer>
         }
     }
 
+    [Column("normalized_middle_name")]
     [StringLength(CustomerContracts.MiddleNameMaxLength)]
     public string? NormalizedMiddleName { get; private set; }
 
+    [Column("last_name")]
     [BackingField(nameof(_lastName))]
     [Required]
     [StringLength(CustomerContracts.LastNameMaxLength)]
@@ -64,69 +71,89 @@ internal class Customer : IUpsertableEntity<Customer>
         }
     }
 
+    [Column("normalized_last_name")]
     [Required]
     [StringLength(CustomerContracts.LastNameMaxLength)]
     public string NormalizedLastName { get; set; } = string.Empty;
 
+    [Column("full_name")]
     [Required]
     [StringLength(CustomerContracts.FullNameMaxLength)]
     public string FullName { get; private set; } = string.Empty;
 
+    [Column("normalized_full_name")]
     [Required]
     [StringLength(CustomerContracts.FullNameMaxLength)]
     public string NormalizedFullName { get; private set; } = string.Empty;
 
+    [Column("nick_name")]
     [StringLength(CustomerContracts.NickNameMaxLength)]
     public string? NickName { get; set; }
 
+    [Column("gender")]
     [Required]
     public Gender Gender { get; set; }
 
+    [Column("birthday")]
     public DateOnly? Birthday { get; set; }
 
+    [Column("phone_number")]
     [StringLength(CustomerContracts.PhoneNumberMaxLength)]
     public string? PhoneNumber { get; set; }
 
+    [Column("zalo_number")]
     [StringLength(CustomerContracts.ZaloNumberMaxLength)]
     public string? ZaloNumber { get; set; }
 
+    [Column("facebook_url")]
     [StringLength(CustomerContracts.FacebookUrlMaxLength)]
     public string? FacebookUrl { get; set; }
 
+    [Column("email")]
     [StringLength(CustomerContracts.EmailMaxLength)]
     public string? Email { get; set; }
 
+    [Column("address")]
     [StringLength(CustomerContracts.AddressMaxLength)]
     public string? Address { get; set; }
 
+    [Column("created_datetime")]
     [Required]
     public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
 
+    [Column("updated_datetime")]
     public DateTime? UpdatedDateTime { get; set; }
 
+    [Column("note")]
     [StringLength(CustomerContracts.NoteMaxLength)]
     public required string Note { get; set; }
 
+    [Column("is_deleted")]
     [Required]
     public bool IsDeleted { get; set; }
     #endregion
 
     #region CachedProperties
+    [Column("cached_incurred_debt_amount")]
     [Required]
     public long CachedIncurredDebtAmount { get; set; } = 0;
 
+    [Column("cached_paid_debt_amount")]
     [Required]
     public long CachedPaidDebtAmount { get; set; } = 0;
     #endregion
 
     #region ForeignKeyProperties
+    [Column("introducer_id")]
     public Guid? IntroducerId { get; set; }
 
+    [Column("created_user_id")]
     [Required]
     public Guid CreatedUserId { get; set; }
     #endregion
 
     #region ConcurrencyOperationTrackingField
+    [Column("row_version")]
     [Timestamp]
     public byte[]? RowVersion { get; set; }
     #endregion
@@ -135,16 +162,14 @@ internal class Customer : IUpsertableEntity<Customer>
     [BackingField(nameof(_createdUser))]
     public User CreatedUser
     {
-        get => _createdUser ?? throw new InvalidOperationException(
-            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(CreatedUser)));
+        get => GetFieldOrThrowIfNull(_createdUser);
         set => _createdUser = value;
     }
 
     [BackingField(nameof(_introducer))]
     public Customer Introducer
     {
-        get => _introducer ?? throw new InvalidOperationException(
-            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(Introducer)));
+        get => GetFieldOrThrowIfNull(_introducer);
         set => _introducer = value;
     }
 
@@ -152,20 +177,21 @@ internal class Customer : IUpsertableEntity<Customer>
     public List<Order> Orders { get; private set; } = new();
     public List<Treatment> Treatments { get; private set; } = new();
     public List<Consultant> Consultants { get; private set; } = new();
-    public List<DebtIncurrence> DebtIncurrences { get; private set; } = new();
-    public List<DebtPayment> DebtPayments { get; private set; } = new();
+    public List<Debt> Debts { get; private set; } = new();
     #endregion
 
     #region ComputedProperties
     [NotMapped]
-    public long DebtIncurredAmount => DebtIncurrences
-        .Where(di => !di.IsDeleted)
-        .Sum(di => di.Amount);
+    public IEnumerable<Debt> DebtIncurrences => Debts.Where(d => d.Type == DebtType.Incurrence);
 
     [NotMapped]
-    public long DebtPaidAmount => DebtPayments
-        .Where(dp => !dp.IsDeleted)
-        .Sum(dp => dp.Amount);
+    public IEnumerable<Debt> DebtPayments => Debts.Where(d => d.Type == DebtType.Payment);
+
+    [NotMapped]
+    public long DebtIncurredAmount => DebtIncurrences.Sum(d => d.Amount);
+
+    [NotMapped]
+    public long DebtPaidAmount => DebtPayments.Sum(d => d.Amount);
 
     [NotMapped]
     public long DebtAmount => DebtIncurredAmount - DebtPaidAmount;
@@ -187,15 +213,25 @@ internal class Customer : IUpsertableEntity<Customer>
     public static void ConfigureModel(EntityTypeBuilder<Customer> entityBuilder)
     {
         entityBuilder.HasKey(c => c.Id);
-        entityBuilder.HasOne(c => c.Introducer)
+        entityBuilder
+            .HasOne(c => c.Introducer)
             .WithMany(i => i.IntroducedCustomers)
             .HasForeignKey(c => c.IntroducerId)
-            .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder.HasOne(c => c.CreatedUser)
+            .HasConstraintName("FK__customers__customers__introducer_id")
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired();
+        entityBuilder
+            .HasOne(c => c.CreatedUser)
             .WithMany(u => u.CreatedCustomers)
             .HasForeignKey(c => c.CreatedUserId)
-            .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder.Property(c => c.RowVersion)
+            .HasConstraintName("FK__customers__users__created_user_id")
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired();
+        entityBuilder
+            .HasIndex(c => c.IsDeleted)
+            .HasDatabaseName("IX__customers__is_deleted");
+        entityBuilder
+            .Property(c => c.RowVersion)
             .IsRowVersion();
     }
     #endregion

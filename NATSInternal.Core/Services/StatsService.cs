@@ -26,7 +26,7 @@ internal class StatsService : IStatsService
             MonthlyStatsRequestDto requestDto)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        MonthlyStats monthlyStats = await context.MonthlyStats
+        MonthlySummary monthlyStats = await context.MonthlyStats
             .Include(ms => ms.DailyStats)
             .Where(ms =>
                 ms.RecordedYear == requestDto.RecordedYear &&
@@ -56,7 +56,7 @@ internal class StatsService : IStatsService
             {
                 if (!recordedDays.Contains(day))
                 {
-                    monthlyStats.DailyStats.Add(new DailyStats
+                    monthlyStats.DailyStats.Add(new DailySummary
                     {
                         RecordedDate = new DateOnly(
                             requestDto.RecordedYear,
@@ -74,16 +74,16 @@ internal class StatsService : IStatsService
         else
         {
             // Generate an empty stats when the stats with the sppecified date doesn't exist.
-            monthlyStats = new MonthlyStats
+            monthlyStats = new MonthlySummary
             {
-                DailyStats = new List<DailyStats>(),
+                DailyStats = new List<DailySummary>(),
                 RecordedMonth = requestDto.RecordedMonth,
                 RecordedYear = requestDto.RecordedYear
             };
 
             for (int day = 1; day <= daysInMonth; day++)
             {
-                DailyStats dailyStats = new DailyStats
+                DailySummary dailyStats = new DailySummary
                 {
                     RecordedDate = new DateOnly(
                         requestDto.RecordedYear,
@@ -105,10 +105,10 @@ internal class StatsService : IStatsService
 
         DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
         DateOnly date = recordedDate ?? DateOnly.FromDateTime(currentDateTime);
-        DailyStats dailyStats = await context.DailyStats
+        DailySummary dailyStats = await context.DailyStats
             .Where(d => d.RecordedDate == date)
             .SingleOrDefaultAsync()
-            ?? new DailyStats { RecordedDate = date };
+            ?? new DailySummary { RecordedDate = date };
 
         return new DailyStatsDetailResponseDto(dailyStats);
     }
@@ -135,14 +135,14 @@ internal class StatsService : IStatsService
         }
         int endingYear = monthYearSeries.Min(mys => mys.Year);
 
-        List<MonthlyStats> monthlyStatsList = await context.MonthlyStats
+        List<MonthlySummary> monthlyStatsList = await context.MonthlyStats
             .OrderByDescending(ms => ms.RecordedYear).ThenByDescending(ms => ms.RecordedMonth)
             .Where(ms => ms.RecordedYear >= endingYear)
             .ToListAsync();
 
         return monthYearSeries.Select(mys =>
         {
-            MonthlyStats stats = monthlyStatsList.SingleOrDefault(ms =>
+            MonthlySummary stats = monthlyStatsList.SingleOrDefault(ms =>
                 ms.RecordedMonth == mys.Month &&
                 ms.RecordedYear == mys.Year);
 
@@ -176,14 +176,14 @@ internal class StatsService : IStatsService
             evaluatingDate = evaluatingDate.AddDays(-1);
         }
 
-        List<DailyStats> dailyStatsList = await context.DailyStats
+        List<DailySummary> dailyStatsList = await context.DailyStats
             .OrderByDescending(ds => ds.RecordedDate)
             .Where(ds => dateSeries.Contains(ds.RecordedDate))
             .ToListAsync();
 
         return dateSeries.Select(seriesDate =>
         {
-            DailyStats stats = dailyStatsList
+            DailySummary stats = dailyStatsList
                 .SingleOrDefault(ds => ds.RecordedDate == seriesDate);
 
             if (stats == null)
@@ -215,16 +215,16 @@ internal class StatsService : IStatsService
             evaluatingDate = evaluatingDate.AddDays(-1);
         }
 
-        List<DailyStats> dailyStatsList = await context.DailyStats
+        List<DailySummary> dailyStatsList = await context.DailyStats
             .OrderByDescending(ds => ds.RecordedDate)
             .Where(ds => dateSeries.Contains(ds.RecordedDate))
             .ToListAsync();
 
         return dateSeries.Select(seriesDate =>
         {
-            DailyStats stats = dailyStatsList
+            DailySummary stats = dailyStatsList
                 .SingleOrDefault(ds => ds.RecordedDate == seriesDate)
-                ?? new DailyStats { RecordedDate = seriesDate };
+                ?? new DailySummary { RecordedDate = seriesDate };
 
             return new DailyStatsDetailResponseDto(stats);
         }).ToList();
@@ -517,7 +517,7 @@ internal class StatsService : IStatsService
             .Take(requestDto.Count)
             .ToListAsync();
 
-        Task<List<DebtIncurrence>> debtIncurrencesTask = debtIncurrenceContext.DebtIncurrences
+        Task<List<Debt>> debtIncurrencesTask = debtIncurrenceContext.DebtIncurrences
             .OrderByDescending(debtIncurrence => debtIncurrence.StatsDateTime)
             .Take(requestDto.Count)
             .ToListAsync();

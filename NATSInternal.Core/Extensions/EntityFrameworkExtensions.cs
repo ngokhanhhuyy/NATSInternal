@@ -2,9 +2,16 @@
 
 internal static class EntityFrameworkExtensions
 {
-    internal static ModelBuilder ConfigureEntity<T>(this ModelBuilder modelBuilder)
-        where T : class, IEntity<T>, new()
+    #region ExtensionMethods
+    public static PropertyBuilder<TData> HasJsonConversion<TData>(
+            this PropertyBuilder<TData> propertyBuilder,
+            JsonSerializerOptions serializerOptions)
+        where TData : class
     {
-        return modelBuilder.Entity<T>(T.ConfigureModel);
+        return propertyBuilder.HasConversion(
+            data => JsonSerializer.Serialize(data, serializerOptions),
+            json => JsonSerializer.Deserialize<TData>(json, serializerOptions)!
+        );
     }
+    #endregion
 }

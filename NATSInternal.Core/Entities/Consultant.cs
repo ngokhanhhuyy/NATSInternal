@@ -1,9 +1,10 @@
 namespace NATSInternal.Core.Entities;
 
+[Table("consultants")]
 internal class Consultant
     :
-        HasStatsAbstractEntity,
-        IRevenueEntity<Consultant, ConsultantUpdateHistory>
+        AbstractHasStatsEntity<Consultant>,
+        IRevenueEntity<Consultant, ConsultantUpdateHistory, ConsultantUpdateHistoryData>
 {
     #region Fields
     private Customer? _customer;
@@ -11,49 +12,69 @@ internal class Consultant
     #endregion
 
     #region Properties
+    [Column("id")]
     [Key]
     public Guid Id { get; private set; } = Guid.NewGuid();
 
+    [Column("stats_datetime")]
     [Required]
     public DateTime StatsDateTime { get; set; }
 
+    [Column("amount_before_vat")]
     [Required]
     public long AmountBeforeVat { get; set; }
 
+    [Column("vat_amount")]
     [Required]
     public long VatAmount { get; set; }
 
-    [StringLength(ConsultantContracts.NoteMaxLength)]
+    [Column("note")]
+    [StringLength(OrderContracts.NoteMaxLength)]
     public string? Note { get; set; }
 
+    [Column("is_deleted")]
     [Required]
     public bool IsDeleted { get; set; }
     #endregion
 
     #region ForeignKeyProperties
+    [Column("customer_id")]
     [Required]
     public required Guid CustomerId { get; set; }
 
+    [Column("created_user_id")]
     [Required]
-    public int CreatedUserId { get; set; }
+    public Guid CreatedUserId { get; set; }
+    #endregion
+
+    #region ConcurrencyOperationTrackingProperties
+    [Column("row_version")]
+    public byte[]? RowVersion { get; set; }
     #endregion
 
     #region NavigationProperties
-    [BackingField(nameof(Customer))]
+    [BackingField(nameof(_customer))]
     public Customer Customer
     {
-        get => _customer ?? throw new InvalidOperationException(
-            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(Customer)));
-        set => _customer = value;
+        get => GetFieldOrThrowIfNull(_customer);
+        set
+        {
+            CustomerId = value.Id;
+            _customer = value;
+        }
     }
 
+    [BackingField(nameof(_createdUser))]
     public User CreatedUser
     {
-        get => _createdUser ?? throw new InvalidOperationException(
-            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(CreatedUser)));
-        set => _createdUser = value;
+        get => GetFieldOrThrowIfNull(_createdUser);
+        set
+        {
+            CreatedUserId = value.Id;
+            _createdUser = value;
+        }
     }
-    
+
     public List<ConsultantUpdateHistory> UpdateHistories { get; private set; } = new();
     #endregion
 
@@ -75,16 +96,26 @@ internal class Consultant
     public static void ConfigureModel(EntityTypeBuilder<Consultant> entityBuilder)
     {
         entityBuilder.HasKey(c => c.Id);
-        entityBuilder.HasOne(cst => cst.Customer)
+        entityBuilder
+            .HasOne(cst => cst.Customer)
             .WithMany(ctm => ctm.Consultants)
             .HasForeignKey(cst => cst.CustomerId)
-            .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder.HasOne(cst => cst.CreatedUser)
+            .HasConstraintName("FK__consultants__customers__customer_id")
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired();
+        entityBuilder
+            .HasOne(cst => cst.CreatedUser)
             .WithMany(u => u.Consultants)
             .HasForeignKey(cst => cst.CreatedUserId)
-            .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder.HasIndex(cst => cst.StatsDateTime);
-        entityBuilder.HasIndex(cst => cst.IsDeleted);
+            .HasConstraintName("FK__consultants__users__created_user_id")
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired();
+        entityBuilder
+            .HasIndex(cst => cst.StatsDateTime)
+            .HasDatabaseName("IX__consultants__stats_datetime");
+        entityBuilder
+            .HasIndex(cst => cst.IsDeleted)
+            .HasDatabaseName("IX__consultants__is_deleted");
     }
     #endregion
 }

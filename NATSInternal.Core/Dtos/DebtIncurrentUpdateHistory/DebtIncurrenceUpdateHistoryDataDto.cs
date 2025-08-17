@@ -8,7 +8,7 @@ public class DebtIncurrenceUpdateHistoryDataDto
 
     public DebtIncurrenceUpdateHistoryDataDto() { }
     
-    internal DebtIncurrenceUpdateHistoryDataDto(DebtIncurrence debtIncurrence)
+    internal DebtIncurrenceUpdateHistoryDataDto(Debt debtIncurrence)
     {
         Amount = debtIncurrence.Amount;
         Note = debtIncurrence.Note;

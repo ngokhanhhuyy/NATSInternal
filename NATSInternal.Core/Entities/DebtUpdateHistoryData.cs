@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Entities;
 
-internal class DebtIncurrenceUpdateHistoryData
+internal class DebtUpdateHistoryData
 {
     #region Properties
     public required long Amount { get; set; }

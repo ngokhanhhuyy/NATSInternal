@@ -30,7 +30,7 @@ public class MonthlyStatsDetailResponseDto : IStatsDetailResponseDto
 
     internal MonthlyStatsDetailResponseDto() { }
 
-    internal MonthlyStatsDetailResponseDto(MonthlyStats monthlyStats)
+    internal MonthlyStatsDetailResponseDto(MonthlySummary monthlyStats)
     {
         RetailGrossRevenue = monthlyStats.RetailGrossRevenue;
         TreatmentGrossRevenue = monthlyStats.TreatmentGrossRevenue;
@@ -52,7 +52,7 @@ public class MonthlyStatsDetailResponseDto : IStatsDetailResponseDto
         GrossProfit = monthlyStats.GrossProfit;
         NetProfit = monthlyStats.NetProfit;
         OperatingProfit = monthlyStats.OperatingProfit;
-        NewCustomers = monthlyStats.NewCustomers;
+        NewCustomers = monthlyStats.NewCustomerCount;
         TemporarilyClosedDateTime = monthlyStats.TemporarilyClosedDateTime;
         OfficiallyClosedDateTime = monthlyStats.OfficiallyClosedDateTime;
         RecordedYear = monthlyStats.RecordedYear;

@@ -1,6 +1,8 @@
 namespace NATSInternal.Core.Contracts;
 
-public static class DebtIncurrenceContracts
+internal static class DebtPaymentContracts
 {
+    #region Constants
     public const int NoteMaxLength = 5000;
+    #endregion
 }

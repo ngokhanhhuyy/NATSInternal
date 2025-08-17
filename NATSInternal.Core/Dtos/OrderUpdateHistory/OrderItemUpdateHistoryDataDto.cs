@@ -13,7 +13,7 @@ public class OrderItemUpdateHistoryDataDto : IProductExportableItemUpdateHistory
     internal OrderItemUpdateHistoryDataDto(OrderItem item)
     {
         Id = item.Id;
-        ProductAmountPerUnit = item.ProductAmountPerUnit;
+        ProductAmountPerUnit = item.AmountBeforeVatPerUnit;
         VatAmountPerUnit = item.VatAmountPerUnit;
         Quantity = item.Quantity;
         ProductName = item.Product.Name;

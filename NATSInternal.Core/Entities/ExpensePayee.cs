@@ -1,27 +1,39 @@
 namespace NATSInternal.Core.Entities;
 
-internal class ExpensePayee : IIdentifiableEntity<ExpensePayee>
+[Table("expense_payees")]
+internal class ExpensePayee : IHasIdEntity<ExpensePayee>
 {
+    #region Properties
+    [Column("id")]
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; private set; } = Guid.NewGuid();
 
+    [Column("name")]
     [Required]
-    [StringLength(100)]
-    public string Name { get; set; }
+    [StringLength(ExpensePayeeContracts.NameMaxLength)]
+    public required string Name { get; set; }
+    #endregion
 
-    // Concurrency operation tracking field
+    #region ConcurrencyOperationTrackingProperties
+    [Column("row_version")]
     [Timestamp]
-    public byte[] RowVersion { get; set; }
+    public byte[]? RowVersion { get; set; }
+    #endregion
 
-    // Navigation properties
-    public virtual List<Expense> Expenses { get; set; }
+    #region NavigationProperties
+    public List<Expense> Expenses { get; private set; } = new();
+    #endregion
 
-    // Model configurations.
+    #region StaticMethods
     public static void ConfigureModel(EntityTypeBuilder<ExpensePayee> entityBuilder)
     {
-        entityBuilder.HasIndex(ep => ep.Name)
+        entityBuilder
+            .HasIndex(ep => ep.Name)
+            .HasDatabaseName("IX__expense_payees__name")
             .IsUnique();
-        entityBuilder.Property(c => c.RowVersion)
+        entityBuilder
+            .Property(c => c.RowVersion)
             .IsRowVersion();
     }
+    #endregion
 }

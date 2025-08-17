@@ -4,7 +4,7 @@ internal class OrderService
     : ExportProductAbstractService<
         Order,
         OrderItem,
-        OrderPhoto,
+        Photo,
         OrderUpdateHistory,
         OrderListRequestDto,
         OrderUpsertRequestDto,
@@ -26,7 +26,7 @@ internal class OrderService
     public OrderService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IMultiplePhotosService<Order, OrderPhoto> photoService,
+            IMultiplePhotosService<Order, Photo> photoService,
             IStatsInternalService statsService)
         : base(context, authorizationService, photoService, statsService)
     {

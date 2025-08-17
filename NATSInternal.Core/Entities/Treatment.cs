@@ -2,7 +2,7 @@ namespace NATSInternal.Core.Entities;
 
 internal class Treatment
     :
-        HasStatsAbstractEntity,
+        AbstractHasStatsEntity,
         IExportProductEntity<
             Treatment,
             TreatmentItem,

@@ -1,66 +1,89 @@
 ﻿namespace NATSInternal.Core.Entities;
 
-internal class MonthlyStats : IIdentifiableEntity<MonthlyStats>
+[Table("monthly_summaries")]
+internal class MonthlySummary : IHasIdEntity<MonthlySummary>
 {
+    #region Properties
+    [Column("id")]
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; private set; } = Guid.NewGuid();
 
+    [Column("retail_gross_revenue")]
     [Required]
     public long RetailGrossRevenue { get; set; }
 
+    [Column("treatment_gross_revenue")]
     [Required]
     public long TreatmentGrossRevenue { get; set; }
 
+    [Column("consultant_gross_revenue")]
     [Required]
     public long ConsultantGrossRevenue { get; set; }
 
+    [Column("vat_collected_amount")]
     [Required]
     public long VatCollectedAmount { get; set; }
 
+    [Column("debt_incurred_amount")]
     [Required]
     public long DebtIncurredAmount { get; set; }
 
+    [Column("debt_paid_amount")]
     [Required]
     public long DebtPaidAmount { get; set; }
 
+    [Column("shipment_cost")]
     [Required]
     public long ShipmentCost { get; set; }
 
+    [Column("supply_cost")]
     [Required]
     public long SupplyCost { get; set; }
 
+    [Column("utilities_expenses")]
     [Required]
     public long UtilitiesExpenses { get; set; }
 
+    [Column("equipment_expenses")]
     [Required]
     public long EquipmentExpenses { get; set; }
 
+    [Column("office_expense")]
     [Required]
     public long OfficeExpense { get; set; }
 
+    [Column("staff_expense")]
     [Required]
     public long StaffExpense { get; set; }
-    
-    [Required]
-    public int NewCustomers { get; set; }
 
+    [Column("new_customer_count")]
+    [Required]
+    public int NewCustomerCount { get; set; }
+
+    [Column("record_month")]
     [Required]
     public int RecordedMonth { get; set; }
 
+    [Column("recorded_year")]
     [Required]
     public int RecordedYear { get; set; }
 
+    [Column("created_datetime")]
     [Required]
     public DateTime CreatedDateTime { get; set; }
 
+    [Column("temporarily_closed_datetime")]
     public DateTime? TemporarilyClosedDateTime { get; set; }
 
+    [Column("officially_closed_datetime")]
     public DateTime? OfficiallyClosedDateTime { get; set; }
+    #endregion
 
-    // Navigation properties.
-    public virtual List<DailyStats> DailyStats { get; set; }
+    #region NavigationProperties
+    public List<DailySummary> DailyStats { get; private set; } = new();
+    #endregion
 
-    // Properties for convinience.
+    #region ComputedProperties
     [NotMapped]
     public long Cost => SupplyCost + ShipmentCost;
 
@@ -72,7 +95,7 @@ internal class MonthlyStats : IIdentifiableEntity<MonthlyStats>
 
     [NotMapped]
     public long NetRevenue => GrossRevenue - DebtAmount;
-    
+
     [NotMapped]
     public long DebtAmount => DebtIncurredAmount - DebtPaidAmount;
 
@@ -90,12 +113,16 @@ internal class MonthlyStats : IIdentifiableEntity<MonthlyStats>
 
     [NotMapped]
     public bool IsOfficiallyClosed => OfficiallyClosedDateTime.HasValue;
-    
-    // Model configurations.
-    public static void ConfigureModel(EntityTypeBuilder<MonthlyStats> entityBuilder)
+    #endregion
+
+    #region StaticMethods
+    public static void ConfigureModel(EntityTypeBuilder<MonthlySummary> entityBuilder)
     {
         entityBuilder.HasKey(ms => ms.Id);
-        entityBuilder.HasIndex(dfs => new { dfs.RecordedMonth, dfs.RecordedYear })
+        entityBuilder
+            .HasIndex(dfs => new { dfs.RecordedMonth, dfs.RecordedYear })
+            .HasDatabaseName("IX__monthly_summaries__recorded_month__recorded_year")
             .IsUnique();
     }
+    #endregion
 }

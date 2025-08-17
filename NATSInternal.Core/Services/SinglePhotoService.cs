@@ -210,7 +210,7 @@ internal class MultiplePhotosService<T, TPhoto>
     :
         SinglePhotoService<T>,
         IMultiplePhotosService<T, TPhoto>
-    where T : class, IHasMultiplePhotosEntity<T, TPhoto>, new()
+    where T : class, IHasPhotosEntity<T, TPhoto>, new()
     where TPhoto : class, IPhotoEntity<TPhoto>, new()
 {
     public MultiplePhotosService(IWebHostEnvironment environment) : base(environment)

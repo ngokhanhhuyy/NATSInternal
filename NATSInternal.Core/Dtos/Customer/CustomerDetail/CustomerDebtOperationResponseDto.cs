@@ -10,7 +10,7 @@ public class CustomerDebtOperationResponseDto
     public CustomerDebtOperationAuthorizationResponseDto Authorization { get; set; }
     
     internal CustomerDebtOperationResponseDto(
-            DebtIncurrence debtIncurrence,
+            Debt debtIncurrence,
             DebtIncurrenceExistingAuthorizationResponseDto authorization)
     {
         Id = debtIncurrence.Id;

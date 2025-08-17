@@ -1,64 +1,65 @@
 ﻿namespace NATSInternal.Core.Entities;
 
-internal class Announcement : IUpsertableEntity<Announcement>
+[Table("announcements")]
+internal class Announcement : AbstractEntity<Announcement>, IUpsertableEntity<Announcement>
 {
     #region Fields
     private User? _createdUser;
     #endregion
 
     #region Properties
+    [Column("id")]
     [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
 
+    [Column("category")]
     [Required]
     public AnnouncementCategory Category { get; set; } = AnnouncementCategory.Announcement;
 
+    [Column("title")]
     [Required]
     [StringLength(AnnouncementContracts.TitleMaxLength)]
     public required string Title { get; set; }
 
+    [Column("content")]
     [Required]
     [StringLength(AnnouncementContracts.ContentMaxLength)]
     public required string Content { get; set; }
 
+    [Column("starting_datetime")]
     [Required]
     public DateTime StartingDateTime { get; set; }
 
+    [Column("ending_datetime")]
     [Required]
     public DateTime EndingDateTime { get; set; }
 
+    [Column("created_datetime")]
     [Required]
     public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
     #endregion
 
     #region ForeignKeyProperties
+    [Column("created_user_id")]
     public Guid CreatedUserId { get; set; }
     #endregion
 
     #region ConcurrencyOperationTrackingField
+    [Column("row_version")]
     [Timestamp]
     public byte[]? RowVersion { get; set; }
     #endregion
 
     #region NavigationProperties
+    [BackingField(nameof(_createdUser))]
     public User CreatedUser
     {
-        get => _createdUser ?? throw new InvalidOperationException(
-            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(CreatedUser)));
-        set => _createdUser = value;
-    }
-    #endregion
-
-    #region StaticMethods
-    public static void ConfigureModel(EntityTypeBuilder<Announcement> entity)
-    {
-        entity.HasKey(a => a.Id);
-        entity.HasOne(a => a.CreatedUser)
-            .WithMany(u => u.CreatedAnnouncements)
-            .HasForeignKey(a => a.CreatedUserId)
-            .OnDelete(DeleteBehavior.Cascade)
-            .IsRequired();
-        entity.Property(c => c.RowVersion).IsRowVersion();
+        get => GetFieldOrThrowIfNull(_createdUser);
+        set
+        {
+            CreatedUserId = value.Id;
+            _createdUser = value;
+        }
     }
     #endregion
 }

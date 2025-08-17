@@ -39,8 +39,8 @@ internal class User : IHasSinglePhotoEntity<User>
     public List<ConsultantUpdateHistory> ConsultantUpdateHistories { get; private set; } = new();
     public List<Expense> Expenses { get; private set; } = new();
     public List<ExpenseUpdateHistory> ExpenseUpdateHistories { get; private set; } = new();
-    public List<DebtIncurrence> Debts { get; private set; } = new();
-    public List<DebtIncurrenceUpdateHistory> DebtUpdateHistories { get; private set; } = new();
+    public List<Debt> Debts { get; private set; } = new();
+    public List<DebtUpdateHistory> DebtUpdateHistories { get; private set; } = new();
     public List<DebtPayment> DebtPayments { get; private set; } = new();
     public List<DebtPaymentUpdateHistory> DebtPaymentUpdateHistories { get; private set; } = new();
     public List<Announcement> CreatedAnnouncements { get; private set; } = new();
@@ -74,8 +74,8 @@ internal class User : IHasSinglePhotoEntity<User>
         .ToList();
 
     [NotMapped]
-    public List<DebtIncurrence> UpdatedDebts => DebtUpdateHistories
-        .Select(duh => duh.DebtIncurrence)
+    public List<Debt> UpdatedDebts => DebtUpdateHistories
+        .Select(duh => duh.Debt)
         .ToList();
 
     [NotMapped]

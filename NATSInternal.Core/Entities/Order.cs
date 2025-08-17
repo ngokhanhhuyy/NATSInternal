@@ -1,48 +1,80 @@
 namespace NATSInternal.Core.Entities;
 
-internal class Order
-    :   HasStatsAbstractEntity,
-        IExportProductEntity<Order, OrderItem, OrderPhoto, OrderUpdateHistory>
+[Table("orders")]
+internal class Order : AbstractHasStatsEntity<Order>
 {
-    [Key]
-    public int Id { get; set; }
+    #region Fields
+    private User? _createdUser;
+    private Customer? _customer;
+    #endregion
 
+    #region Properties
+    [Column("type")]
     [Required]
-    public DateTime StatsDateTime { get; set; }
+    public OrderType Type { get; set; }
 
-    [StringLength(255)]
-    public string Note { get; set; }
+    [Column("note")]
+    [StringLength(OrderContracts.NoteMaxLength)]
+    public string? Note { get; set; }
 
+    [Column("is_deleted")]
     [Required]
     public bool IsDeleted { get; set; }
+    #endregion
 
-    // Foreign keys
+    #region ForeignKeyProperties
+    [Column("customer_id")]
     [Required]
-    public int CustomerId { get; set; }
+    public Guid CustomerId { get; set; }
 
+    [Column("created_user_id")]
     [Required]
-    public int CreatedUserId { get; set; }
+    public Guid CreatedUserId { get; set; }
+    #endregion
 
-    // Concurrency operation tracking field
+    #region ConcurrencyOperationTrackingProperties
+    [Column("row_version")]
     [Timestamp]
-    public byte[] RowVersion { get; set; }
+    public byte[]? RowVersion { get; set; }
+    #endregion
 
-    // Relationships
-    public virtual User CreatedUser { get; set; }
-    public virtual Customer Customer { get; set; }
-    public virtual List<OrderItem> Items { get; set; }
-    public virtual List<OrderPhoto> Photos { get; set; }
-    public virtual List<OrderUpdateHistory> UpdateHistories { get; set; }
+    #region NavigationProperties
+    [BackingField(nameof(_createdUser))]
+    public User CreatedUser
+    {
+        get => GetFieldOrThrowIfNull(_createdUser);
+        set
+        {
+            CreatedUserId = value.Id;
+            _createdUser = value;
+        }
+    }
 
-    // Property for convinience.
+    [BackingField(nameof(_customer))]
+    public Customer Customer
+    {
+        get => GetFieldOrThrowIfNull(_customer);
+        set
+        {
+            CustomerId = value.Id;
+            _customer = value;
+        }
+    }
+
+    public List<OrderItem> Items { get; private set; } = new();
+    public List<Photo> Photos { get; private set; } = new();
+    public List<OrderUpdateHistory> UpdateHistories { get; private set; } = new();
+    #endregion
+
+    #region ComputedProperties
     [NotMapped]
-    public string ThumbnailUrl => Photos?
+    public string? ThumbnailUrl => Photos
         .OrderBy(p => p.Id)
         .Select(p => p.Url)
         .FirstOrDefault();
 
     [NotMapped]
-    public long ProductAmountBeforeVat => Items.Sum(i => i.ProductAmountPerUnit * i.Quantity);
+    public long ProductAmountBeforeVat => Items.Sum(i => i.AmountBeforeVatPerUnit * i.Quantity);
 
     [NotMapped]
     public long ProductVatAmount => Items.Sum(i => i.VatAmountPerUnit * i.Quantity);
@@ -63,38 +95,40 @@ internal class Order
         .LastOrDefault();
 
     [NotMapped]
-    public User LastUpdatedUser => UpdateHistories
+    public User? LastUpdatedUser => UpdateHistories
         .OrderBy(uh => uh.UpdatedDateTime)
         .Select(uh => uh.UpdatedUser)
         .LastOrDefault();
 
     [NotMapped]
-    public static Expression<Func<Order, long>> AmountAfterVatExpression
-    {
-        get
-        {
-            return (Order o) => o.Items.Sum(
-                oi => (oi.ProductAmountPerUnit + oi.VatAmountPerUnit) * oi.Quantity);
-        }
-    }
+    public static Expression<Func<Order, long>> AmountAfterVatExpression => (order) =>
+        order.Items.Sum(oi => (oi.AmountBeforeVatPerUnit + oi.VatAmountPerUnit) * oi.Quantity);
+    #endregion
 
-    // Model configurations.
+    #region StaticMethods
     public static void ConfigureModel(EntityTypeBuilder<Order> entityBuilder)
     {
         entityBuilder.HasKey(o => o.Id);
-        entityBuilder.HasOne(o => o.Customer)
+        entityBuilder
+            .HasOne(o => o.Customer)
             .WithMany(c => c.Orders)
             .HasForeignKey(o => o.CustomerId)
             .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder.HasOne(o => o.CreatedUser)
+        entityBuilder
+            .HasOne(o => o.CreatedUser)
             .WithMany(u => u.Orders)
             .HasForeignKey(o => o.CreatedUserId)
             .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder.HasIndex(o => o.StatsDateTime);
-        entityBuilder.HasIndex(o => o.IsDeleted);
-        entityBuilder.Property(c => c.RowVersion)
+        entityBuilder
+            .HasIndex(o => o.StatsDateTime);
+        entityBuilder
+            .HasIndex(o => o.IsDeleted);
+        entityBuilder
+            .Property(c => c.RowVersion)
             .IsRowVersion();
-        entityBuilder.Property(c => c.RowVersion)
+        entityBuilder
+            .Property(c => c.RowVersion)
             .IsRowVersion();
     }
+    #endregion
 }

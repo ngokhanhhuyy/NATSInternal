@@ -38,7 +38,7 @@ internal class StatsInternalService : StatsService, IStatsInternalService
     public async Task IncrementRetailGrossRevenueAsync(long value, DateOnly? date = null)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.RetailGrossRevenue += value;
         dailyStats.Monthly.RetailGrossRevenue += value;
         await context.SaveChangesAsync();
@@ -48,7 +48,7 @@ internal class StatsInternalService : StatsService, IStatsInternalService
     public async Task IncrementTreatmentGrossRevenueAsync(long value, DateOnly? date = null)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.TreatmentGrossRevenue += value;
         dailyStats.Monthly.TreatmentGrossRevenue += value;
         await context.SaveChangesAsync();
@@ -58,7 +58,7 @@ internal class StatsInternalService : StatsService, IStatsInternalService
     public async Task IncrementConsultantGrossRevenueAsync(long value, DateOnly? date = null)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.ConsultantGrossRevenue += value;
         dailyStats.Monthly.ConsultantGrossRevenue += value;
         await context.SaveChangesAsync();
@@ -68,7 +68,7 @@ internal class StatsInternalService : StatsService, IStatsInternalService
     public async Task IncrementDebtIncurredAmountAsync(long value, DateOnly? date = null)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.DebtIncurredAmount += value;
         dailyStats.Monthly.DebtIncurredAmount += value;
         await context.SaveChangesAsync();
@@ -78,7 +78,7 @@ internal class StatsInternalService : StatsService, IStatsInternalService
     public async Task IncrementDebtPaidAmountAsync(long value, DateOnly? date = null)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.DebtPaidAmount += value;
         dailyStats.Monthly.DebtPaidAmount += value;
         await context.SaveChangesAsync();
@@ -88,7 +88,7 @@ internal class StatsInternalService : StatsService, IStatsInternalService
     public async Task IncrementVatCollectedAmountAsync(long amount, DateOnly? date = null)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.VatCollectedAmount += amount;
         dailyStats.Monthly.VatCollectedAmount += amount;
         await context.SaveChangesAsync();
@@ -98,7 +98,7 @@ internal class StatsInternalService : StatsService, IStatsInternalService
     public async Task IncrementShipmentCostAsync(long value, DateOnly? date = null)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.ShipmentCost += value;
         dailyStats.Monthly.ShipmentCost += value;
         await context.SaveChangesAsync();
@@ -108,7 +108,7 @@ internal class StatsInternalService : StatsService, IStatsInternalService
     public async Task IncrementSupplyCostAsync(long value, DateOnly? date = null)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.SupplyCost += value;
         dailyStats.Monthly.SupplyCost += value;
         await context.SaveChangesAsync();
@@ -121,7 +121,7 @@ internal class StatsInternalService : StatsService, IStatsInternalService
             DateOnly? date = null)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
         switch (category)
         {
             case ExpenseCategory.Equipment:
@@ -152,9 +152,9 @@ internal class StatsInternalService : StatsService, IStatsInternalService
     public async Task IncrementNewCustomerAsync(int value = 1, DateOnly? date = null)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
-        dailyStats.NewCustomers += value;
-        dailyStats.Monthly.NewCustomers += value;
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        dailyStats.NewCustomerCount += value;
+        dailyStats.Monthly.NewCustomerCount += value;
         await context.SaveChangesAsync();
     }
 
@@ -162,7 +162,7 @@ internal class StatsInternalService : StatsService, IStatsInternalService
     public async Task TemporarilyCloseAsync(DateOnly date)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailyStats dailyStats = await FetchStatisticsEntitiesAsync(date);
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
         dailyStats.TemporarilyClosedDateTime = DateTime.UtcNow.ToApplicationTime();
         await context.SaveChangesAsync();
     }
@@ -198,33 +198,33 @@ internal class StatsInternalService : StatsService, IStatsInternalService
     /// Optional - The date when the stats entity is recorded. If not specified,
     /// the entity will be fetched based on today's date.</param>
     /// <returns>The DailyStats entity.</returns>
-    protected async Task<DailyStats> FetchStatisticsEntitiesAsync(DateOnly? date = null)
+    protected async Task<DailySummary> FetchStatisticsEntitiesAsync(DateOnly? date = null)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         
         DateOnly dateValue = date
             ?? DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
-        DailyStats dailyStats = await context.DailyStats
+        DailySummary dailyStats = await context.DailyStats
             .Include(ds => ds.Monthly)
             .Where(ds => ds.RecordedDate == dateValue)
             .SingleOrDefaultAsync();
 
         if (dailyStats == null)
         {
-            dailyStats = new DailyStats
+            dailyStats = new DailySummary
             {
                 RecordedDate = dateValue,
                 CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),
             };
             context.DailyStats.Add(dailyStats);
 
-            MonthlyStats monthlyStats = await context.MonthlyStats
+            MonthlySummary monthlyStats = await context.MonthlyStats
                 .Where(ms => ms.RecordedYear == dateValue.Year)
                 .Where(ms => ms.RecordedMonth == dateValue.Month)
                 .SingleOrDefaultAsync();
             if (monthlyStats == null)
             {
-                monthlyStats = new MonthlyStats
+                monthlyStats = new MonthlySummary
                 {
                     RecordedMonth = dateValue.Month,
                     RecordedYear = dateValue.Year

@@ -1,48 +1,102 @@
 ﻿namespace NATSInternal.Core.Entities;
 
-internal class ExpenseUpdateHistory : IUpdateHistoryEntity<ExpenseUpdateHistory>
+[Table("expense_update_histories")]
+internal class ExpenseUpdateHistory
+    :
+        AbstractEntity,
+        IUpdateHistoryEntity<ExpenseUpdateHistory, ExpenseUpdateHistoryData>
 {
+    #region Fields
+    private Expense? _expense;
+    private User? _updatedUser;
+    #endregion
+
+    #region Properties
+    [Column("id")]
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; private set; } = Guid.NewGuid();
+
+    [Column("updated_datetime")]
+    [Required]
+    public required DateTime UpdatedDateTime { get; set; }
+
+    [Column("reason")]
+    [Required]
+    [StringLength(ExpenseUpdateHistoryContracts.ReasonMaxLength)]
+    public required string Reason { get; set; }
 
     [Required]
-    public DateTime UpdatedDateTime { get; set; }
-
-    [StringLength(255)]
-    public string Reason { get; set; }
-
-    [StringLength(1000)]
-    public string OldData { get; set; }
+    [StringLength(ExpenseUpdateHistoryContracts.DataMaxLength)]
+    public required ExpenseUpdateHistoryData OldData { get; set; }
 
     [Required]
-    [StringLength(1000)]
-    public string NewData { get; set; }
+    [StringLength(ExpenseUpdateHistoryContracts.DataMaxLength)]
+    public required ExpenseUpdateHistoryData NewData { get; set; }
+    #endregion
 
-    // Foreign keys
+    #region ForeignKeyProperties
     [Required]
-    public int ExpenseId { get; set; }
+    public Guid ExpenseId { get; set; }
 
     [Required]
-    public int UpdatedUserId { get; set; }
+    public Guid UpdatedUserId { get; set; }
+    #endregion
 
-    // Navigation properties
-    public virtual Expense Expense { get; set; }
-    public virtual User UpdatedUser { get; set; }
+    #region NavigationProperties
+    [BackingField(nameof(_expense))]
+    public Expense Expense
+    {
+        get => GetFieldOrThrowIfNull(_expense);
+        set
+        {
+            ExpenseId = value.Id;
+            _expense = value;
+        }
+    }
 
-    // Model configurations.
-    public static void ConfigureModel(EntityTypeBuilder<ExpenseUpdateHistory> entityBuilder)
+    [BackingField(nameof(_updatedUser))]
+    public User UpdatedUser
+    {
+        get => GetFieldOrThrowIfNull(_updatedUser);
+        set
+        {
+            UpdatedUserId = value.Id;
+            _updatedUser = value;
+        }
+    }
+    #endregion
+
+    #region StaticMethods
+    public static void ConfigureModel(
+            EntityTypeBuilder<ExpenseUpdateHistory> entityBuilder,
+            JsonSerializerOptions serializerOptions)
     {
         entityBuilder.HasKey(euh => euh.Id);
-        entityBuilder.HasOne(euh => euh.Expense)
+        entityBuilder
+            .HasOne(euh => euh.Expense)
             .WithMany(ex => ex.UpdateHistories)
             .HasForeignKey(euh => euh.ExpenseId)
-            .OnDelete(DeleteBehavior.Cascade);
-        entityBuilder.HasOne(euh => euh.UpdatedUser)
+            .HasConstraintName("FK__expense_update_histories__expenses__expense_id")
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+        entityBuilder
+            .HasOne(euh => euh.UpdatedUser)
             .WithMany(u => u.ExpenseUpdateHistories)
             .HasForeignKey(euh => euh.UpdatedUserId)
-            .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder.HasIndex(euh => euh.UpdatedDateTime);
-        entityBuilder.Property(euh => euh.OldData).HasColumnType("JSON");
-        entityBuilder.Property(euh => euh.NewData).HasColumnType("JSON");
+            .HasConstraintName("FK__expense_update_histories__users__updated_user_id")
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired();
+        entityBuilder
+            .HasIndex(euh => euh.UpdatedDateTime)
+            .HasDatabaseName("IX__expense_update_histories__updated_datetime");
+        entityBuilder
+            .Property(euh => euh.OldData)
+            .HasColumnType("JSON")
+            .HasJsonConversion(serializerOptions);
+        entityBuilder
+            .Property(euh => euh.NewData)
+            .HasColumnType("JSON")
+            .HasJsonConversion(serializerOptions);
     }
+    #endregion
 }

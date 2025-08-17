@@ -816,7 +816,7 @@ internal sealed class DataSeedingService
                 Name = name,
                 Description = ValueOrNull(description),
                 Unit = units.Skip(random.Next(units.Length)).Take(1).Single(),
-                DefaultPrice = random.Next(25, 95) * 1000,
+                DefaultAmountBeforeVatPerUnit = random.Next(25, 95) * 1000,
                 DefaultVatPercentage = 10,
                 IsForRetail = random.Next(10) < 7,
                 IsDiscontinued = false,
@@ -904,9 +904,9 @@ internal sealed class DataSeedingService
         customerIds.Add(customer.Id);
 
         // Generating stats data.
-        DailyStats dailyStats = await SelectOrSeedDailyStatsAsync(createdDateTime);
-        dailyStats.NewCustomers += 1;
-        dailyStats.Monthly.NewCustomers += 1;
+        DailySummary dailyStats = await SelectOrSeedDailyStatsAsync(createdDateTime);
+        dailyStats.NewCustomerCount += 1;
+        dailyStats.Monthly.NewCustomerCount += 1;
 
         if (logResult)
         {
@@ -916,11 +916,11 @@ internal sealed class DataSeedingService
         return customer.Id;
     }
 
-    private async Task<DailyStats> SelectOrSeedDailyStatsAsync(DateTime statsDateTime)
+    private async Task<DailySummary> SelectOrSeedDailyStatsAsync(DateTime statsDateTime)
     {
         DateOnly statsDate = DateOnly.FromDateTime(statsDateTime);
 
-        DailyStats dailyStats = await _context.DailyStats
+        DailySummary dailyStats = await _context.DailyStats
             .Include(ds => ds.Monthly)
             .SingleOrDefaultAsync(ds => ds.RecordedDate == statsDate);
 
@@ -929,24 +929,24 @@ internal sealed class DataSeedingService
             return dailyStats;
         }
 
-        MonthlyStats monthlyStats = await _context.MonthlyStats
+        MonthlySummary monthlyStats = await _context.MonthlyStats
             .SingleOrDefaultAsync(ms =>
                 ms.RecordedMonth == statsDate.Month &&
                 ms.RecordedYear == statsDate.Year);
 
         if (monthlyStats is null)
         {
-            monthlyStats = new MonthlyStats
+            monthlyStats = new MonthlySummary
             {
                 CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),
                 RecordedMonth = statsDate.Month,
                 RecordedYear = statsDate.Year,
-                DailyStats = new List<DailyStats>()
+                DailyStats = new List<DailySummary>()
             };
             _context.MonthlyStats.Add(monthlyStats);
         }
 
-        dailyStats = new DailyStats
+        dailyStats = new DailySummary
         {
             RecordedDate = statsDate,
             CreatedDateTime = DateTime.UtcNow.ToApplicationTime()
@@ -1130,7 +1130,7 @@ internal sealed class DataSeedingService
                 SupplyItem item = new SupplyItem
                 {
                     ProductAmountPerUnit = (int)Math
-                        .Round(product.DefaultPrice - product.DefaultPrice * 0.35),
+                        .Round(product.DefaultAmountBeforeVatPerUnit - product.DefaultAmountBeforeVatPerUnit * 0.35),
                     Quantity = 100 - product.StockingQuantity,
                     ProductId = product.Id,
                 };
@@ -1156,7 +1156,7 @@ internal sealed class DataSeedingService
             _context.Supplies.Add(supply);
 
             // Generate stats data.
-            DailyStats dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
+            DailySummary dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
             dailyStats.SupplyCost += supply.ItemAmount;
             dailyStats.ShipmentCost += supply.ShipmentFee;
             dailyStats.Monthly.SupplyCost += supply.ItemAmount;
@@ -1227,7 +1227,7 @@ internal sealed class DataSeedingService
         _context.Expenses.Add(expense);
 
         // Generating stats data.
-        DailyStats dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
+        DailySummary dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
 
         switch (expense.Category)
         {
@@ -1321,8 +1321,8 @@ internal sealed class DataSeedingService
 
                 OrderItem item = new OrderItem
                 {
-                    ProductAmountPerUnit = product.DefaultPrice,
-                    VatAmountPerUnit = (int)Math.Round(product.DefaultPrice * 0.1),
+                    AmountBeforeVatPerUnit = product.DefaultAmountBeforeVatPerUnit,
+                    VatAmountPerUnit = (int)Math.Round(product.DefaultAmountBeforeVatPerUnit * 0.1),
                     Quantity = Math.Min(random.Next(1, 5), product.StockingQuantity),
                     ProductId = product.Id
                 };
@@ -1331,7 +1331,7 @@ internal sealed class DataSeedingService
             }
 
             // Generating stats data.
-            DailyStats dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
+            DailySummary dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
             dailyStats.RetailGrossRevenue += order.ProductAmountBeforeVat;
             dailyStats.VatCollectedAmount += order.ProductVatAmount;
             dailyStats.Monthly.RetailGrossRevenue += order.ProductAmountBeforeVat;
@@ -1434,7 +1434,7 @@ internal sealed class DataSeedingService
 
                 TreatmentItem item = new TreatmentItem
                 {
-                    ProductAmountPerUnit = product.DefaultPrice,
+                    ProductAmountPerUnit = product.DefaultAmountBeforeVatPerUnit,
                     VatAmountPerUnit = 0,
                     Quantity = Math.Min(random.Next(1, 5), product.StockingQuantity),
                     ProductId = product.Id
@@ -1444,7 +1444,7 @@ internal sealed class DataSeedingService
             }
 
             // Generating stats data.
-            DailyStats dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
+            DailySummary dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
             dailyStats.TreatmentGrossRevenue += treatment.AmountBeforeVat;
             dailyStats.VatCollectedAmount += treatment.ProductVatAmount;
             dailyStats.Monthly.TreatmentGrossRevenue += treatment.AmountBeforeVat;
@@ -1517,7 +1517,7 @@ internal sealed class DataSeedingService
         _context.Consultants.Add(consultant);
 
         // Generating stats data.
-        DailyStats dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
+        DailySummary dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
         dailyStats.ConsultantGrossRevenue += consultant.AmountBeforeVat;
         dailyStats.Monthly.ConsultantGrossRevenue += consultant.AmountBeforeVat;
 
@@ -1641,7 +1641,7 @@ internal sealed class DataSeedingService
         }
 
         // Initialize entity.
-        DebtIncurrence debtIncurrence = new DebtIncurrence
+        Debt debtIncurrence = new Debt
         {
             Amount = amount > 0 ? amount : throw new Exception(),
             Note = random.Next(0, 2) == 0
@@ -1658,7 +1658,7 @@ internal sealed class DataSeedingService
         customer.CachedIncurredDebtAmount += debtIncurrence.Amount;
 
         // Generating stats data.
-        DailyStats dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
+        DailySummary dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
         dailyStats.DebtIncurredAmount += debtIncurrence.Amount;
         dailyStats.Monthly.DebtIncurredAmount += debtIncurrence.Amount;
 
@@ -1688,7 +1688,7 @@ internal sealed class DataSeedingService
             customer.CachedPaidDebtAmount += debtPayment.Amount;
 
             // Generating stats data.
-            DailyStats dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
+            DailySummary dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
             dailyStats.DebtPaidAmount += debtPayment.Amount;
             dailyStats.Monthly.DebtPaidAmount += debtPayment.Amount;
 

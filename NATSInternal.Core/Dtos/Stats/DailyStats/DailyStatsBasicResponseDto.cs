@@ -17,14 +17,14 @@ public class DailyStatsBasicResponseDto : IStatsBasicResponseDto
         RecordedDate = recordedDate;
     }
 
-    internal DailyStatsBasicResponseDto(DailyStats stats)
+    internal DailyStatsBasicResponseDto(DailySummary stats)
     {
         Cost = stats.Cost;
         Expenses = stats.Expenses;
         GrossRevenue = stats.GrossRevenue;
         NetRevenue = stats.NetRevenue;
         NetProfit = stats.NetProfit;
-        NewCustomers = stats.NewCustomers;
+        NewCustomers = stats.NewCustomerCount;
         IsTemporarilyClosed = stats.TemporarilyClosedDateTime.HasValue;
         IsOfficiallyClosed = stats.OfficiallyClosedDateTime.HasValue;
         RecordedDate = stats.RecordedDate;

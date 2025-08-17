@@ -1,76 +1,100 @@
 ﻿namespace NATSInternal.Core.Entities;
 
-internal class DailyStats : IHasIdEntity<DailyStats>
+[Table("daily_summaries")]
+internal class DailySummary : AbstractEntity<DailySummary>, IHasIdEntity<DailySummary>
 {
     #region Fields
-    private MonthlyStats? _monthly;
+    private MonthlySummary? _monthly;
     #endregion
 
     #region Properties
+    [Column("id")]
     [Key]
     public Guid Id { get; private set; } = Guid.NewGuid();
 
+    [Column("retail_gross_revenuue")]
     [Required]
     public long RetailGrossRevenue { get; set; }
 
+    [Column("treatment_gross_revenue")]
     [Required]
     public long TreatmentGrossRevenue { get; set; }
 
+    [Column("consultant_gross_revenue")]
     [Required]
     public long ConsultantGrossRevenue { get; set; }
 
+    [Column("vat_collected_amount")]
     [Required]
     public long VatCollectedAmount { get; set; }
 
+    [Column("debt_incurred_amount")]
     [Required]
     public long DebtIncurredAmount { get; set; }
 
+    [Column("debt_paid_amount")]
     [Required]
     public long DebtPaidAmount { get; set; }
 
+    [Column("shipment_cost")]
     [Required]
     public long ShipmentCost { get; set; }
 
+    [Column("supply_cost")]
     [Required]
     public long SupplyCost { get; set; }
 
+    [Column("utilities_expenses")]
     [Required]
     public long UtilitiesExpenses { get; set; }
 
+    [Column("equiment_expenses")]
     [Required]
     public long EquipmentExpenses { get; set; }
 
+    [Column("office_expense")]
     [Required]
     public long OfficeExpense { get; set; }
 
+    [Column("staff_expense")]
     [Required]
     public long StaffExpense { get; set; }
 
+    [Column("new_customer_count")]
     [Required]
-    public int NewCustomers { get; set; }
+    public int NewCustomerCount { get; set; }
 
+    [Column("recorded_date")]
     [Required]
     public DateOnly RecordedDate { get; set; }
 
+    [Column("created_datetime")]
     [Required]
     public DateTime CreatedDateTime { get; set; }
 
+    [Column("temporarily_closed_datetime")]
     public DateTime? TemporarilyClosedDateTime { get; set; }
 
+    [Column("officially_closed_datetime")]
     public DateTime? OfficiallyClosedDateTime { get; set; }
     #endregion
 
     #region ForeignKeyProperties
+    [Column("monthly_id")]
     [Required]
-    public Guid MonthlyStatsId { get; set; }
+    public Guid MonthlyId { get; set; }
     #endregion
 
     #region NavigationProperties
-    public MonthlyStats Monthly
+    [BackingField(nameof(_monthly))]
+    public MonthlySummary Monthly
     {
-        get => _monthly ?? throw new InvalidOperationException(
-            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(Monthly)));
-        set => _monthly = value;
+        get => GetFieldOrThrowIfNull(_monthly);
+        set
+        {
+            MonthlyId = value.Id;
+            _monthly = value;
+        }
     }
     #endregion
 
@@ -107,14 +131,19 @@ internal class DailyStats : IHasIdEntity<DailyStats>
     #endregion
 
     #region StaticMethods
-    public static void ConfigureModel(EntityTypeBuilder<DailyStats> entityBuilder)
+    public static void ConfigureModel(EntityTypeBuilder<DailySummary> entityBuilder)
     {
-        entityBuilder.HasOne(dfs => dfs.Monthly)
+        entityBuilder
+            .HasOne(dfs => dfs.Monthly)
             .WithMany(mfs => mfs.DailyStats)
-            .HasForeignKey(dfs => dfs.MonthlyStatsId)
-            .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder.HasIndex(dfs => dfs.RecordedDate)
-            .IsUnique();
+            .HasForeignKey(dfs => dfs.MonthlyId)
+            .HasConstraintName("FK__daily_summaries__monthly_summaries__monthly_summary_id")
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired();
+        entityBuilder
+            .HasIndex(dfs => dfs.RecordedDate)
+            .IsUnique()
+            .HasDatabaseName("IX__daily_summaries__recorded_date");
     }
     #endregion
 }

@@ -5,7 +5,7 @@ public enum TransactionType
     Supply,
     Expense,
     Consultant,
-    Order,
+    Retail,
     Treatment,
     DebtIncurrence,
     DebtPayment

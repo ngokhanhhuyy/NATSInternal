@@ -1,11 +1,15 @@
 namespace NATSInternal.Core.Interfaces.Entities;
 
-internal interface IUpdateHistoryEntity<T> : IHasIdEntity<T> where T : class
+internal interface IUpdateHistoryEntity<TEntity, TData> : IHasIdEntity<TEntity>
+    where TEntity : class
+    where TData : class
 {
+    #region Properties
     DateTime UpdatedDateTime { get; set; }
     string Reason { get; set; }
-    string OldData { get; set; }
-    string NewData { get; set; }
+    TData OldData { get; set; }
+    TData NewData { get; set; }
     Guid UpdatedUserId { get; set; }
     User UpdatedUser { get; set; }
+    #endregion
 }

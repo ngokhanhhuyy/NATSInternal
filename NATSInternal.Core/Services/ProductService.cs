@@ -120,12 +120,12 @@ internal class ProductService
             Name = requestDto.Name,
             Description = requestDto.Description,
             Unit = requestDto.Unit,
-            DefaultPrice = requestDto.DefaultPrice,
+            DefaultAmountBeforeVatPerUnit = requestDto.DefaultPrice,
             DefaultVatPercentage = requestDto.DefaultVatPercentage,
             IsForRetail = requestDto.IsForRetail,
             IsDiscontinued = requestDto.IsDiscontinued,
             CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),
-            UpdatedDateTime = null,
+            LastUpdatedDateTime = null,
             StockingQuantity = 0,
             BrandId = requestDto.BrandId,
             CategoryId = requestDto.CategoryId,
@@ -199,13 +199,13 @@ internal class ProductService
         product.Name = requestDto.Name;
         product.Description = requestDto.Description;
         product.Unit = requestDto.Unit;
-        product.DefaultPrice = requestDto.DefaultPrice;
+        product.DefaultAmountBeforeVatPerUnit = requestDto.DefaultPrice;
         product.DefaultVatPercentage = requestDto.DefaultVatPercentage;
         product.IsForRetail = requestDto.IsForRetail;
         product.IsDiscontinued = requestDto.IsDiscontinued;
         product.CategoryId = requestDto.CategoryId;
         product.BrandId = requestDto.BrandId;
-        product.UpdatedDateTime = DateTime.UtcNow.ToApplicationTime();
+        product.LastUpdatedDateTime = DateTime.UtcNow.ToApplicationTime();
 
         // Prepare lists of urls to be deleted later when the operation
         // is succeeded or failed.

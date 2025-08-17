@@ -17,7 +17,7 @@ public class DebtIncurrenceDetailResponseDto
     public List<DebtIncurrenceUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
     internal DebtIncurrenceDetailResponseDto(
-            DebtIncurrence debtIncurrence,
+            Debt debtIncurrence,
             DebtIncurrenceExistingAuthorizationResponseDto authorization)
     {
         Id = debtIncurrence.Id;

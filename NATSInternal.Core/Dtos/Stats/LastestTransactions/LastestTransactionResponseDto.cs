@@ -39,7 +39,7 @@ public class LastestTransactionResponseDto
     {
         Id = order.Id;
         Direction = TransactionDirection.In;
-        Type = TransactionType.Order;
+        Type = TransactionType.Retail;
         Amount = order.AmountAfterVat;
         StatsDateTime = order.StatsDateTime;
     }
@@ -53,7 +53,7 @@ public class LastestTransactionResponseDto
         StatsDateTime = treatment.StatsDateTime;
     }
 
-    internal LastestTransactionResponseDto(DebtIncurrence debtIncurrence)
+    internal LastestTransactionResponseDto(Debt debtIncurrence)
     {
         Id = debtIncurrence.Id;
         Direction = TransactionDirection.In;

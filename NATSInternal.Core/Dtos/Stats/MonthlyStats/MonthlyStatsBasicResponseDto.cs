@@ -13,14 +13,14 @@ public class MonthlyStatsBasicResponseDto : IStatsBasicResponseDto
     public int RecordedYear { get; set; }
     public int RecordedMonth { get; set; }
 
-    internal MonthlyStatsBasicResponseDto(MonthlyStats stats)
+    internal MonthlyStatsBasicResponseDto(MonthlySummary stats)
     {
         Cost = stats.Cost;
         Expenses = stats.Expenses;
         GrossRevenue = stats.GrossRevenue;
         NetRevenue = stats.NetRevenue;
         NetProfit = stats.NetProfit;
-        NewCustomers = stats.NewCustomers;
+        NewCustomers = stats.NewCustomerCount;
         IsTemporarilyClosed = stats.TemporarilyClosedDateTime.HasValue;
         IsOfficiallyClosed = stats.OfficiallyClosedDateTime.HasValue;
         RecordedYear = stats.RecordedYear;

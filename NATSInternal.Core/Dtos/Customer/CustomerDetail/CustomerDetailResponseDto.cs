@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Dtos;
 
-using DebtIncurrenceAuthorizationGetter = Func<DebtIncurrence, DebtIncurrenceExistingAuthorizationResponseDto>;
+using DebtIncurrenceAuthorizationGetter = Func<Debt, DebtIncurrenceExistingAuthorizationResponseDto>;
 using DebtPaymentAuthorizationGetter = Func<DebtPayment, DebtPaymentExistingAuthorizationResponseDto>;
 
 public record CustomerDetailResponseDto
@@ -59,10 +59,10 @@ public record CustomerDetailResponseDto
             Introducer = new CustomerBasicResponseDto(customer.Introducer);
         }
         
-        if (customer.DebtIncurrences != null)
+        if (customer.Debts != null)
         {
             DebtOperations = new List<CustomerDebtOperationResponseDto>();
-            foreach (DebtIncurrence debtIncurrence in customer.DebtIncurrences)
+            foreach (Debt debtIncurrence in customer.Debts)
             {
                 CustomerDebtOperationResponseDto operationResponseDto;
                 operationResponseDto = new CustomerDebtOperationResponseDto(

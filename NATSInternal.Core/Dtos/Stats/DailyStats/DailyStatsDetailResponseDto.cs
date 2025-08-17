@@ -26,7 +26,7 @@ public class DailyStatsDetailResponseDto : IStatsDetailResponseDto
     public DateTime? OfficiallyClosedDateTime { get; set; }
     public DateOnly RecordedDate { get; set; }
 
-    internal DailyStatsDetailResponseDto(DailyStats dailyStats)
+    internal DailyStatsDetailResponseDto(DailySummary dailyStats)
     {
         RetailGrossRevenue = dailyStats.RetailGrossRevenue;
         TreatmentGrossRevenue = dailyStats.TreatmentGrossRevenue;

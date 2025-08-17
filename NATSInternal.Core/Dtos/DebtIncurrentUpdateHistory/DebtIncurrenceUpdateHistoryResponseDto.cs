@@ -19,7 +19,7 @@ public class DebtIncurrenceUpdateHistoryResponseDto : IDebtUpdateHistoryResponse
     public string NewNote => _newData.Note;
     
     internal DebtIncurrenceUpdateHistoryResponseDto(
-            DebtIncurrenceUpdateHistory updateHistory)
+            DebtUpdateHistory updateHistory)
     {
         _oldData = JsonSerializer
             .Deserialize<DebtIncurrenceUpdateHistoryDataDto>(updateHistory.OldData);

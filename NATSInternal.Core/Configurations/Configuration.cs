@@ -63,8 +63,8 @@ public static class ConfigurationExtensions
             IMultiplePhotosService<Expense, ExpensePhoto>,
             MultiplePhotosService<Expense, ExpensePhoto>>();
         services.AddScoped<
-            IMultiplePhotosService<Order, OrderPhoto>,
-            MultiplePhotosService<Order, OrderPhoto>>();
+            IMultiplePhotosService<Order, Photo>,
+            MultiplePhotosService<Order, Photo>>();
 
         services.AddScoped<ITreatmentPhotoService, TreatmentPhotoService>();
         services.AddScoped<ICustomerService, CustomerService>();
@@ -102,8 +102,8 @@ public static class ConfigurationExtensions
             IMultiplePhotosService<Supply, SupplyPhoto>,
             MultiplePhotosService<Supply, SupplyPhoto>>();
         services.AddScoped<
-            IMultiplePhotosService<Order, OrderPhoto>,
-            MultiplePhotosService<Order, OrderPhoto>>();
+            IMultiplePhotosService<Order, Photo>,
+            MultiplePhotosService<Order, Photo>>();
         services.AddScoped<
             IMultiplePhotosService<Treatment, TreatmentPhoto>,
             MultiplePhotosService<Treatment, TreatmentPhoto>>();
@@ -131,8 +131,8 @@ public static class ConfigurationExtensions
             IMonthYearService<Consultant, ConsultantUpdateHistory>,
             MonthYearService<Consultant, ConsultantUpdateHistory>>();
         services.AddScoped<
-            IMonthYearService<DebtIncurrence, DebtIncurrenceUpdateHistory>,
-            MonthYearService<DebtIncurrence, DebtIncurrenceUpdateHistory>>();
+            IMonthYearService<Debt, DebtUpdateHistory>,
+            MonthYearService<Debt, DebtUpdateHistory>>();
         services.AddScoped<
             IMonthYearService<DebtPayment, DebtPaymentUpdateHistory>,
             MonthYearService<DebtPayment, DebtPaymentUpdateHistory>>();

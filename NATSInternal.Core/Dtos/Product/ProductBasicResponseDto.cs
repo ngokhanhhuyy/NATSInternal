@@ -30,7 +30,7 @@ public class ProductBasicResponseDto
         Id = product.Id;
         Name = product.Name;
         Unit = product.Unit;
-        DefaultPrice = product.DefaultPrice;
+        DefaultPrice = product.DefaultAmountBeforeVatPerUnit;
         DefaultVatPercentage = product.DefaultVatPercentage;
         StockingQuantity = product.StockingQuantity;
         ThumbnailUrl = product.ThumbnailUrl;

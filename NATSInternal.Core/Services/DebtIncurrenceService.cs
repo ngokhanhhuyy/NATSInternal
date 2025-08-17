@@ -3,7 +3,7 @@
 /// <inheritdoc cref="IDebtIncurrenceService" />
 internal class DebtIncurrenceService
     :
-        DebtAbstractService<DebtIncurrence, DebtIncurrenceUpdateHistory,
+        DebtAbstractService<Debt, DebtUpdateHistory,
             DebtIncurrenceListRequestDto, DebtIncurrenceUpsertRequestDto,
             DebtIncurrenceListResponseDto, DebtIncurrenceBasicResponseDto,
             DebtIncurrenceDetailResponseDto, DebtIncurrenceUpdateHistoryResponseDto,
@@ -24,7 +24,7 @@ internal class DebtIncurrenceService
     public async Task<DebtIncurrenceListResponseDto> GetListAsync(
             DebtIncurrenceListRequestDto requestDto)
     {
-        EntityListDto<DebtIncurrence> entityListDto = await GetListOfEntitiesAsync(requestDto);
+        EntityListDto<Debt> entityListDto = await GetListOfEntitiesAsync(requestDto);
 
         return new DebtIncurrenceListResponseDto
         {
@@ -43,7 +43,7 @@ internal class DebtIncurrenceService
     /// <inheritdoc />
     public async Task<DebtIncurrenceDetailResponseDto> GetDetailAsync(int id)
     {
-        DebtIncurrence debtIncurrence = await GetEntityAsync(id);
+        Debt debtIncurrence = await GetEntityAsync(id);
 
         DebtIncurrenceExistingAuthorizationResponseDto authorization;
         authorization = GetExistingAuthorization(debtIncurrence);
@@ -52,21 +52,21 @@ internal class DebtIncurrenceService
     }
 
     /// <inheritdoc />
-    protected override DbSet<DebtIncurrence> GetRepository(DatabaseContext context)
+    protected override DbSet<Debt> GetRepository(DatabaseContext context)
     {
         return context.DebtIncurrences;
     }
 
     /// <inheritdoc />
     protected override DebtIncurrenceUpdateHistoryDataDto InitializeUpdateHistoryDataDto(
-            DebtIncurrence debtIncurrence)
+            Debt debtIncurrence)
     {
         return new DebtIncurrenceUpdateHistoryDataDto(debtIncurrence);
     }
 
     /// <inheritdoc />
     protected override async Task AdjustStatsAsync(
-            DebtIncurrence debtIncurrence,
+            Debt debtIncurrence,
             IStatsInternalService service,
             bool isIncrement)
     {

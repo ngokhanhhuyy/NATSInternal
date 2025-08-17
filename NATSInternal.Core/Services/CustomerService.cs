@@ -30,7 +30,7 @@ internal class CustomerService
         // Initialize query.
         IQueryable<Customer> query = context.Customers
             .Include(c => c.CreatedUser).ThenInclude(u => u.Roles)
-            .Include(c => c.DebtIncurrences)
+            .Include(c => c.Debts)
             .Include(c => c.DebtPayments);
 
         // Filter by search content.
@@ -50,7 +50,7 @@ internal class CustomerService
         // Filter by remaining debt amount.
         if (requestDto.HasRemainingDebtAmountOnly)
         {
-            query = query.Where(c => c.DebtIncurrences
+            query = query.Where(c => c.Debts
                 .Where(di => !di.IsDeleted)
                 .Sum(di => di.Amount) - c.DebtPayments
                 .Where(dp => !dp.IsDeleted)
@@ -84,13 +84,13 @@ internal class CustomerService
                 break;
             case nameof(OrderByFieldOption.DebtRemainingAmount):
                 query = sortingByAscending
-                    ? query.OrderBy(c => c.DebtIncurrences
+                    ? query.OrderBy(c => c.Debts
                             .Where(d => !d.IsDeleted)
                             .Sum(d => d.Amount) - c.DebtPayments
                             .Where(dp => !dp.IsDeleted)
                             .Sum(dp => dp.Amount))
                         .ThenBy(c => c.Id)
-                    : query.OrderByDescending(c => c.DebtIncurrences
+                    : query.OrderByDescending(c => c.Debts
                             .Where(d => !d.IsDeleted)
                             .Sum(d => d.Amount) - c.DebtPayments
                             .Where(dp => !dp.IsDeleted)
@@ -126,7 +126,7 @@ internal class CustomerService
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         
         return await context.Customers
-            .Include(c => c.DebtIncurrences)
+            .Include(c => c.Debts)
             .Include(c => c.DebtPayments)
             .Where(c => c.Id == id)
             .Select(c => new CustomerBasicResponseDto(c, GetExistingAuthorization(c)))
@@ -145,7 +145,7 @@ internal class CustomerService
         Customer customer = await context.Customers
             .Include(customer => customer.Introducer)
             .Include(customer => customer.CreatedUser).ThenInclude(u => u.Roles)
-            .Include(customer => customer.DebtIncurrences
+            .Include(customer => customer.Debts
                 .OrderByDescending(di => di.StatsDateTime))
             .Include(customer => customer.DebtPayments
                 .OrderByDescending(dp => dp.StatsDateTime))
@@ -160,8 +160,8 @@ internal class CustomerService
             customer,
             GetExistingAuthorization(customer),
             _authorizationService.GetExistingAuthorization<
-                DebtIncurrence,
-                DebtIncurrenceUpdateHistory,
+                Debt,
+                DebtUpdateHistory,
                 DebtIncurrenceExistingAuthorizationResponseDto>,
             _authorizationService.GetExistingAuthorization<
                 DebtPayment,
