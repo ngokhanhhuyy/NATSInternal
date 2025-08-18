@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Core.Dtos;
 
 public class ProductDetailResponseDto
-        : IHasMultiplePhotosDetailResponseDto<ProductPhotoResponseDto>
+        : IHasPhotosDetailResponseDto<ProductPhotoResponseDto>
 {
     public int Id { get; set; }
     public string Name { get; set; }

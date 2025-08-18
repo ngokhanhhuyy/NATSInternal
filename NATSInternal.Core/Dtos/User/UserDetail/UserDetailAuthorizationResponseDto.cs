@@ -2,6 +2,7 @@
 
 public class UserDetailAuthorizationResponseDto
 {
+    #region Properties
     public bool CanGetNote { get; set; }
     public bool CanEdit { get; set; }
     public bool CanEditUserPersonalInformation { get; set; }
@@ -10,4 +11,5 @@ public class UserDetailAuthorizationResponseDto
     public bool CanChangePassword { get; set; }
     public bool CanResetPassword { get; set; }
     public bool CanDelete { get; set; }
+    #endregion
 }

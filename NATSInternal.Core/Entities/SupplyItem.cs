@@ -1,51 +1,65 @@
 namespace NATSInternal.Core.Entities;
 
-internal class SupplyItem : IHasProductItemEntity<SupplyItem>
+[EntityTypeConfiguration(typeof(SupplyItemEntityConfiguration))]
+[Table("supply_items")]
+internal class SupplyItem : AbstractEntity<SupplyItem>, IHasProductItemEntity<SupplyItem>
 {
+    #region Fields
+    private Supply? _supply;
+    private Product? _product;
+    #endregion
+
+    #region Properties
+    [Column("id")]
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; protected set; } = Guid.NewGuid();
 
+    [Column("amount_per_unit")]
     [Required]
-    public long ProductAmountPerUnit { get; set; }
+    public long AmountPerUnit { get; set; }
 
+    [Column("quantity")]
     [Required]
     public int Quantity { get; set; } = 1;
-
-    // Foreign keys
+    #endregion
+    
+    #region ForeignKeyProperties
+    [Column("supply_id")]
     [Required]
-    public int SupplyId { get; set; }
+    public Guid SupplyId { get; set; }
 
+    [Column("product_id")]
     [Required]
-    public int ProductId { get; set; }
+    public Guid ProductId { get; set; }
+    #endregion
 
-    // Concurrency operation tracking field
+    #region ConcurrencyOperationTrackingProperties
+    [Column("row_version")]
     [Timestamp]
-    [JsonIgnore]
-    public byte[] RowVersion { get; set; }
+    public byte[]? RowVersion { get; set; }
+    #endregion
 
-    // Relationships
-    [JsonIgnore]
-    public virtual Supply Supply { get; set; }
-
-    [JsonIgnore]
-    public virtual Product Product { get; set; }
-
-    [JsonIgnore]
-    public virtual List<OrderItem> OrderItems { get; set; }
-
-    // Model configuration.
-    public static void ConfigureModel(EntityTypeBuilder<SupplyItem> entityBuilder)
+    #region NavigationProperties
+    [BackingField(nameof(_supply))]
+    public Supply Supply
     {
-        entityBuilder.HasKey(si => si.Id);
-        entityBuilder.HasOne(si => si.Supply)
-            .WithMany(s => s.Items)
-            .HasForeignKey(si => si.SupplyId)
-            .OnDelete(DeleteBehavior.Cascade);
-        entityBuilder.HasOne(si => si.Product)
-            .WithMany(p => p.SupplyItems)
-            .HasForeignKey(si => si.ProductId)
-            .OnDelete(DeleteBehavior.Cascade);
-        entityBuilder.Property(si => si.RowVersion)
-            .IsRowVersion();
+        get => GetFieldOrThrowIfNull(_supply);
+        set
+        {
+            SupplyId = value.Id;
+            _supply = value;
+        }
     }
+
+    [BackingField(nameof(_product))]
+    public Product Product
+    {
+        get => GetFieldOrThrowIfNull(_product);
+        set
+        {
+            ProductId = value.Id;
+            _product = value;
+        }
+    }
+    #endregion
 }

@@ -1,13 +1,11 @@
 namespace NATSInternal.Core.Interfaces.Entities;
 
-internal interface IHasProductEntity<T, TItem, TPhoto, TUpdateHistory>
-    :
-        IHasStatsEntity<T, TUpdateHistory>,
-        IHasPhotosEntity<T, TPhoto>
+internal interface IHasProductEntity<T, TItem, TData> : IHasStatsEntity<T, TData>, IHasPhotosEntity<T>
     where T : class, IUpsertableEntity<T>, new()
     where TItem : class, IHasProductItemEntity<TItem>, new()
-    where TPhoto : class, IPhotoEntity<TPhoto>, new()
-    where TUpdateHistory :class, IUpdateHistoryEntity<TUpdateHistory>, new()
+    where TData : class
 {
+    #region Properties
     List<TItem> Items { get; }
+    #endregion
 }

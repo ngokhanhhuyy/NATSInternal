@@ -4,6 +4,7 @@ namespace NATSInternal.Core.Entities;
 internal class Photo : AbstractHasIdEntity<Photo>
 {
     #region Fields
+    private Brand? _brand;
     private Product? _product;
     private Supply? _supply;
     private Expense? _expense;
@@ -11,6 +12,10 @@ internal class Photo : AbstractHasIdEntity<Photo>
     #endregion
 
     #region Properties
+    [Column("id")]
+    [Key]
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
+    
     [Column("url")]
     [Required]
     [StringLength(255)]
@@ -22,6 +27,9 @@ internal class Photo : AbstractHasIdEntity<Photo>
     #endregion
 
     #region ForeignKeyProperties
+    [Column("brand_id")]
+    public Guid? BrandId { get; set; }
+
     [Column("product_id")]
     public Guid? ProductId { get; set; }
 
@@ -42,6 +50,17 @@ internal class Photo : AbstractHasIdEntity<Photo>
     #endregion
 
     #region NavigationProperties
+    [BackingField(nameof(_brand))]
+    public Brand? Brand
+    {
+        get => _brand;
+        set
+        {
+            BrandId = value?.Id;
+            _brand = value;
+        }
+    }
+
     [BackingField(nameof(_product))]
     public Product? Product
     {

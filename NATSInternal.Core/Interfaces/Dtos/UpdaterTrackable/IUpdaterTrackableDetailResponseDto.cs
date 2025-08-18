@@ -1,9 +1,10 @@
 namespace NATSInternal.Core.Interfaces.Dtos;
 
-internal interface IUpdaterTrackableDetailResponseDto<TUpdateHistory, TExistingAuthorization>
+internal interface IUpdaterTrackableDetailResponseDto<TUpdateHistoryData, TExistingAuthorization>
     : IUpsertableDetailResponseDto<TExistingAuthorization>
-    where TUpdateHistory : IUpdateHistoryResponseDto
     where TExistingAuthorization : IUpsertableExistingAuthorizationResponseDto
 {
-    List<TUpdateHistory> UpdateHistories { get; }
+    #region Properties
+    List<TUpdateHistoryData> UpdateHistories { get; }
+    #endregion
 }

@@ -1,7 +1,8 @@
 namespace NATSInternal.Core.Entities;
 
+[EntityTypeConfiguration(typeof(OrderEntityConfiguration))]
 [Table("orders")]
-internal class Order : AbstractHasStatsEntity<Order>
+internal class Order : AbstractEntity<Order>, IHasStatsEntity<Order, OrderUpdateHistoryData>
 {
     #region Fields
     private User? _createdUser;
@@ -9,12 +10,24 @@ internal class Order : AbstractHasStatsEntity<Order>
     #endregion
 
     #region Properties
+    [Column("id")]
+    [Key]
+    public Guid Id { get; protected set; } = Guid.NewGuid();
+
     [Column("type")]
     [Required]
     public OrderType Type { get; set; }
 
+    [Column("stats_datetime")]
+    [Required]
+    public DateTime StatsDateTime { get; set; }
+
+    [Column("created_datetime")]
+    [Required]
+    public DateTime CreatedDateTime { get; protected set; } = DateTime.UtcNow.ToApplicationTime();
+
     [Column("note")]
-    [StringLength(OrderContracts.NoteMaxLength)]
+    [StringLength(HasStatsContracts.NoteMaxLength)]
     public string? Note { get; set; }
 
     [Column("is_deleted")]
@@ -61,9 +74,9 @@ internal class Order : AbstractHasStatsEntity<Order>
         }
     }
 
-    public List<OrderItem> Items { get; private set; } = new();
-    public List<Photo> Photos { get; private set; } = new();
-    public List<OrderUpdateHistory> UpdateHistories { get; private set; } = new();
+    public List<OrderItem> Items { get; protected set; } = new();
+    public List<Photo> Photos { get; protected set; } = new();
+    public List<UpdateHistory> UpdateHistories { get; protected set; } = new();
     #endregion
 
     #region ComputedProperties
@@ -103,32 +116,5 @@ internal class Order : AbstractHasStatsEntity<Order>
     [NotMapped]
     public static Expression<Func<Order, long>> AmountAfterVatExpression => (order) =>
         order.Items.Sum(oi => (oi.AmountBeforeVatPerUnit + oi.VatAmountPerUnit) * oi.Quantity);
-    #endregion
-
-    #region StaticMethods
-    public static void ConfigureModel(EntityTypeBuilder<Order> entityBuilder)
-    {
-        entityBuilder.HasKey(o => o.Id);
-        entityBuilder
-            .HasOne(o => o.Customer)
-            .WithMany(c => c.Orders)
-            .HasForeignKey(o => o.CustomerId)
-            .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder
-            .HasOne(o => o.CreatedUser)
-            .WithMany(u => u.Orders)
-            .HasForeignKey(o => o.CreatedUserId)
-            .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder
-            .HasIndex(o => o.StatsDateTime);
-        entityBuilder
-            .HasIndex(o => o.IsDeleted);
-        entityBuilder
-            .Property(c => c.RowVersion)
-            .IsRowVersion();
-        entityBuilder
-            .Property(c => c.RowVersion)
-            .IsRowVersion();
-    }
     #endregion
 }

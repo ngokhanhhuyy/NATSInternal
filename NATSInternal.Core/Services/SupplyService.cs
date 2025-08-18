@@ -47,7 +47,7 @@ internal class SupplyService
         bool sortingByAscending = requestDto.SortingByAscending
                                   ?? GetListSortingOptions().DefaultAscending;
         Expression<Func<Supply, long>> amountExpression = (supply) =>
-            supply.Items.Sum(s => s.ProductAmountPerUnit * s.Quantity) + supply.ShipmentFee;
+            supply.Items.Sum(s => s.AmountPerUnit * s.Quantity) + supply.ShipmentFee;
         switch (sortingByField)
         {
             case nameof(OrderByFieldOption.Amount):

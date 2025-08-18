@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Entities;
 
-internal class UserRole : IEntity<UserRole>
+internal class UserRole : AbstractEntity<UserRole>
 {
     #region Fields
     private User? _user;
@@ -21,8 +21,7 @@ internal class UserRole : IEntity<UserRole>
     [BackingField(nameof(_user))]
     public User User
     {
-        get => _user ?? throw new InvalidOperationException(
-            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(User)));
+        get => GetFieldOrThrowIfNull(_user);
         set
         {
             UserId = value.Id;
@@ -33,20 +32,12 @@ internal class UserRole : IEntity<UserRole>
     [BackingField(nameof(_role))]
     public Role Role
     {
-        get => _role ?? throw new InvalidOperationException(
-            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(Role)));
+        get => GetFieldOrThrowIfNull(_role);
         set
         {
             RoleId = value.Id;
             _role = value;
         }
-    }
-    #endregion
-
-    #region StaticMethods
-    public static void ConfigureModel(EntityTypeBuilder<UserRole> entityBuilder)
-    {
-        entityBuilder.HasKey(ur => new { ur.UserId, ur.RoleId });
     }
     #endregion
 }

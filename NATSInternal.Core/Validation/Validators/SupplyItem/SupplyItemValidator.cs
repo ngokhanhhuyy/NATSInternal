@@ -4,7 +4,7 @@ internal class SupplyItemValidator : Validator<SupplyItemRequestDto>
 {
     public SupplyItemValidator()
     {
-        RuleFor(dto => dto.ProductAmountPerUnit)
+        RuleFor(dto => dto.AmountBeforeVatPerUnit)
             .GreaterThanOrEqualTo(0)
             .WithName(DisplayNames.Amount);
         RuleFor(dto => dto.Quantity)

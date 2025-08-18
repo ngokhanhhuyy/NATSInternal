@@ -4,7 +4,7 @@ internal class OrderItemValidator : Validator<OrderItemRequestDto>
 {
     public OrderItemValidator()
     {
-        RuleFor(dto => dto.ProductAmountPerUnit)
+        RuleFor(dto => dto.AmountBeforeVatPerUnit)
             .GreaterThanOrEqualTo(0)
             .WithName(DisplayNames.Amount);
         RuleFor(dto => dto.VatAmountPerUnit)

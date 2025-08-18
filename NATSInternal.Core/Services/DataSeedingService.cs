@@ -1129,7 +1129,7 @@ internal sealed class DataSeedingService
             {
                 SupplyItem item = new SupplyItem
                 {
-                    ProductAmountPerUnit = (int)Math
+                    AmountPerUnit = (int)Math
                         .Round(product.DefaultAmountBeforeVatPerUnit - product.DefaultAmountBeforeVatPerUnit * 0.35),
                     Quantity = 100 - product.StockingQuantity,
                     ProductId = product.Id,
@@ -1309,7 +1309,7 @@ internal sealed class DataSeedingService
             for (int i = 0; i < orderItemCount; i++)
             {
                 // Get a list of product ids which have been picked ealier.
-                List<int> pickedProductIds = order.Items
+                List<int> pickedProductIds = order.OrderProducts
                     .Select(item => item.ProductId)
                     .ToList();
 
@@ -1326,7 +1326,7 @@ internal sealed class DataSeedingService
                     Quantity = Math.Min(random.Next(1, 5), product.StockingQuantity),
                     ProductId = product.Id
                 };
-                order.Items.Add(item);
+                order.OrderProducts.Add(item);
                 product.StockingQuantity -= item.Quantity;
             }
 
@@ -1434,7 +1434,7 @@ internal sealed class DataSeedingService
 
                 TreatmentItem item = new TreatmentItem
                 {
-                    ProductAmountPerUnit = product.DefaultAmountBeforeVatPerUnit,
+                    AmountPerUnit = product.DefaultAmountBeforeVatPerUnit,
                     VatAmountPerUnit = 0,
                     Quantity = Math.Min(random.Next(1, 5), product.StockingQuantity),
                     ProductId = product.Id

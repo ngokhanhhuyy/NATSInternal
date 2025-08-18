@@ -2,6 +2,7 @@ using Bogus.Extensions;
 
 namespace NATSInternal.Core.Entities;
 
+[EntityTypeConfiguration(typeof(CustomerEntityConfiguration))]
 [Table("customers")]
 internal class Customer : AbstractEntity<Customer>, IUpsertableEntity<Customer>
 {
@@ -173,11 +174,9 @@ internal class Customer : AbstractEntity<Customer>, IUpsertableEntity<Customer>
         set => _introducer = value;
     }
 
-    public List<Customer> IntroducedCustomers { get; private set; } = new();
-    public List<Order> Orders { get; private set; } = new();
-    public List<Treatment> Treatments { get; private set; } = new();
-    public List<Consultant> Consultants { get; private set; } = new();
-    public List<Debt> Debts { get; private set; } = new();
+    public List<Customer> IntroducedCustomers { get; protected set; } = new();
+    public List<Order> Orders { get; protected set; } = new();
+    public List<Debt> Debts { get; protected set; } = new();
     #endregion
 
     #region ComputedProperties
@@ -206,33 +205,6 @@ internal class Customer : AbstractEntity<Customer>, IUpsertableEntity<Customer>
         string?[] names = new[] { FirstName, MiddleName, LastName };
         FullName = string.Join(" ", names.Where(n => n is not null));
         NormalizedFullName = FullName.RemoveDiacritics();
-    }
-    #endregion
-
-    #region StaticMethods
-    public static void ConfigureModel(EntityTypeBuilder<Customer> entityBuilder)
-    {
-        entityBuilder.HasKey(c => c.Id);
-        entityBuilder
-            .HasOne(c => c.Introducer)
-            .WithMany(i => i.IntroducedCustomers)
-            .HasForeignKey(c => c.IntroducerId)
-            .HasConstraintName("FK__customers__customers__introducer_id")
-            .OnDelete(DeleteBehavior.Restrict)
-            .IsRequired();
-        entityBuilder
-            .HasOne(c => c.CreatedUser)
-            .WithMany(u => u.CreatedCustomers)
-            .HasForeignKey(c => c.CreatedUserId)
-            .HasConstraintName("FK__customers__users__created_user_id")
-            .OnDelete(DeleteBehavior.Restrict)
-            .IsRequired();
-        entityBuilder
-            .HasIndex(c => c.IsDeleted)
-            .HasDatabaseName("IX__customers__is_deleted");
-        entityBuilder
-            .Property(c => c.RowVersion)
-            .IsRowVersion();
     }
     #endregion
 }

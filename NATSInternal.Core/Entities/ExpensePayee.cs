@@ -1,12 +1,13 @@
 namespace NATSInternal.Core.Entities;
 
+[EntityTypeConfiguration(typeof(ExpensePayeeEntityConfiguration))]
 [Table("expense_payees")]
 internal class ExpensePayee : IHasIdEntity<ExpensePayee>
 {
     #region Properties
     [Column("id")]
     [Key]
-    public Guid Id { get; private set; } = Guid.NewGuid();
+    public Guid Id { get; protected set; } = Guid.NewGuid();
 
     [Column("name")]
     [Required]
@@ -21,19 +22,6 @@ internal class ExpensePayee : IHasIdEntity<ExpensePayee>
     #endregion
 
     #region NavigationProperties
-    public List<Expense> Expenses { get; private set; } = new();
-    #endregion
-
-    #region StaticMethods
-    public static void ConfigureModel(EntityTypeBuilder<ExpensePayee> entityBuilder)
-    {
-        entityBuilder
-            .HasIndex(ep => ep.Name)
-            .HasDatabaseName("IX__expense_payees__name")
-            .IsUnique();
-        entityBuilder
-            .Property(c => c.RowVersion)
-            .IsRowVersion();
-    }
+    public List<Expense> Expenses { get; protected set; } = new();
     #endregion
 }

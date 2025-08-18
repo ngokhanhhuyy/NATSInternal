@@ -2,14 +2,9 @@
 
 public class UserPasswordChangeRequestDto : IRequestDto
 {
-    public string CurrentPassword { get; set; }
-    public string NewPassword { get; set; }
-    public string ConfirmationPassword { get; set; }
-
-    public void TransformValues()
-    {
-        CurrentPassword = CurrentPassword?.ToNullIfEmpty();
-        NewPassword = NewPassword?.ToNullIfEmpty();
-        ConfirmationPassword = ConfirmationPassword?.ToNullIfEmpty();
-    }
+    #region Properties
+    public string CurrentPassword { get; set; } = string.Empty;
+    public string NewPassword { get; set; } = string.Empty;
+    public string ConfirmationPassword { get; set; } = string.Empty;
+    #endregion
 }

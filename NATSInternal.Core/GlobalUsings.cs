@@ -15,6 +15,7 @@ global using Microsoft.Extensions.DependencyInjection;
 global using MySqlConnector;
 global using NATSInternal.Core.Constants;
 global using NATSInternal.Core.Contracts;
+global using NATSInternal.Core.DbContext;
 global using NATSInternal.Core.Dtos;
 global using NATSInternal.Core.Enums;
 global using NATSInternal.Core.Entities;

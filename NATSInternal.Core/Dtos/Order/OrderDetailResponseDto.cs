@@ -2,7 +2,7 @@ namespace NATSInternal.Core.Dtos;
 
 public class OrderDetailResponseDto : IExportProductDetailResponseDto<
         OrderItemResponseDto,
-        OrderPhotoResponseDto,
+        PhotoResponseDto,
         OrderUpdateHistoryResponseDto,
         OrderItemUpdateHistoryDataDto,
         OrderExistingAuthorizationResponseDto>
@@ -17,7 +17,7 @@ public class OrderDetailResponseDto : IExportProductDetailResponseDto<
     public List<OrderItemResponseDto> Items { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
     public UserBasicResponseDto CreatedUser { get; set; }
-    public List<OrderPhotoResponseDto> Photos { get; set; }
+    public List<PhotoResponseDto> Photos { get; set; }
     public OrderExistingAuthorizationResponseDto Authorization { get; set; }
     public List<OrderUpdateHistoryResponseDto> UpdateHistories { get; set; }
 
@@ -40,10 +40,10 @@ public class OrderDetailResponseDto : IExportProductDetailResponseDto<
         VatAmount = order.VatAmount;
         Note = order.Note;
         IsLocked = order.IsLocked;
-        Items = order.Items?.Select(i => new OrderItemResponseDto(i)).ToList();
+        Items = order.OrderProducts?.Select(i => new OrderItemResponseDto(i)).ToList();
         Customer = new CustomerBasicResponseDto(order.Customer);
         CreatedUser = new UserBasicResponseDto(order.CreatedUser);
-        Photos = order.Photos?.Select(p => new OrderPhotoResponseDto(p)).ToList();
+        Photos = order.Photos?.Select(p => new PhotoResponseDto(p)).ToList();
         Authorization = authorization;
         UpdateHistories = order.UpdateHistories?
             .Select(uh => new OrderUpdateHistoryResponseDto(uh))

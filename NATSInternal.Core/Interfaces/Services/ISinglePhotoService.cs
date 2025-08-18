@@ -3,7 +3,7 @@ namespace NATSInternal.Core.Interfaces.Services;
 /// <summary>
 /// A service to handle the photo-related operations.
 /// </summary>
-internal interface ISinglePhotoService<T> where T : class, IHasSinglePhotoEntity<T>, new()
+internal interface ISinglePhotoService<T> where T : class, IHasThumbnailEntity<T>, new()
 {
     /// <summary>
     /// Creates a new photo and save it into a specific folder.

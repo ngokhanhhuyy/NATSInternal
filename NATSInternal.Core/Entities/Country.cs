@@ -1,12 +1,13 @@
 namespace NATSInternal.Core.Entities;
 
+[EntityTypeConfiguration(typeof(CountryEntityConfigration))]
 [Table("countries")]
-internal class Country : IHasIdEntity<Country>
+internal class Country : AbstractEntity<Country>, IHasIdEntity<Country>
 {
     #region Properties
     [Column("id")]
     [Key]
-    public Guid Id { get; private set; } = Guid.NewGuid();
+    public Guid Id { get; protected set; } = Guid.NewGuid();
 
     [Column("name")]
     [Required]
@@ -20,21 +21,6 @@ internal class Country : IHasIdEntity<Country>
     #endregion
 
     #region NavigationProperties
-    public List<Brand> Brands { get; private set; } = new();
-    #endregion
-
-    #region StaticMethods
-    public static void ConfigureModel(EntityTypeBuilder<Country> entityBuilder)
-    {
-        entityBuilder.HasKey(c => c.Id);
-        entityBuilder
-            .HasIndex(c => c.Name)
-            .IsUnique()
-            .HasDatabaseName("IX__countries__name");
-        entityBuilder
-            .HasIndex(c => c.Code)
-            .IsUnique()
-            .HasDatabaseName("IX__countries__code");
-    }
+    public List<Brand> Brands { get; protected set; } = new();
     #endregion
 }

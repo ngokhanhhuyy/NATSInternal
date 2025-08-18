@@ -1,7 +1,9 @@
 ﻿namespace NATSInternal.Core.Dtos;
 
-public class UserListResponseDto : IListResponseDto<UserBasicResponseDto>
+public class UserListResponseDto : IPageableListResponseDto<UserBasicResponseDto>
 {
-    public int PageCount { get; set; }
-    public List<UserBasicResponseDto> Items { get; set; }
+    #region Properties
+    public int PageCount { get; set; } = 0;
+    public List<UserBasicResponseDto> Items { get; set; } = new();
+    #endregion
 }

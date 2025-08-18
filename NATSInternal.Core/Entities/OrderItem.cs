@@ -1,11 +1,15 @@
 namespace NATSInternal.Core.Entities;
 
 [Table("order_items")]
-internal class OrderItem : AbstractHasIdEntity<OrderItem>
+internal class OrderItem : AbstractEntity<OrderItemEntityConfiguration>
 {
     #region Fields
     private Order? _order;
     private Product? _product;
+    #endregion
+
+    #region Constructors
+    protected OrderItem() { }
     #endregion
 
     #region Properties
@@ -70,28 +74,40 @@ internal class OrderItem : AbstractHasIdEntity<OrderItem>
     #endregion
 
     #region StaticMethods
-    public static void ConfigureModel(EntityTypeBuilder<OrderItem> entityBuilder)
+    public static OrderItem CreateForService(
+        string name,
+        long amountBeforeVatPerUnit,
+        long vatAmountPerUnit,
+        int quantity,
+        Guid orderId)
     {
-        entityBuilder.HasKey(oi => oi.Id);
-        entityBuilder
-            .HasOne(oi => oi.Order)
-            .WithMany(o => o.Items)
-            .HasForeignKey(oi => oi.OrderId)
-            .HasConstraintName("FK__order_items__orders__order_id")
-            .OnDelete(DeleteBehavior.Cascade)
-            .IsRequired();
-        entityBuilder
-            .HasOne(oi => oi.Product)
-            .WithMany(p => p.OrderItems)
-            .HasForeignKey(oi => oi.ProductId)
-            .HasConstraintName("FK__order_items__products__product_id")
-            .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder
-            .HasIndex(o => o.Type)
-            .HasDatabaseName("IX__order_items__type");
-        entityBuilder
-            .Property(c => c.RowVersion)
-            .IsRowVersion();
+        return new()
+        {
+            Name = name,
+            Type = OrderItemType.Service,
+            AmountBeforeVatPerUnit = amountBeforeVatPerUnit,
+            VatAmountPerUnit = vatAmountPerUnit,
+            Quantity = quantity,
+            OrderId = orderId
+        };
+    }
+
+    public static OrderItem CreateForProduct(
+        long amountBeforeVatPerUnit,
+        long vatAmountPerUnit,
+        int quantity,
+        Guid orderId,
+        Guid productId)
+    {
+        return new()
+        {
+            Type = OrderItemType.Product,
+            AmountBeforeVatPerUnit = amountBeforeVatPerUnit,
+            VatAmountPerUnit = vatAmountPerUnit,
+            Quantity = quantity,
+            OrderId = orderId,
+            ProductId = productId
+        };
     }
     #endregion
 }

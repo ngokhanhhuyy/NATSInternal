@@ -1,25 +1,25 @@
 namespace NATSInternal.Core.Entities;
 
-internal class ProductCategory : IUpsertableEntity<ProductCategory>
+[EntityTypeConfiguration(typeof(ProductCategoryEntityConfiguration))]
+[Table("product_categories")]
+internal class ProductCategory : AbstractEntity<ProductCategory>, IUpsertableEntity<ProductCategory>
 {
+    #region Properties
+    [Column("id")]
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; protected set; } = Guid.NewGuid();
 
+    [Column("name")]
     [Required]
     [StringLength(30)]
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
+    [Column("created_datetime")]
     [Required]
     public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
+    #endregion
 
-    // Relationships
-    public virtual List<Product> Products { get; set; }
-
-    // Model configurations.
-    public static void ConfigureModel(EntityTypeBuilder<ProductCategory> entityBuilder)
-    {
-        entityBuilder.HasKey(pc => pc.Id);
-        entityBuilder.HasIndex(pc => pc.Name)
-            .IsUnique();
-    }
+    #region NavigationProperties
+    public List<Product> Products { get; protected set; } = new();
+    #endregion
 }

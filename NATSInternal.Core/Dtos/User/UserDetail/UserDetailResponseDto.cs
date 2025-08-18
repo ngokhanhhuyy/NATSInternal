@@ -2,30 +2,24 @@ namespace NATSInternal.Core.Dtos;
 
 public class UserDetailResponseDto
 {
-    public int Id { get; set; }
+    #region Properties
+    public Guid Id { get; set; }
     public string UserName { get; set; }
-    public UserPersonalInformationResponseDto PersonalInformation { get; set; }
-    public UserUserInformationResponseDto UserInformation { get; set; }
-    public UserDetailAuthorizationResponseDto Authorization { get; set; }
-    
-    internal UserDetailResponseDto(User user)
-    {
-        MapFromEntity(user);
-    }
+    public List<RoleDetailResponseDto> Roles { get; set; }
+    public UserDetailAuthorizationResponseDto? Authorization { get; set; }
+    #endregion
 
-    internal UserDetailResponseDto(
-            User user,
-            UserDetailAuthorizationResponseDto authorization)
-    {
-        MapFromEntity(user);
-        Authorization = authorization;
-    }
-    
-    private void MapFromEntity(User user)
+    #region Constructors
+    internal UserDetailResponseDto(User user)
     {
         Id = user.Id;
         UserName = user.UserName;
-        PersonalInformation = new UserPersonalInformationResponseDto(user);
-        UserInformation = new UserUserInformationResponseDto(user);
+        Roles = user.Roles.Select(r => new RoleDetailResponseDto(r)).ToList();
     }
+
+    internal UserDetailResponseDto(User user, UserDetailAuthorizationResponseDto authorization) : this(user)
+    {
+        Authorization = authorization;
+    }
+    #endregion
 }

@@ -1,5 +1,6 @@
 ﻿namespace NATSInternal.Core.Entities;
 
+[EntityTypeConfiguration(typeof(AnnouncementEntityConfiguration))]
 [Table("announcements")]
 internal class Announcement : AbstractEntity<Announcement>, IUpsertableEntity<Announcement>
 {

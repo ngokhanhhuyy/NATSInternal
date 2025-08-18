@@ -2,6 +2,8 @@ namespace NATSInternal.Core.Interfaces.Dtos;
 
 internal interface IMinimalResponseDto
 {
-    int Id { get; }
+    #region Properties
+    Guid Id { get; }
     string Name { get; }
+    #endregion
 }

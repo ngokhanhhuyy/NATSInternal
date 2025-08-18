@@ -2,8 +2,9 @@ using Bogus.Extensions;
 
 namespace NATSInternal.Core.Entities;
 
+[EntityTypeConfiguration(typeof(ProductEntityConfiguration))]
 [Table("products")]
-internal class Product : AbstractHasIdEntity<Product>, IHasPhotosEntity<Product>
+internal class Product : AbstractEntity<Product>, IHasPhotosEntity<Product>
 {
     #region Fields
     private string _name = string.Empty;
@@ -12,6 +13,10 @@ internal class Product : AbstractHasIdEntity<Product>, IHasPhotosEntity<Product>
     #endregion
 
     #region Properties
+    [Column("id")]
+    [Key]
+    public Guid Id { get; protected set; } = Guid.NewGuid();
+
     [Column("name")]
     [BackingField(nameof(_name))]
     [Required]
@@ -57,7 +62,7 @@ internal class Product : AbstractHasIdEntity<Product>, IHasPhotosEntity<Product>
     public bool IsDiscontinued { get; set; }
 
     [Column("created_datetime")]
-    public DateTime CreatedDateTime { get; private set; } = 
+    public DateTime CreatedDateTime { get; private set; } = DateTime.UtcNow.ToApplicationTime();
 
     [Column("last_updated_datetime")]
     public DateTime? LastUpdatedDateTime { get; set; }
@@ -102,30 +107,8 @@ internal class Product : AbstractHasIdEntity<Product>, IHasPhotosEntity<Product>
         }
     }
 
-    public List<OrderItem> OrderItems { get; private set; } = new();
-    public List<Photo> Photos { get; private set; } = new();
-    #endregion
-
-    #region StaticMethods
-    public static void ConfigureModel(EntityTypeBuilder<Product> entityBuilder)
-    {
-        entityBuilder.HasKey(p => p.Id);
-        entityBuilder
-            .HasOne(p => p.Brand)
-            .WithMany(b => b.Products)
-            .HasForeignKey(p => p.BrandId)
-            .HasConstraintName("FK__products__brands__brand_id")
-            .OnDelete(DeleteBehavior.SetNull);
-        entityBuilder
-            .HasOne(p => p.Category)
-            .WithMany(pc => pc.Products)
-            .HasForeignKey(p => p.CategoryId)
-            .HasConstraintName("FK__products__product_categories__category_id")
-            .OnDelete(DeleteBehavior.SetNull);
-        entityBuilder
-            .HasIndex(p => p.Name)
-            .IsUnique()
-            .HasDatabaseName("IX__products__name");
-    }
+    public List<SupplyItem> SupplyItems { get; protected set; } = new();
+    public List<OrderItem> OrderItems { get; protected set; } = new();
+    public List<Photo> Photos { get; protected set; } = new();
     #endregion
 }

@@ -1,42 +1,39 @@
 namespace NATSInternal.Core.Entities;
 
-internal class Permission : IHasIdEntity<Permission>
+[Table("permissions")]
+internal class Permission : AbstractHasIdEntity<Permission>
 {
     #region Fields
     private Role? _role;
     #endregion
 
     #region Properties
+    [Column("id")]
     [Key]
-    public Guid Id { get; private set; } = Guid.NewGuid();
+    public override Guid Id { get; protected set; } = Guid.NewGuid();
 
+    [Column("name")]
     [Required]
     [StringLength(PermissionContracts.NameMaxLength)]
     public required string Name { get; set; }
     #endregion
 
     #region ForeignKeyProperties
+    [Column("role_id")]
+    [Required]
     public required Guid RoleId { get; set; }
     #endregion
 
     #region NavigationProperties
-    // Navigation properties.
+    [BackingField(nameof(_role))]
     public Role Role
     {
-        get => _role ?? throw new InvalidOperationException(
-            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(Role)));
-        set => _role = value;
-    }
-    #endregion
-
-    #region Methods
-    public static void ConfigureModel(EntityTypeBuilder<Permission> entityBuilder)
-    {
-        entityBuilder.HasKey(p => p.Id);
-        entityBuilder.HasOne(p => p.Role)
-            .WithMany(r => r.Permissions)
-            .HasForeignKey(p => p.RoleId)
-            .IsRequired();
+        get => GetFieldOrThrowIfNull(_role);
+        set
+        {
+            RoleId = value.Id;
+            _role = value;
+        }
     }
     #endregion
 }

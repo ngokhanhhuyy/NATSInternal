@@ -1,72 +1,57 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+﻿namespace NATSInternal.Core.Entities;
 
-namespace NATSInternal.Core.Entities;
-
-internal class Notification : IUpsertableEntity<Notification>
+[EntityTypeConfiguration(typeof(NotificationEntityConfiguration))]
+[Table("notifications")]
+internal class Notification : AbstractEntity<Notification>, IUpsertableEntity<Notification>
 {
-    [Key]
-    public int Id { get; set; }
+    #region Fields
+    private User? _createdUser;
+    #endregion
 
+    #region Properties
+    [Column("id")]
+    [Key]
+    public Guid Id { get; protected set; } = Guid.NewGuid();
+
+    [Column("type")]
     [Required]
     public NotificationType Type { get; set; }
 
+    [Column("created_datetime")]
     [Required]
-    public DateTime CreatedDateTime { get; set; }
-    
-    public List<int> ResourceIds { get; set; }
-    
-    // Foreign key.
-    public int? CreatedUserId { get; set; }
+    public DateTime CreatedDateTime { get; protected set; } = DateTime.UtcNow.ToApplicationTime();
 
-    // Navigation properties.
-    public virtual User CreatedUser { get; set; }
-    public virtual List<User> ReceivedUsers { get; set; }
-    public virtual List<User> ReadUsers { get; set; }
-    
-    // Computed properies.
-    [NotMapped]
-    public int ResourcePrimaryId => ResourceIds[0];
-    
-    [NotMapped]
-    public int ResourceSecondaryId => ResourceIds[1];
-    
-    // Model configurations.
-    public static void ConfigureModel(EntityTypeBuilder<Notification> entityBuilder)
+    [Column("resource_ids")]
+    [StringLength(5000)]
+    public List<Guid> ResourceIds { get; set; } = new();
+    #endregion
+
+    #region ForeignKeyProperties
+    [Column("created_user_id")]
+    public Guid? CreatedUserId { get; set; }
+    #endregion
+
+    #region NavigationProperties
+    [BackingField(nameof(_createdUser))]
+    public User? CreatedUser
     {
-        entityBuilder.HasKey(n => n.Id);
-        entityBuilder.Property(n => n.ResourceIds)
-            .HasConversion(new ValueConverter<List<int>, string>(
-                v => JsonSerializer.Serialize(v, JsonSerializerOptions.Default),
-                v => JsonSerializer.Deserialize<List<int>>(
-                    v,
-                    JsonSerializerOptions.Default)))
-            .HasColumnType("JSON");
-        entityBuilder.HasOne(n => n.CreatedUser)
-            .WithMany(u => u.CreatedNotifications)
-            .HasForeignKey(n => n.CreatedUserId)
-            .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder.HasMany(n => n.ReceivedUsers)
-            .WithMany(u => u.ReceivedNotifications)
-            .UsingEntity<NotificationReceivedUser>(
-                notificationReceivedUser => notificationReceivedUser
-                    .HasOne(nru => nru.ReceivedUser)
-                    .WithMany()
-                    .HasForeignKey(nru => nru.ReceivedUserId),
-                notificationReceivedUser => notificationReceivedUser
-                    .HasOne(nru => nru.ReceivedNotification)
-                    .WithMany()
-                    .HasForeignKey(nru => nru.ReceivedNotificationId));
-        entityBuilder.HasMany(n => n.ReadUsers)
-            .WithMany(u => u.ReadNotifications)
-            .UsingEntity<NotificationReadUser>(
-                notificationReadUser => notificationReadUser
-                    .HasOne(nru => nru.ReadUser)
-                    .WithMany()
-                    .HasForeignKey(nru => nru.ReadUserId)
-                ,
-                notificationReceivedUser => notificationReceivedUser
-                    .HasOne(nru => nru.ReadNotification)
-                    .WithMany()
-                    .HasForeignKey(nru => nru.ReadNotificationId));
+        get => _createdUser;
+        set
+        {
+            CreatedUserId = value?.Id;
+            _createdUser = value;
+        }
     }
+
+    public List<User> ReceivedUsers { get; protected set; } = new();
+    public List<User> ReadUsers { get; protected set; } = new();
+    #endregion
+
+    #region ComputedProperties
+    [NotMapped]
+    public Guid ResourcePrimaryId => ResourceIds[0];
+
+    [NotMapped]
+    public Guid ResourceSecondaryId => ResourceIds[1];
+    #endregion
 }

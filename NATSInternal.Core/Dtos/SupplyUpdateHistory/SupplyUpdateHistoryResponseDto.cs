@@ -1,11 +1,13 @@
 namespace NATSInternal.Core.Dtos;
 
-public class SupplyUpdateHistoryResponseDto
-        : IHasProductUpdateHistoryResponseDto<SupplyItemUpdateHistoryDataDto>
+public class SupplyUpdateHistoryResponseDto : IHasProductUpdateHistoryResponseDto<SupplyItemUpdateHistoryDataDto>
 {
-    private readonly SupplyUpdateHistoryDataDto _oldData;
-    private readonly SupplyUpdateHistoryDataDto _newData;
+    #region Fields
+    private readonly SupplyUpdateHistoryData _oldData;
+    private readonly SupplyUpdateHistoryData _newData;
+    #endregion
     
+    #region Properties
     public DateTime UpdatedDateTime { get; set; }
     public UserBasicResponseDto UpdatedUser { get; set; }
     public string UpdatedReason { get; set; }
@@ -21,15 +23,18 @@ public class SupplyUpdateHistoryResponseDto
     
     public List<SupplyItemUpdateHistoryDataDto> OldItems => _oldData.Items;
     public List<SupplyItemUpdateHistoryDataDto> NewItems => _newData.Items;
+    #endregion
+
+    #region Constructors
     
-    internal SupplyUpdateHistoryResponseDto(SupplyUpdateHistory updateHistory)
+    internal SupplyUpdateHistoryResponseDto(UpdateHistory updateHistory)
     {
-        _oldData = JsonSerializer
-            .Deserialize<SupplyUpdateHistoryDataDto>(updateHistory.OldData);
-        _newData = JsonSerializer
-            .Deserialize<SupplyUpdateHistoryDataDto>(updateHistory.NewData);
+        _oldData = updateHistory.GetOldData<SupplyUpdateHistoryData>();
+        _newData = updateHistory.GetNewData<SupplyUpdateHistoryData>();
+
         UpdatedDateTime = updateHistory.UpdatedDateTime;
         UpdatedUser = new UserBasicResponseDto(updateHistory.UpdatedUser);
         UpdatedReason = updateHistory.Reason;
     }
+    #endregion
 }

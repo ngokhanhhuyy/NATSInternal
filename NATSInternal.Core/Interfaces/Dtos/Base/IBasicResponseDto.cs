@@ -2,5 +2,7 @@ namespace NATSInternal.Core.Interfaces.Dtos;
 
 internal interface IBasicResponseDto
 {
-    int Id { get; }
+    #region Properties
+    Guid Id { get; }
+    #endregion
 }

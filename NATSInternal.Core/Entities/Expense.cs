@@ -1,11 +1,12 @@
 namespace NATSInternal.Core.Entities;
 
+[EntityTypeConfiguration(typeof(ExpenseEntityConfiguration))]
 [Table("expenses")]
 internal class Expense
     :
-        AbstractHasStatsEntity<Expense>,
-        ICostEntity<Expense, ExpenseUpdateHistory, ExpenseUpdateHistoryData>,
-        IHasPhotosEntity<Expense, ExpensePhoto>
+        AbstractEntity<Expense>,
+        ICostEntity<Expense, ExpenseUpdateHistoryData>,
+        IHasPhotosEntity<Expense>
 {
     #region Fields
     private User? _createdUser;
@@ -15,7 +16,7 @@ internal class Expense
     #region Properties
     [Column("id")]
     [Key]
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; protected set; } = Guid.NewGuid();
 
     [Column("amount")]
     [Required]
@@ -25,12 +26,16 @@ internal class Expense
     [Required]
     public DateTime StatsDateTime { get; set; }
 
+    [Column("created_datetime")]
+    [Required]
+    public DateTime CreatedDateTime { get; protected set; } = DateTime.UtcNow.ToApplicationTime();
+
     [Column("category")]
     [Required]
     public ExpenseCategory Category { get; set; }
 
     [Column("note")]
-    [StringLength(ExpenseContracts.NoteMaxLength)]
+    [StringLength(HasStatsContracts.NoteMaxLength)]
     public string? Note { get; set; }
 
     [Column("is_deleted")]
@@ -77,8 +82,8 @@ internal class Expense
         }
     }
 
-    public List<ExpensePhoto> Photos { get; private set; } = new();
-    public List<ExpenseUpdateHistory> UpdateHistories { get; private set; } = new();
+    public List<Photo> Photos { get; protected set; } = new();
+    public List<UpdateHistory> UpdateHistories { get; protected set; } = new();
     #endregion
 
     #region ComputedProperties
@@ -99,35 +104,5 @@ internal class Expense
         .OrderBy(uh => uh.UpdatedDateTime)
         .Select(uh => uh.UpdatedUser)
         .LastOrDefault();
-    #endregion
-
-    #region StaticMethods
-    public static void ConfigureModel(EntityTypeBuilder<Expense> entityBuilder)
-    {
-        entityBuilder.HasKey(ex => ex.Id);
-        entityBuilder
-            .HasOne(ex => ex.CreatedUser)
-            .WithMany(u => u.Expenses)
-            .HasForeignKey(ex => ex.CreatedUserId)
-            .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("FK__expenses__users__created_user_id")
-            .IsRequired();
-        entityBuilder
-            .HasOne(ex => ex.Payee)
-            .WithMany(exp => exp.Expenses)
-            .HasForeignKey(exp => exp.PayeeId)
-            .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("FK__expenses__expense_payees__payee_id")
-            .IsRequired();
-        entityBuilder
-            .HasIndex(e => e.StatsDateTime)
-            .HasDatabaseName("IX__expenses__stats_datetime");
-        entityBuilder
-            .HasIndex(e => e.IsDeleted)
-            .HasDatabaseName("IX__expenses__is_deleted");
-        entityBuilder
-            .Property(c => c.RowVersion)
-            .IsRowVersion();
-    }
     #endregion
 }

@@ -1,20 +1,44 @@
 ﻿namespace NATSInternal.Core.Entities;
 
-internal class NotificationReceivedUser : IEntity<NotificationReceivedUser>
+[Table("notification_received_users")]
+internal class NotificationReceivedUser : AbstractEntity<NotificationReadUser>, IEntity<NotificationReceivedUser>
 {
-    [Key]
-    public int ReceivedNotificationId { get; set; }
+    #region Fields
+    private Notification? _receivedNotification;
+    private User? _receivedUser;
+    #endregion
 
+    #region Properties
+    [Column("received_notification_id")]
     [Key]
-    public int ReceivedUserId { get; set; }
+    public Guid ReceivedNotificationId { get; set; }
 
-    // Navigation properties.
-    public virtual Notification ReceivedNotification { get; set; }
-    public virtual User ReceivedUser { get; set; }
-    
-    // Model configurations.
-    public static void ConfigureModel(EntityTypeBuilder<NotificationReceivedUser> builder)
+    [Column("received_user_id")]
+    [Key]
+    public Guid ReceivedUserId { get; set; }
+    #endregion
+
+    #region NavigationProperties
+    [BackingField(nameof(_receivedNotification))]
+    public Notification ReceivedNotification
     {
-        builder.HasKey(nru => new { nru.ReceivedNotificationId, nru.ReceivedUserId });
+        get => GetFieldOrThrowIfNull(_receivedNotification);
+        set
+        {
+            ReceivedNotificationId = value.Id;
+            _receivedNotification = value;
+        }
     }
+
+    [BackingField(nameof(_receivedUser))]
+    public User ReceivedUser
+    {
+        get => GetFieldOrThrowIfNull(_receivedUser);
+        set
+        {
+            ReceivedUserId = value.Id;
+            _receivedUser = value;
+        }
+    }
+    #endregion
 }

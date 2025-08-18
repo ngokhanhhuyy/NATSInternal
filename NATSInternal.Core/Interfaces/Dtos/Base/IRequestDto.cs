@@ -6,10 +6,8 @@ namespace NATSInternal.Core.Interfaces.Dtos;
 public interface IRequestDto
 {
     /// <summary>
-    /// Transform the values of all properties which represent the absence of data or meanless
-    /// value into the default value.
+    /// Transform the values of all properties which represent the absence of data or meanless value into the default
+    /// value.
     /// </summary>
-    void TransformValues()
-    {
-    }
+    void TransformValues();
 }

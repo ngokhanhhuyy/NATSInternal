@@ -3,7 +3,7 @@ namespace NATSInternal.Core.Dtos;
 public class OrderItemRequestDto : IProductExportableItemRequestDto
 {
     public int? Id { get; set; }
-    public long ProductAmountPerUnit { get; set; }
+    public long AmountBeforeVatPerUnit { get; set; }
     public long VatAmountPerUnit { get; set; }
     public int Quantity { get; set; }
     public int ProductId { get; set; }

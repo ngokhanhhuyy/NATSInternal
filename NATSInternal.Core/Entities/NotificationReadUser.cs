@@ -1,20 +1,44 @@
 ﻿namespace NATSInternal.Core.Entities;
 
-internal class NotificationReadUser : IEntity<NotificationReadUser>
+[Table("notification_read_users")]
+internal class NotificationReadUser : AbstractEntity<NotificationReadUser>
 {
-    [Key]
-    public int ReadNotificationId { get; set; }
+    #region Fields
+    private Notification? _readNotification;
+    private User? _readUser;
+    #endregion
 
+    #region ForeignKeyProperties
+    [Column("read_notification_id")]
     [Key]
-    public int ReadUserId { get; set; }
+    public Guid ReadNotificationId { get; set; }
 
-    // Navigation properties.
-    public virtual Notification ReadNotification { get; set; }
-    public virtual User ReadUser { get; set; }
-    
-    // Model configurations.
-    public static void ConfigureModel(EntityTypeBuilder<NotificationReadUser> entityBuilder)
+    [Column("read_user_id")]
+    [Key]
+    public Guid ReadUserId { get; set; }
+    #endregion
+
+    #region NavigationProperties
+    [BackingField(nameof(_readNotification))]
+    public Notification ReadNotification
     {
-        entityBuilder.HasKey(nru => new { nru.ReadNotificationId, nru.ReadUserId });
+        get => GetFieldOrThrowIfNull(_readNotification);
+        set
+        {
+            ReadNotificationId = value.Id;
+            _readNotification = value;
+        }
     }
+    
+    [BackingField(nameof(_readUser))]
+    public User ReadUser
+    {
+        get => GetFieldOrThrowIfNull(_readUser);
+        set
+        {
+            ReadUserId = value.Id;
+            _readUser = value;
+        }
+    }
+    #endregion
 }

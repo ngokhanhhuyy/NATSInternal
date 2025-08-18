@@ -264,7 +264,7 @@ internal class StatsService : IStatsService
         }
 
         Task<List<Order>> ordersTask = orderContext.Orders
-            .Include(o => o.Items).ThenInclude(oi => oi.Product)
+            .Include(o => o.OrderProducts).ThenInclude(oi => oi.Product)
             .Where(o =>
                 o.StatsDateTime.Date >= minDateTime &&
                 o.StatsDateTime.Date <= maxDateTime)
@@ -282,7 +282,7 @@ internal class StatsService : IStatsService
         
         foreach (Order order in ordersTask.Result)
         {
-            foreach (OrderItem orderItem in order.Items)
+            foreach (OrderItem orderItem in order.OrderProducts)
             {
                 TopSoldProductResponseDto responseDto = responseDtos
                     .SingleOrDefault(dto => dto.Id == orderItem.Product.Id);
@@ -382,7 +382,7 @@ internal class StatsService : IStatsService
             .ToListAsync();
         Task<List<Order>> ordersTask = orderContext.Orders
             .Include(o => o.Customer)
-            .Include(o => o.Items)
+            .Include(o => o.OrderProducts)
             .Where(o =>
                 o.StatsDateTime.Date >= minDateTime &&
                 o.StatsDateTime.Date <= maxDateTime)
@@ -506,7 +506,7 @@ internal class StatsService : IStatsService
             .ToListAsync();
 
         Task<List<Order>> ordersTask = orderContext.Orders
-            .Include(order => order.Items)
+            .Include(order => order.OrderProducts)
             .OrderByDescending(order => order.StatsDateTime)
             .Take(requestDto.Count)
             .ToListAsync();
@@ -618,6 +618,6 @@ internal class StatsService : IStatsService
     private static long CalculateExportProductItemAmount<TItemEntity>(TItemEntity item)
         where TItemEntity : class, IExportProductItemEntity<TItemEntity>, new()
     {
-        return (item.ProductAmountPerUnit + item.VatAmountPerUnit) * item.Quantity;
+        return (item.AmountPerUnit + item.VatAmountPerUnit) * item.Quantity;
     }
 }

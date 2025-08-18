@@ -9,7 +9,7 @@ namespace NATSInternal.Core.Services;
 /// The type of the entity with which the photos are associate.
 /// </typeparam>
 internal class SinglePhotoService<T> : ISinglePhotoService<T>
-    where T : class, IHasSinglePhotoEntity<T>, new()
+    where T : class, IHasThumbnailEntity<T>, new()
 {
     private readonly IWebHostEnvironment _environment;
     protected readonly string _folderName = typeof(T).Name.PascalCaseToSnakeCase();

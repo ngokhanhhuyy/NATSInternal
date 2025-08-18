@@ -148,7 +148,7 @@ internal abstract class HasProductAbstractService<
             // Initialize entity.
             TItem item = new TItem
             {
-                ProductAmountPerUnit = itemRequestDto.ProductAmountPerUnit,
+                AmountPerUnit = itemRequestDto.AmountBeforeVatPerUnit,
                 Quantity = itemRequestDto.Quantity,
                 Product = product
             };
@@ -252,7 +252,7 @@ internal abstract class HasProductAbstractService<
                         continue;
                     }
 
-                    item.ProductAmountPerUnit = itemRequestDto.ProductAmountPerUnit;
+                    item.AmountPerUnit = itemRequestDto.AmountBeforeVatPerUnit;
                     item.Product.StockingQuantity -= item.Quantity;
                     item.Quantity = itemRequestDto.Quantity;
                     itemUpdatingAssigner?.Invoke(item, itemRequestDto);
@@ -276,7 +276,7 @@ internal abstract class HasProductAbstractService<
                     // Initialize new supply item.
                     item = new TItem
                     {
-                        ProductAmountPerUnit = itemRequestDto.ProductAmountPerUnit,
+                        AmountPerUnit = itemRequestDto.AmountBeforeVatPerUnit,
                         Quantity = itemRequestDto.Quantity,
                         Product = product
                     };

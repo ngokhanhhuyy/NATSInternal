@@ -1,37 +1,50 @@
 namespace NATSInternal.Core.Entities;
 
+[EntityTypeConfiguration(typeof(SupplyEntityConfiguration))]
+[Table("supplies")]
 internal class Supply
     :
-        AbstractHasStatsEntity,
-        IHasProductEntity<Supply, SupplyItem, SupplyPhoto, SupplyUpdateHistory>
+        AbstractEntity<Supply>,
+        IHasProductEntity<Supply, SupplyItem, SupplyUpdateHistoryData>
 {
     #region Fields
     private User? _createdUser;
     #endregion
 
     #region Properties
+    [Column("id")]
     [Key]
-    public Guid Id { get; private set; } = Guid.NewGuid();
+    public Guid Id { get; protected set; } = Guid.NewGuid();
 
+    [Column("stats_datetime")]
     [Required]
     public DateTime StatsDateTime { get; set; }
 
+    [Column("created_datetime")]
+    [Required]
+    public DateTime CreatedDateTime { get; protected set; } = DateTime.UtcNow.ToApplicationTime();
+
+    [Column("shipment_free")]
     [Required]
     public long ShipmentFee { get; set; } = 0;
 
-    [StringLength(255)]
+    [Column("note")]
+    [StringLength(HasStatsContracts.NoteMaxLength)]
     public string? Note { get; set; }
 
+    [Column("is_deleted")]
     [Required]
     public bool IsDeleted { get; set; }
     #endregion
 
     #region ForeignKeyProperties
+    [Column("created_user_id")]
     [Required]
-    public int CreatedUserId { get; set; }
+    public Guid CreatedUserId { get; set; }
     #endregion
 
     #region ConcurrencyOperationTrackingProperty
+    [Column("row_version")]
     [Timestamp]
     public byte[]? RowVersion { get; set; }
     #endregion
@@ -40,25 +53,28 @@ internal class Supply
     [BackingField(nameof(_createdUser))]
     public User CreatedUser
     {
-        get => _createdUser ?? throw new InvalidOperationException(
-            ErrorMessages.NavigationPropertyHasNotBeenLoaded.ReplacePropertyName(nameof(CreatedUser)));
-        set => _createdUser = value;
+        get => GetFieldOrThrowIfNull(_createdUser);
+        set
+        {
+            CreatedUserId = value.Id;
+            _createdUser = value;
+        }
     }
 
-    public List<SupplyItem> Items { get; private set; } = new();
-    public List<SupplyPhoto> Photos { get; private set; } = new();
-    public List<SupplyUpdateHistory> UpdateHistories { get; private set; } = new();
+    public List<SupplyItem> Items { get; protected set; } = new();
+    public List<Photo> Photos { get; protected set; } = new();
+    public List<UpdateHistory> UpdateHistories { get; protected set; } = new();
     #endregion
 
     #region ComputedProperties
     [NotMapped]
-    public string? ThumbnailUrl => Photos?
+    public string? ThumbnailUrl => Photos
         .OrderBy(p => p.Id)
         .Select(p => p.Url)
         .FirstOrDefault();
 
     [NotMapped]
-    public long ItemAmount => Items.Sum(i => i.ProductAmountPerUnit * i.Quantity);
+    public long ItemAmount => Items.Sum(i => i.AmountPerUnit * i.Quantity);
 
     [NotMapped]
     public long Amount => ItemAmount + ShipmentFee;
@@ -81,21 +97,5 @@ internal class Supply
         .OrderBy(uh => uh.UpdatedDateTime)
         .Select(uh => uh.UpdatedUser)
         .LastOrDefault();
-    #endregion
-
-    #region StaticMethods
-    public static void ConfigureModel(EntityTypeBuilder<Supply> entityBuilder)
-    {
-        entityBuilder.HasKey(s => s.Id);
-        entityBuilder.HasOne(s => s.CreatedUser)
-            .WithMany(u => u.Supplies)
-            .HasForeignKey(s => s.CreatedUserId)
-            .OnDelete(DeleteBehavior.Restrict);
-        entityBuilder.HasIndex(s => s.StatsDateTime)
-            .IsUnique();
-        entityBuilder.HasIndex(s => s.IsDeleted);
-        entityBuilder.Property(c => c.RowVersion)
-            .IsRowVersion();
-    }
     #endregion
 }

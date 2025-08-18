@@ -29,6 +29,7 @@ internal class DebtEntityConfiguration : IEntityTypeConfiguration<Debt>
         entityBuilder
             .HasIndex(d => d.IsDeleted)
             .HasDatabaseName("IX__debts__is_deleted");
+        entityBuilder.HasQueryFilter(d => !d.IsDeleted);
     }
     #endregion
 }

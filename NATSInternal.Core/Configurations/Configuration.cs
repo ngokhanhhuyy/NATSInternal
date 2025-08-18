@@ -122,8 +122,8 @@ public static class ConfigurationExtensions
             IMonthYearService<Supply, SupplyUpdateHistory>,
             MonthYearService<Supply, SupplyUpdateHistory>>();
         services.AddScoped<
-            IMonthYearService<Order, OrderUpdateHistory>,
-            MonthYearService<Order, OrderUpdateHistory>>();
+            IMonthYearService<Order, UpdateHistory>,
+            MonthYearService<Order, UpdateHistory>>();
         services.AddScoped<
             IMonthYearService<Treatment, TreatmentUpdateHistory>,
             MonthYearService<Treatment, TreatmentUpdateHistory>>();

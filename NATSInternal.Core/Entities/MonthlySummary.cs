@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Core.Entities;
 
 [Table("monthly_summaries")]
-internal class MonthlySummary : IHasIdEntity<MonthlySummary>
+internal class MonthlySummary : AbstractEntity<MonthlySummary>, IHasIdEntity<MonthlySummary>
 {
     #region Properties
     [Column("id")]
@@ -80,7 +80,7 @@ internal class MonthlySummary : IHasIdEntity<MonthlySummary>
     #endregion
 
     #region NavigationProperties
-    public List<DailySummary> DailyStats { get; private set; } = new();
+    public List<DailySummary> DailyStats { get; protected set; } = new();
     #endregion
 
     #region ComputedProperties
@@ -113,16 +113,5 @@ internal class MonthlySummary : IHasIdEntity<MonthlySummary>
 
     [NotMapped]
     public bool IsOfficiallyClosed => OfficiallyClosedDateTime.HasValue;
-    #endregion
-
-    #region StaticMethods
-    public static void ConfigureModel(EntityTypeBuilder<MonthlySummary> entityBuilder)
-    {
-        entityBuilder.HasKey(ms => ms.Id);
-        entityBuilder
-            .HasIndex(dfs => new { dfs.RecordedMonth, dfs.RecordedYear })
-            .HasDatabaseName("IX__monthly_summaries__recorded_month__recorded_year")
-            .IsUnique();
-    }
     #endregion
 }

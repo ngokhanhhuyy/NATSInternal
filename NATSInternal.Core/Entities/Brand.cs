@@ -1,7 +1,8 @@
 namespace NATSInternal.Core.Entities;
 
+[EntityTypeConfiguration(typeof(BrandEntityConfiguration))]
 [Table("brands")]
-internal class Brand : AbstractEntity<Brand>, IHasSinglePhotoEntity<Brand>
+internal class Brand : AbstractEntity<Brand>, IHasThumbnailEntity<Brand>
 {
     #region Fields
     private Country? _country;
@@ -37,10 +38,6 @@ internal class Brand : AbstractEntity<Brand>, IHasSinglePhotoEntity<Brand>
     [StringLength(BrandContracts.AddressMaxLength)]
     public string? Address { get; set; }
 
-    [Column("thumbnail_url")]
-    [StringLength(BrandContracts.ThumbnailUrlMaxLength)]
-    public string? ThumbnailUrl { get; set; }
-
     [Column("created_datetime")]
     [Required]
     public DateTime CreatedDateTime { get; set; }
@@ -52,7 +49,8 @@ internal class Brand : AbstractEntity<Brand>, IHasSinglePhotoEntity<Brand>
     #endregion
 
     #region NavigationProperties
-    public List<Product> Products { get; private set; } = new();
+    public List<Product> Products { get; protected set; } = new();
+    public List<Photo> Photos { get; protected set; } = new();
 
     [BackingField(nameof(_country))]
     public Country? Country
@@ -66,20 +64,11 @@ internal class Brand : AbstractEntity<Brand>, IHasSinglePhotoEntity<Brand>
     }
     #endregion
 
-    #region StaticMethods
-    public static void ConfigureModel(EntityTypeBuilder<Brand> entityBuilder)
-    {
-        entityBuilder.HasKey(b => b.Id);
-        entityBuilder
-            .HasOne(b => b.Country)
-            .WithMany(c => c.Brands)
-            .HasForeignKey(b => b.CountryId)
-            .HasConstraintName("FK__brands__countries__country_id")
-            .OnDelete(DeleteBehavior.SetNull);
-        entityBuilder
-            .HasIndex(b => b.Name)
-            .IsUnique()
-            .HasDatabaseName("IX__brands__name");
-    }
+    #region ComputedProperties
+    [NotMapped]
+    public string? ThumbnailUrl => Photos?
+        .Where(p => p.IsThumbnail && p.BrandId == Id)
+        .Select(p => p.Url)
+        .SingleOrDefault();
     #endregion
 }

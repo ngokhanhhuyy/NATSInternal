@@ -1,9 +1,11 @@
 ﻿namespace NATSInternal.Core.Interfaces.Entities;
 
-internal interface IHasProductItemEntity<T> : IEntity<T> where T : class, new()
+internal interface IHasProductItemEntity<T> : IEntity<T> where T : class
 {
-    long ProductAmountPerUnit { get; set; }
+    #region Properties
+    long AmountPerUnit { get; set; }
     int Quantity { get; set; }
-    int ProductId { get; set; }
+    Guid ProductId { get; set; }
     Product Product { get; set; }
+    #endregion
 }
