@@ -5,24 +5,25 @@ namespace NATSInternal.Core.Interfaces.Services;
 /// </summary>
 internal interface IAuthorizationInternalService : IAuthorizationService
 {
+    #region Methods
     // Authorization for users.
     UserBasicAuthorizationResponseDto GetUserBasicAuthorization(User targetUser);
     UserDetailAuthorizationResponseDto GetUserDetailAuthorization(User targetUser);
 
     // Authorization for other resources.
-    TResponseDto GetCreatingAuthorization<TEntity, TUpdateHistoryEntity, TResponseDto>()
-            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
-            where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new()
-            where TResponseDto : IHasStatsCreatingAuthorizationResponseDto, new();
+    TResponseDto GetCreatingAuthorization<TEntity, TData, TResponseDto>()
+            where TEntity : class, IHasStatsEntity<TEntity, TData>
+            where TData : class
+            where TResponseDto : IHasStatsCreatingAuthorizationResponseDto;
 
     TResponseDto GetExistingAuthorization<TEntity, TResponseDto>()
-            where TEntity : class, IUpsertableEntity<TEntity>, new()
-            where TResponseDto : IUpsertableExistingAuthorizationResponseDto, new();
+            where TEntity : class, IUpsertableEntity<TEntity>
+            where TResponseDto : IUpsertableExistingAuthorizationResponseDto;
 
-    TResponseDto GetExistingAuthorization<TEntity, TUpdateHistoryEntity, TResponseDto>(TEntity entity)
-            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
-            where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new()
-            where TResponseDto : IHasStatsExistingAuthorizationResponseDto, new();
+    TResponseDto GetExistingAuthorization<TEntity, TData, TResponseDto>(TEntity entity)
+            where TEntity : class, IHasStatsEntity<TEntity, TData>
+            where TData : class
+            where TResponseDto : IHasStatsExistingAuthorizationResponseDto;
 
     // Permissions to interact with users.
     bool CanCreateUser();
@@ -35,22 +36,30 @@ internal interface IAuthorizationInternalService : IAuthorizationService
     bool CanAssignToRole(Role role);
 
     // Permissions to interact with other resources.
-    bool CanCreate<TEntity>() where TEntity : class, IUpsertableEntity<TEntity>, new();
-    bool CanEdit<TEntity>() where TEntity : class, IUpsertableEntity<TEntity>, new();
-    bool CanEdit<TEntity, TUpdateHistoryEntity>(TEntity entity)
-            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
-            where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new();
-    bool CanDelete<TEntity>() where TEntity : class, IUpsertableEntity<TEntity>, new();
-    bool CanDelete<TEntity, TUpdateHistoryEntity>(TEntity entity)
-            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
-            where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new();
-    bool CanSetStatsDateTimeWhenCreating<TEntity, TUpdateHistoryEntity>()
-            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
-            where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new();
-    bool CanSetStatsDateTimeWhenEditing<TEntity, TUpdateHistoryEntity>(TEntity entity)
-            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
-            where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new();
-    bool CanAccessUpdateHistory<TEntity, TUpdateHistoryEntity>()
-            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
-            where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new();
+    bool CanCreate<TEntity>() where TEntity : class, IUpsertableEntity<TEntity>;
+
+    bool CanEdit<TEntity>() where TEntity : class, IUpsertableEntity<TEntity>;
+
+    bool CanEdit<TEntity, TData>(TEntity entity)
+            where TEntity : class, IHasStatsEntity<TEntity, TData>
+            where TData : class;
+
+    bool CanDelete<TEntity>() where TEntity : class, IUpsertableEntity<TEntity>;
+
+    bool CanDelete<TEntity, TData>(TEntity entity)
+            where TEntity : class, IHasStatsEntity<TEntity, TData>
+            where TData : class;
+
+    bool CanSetStatsDateTimeWhenCreating<TEntity, TData>()
+            where TEntity : class, IHasStatsEntity<TEntity, TData>
+            where TData : class;
+
+    bool CanSetStatsDateTimeWhenEditing<TEntity, TData>(TEntity entity)
+            where TEntity : class, IHasStatsEntity<TEntity, TData>
+            where TData : class;
+            
+    bool CanAccessUpdateHistory<TEntity, TData>()
+            where TEntity : class, IHasStatsEntity<TEntity, TData>
+            where TData : class;
+    #endregion
 }

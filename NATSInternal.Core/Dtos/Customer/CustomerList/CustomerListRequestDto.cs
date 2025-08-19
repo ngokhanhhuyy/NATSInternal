@@ -3,7 +3,7 @@ namespace NATSInternal.Core.Dtos;
 public class CustomerListRequestDto : ICreatorTrackableListRequestDto
 {
     public bool? SortingByAscending { get; set; } = true;
-    public string SortingByField { get; set; }
+    public string SortingByFieldName { get; set; }
     public string SearchByContent { get; set; }
     public int? CreatedUserId { get; set; }
     public int Page { get; set; } = 1;
@@ -12,7 +12,7 @@ public class CustomerListRequestDto : ICreatorTrackableListRequestDto
 
     public void TransformValues()
     {
-        SortingByField = SortingByField?.ToNullIfEmpty();
+        SortingByFieldName = SortingByFieldName?.ToNullIfEmpty();
         SearchByContent = SearchByContent?.ToNullIfEmpty();
     }
 }

@@ -61,7 +61,7 @@ internal class CustomerService
         query = query.Where(c => !c.IsDeleted);
 
         // Determine the field and the direction the sort.
-        string sortingByField = requestDto.SortingByField
+        string sortingByField = requestDto.SortingByFieldName
                                 ?? GetListSortingOptions().DefaultFieldName;
         bool sortingByAscending = requestDto.SortingByAscending
                                   ?? GetListSortingOptions().DefaultAscending;

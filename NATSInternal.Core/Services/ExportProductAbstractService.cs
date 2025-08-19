@@ -539,7 +539,7 @@ internal abstract class ExportProductAbstractService<
             .Include(t => t.Photos);
 
         // Determine the field and the direction the sort.
-        string sortingByField = requestDto.SortingByField
+        string sortingByField = requestDto.SortingByFieldName
                                 ?? GetListSortingOptions().DefaultFieldName;
         bool sortingByAscending = requestDto.SortingByAscending
                                   ?? GetListSortingOptions().DefaultAscending;

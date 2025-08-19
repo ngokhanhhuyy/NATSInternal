@@ -21,6 +21,7 @@ global using NATSInternal.Core.Enums;
 global using NATSInternal.Core.Entities;
 global using NATSInternal.Core.Exceptions;
 global using NATSInternal.Core.Extensions;
+global using NATSInternal.Core.Handlers;
 global using NATSInternal.Core.Interfaces;
 global using NATSInternal.Core.Interfaces.Dtos;
 global using NATSInternal.Core.Interfaces.Entities;

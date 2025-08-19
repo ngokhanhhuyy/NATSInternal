@@ -4,6 +4,6 @@ public interface ISortableListRequestDto : IRequestDto
 {
     #region Properties
     bool? SortingByAscending { get; set; }
-    string? SortingByField { get; set; }
+    string? SortingByFieldName { get; set; }
     #endregion
 }

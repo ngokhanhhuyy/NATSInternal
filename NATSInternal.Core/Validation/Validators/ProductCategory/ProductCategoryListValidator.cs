@@ -4,7 +4,7 @@ internal class ProductCategoryListValidator : Validator<ProductCategoryListReque
 {
     public ProductCategoryListValidator(IProductCategoryService service)
     {
-        RuleFor(dto => dto.SortingByField)
+        RuleFor(dto => dto.SortingByFieldName)
             .IsOneOfFieldOptions(service.GetListSortingOptions().FieldOptions)
             .WithName(DisplayNames.SortingByField);
         RuleFor(dto => dto.Page)

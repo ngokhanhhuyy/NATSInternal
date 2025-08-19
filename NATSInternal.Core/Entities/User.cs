@@ -1,17 +1,42 @@
+using Bogus.Extensions;
+
 namespace NATSInternal.Core.Entities;
 
 [Table("users")]
 internal class User : AbstractEntity<User>, IHasThumbnailEntity<User>
 {
+    #region Fields
+    private string _userName = string.Empty;
+    #endregion
+
     #region Properties
     [Column("id")]
     [Key]
-    public Guid Id { get; protected set; }
+    public Guid Id { get; protected set; } = Guid.NewGuid();
 
+    [BackingField(nameof(_userName))]
     [Column("user_name")]
     [Required]
     [StringLength(UserContracts.UserNameMaxLength)]
-    public string UserName { get; set; } = string.Empty;
+    public required string UserName
+    {
+        get => _userName;
+        set
+        {
+            NormalizedUserName = value.RemoveDiacritics();
+            _userName = value;
+        }
+    }
+
+    [Column("normalized_user_name")]
+    [Required]
+    [StringLength(UserContracts.UserNameMaxLength)]
+    public string NormalizedUserName { get; protected set; } = string.Empty;
+
+    [Column("password_hash")]
+    [Required]
+    [StringLength(UserContracts.PasswordHashMaxLength)]
+    public required string PasswordHash { get; set; }
 
     [Column("created_datetime")]
     [Required]
@@ -19,7 +44,7 @@ internal class User : AbstractEntity<User>, IHasThumbnailEntity<User>
 
     [Column("is_deleted")]
     [Required]
-    public bool IsDeleted { get; set; }
+    public bool IsDeleted { get; protected set; }
     #endregion
 
     #region ConcurrencyOperationTrackingProperty

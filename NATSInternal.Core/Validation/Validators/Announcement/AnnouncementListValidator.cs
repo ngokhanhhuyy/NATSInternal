@@ -4,7 +4,7 @@ internal class AnnouncementListValidator : Validator<AnnouncementListRequestDto>
 {
     public AnnouncementListValidator(IAnnouncementService service)
     {
-        RuleFor(dto => dto.SortingByField)
+        RuleFor(dto => dto.SortingByFieldName)
             .IsOneOfFieldOptions(service.GetListSortingOptions().FieldOptions)
             .WithName(DisplayNames.SortingByField);
         RuleFor(dto => dto.Page)

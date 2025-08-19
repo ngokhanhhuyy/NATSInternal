@@ -3,7 +3,7 @@
 public class ProductListRequestDto : ISortableListRequestDto
 {
     public bool? SortingByAscending { get; set; }
-    public string SortingByField { get; set; }
+    public string SortingByFieldName { get; set; }
     public int? CategoryId { get; set; }
     public int? BrandId { get; set; }
     public string ProductName { get; set; }
@@ -12,7 +12,7 @@ public class ProductListRequestDto : ISortableListRequestDto
 
     public void TransformValues()
     {
-        SortingByField = SortingByField?.ToNullIfEmpty();
+        SortingByFieldName = SortingByFieldName?.ToNullIfEmpty();
         ProductName = ProductName?.ToNullIfEmpty();
     }
 }

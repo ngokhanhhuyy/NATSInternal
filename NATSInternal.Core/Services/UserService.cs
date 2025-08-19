@@ -1,75 +1,59 @@
-﻿namespace NATSInternal.Core.Services;
+﻿using System.Data.Common;
+
+namespace NATSInternal.Core.Services;
 
 /// <inheritdoc />
 internal class UserService : IUserService
 {
+    #region Fields
     private readonly DatabaseContext _context;
-    private readonly UserManager<User> _userManager;
+    private readonly IListQueryService _listQueryService;
+    private readonly IPasswordHashingService _passwordHashingService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly ISinglePhotoService<User> _photoService;
+    private readonly IDbExceptionHandler _exceptionHandler;
+    #endregion
 
+    #region Constructors
     public UserService(
             DatabaseContext context,
-            UserManager<User> userManager,
+            IListQueryService listQueryService,
+            IPasswordHashingService passwordHashingService,
             IAuthorizationInternalService authorizationService,
-            ISinglePhotoService<User> photoService)
+            ISinglePhotoService<User> photoService,
+            IDbExceptionHandler exceptionHandler)
     {
         _context = context;
-        _userManager = userManager;
+        _listQueryService = listQueryService;
+        _passwordHashingService = passwordHashingService;
         _authorizationService = authorizationService;
         _photoService = photoService;
+        _exceptionHandler = exceptionHandler;
     }
+    #endregion
 
+    #region Methods
     /// <inheritdoc />
-    public async Task<UserListResponseDto> GetListAsync(UserListRequestDto requestDto)
+    public async Task<UserListResponseDto> GetListAsync(
+            UserListRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
         // Initialize query.
-        IQueryable<User> query = _context.Users
-            .Include(u => u.Roles)
-            .Where(u => !u.IsDeleted);
+        IQueryable<User> query = _context.Users.Include(u => u.Roles);
+
         // Determine the field and the direction the sort.
-        string sortingByField = requestDto.SortingByField
-                                ?? GetListSortingOptions().DefaultFieldName;
-        bool sortingByAscending = requestDto.SortingByAscending
-                                  ?? GetListSortingOptions().DefaultAscending;
+        string sortingByField = requestDto.SortingByFieldName ?? GetListSortingOptions().DefaultFieldName;
+        bool sortingByAscending = requestDto.SortingByAscending ?? GetListSortingOptions().DefaultAscending;
         switch (sortingByField)
         {
-            case nameof(OrderByFieldOption.FirstName):
-                query = sortingByAscending
-                    ? query.OrderBy(u => u.FirstName)
-                    : query.OrderByDescending(u => u.FirstName);
+            case nameof(UserListRequestDto.FieldToSort.UserName) or null:
+                query = _listQueryService.ApplySorting(query, u => u.UserName, sortingByAscending);
                 break;
-            case nameof(OrderByFieldOption.UserName):
-                query = sortingByAscending
-                    ? query.OrderBy(u => u.UserName)
-                    : query.OrderByDescending(u => u.UserName);
-                break;
-            case nameof(OrderByFieldOption.Birthday):
-                query = sortingByAscending
-                    ? query.OrderBy(u => u.Birthday.Value.Month)
-                        .ThenBy(u => u.Birthday.Value.Day)
-                    : query.OrderByDescending(u => u.Birthday.Value.Month)
-                        .ThenByDescending(u => u.Birthday.Value.Day);
-                break;
-            case nameof(OrderByFieldOption.Age):
-                query = sortingByAscending
-                    ? query.OrderBy(u => u.Birthday)
-                    : query.OrderByDescending(u => u.Birthday);
+            case nameof(UserListRequestDto.FieldToSort.RoleMaxPowerLevel):
+                query = _listQueryService.ApplySorting(query, u => u.Roles.Max(r => r.PowerLevel), sortingByAscending);
                 break;
             case nameof(OrderByFieldOption.CreatedDateTime):
-                query = sortingByAscending
-                    ? query.OrderBy(u => u.CreatedDateTime)
-                    : query.OrderByDescending(u => u.CreatedDateTime);
-                break;
-            case nameof(OrderByFieldOption.Role):
-                query = sortingByAscending
-                    ? query.OrderBy(u => u.Roles.First().Id)
-                    : query.OrderByDescending(u => u.Roles.First().Id);
-                break;
-            case nameof(OrderByFieldOption.LastName):
-                query = sortingByAscending
-                    ? query.OrderBy(u => u.LastName)
-                    : query.OrderByDescending(u => u.LastName);
+                query = _listQueryService.ApplySorting(query, u => u.CreatedDateTime, sortingByAscending);
                 break;
             default:
                 throw new NotImplementedException();
@@ -78,83 +62,33 @@ internal class UserService : IUserService
         // Filter by role.
         if (requestDto.RoleId.HasValue)
         {
-            query = query
-                .Where(u => u.Roles.First().Id == requestDto.RoleId.Value);
-        }
-
-        // Filter by joined recently.
-        if (requestDto.JoinedRencentlyOnly)
-        {
-            DateOnly minimumJoiningDate = DateOnly
-                .FromDateTime(DateTime.UtcNow.ToApplicationTime())
-                .AddMonths(-1);
-            query = query
-                .Where(u => u.JoiningDate.HasValue)
-                .Where(u => u.JoiningDate.Value > minimumJoiningDate);
-        }
-
-        // Filter by having incoming birthday.
-        if (requestDto.UpcomingBirthdayOnly)
-        {
-            DateOnly minRange = DateOnly.FromDateTime(DateTime.Today);
-            DateOnly maxRange = minRange.AddMonths(1);
-            int thisYear = DateTime.Today.Year;
-            query = query
-                .Where(u => u.Birthday.HasValue && !u.IsDeleted)
-                .Where(u =>
-                    (
-                        minRange <= u.Birthday.Value
-                            .AddYears(thisYear - u.Birthday.Value.Year) &&
-                        maxRange > u.Birthday.Value
-                            .AddYears(thisYear - u.Birthday.Value.Year)
-                    ) || (
-                        minRange <= u.Birthday.Value
-                            .AddYears(thisYear - u.Birthday.Value.Year + 1) &&
-                        maxRange > u.Birthday.Value
-                            .AddYears(thisYear - u.Birthday.Value.Year + 1)
-                    ));
+            query = query.Where(u => u.Roles.Select(r => r.Id).Contains(requestDto.RoleId.Value));
         }
 
         // Filter by search content.
-        if (requestDto.Content != null && requestDto.Content.Length >= 3)
+        if (requestDto.SearchContent != null && requestDto.SearchContent.Length >= 3)
         {
-            query = query
-                .Where(u =>
-                    u.NormalizedFullName.Contains(requestDto.Content) ||
-                    u.NormalizedUserName.Contains(requestDto.Content.ToUpper()));
+            query = query.Where(u => u.NormalizedUserName.Contains(requestDto.SearchContent));
         }
 
-        // Initialize response dto.
-        UserListResponseDto responseDto = new UserListResponseDto();
-        int resultCount = await query.CountAsync();
-        if (resultCount == 0)
-        {
-            responseDto.PageCount = 0;
-            return responseDto;
-        }
-        responseDto.PageCount = (int)Math.Ceiling(
-            (double)resultCount / requestDto.ResultsPerPage);
-        responseDto.Items = await query
-            .Skip(requestDto.ResultsPerPage * (requestDto.Page - 1))
-            .Take(requestDto.ResultsPerPage)
-            .Select(u => new UserBasicResponseDto(
-                u,
-                _authorizationService.GetUserBasicAuthorization(u)))
-            .ToListAsync()
-            ?? new List<UserBasicResponseDto>();
-
-        return responseDto;
+        return await _listQueryService.GetPagedListAsync(
+            query,
+            requestDto,
+            (entities, pageCount) => new UserListResponseDto(entities, pageCount),
+            cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<List<UserBasicResponseDto>> GetMultipleAsync(IEnumerable<int> ids)
+    public async Task<List<UserBasicResponseDto>> GetMultipleAsync(
+            IEnumerable<Guid> ids,
+            CancellationToken cancellationToken = default)
     {
         // Fetch a list of users with specified ids.
         List<User> users = await _context.Users
-            .Include(u => u.Roles).ThenInclude(r => r.Claims)
+            .Include(u => u.Roles).ThenInclude(r => r.Permissions)
             .OrderBy(u => u.Id)
             .Where(u => ids.Contains(u.Id))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         // Ensure all of the ids exist.
         if (ids.Except(users.Select(u => u.Id)).Any())
@@ -166,304 +100,174 @@ internal class UserService : IUserService
     }
 
     /// <inheritdoc />
-    public async Task<UserListResponseDto> GetJoinedRecentlyListAsync()
+    public async Task<RoleDetailResponseDto> GetRoleAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        DateOnly minimumJoiningDate = DateOnly
-            .FromDateTime(DateTime.UtcNow.ToApplicationTime())
-            .AddMonths(-1);
-
-        List<User> users = await _context.Users
-            .Include(u => u.Roles)
-            .OrderBy(u => u.JoiningDate)
-            .Where(u => u.JoiningDate.HasValue && !u.IsDeleted)
-            .Where(u => u.JoiningDate.Value > minimumJoiningDate)
-            .ToListAsync();
-
-        return new UserListResponseDto
-        {
-            Items = users
-                .Select(u => new UserBasicResponseDto(u))
-                .ToList()
-        };
-    }
-
-    /// <inheritdoc />
-    public async Task<UserListResponseDto> GetUpcomingBirthdayListAsync()
-    {
-        DateOnly minRange = DateOnly.FromDateTime(DateTime.Today);
-        DateOnly maxRange = minRange.AddMonths(1);
-        int thisYear = DateTime.Today.Year;
-        List<User> users = await _context.Users
-            .Include(u => u.Roles)
-            .OrderBy(u => u.Birthday.Value.Month).ThenBy(u => u.Birthday.Value.Day)
-            .Where(u => u.Birthday.HasValue && !u.IsDeleted)
-            .Where(u =>
-                (
-                    minRange <= u.Birthday.Value.AddYears(thisYear - u.Birthday.Value.Year) &&
-                    maxRange > u.Birthday.Value.AddYears(thisYear - u.Birthday.Value.Year)
-                ) || (
-                    minRange <= u.Birthday.Value.AddYears(thisYear - u.Birthday.Value.Year + 1) &&
-                    maxRange > u.Birthday.Value.AddYears(thisYear - u.Birthday.Value.Year + 1)
-                )
-            ).ToListAsync();
-
-        return new UserListResponseDto
-        {
-            Items = users.Select(u => new UserBasicResponseDto(u)).ToList()
-        };
-    }
-
-    /// <inheritdoc />
-    public async Task<RoleDetailResponseDto> GetRoleAsync(int id)
-    {
-        RoleDetailResponseDto responseDto = await _context.UserRoles
-            .Include(ur => ur.Role).ThenInclude(r => r.Claims)
+        return await _context.UserRoles
+            .Include(ur => ur.Role).ThenInclude(r => r.Permissions)
             .Where(ur => ur.UserId == id)
-            .Select(ur => new RoleDetailResponseDto(ur.Role)).SingleOrDefaultAsync()
-            ?? throw new NotFoundException(nameof(User), nameof(id), id.ToString());
-        return responseDto;
-    }
-
-    /// <inheritdoc />
-    public async Task<UserBasicResponseDto> GetBasicAsync(int id)
-    {
-        return await _context.Users
-            .Include(u => u.Roles).ThenInclude(r => r.Claims)
-            .Where(u => u.Id == id)
-            .Select(u => new UserBasicResponseDto(u))
-            .SingleOrDefaultAsync()
+            .Select(ur => new RoleDetailResponseDto(ur.Role))
+            .SingleOrDefaultAsync(cancellationToken)
             ?? throw new NotFoundException();
     }
 
     /// <inheritdoc />
-    public async Task<UserDetailResponseDto> GetDetailAsync(int id)
+    public async Task<UserBasicResponseDto> GetBasicAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        User user = await _context.Users
-            .Include(u => u.Roles).ThenInclude(r => r.Claims)
-            .SingleOrDefaultAsync(u => u.Id == id && !u.IsDeleted)
-            ?? throw new NotFoundException(nameof(User), nameof(id), id.ToString());
-
-        return new UserDetailResponseDto(
-            user,
-            _authorizationService.GetUserDetailAuthorization(user));
+        return await _context.Users
+            .Include(u => u.Roles).ThenInclude(r => r.Permissions)
+            .Where(u => u.Id == id)
+            .Select(u => new UserBasicResponseDto(u))
+            .SingleOrDefaultAsync(cancellationToken)
+            ?? throw new NotFoundException();
     }
 
     /// <inheritdoc />
-    public async Task<int> CreateAsync(UserCreateRequestDto requestDto)
+    public async Task<UserDetailResponseDto> GetDetailAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        string fullName = PersonNameUtility.GetFullNameFromNameElements(
-            requestDto.PersonalInformation.FirstName,
-            requestDto.PersonalInformation.MiddleName,
-            requestDto.PersonalInformation.LastName);
+        User user = await _context.Users
+            .Include(u => u.Roles).ThenInclude(r => r.Permissions)
+            .SingleOrDefaultAsync(u => u.Id == id && !u.IsDeleted, cancellationToken)
+            ?? throw new NotFoundException();
 
-        // Create user.
+        return new UserDetailResponseDto(user, _authorizationService.GetUserDetailAuthorization(user));
+    }
+
+    /// <inheritdoc />
+    public async Task<Guid> CreateAsync(UserCreateRequestDto requestDto, CancellationToken cancellationToken = default)
+    {
+        // Initialize the entity.
         User user = new User
         {
             UserName = requestDto.UserName,
-            FirstName = requestDto.PersonalInformation.FirstName,
-            NormalizedFirstName = requestDto.PersonalInformation.FirstName
-                .ToNonDiacritics()
-                .ToUpper(),
-            MiddleName = requestDto.PersonalInformation.MiddleName,
-            NormalizedMiddleName = requestDto.PersonalInformation.MiddleName?
-                .ToNonDiacritics()
-                .ToUpper(),
-            LastName = requestDto.PersonalInformation.LastName,
-            NormalizedLastName = requestDto.PersonalInformation.LastName
-                .ToNonDiacritics()
-                .ToUpper(),
-            FullName = fullName,
-            NormalizedFullName = fullName.ToNonDiacritics().ToUpper(),
-            Gender = requestDto.PersonalInformation.Gender,
-            Birthday = requestDto.PersonalInformation.Birthday,
-            PhoneNumber = requestDto.PersonalInformation.PhoneNumber,
-            Email = requestDto.PersonalInformation.Email,
-            JoiningDate = requestDto.UserInformation.JoiningDate,
-            Note = requestDto.UserInformation.Note,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(requestDto.Password)
         };
 
-        await using IDbContextTransaction transaction = await _context.Database
-            .BeginTransactionAsync();
+        _context.Users.Add(user);
 
-        IdentityResult creatingUserResult;
-        try
+        if (requestDto.RoleNames.Count > 0)
         {
-            creatingUserResult = await _userManager.CreateAsync(
-                user,
-                requestDto.Password);
-        }
-        catch (DbUpdateException exception)
-        {
-            if (exception.InnerException is MySqlException sqlException)
+            // Fetch the requested roles by names.
+            List<Role> roles = await _context.Roles
+                .Where(r => requestDto.RoleNames.Contains(r.Name))
+                .ToListAsync(cancellationToken);
+
+            // Ensure all requested roles exist.
+            List<string> existingRoleNames = roles.Select(r => r.Name).ToList();
+            for (int i = 0; i < requestDto.RoleNames.Count; i++)
             {
-                SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(sqlException);
-                if (exceptionHandler.IsUniqueConstraintViolated)
-                {
-                    throw new DuplicatedException(exceptionHandler.ViolatedFieldName);
-                }
-            }
-            throw;
-        }
+                Role? role = roles
+                    .SingleOrDefault(r => r.Name == requestDto.RoleNames[i])
+                    ?? throw OperationException.NotFound(
+                        new object[] { nameof(requestDto.RoleNames), i },
+                        DisplayNames.Role
+                    );
 
-        if (creatingUserResult.Succeeded)
-        {
-            // Checking if the role name from the request exist
-            Role role = await _context.Roles
-                .SingleOrDefaultAsync(r => r.Name == requestDto.UserInformation.RoleName)
-                ?? throw new NotFoundException(
-                    nameof(Role),
-                    nameof(requestDto.UserInformation.RoleName),
-                    requestDto.UserInformation.RoleName);
-
-            // Ensure the desired role's power level cannot be greater than
-            // the requested user's power level.
-            if (!_authorizationService.CanAssignToRole(role))
-            {
-                throw new AuthorizationException();
-            }
-
-            // Adding user to role
-            IdentityResult result = await _userManager.AddToRoleAsync(
-            user,
-            requestDto.UserInformation.RoleName);
-            if (result.Errors.Any())
-            {
-                throw new InvalidOperationException(result.Errors
-                    .Select(e => e.Description)
-                    .First());
-            }
-            await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            // Save avatar if included in the request.
-            if (requestDto.PersonalInformation.AvatarFile != null)
-            {
-                user.ProfilePictureUrl = await _photoService
-                    .CreateAsync(requestDto.PersonalInformation.AvatarFile, true);
-            }
-
-            return user.Id;
-        }
-
-        if (creatingUserResult.Errors.Any(e => e.Code == "DuplicateUserName"))
-        {
-            throw new DuplicatedException(nameof(requestDto.UserName));
-        }
-
-        throw new InvalidOperationException(creatingUserResult.Errors
-            .Select(error => error.Description)
-            .First());
-    }
-
-    /// <inheritdoc />
-    public async Task UpdateAsync(int id, UserUpdateRequestDto requestDto)
-    {
-        // Fetch the entity from the database.
-        User user = await _context.Users
-            .Include(u => u.Roles).ThenInclude(r => r.Claims)
-            .SingleOrDefaultAsync(u => u.Id == id && !u.IsDeleted)
-                ?? throw new NotFoundException(
-                    nameof(User),
-                    nameof(id),
-                    id.ToString());
-
-        // Use transaction for atomic cancellation if there is any error during the operation.
-        await using IDbContextTransaction transaction = await _context.Database
-            .BeginTransactionAsync();
-
-        // Edit personal information if user has right.
-        if (_authorizationService.CanEditUserPersonalInformation(user)
-                && requestDto.PersonalInformation != null)
-        {
-            // Update avatar when the request specified.
-            if (requestDto.PersonalInformation.AvatarChanged)
-            {
-                // Delete old avatar if there is any.
-                if (user.ProfilePictureUrl != null)
-                {
-                    _photoService.Delete(user.ProfilePictureUrl);
-                    user.ProfilePictureUrl = null;
-                }
-
-                // Create new avatar if the request data contains it.
-                if (requestDto.PersonalInformation.AvatarFile != null)
-                {
-                    user.ProfilePictureUrl = await _photoService
-                        .CreateAsync(requestDto.PersonalInformation.AvatarFile, true);
-                }
-            }
-            string fullName = PersonNameUtility.GetFullNameFromNameElements(
-                requestDto.PersonalInformation.FirstName,
-                requestDto.PersonalInformation.MiddleName,
-                requestDto.PersonalInformation.LastName);
-            user.FirstName = requestDto.PersonalInformation.FirstName;
-            user.MiddleName = requestDto.PersonalInformation.MiddleName;
-            user.LastName = requestDto.PersonalInformation.LastName;
-            user.FullName = fullName;
-            user.NormalizedFirstName = requestDto.PersonalInformation.LastName
-                .ToNonDiacritics()
-                .ToUpper();
-            user.NormalizedMiddleName = requestDto.PersonalInformation.MiddleName?
-                .ToNonDiacritics()
-                .ToUpper();
-            user.NormalizedLastName = requestDto.PersonalInformation.LastName
-                .ToNonDiacritics()
-                .ToUpper();
-            user.NormalizedFullName = fullName.ToNonDiacritics().ToUpper();
-            user.Gender = requestDto.PersonalInformation.Gender;
-            user.Birthday = requestDto.PersonalInformation.Birthday;
-            user.PhoneNumber = requestDto.PersonalInformation.PhoneNumber;
-            user.Email = requestDto.PersonalInformation.Email;
-            user.NormalizedEmail = requestDto.PersonalInformation.Email?
-                .ToUpper();
-        }
-        else
-        {
-            throw new AuthorizationException();
-        }
-
-        // Edit user's user information if user has right.
-        if (_authorizationService.CanEditUserUserInformation(user) &&
-                requestDto.UserInformation != null)
-        {
-            user.JoiningDate = requestDto.UserInformation.JoiningDate;
-            user.Note = requestDto.UserInformation.Note;
-
-            // Update user's role if needed.
-            if (requestDto.UserInformation.RoleName != user.Role.Name)
-            {
-                // Ensure the desired role's power level cannot be greater than
-                // the requested user's power level.
-                Role role = await _context.Roles
-                    .SingleOrDefaultAsync(r => r.Name == requestDto.UserInformation.RoleName)
-                    ?? throw new NotFoundException(
-                        nameof(Role),
-                        "role.name",
-                        requestDto.UserInformation.RoleName);
-                if (!_authorizationService.CanAssignToRole(role))
-                {
-                    throw new AuthorizationException();
-                }
-
-                user.Roles.Remove(user.Role);
                 user.Roles.Add(role);
             }
         }
 
-        user.UpdatedDateTime = DateTime.UtcNow.ToApplicationTime();
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
 
-        await _context.SaveChangesAsync();
-        await transaction.CommitAsync();
+            return user.Id;
+        }
+        catch (DbUpdateException exception)
+        {
+            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+            if (handledResult is null)
+            {
+                throw;
+            }
+
+            if (handledResult.IsUniqueConstraintViolation)
+            {
+                throw OperationException.Duplicated(
+                    new object[] { nameof(requestDto.UserName) },
+                    DisplayNames.UserName
+                );
+            }
+
+            if (handledResult.IsForeignKeyConstraintViolation || handledResult.IsConcurrencyConflict)
+            {
+                throw new ConcurrencyException();
+            }
+
+            throw;
+        }
     }
 
     /// <inheritdoc />
-    public async Task ChangePasswordAsync(UserPasswordChangeRequestDto requestDto)
+    public async Task AddToRolesAsync(
+            Guid id,
+            AddToRolesRequestDto requestDto,
+            CancellationToken cancellationToken = default)
+    {
+        User user = await _context.Users
+            .Include(u => u.Roles)
+            .SingleOrDefaultAsync(u => u.Id == id, cancellationToken)
+            ?? throw new NotFoundException();
+
+        List<Role> existingRoles = await _context.Roles
+            .Where(r => requestDto.RoleNames.Contains(r.Name))
+            .ToListAsync(cancellationToken);
+
+        List<string> addedRoleNames = user.Roles.Select(r => r.Name).ToList();
+
+        for (int i = 0; i < existingRoles.Count; i++)
+        {
+            if (!requestDto.RoleNames.Contains(existingRoles[i].Name))
+            {
+                throw OperationException.NotFound(
+                    new object[] { nameof(requestDto.RoleNames), i },
+                    DisplayNames.Role
+                );
+            }
+
+            if (addedRoleNames.Contains(existingRoles[i].Name))
+            {
+                throw new OperationException(
+                    new object[] { nameof(requestDto.RoleNames), i },
+                    ErrorMessages.UserAlreadyInRole.Replace("{RoleName}", existingRoles[i].DisplayName)
+                );
+            }
+
+            user.Roles.Add(existingRoles[i]);
+        }
+
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception)
+        {
+            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+            if (handledResult is null)
+            {
+                throw;
+            }
+
+            if (handledResult.IsForeignKeyConstraintViolation || handledResult.IsConcurrencyConflict)
+            {
+                throw new ConcurrencyException();
+            }
+
+            throw;
+        }
+    }
+
+
+
+    /// <inheritdoc />
+    public async Task ChangePasswordAsync(
+            UserPasswordChangeRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
         // Fetch the entity with given id and ensure the entity exists.
-        int id = _authorizationService.GetUserId();
+        Guid id = _authorizationService.GetUserId();
         User user = await _context.Users
-            .SingleOrDefaultAsync(u => u.Id == id && !u.IsDeleted)
-            ?? throw new NotFoundException(nameof(User), nameof(id), id.ToString());
+            .SingleOrDefaultAsync(u => u.Id == id, cancellationToken)
+            ?? throw new NotFoundException();
 
         // Ensure having permission to change password of the fetched user.
         if (!_authorizationService.CanChangeUserPassword(user))
@@ -471,29 +275,51 @@ internal class UserService : IUserService
             throw new AuthorizationException();
         }
 
-        // Performing password change operation.
-        IdentityResult result = await _userManager
-            .ChangePasswordAsync(user, requestDto.CurrentPassword, requestDto.NewPassword);
-
-        // Ensure the operation succeeded.
-        if (!result.Succeeded)
+        // Verify current password.
+        bool isPasswordCorrect = _passwordHashingService.VerifyPassword(requestDto.CurrentPassword, user.PasswordHash);
+        if (!isPasswordCorrect)
         {
             throw new OperationException(
-                nameof(requestDto.CurrentPassword),
-                result.Errors.First().Description);
+                new object[] { nameof(requestDto.CurrentPassword) },
+                ErrorMessages.Incorrect.ReplacePropertyName(DisplayNames.CurrentPassword)
+            );
+        }
+
+        // Generate new password hash.
+        user.PasswordHash = _passwordHashingService.HashPassword(requestDto.NewPassword);
+
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception)
+        {
+            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+            if (handledResult is null)
+            {
+                throw;
+            }
+
+            if (handledResult.IsConcurrencyConflict)
+            {
+                throw new ConcurrencyException();
+            }
+
+            throw;
         }
     }
 
     /// <inheritdoc />
     public async Task ResetPasswordAsync(
-            int id,
-            UserPasswordResetRequestDto requestDto)
+            Guid id,
+            UserPasswordResetRequestDto requestDto,
+            CancellationToken cancellationToken)
     {
         // Fetch the entity with given id and ensure the entity exists.
         User user = await _context.Users
-            .Include(u => u.Roles).ThenInclude(u => u.Claims)
-            .SingleOrDefaultAsync(u => u.Id == id && !u.IsDeleted)
-            ?? throw new NotFoundException(nameof(User), nameof(id), id.ToString());
+            .Include(u => u.Roles).ThenInclude(u => u.Permissions)
+            .SingleOrDefaultAsync(u => u.Id == id, cancellationToken)
+            ?? throw new NotFoundException();
 
         // Check if having permission to reset password of the fetched user.
         if (!_authorizationService.CanResetUserPassword(user))
@@ -502,30 +328,40 @@ internal class UserService : IUserService
         }
 
         // Performing password reset operation.
-        string token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        IdentityResult result = await _userManager
-            .ResetPasswordAsync(user, token, requestDto.NewPassword);
+        user.PasswordHash = _passwordHashingService.HashPassword(requestDto.NewPassword);
 
-        // Ensure the operation succeeded.
-        if (!result.Succeeded)
+        try
         {
-            throw new OperationException(
-                requestDto.NewPassword,
-                result.Errors.First().Description);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception)
+        {
+            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+            if (handledResult is null)
+            {
+                throw;
+            }
+
+            if (handledResult.IsConcurrencyConflict)
+            {
+                throw new ConcurrencyException();
+            }
+
+            throw;
         }
     }
 
     /// <inheritdoc />
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
+        // Prepare the query.
+        IQueryable<User> query = _context.Users.Where(u => u.Id == id);
+
         // Fetch the user entity with given id from the database and ensure the entity exists.
-        User user = await _context.Users
-            .Include(u => u.Roles).ThenInclude(r => r.Claims)
-            .SingleOrDefaultAsync(u => u.Id == id && !u.IsDeleted)
-            ?? throw new NotFoundException(
-                nameof(User),
-                nameof(id),
-                id.ToString());
+        User user = await query
+            .Include(u => u.Roles).ThenInclude(r => r.Permissions)
+            .SingleOrDefaultAsync(cancellationToken)
+            ?? throw new NotFoundException();
 
         // Ensure having permission to delete the user.
         if (!_authorizationService.CanDeleteUser(user))
@@ -534,31 +370,30 @@ internal class UserService : IUserService
         }
 
         // Performing deleting operation.
-        user.IsDeleted = true;
-
-        // Save changes.
-        await _context.SaveChangesAsync();
-    }
-
-    /// <inheritdoc />
-    public async Task RestoreAsync(int id)
-    {
-        // Fetch the user entity from the database and ensure the entity exists.
-        User user = await _context.Users
-            .SingleOrDefaultAsync(u => u.Id == id && u.IsDeleted)
-            ?? throw new NotFoundException(nameof(User), nameof(id), id.ToString());
-
-        // Ensure having permission to restore the user.
-        if (!_authorizationService.CanRestoreUser(user))
+        try
         {
-            throw new AuthorizationException();
+            await query.ExecuteDeleteAsync(cancellationToken);
         }
+        catch (DbException exception)
+        {
+            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+            if (handledResult is null)
+            {
+                throw;
+            }
 
-        // Perform restoration operation.
-        user.IsDeleted = false;
+            if (handledResult.IsConcurrencyConflict)
+            {
+                throw new ConcurrencyException();
+            }
 
-        // Save changes.
-        await _context.SaveChangesAsync();
+            if (!handledResult.IsForeignKeyConstraintViolation)
+            {
+                throw;
+            }
+
+            await query.ExecuteUpdateAsync(setters => setters.SetProperty(u => u.IsDeleted, true), cancellationToken);
+        }
     }
 
     /// <inheritdoc />
@@ -607,9 +442,7 @@ internal class UserService : IUserService
         return new ListSortingOptionsResponseDto
         {
             FieldOptions = fieldOptions,
-            DefaultFieldName = fieldOptions
-                .Single(i => i.Name == nameof(OrderByFieldOption.LastName))
-                .Name,
+            DefaultFieldName = fieldOptions.Single(i => i.Name == nameof(OrderByFieldOption.LastName)).Name,
             DefaultAscending = true
         };
     }
@@ -621,12 +454,14 @@ internal class UserService : IUserService
     }
 
     /// <inheritdoc />
-    public async Task<bool> GetPasswordResetPermission(int id)
+    public async Task<bool> GetPasswordResetPermission(Guid id, CancellationToken cancellationToken = default)
     {
         User user = await _context.Users
             .Include(u => u.Roles)
-            .SingleOrDefaultAsync(u => u.Id == id)
+            .SingleOrDefaultAsync(u => u.Id == id, cancellationToken)
             ?? throw new NotFoundException();
+
         return _authorizationService.CanResetUserPassword(user);
     }
+    #endregion
 }

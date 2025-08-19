@@ -2,12 +2,10 @@
 
 public class UserPasswordResetRequestDto : IRequestDto
 {
-    public string NewPassword { get; set; }
-    public string ConfirmationPassword { get; set; }
+    #region Properties
+    public required string NewPassword { get; set; }
+    public required string ConfirmationPassword { get; set; }
+    #endregion
 
-    public void TransformValues()
-    {
-        NewPassword = NewPassword?.ToNullIfEmpty();
-        ConfirmationPassword = ConfirmationPassword?.ToNullIfEmpty();
-    }
+    public void TransformValues() { }
 }

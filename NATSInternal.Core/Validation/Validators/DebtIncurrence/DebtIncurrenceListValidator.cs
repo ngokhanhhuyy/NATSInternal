@@ -4,7 +4,7 @@ internal class DebtIncurrenceListValidator : Validator<DebtIncurrenceListRequest
 {
     public DebtIncurrenceListValidator(IDebtIncurrenceService service)
     {
-        RuleFor(dto => dto.SortingByField)
+        RuleFor(dto => dto.SortingByFieldName)
             .IsOneOfFieldOptions(service.GetListSortingOptions().FieldOptions)
             .WithName(DisplayNames.SortingByField);
         RuleFor(dto => dto.MonthYear)

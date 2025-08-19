@@ -4,10 +4,10 @@ internal class UserListValidator : Validator<UserListRequestDto>
 {
     public UserListValidator(IUserService service)
     {
-        RuleFor(dto => dto.SortingByField)
+        RuleFor(dto => dto.SortingByFieldName)
             .IsOneOfFieldOptions(service.GetListSortingOptions().FieldOptions)
             .WithName(DisplayNames.SortingByField);
-        RuleFor(dto => dto.Content)
+        RuleFor(dto => dto.SearchContent)
             .MaximumLength(255)
             .WithName(DisplayNames.Content);
         RuleFor(dto => dto.Page)

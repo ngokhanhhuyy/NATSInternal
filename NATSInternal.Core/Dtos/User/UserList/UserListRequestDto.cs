@@ -1,14 +1,12 @@
 namespace NATSInternal.Core.Dtos;
 
-public class UserListRequestDto : IRequestDto
+public class UserListRequestDto : ISortableAndPagableListRequestDto
 {
     #region Properties
     public bool? SortingByAscending { get; set; }
-    public string? SortingByField { get; set; }
+    public string? SortingByFieldName { get; set; }
     public Guid? RoleId { get; set; }
-    public bool? JoinedRencentlyOnly { get; set; }
-    public bool? UpcomingBirthdayOnly { get; set; }
-    public string? Content { get; set; }
+    public string? SearchContent { get; set; }
     public int? Page { get; set; }
     public int? ResultsPerPage { get; set; }
     #endregion
@@ -16,8 +14,17 @@ public class UserListRequestDto : IRequestDto
     #region Methods
     public void TransformValues()
     {
-        SortingByField = SortingByField?.ToNullIfEmpty();
-        Content = Content?.ToNullIfEmpty();
+        SortingByFieldName = SortingByFieldName?.ToNullIfEmpty();
+        SearchContent = SearchContent?.ToNullIfEmpty();
+    }
+    #endregion
+
+    #region Enums
+    public enum FieldToSort
+    {
+        UserName,
+        RoleMaxPowerLevel,
+        CreatedDateTime
     }
     #endregion
 }

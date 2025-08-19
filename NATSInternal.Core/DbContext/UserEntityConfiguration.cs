@@ -25,6 +25,9 @@ internal class UserEntityConfiguration : IEntityTypeConfiguration<User>
                     .OnDelete(DeleteBehavior.Cascade)
                     .IsRequired());
         entityBuilder
+            .Property(u => u.UserName)
+            .UseCollation("utf8mb4_general_ci");
+        entityBuilder
             .HasIndex(u => u.UserName)
             .IsUnique()
             .HasDatabaseName("IX__user_roles__user_name");

@@ -7,23 +7,26 @@ internal class DatabaseContext : Microsoft.EntityFrameworkCore.DbContext
     #endregion
 
     #region Properties
-    public DbSet<Country> Countries { get; set; }
-    public DbSet<Brand> Brands { get; set; }
-    public DbSet<ProductCategory> ProductCategories { get; set; }
-    public DbSet<Product> Products { get; set; }
-    public DbSet<Customer> Customers { get; set; }
-    public DbSet<Supply> Supplies { get; set; }
-    public DbSet<SupplyItem> SupplyItems { get; set; }
-    public DbSet<Order> Orders { get; set; }
-    public DbSet<OrderItem> OrderItems { get; set; }
-    public DbSet<UpdateHistory> OrderUpdateHistories { get; set; }
-    public DbSet<Expense> Expenses { get; set; }
-    public DbSet<ExpensePayee> ExpensePayees { get; set; }
-    public DbSet<Debt> Debts { get; set; }
-    public DbSet<Announcement> Announcements { get; set; }
-    public DbSet<Notification> Notifications { get; set; }
-    public DbSet<DailySummary> DailyStats { get; set; }
-    public DbSet<MonthlySummary> MonthlyStats { get; set; }
+    public DbSet<User> Users { get; protected set; }
+    public DbSet<Role> Roles { get; protected set; }
+    public DbSet<UserRole> UserRoles { get; protected set; }
+    public DbSet<Country> Countries { get; protected set; }
+    public DbSet<Brand> Brands { get; protected set; }
+    public DbSet<ProductCategory> ProductCategories { get; protected set; }
+    public DbSet<Product> Products { get; protected set; }
+    public DbSet<Customer> Customers { get; protected set; }
+    public DbSet<Supply> Supplies { get; protected set; }
+    public DbSet<SupplyItem> SupplyItems { get; protected set; }
+    public DbSet<Order> Orders { get; protected set; }
+    public DbSet<OrderItem> OrderItems { get; protected set; }
+    public DbSet<UpdateHistory> OrderUpdateHistories { get; protected set; }
+    public DbSet<Expense> Expenses { get; protected set; }
+    public DbSet<ExpensePayee> ExpensePayees { get; protected set; }
+    public DbSet<Debt> Debts { get; protected set; }
+    public DbSet<Announcement> Announcements { get; protected set; }
+    public DbSet<Notification> Notifications { get; protected set; }
+    public DbSet<DailySummary> DailyStats { get; protected set; }
+    public DbSet<MonthlySummary> MonthlyStats { get; protected set; }
     #endregion
 
     #region Methods

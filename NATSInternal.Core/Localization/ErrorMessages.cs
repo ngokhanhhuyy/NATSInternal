@@ -39,6 +39,8 @@ public static class ErrorMessages
     public const string NotAvailableByProperty = "{ResourceName} có {PropertyName} '{AttemptedValue}' hiện đang không khả dụng.";
     public const string UpdateRestricted = "{ResourceName} không thể được chỉnh sửa do liên kết với các tài nguyên khác.";
     public const string DeleteRestricted = "{ResourceName} không thể được xoá do liên kết với các tài nguyên khác.";
+    public const string UserAlreadyInRole = $"{DisplayNames.User} hiện đã được thêm vào vị trí {{RoleName}} từ trước.";
+    public const string UserNotInRole = $"{DisplayNames.User} không thuộc về vị trí {{RoleName}} từ trước.";
     public const string PaymentAlreadyCompleted = "{ResourceName} đã được thanh toán đầy đủ, Không thể thanh toán thêm.";
     public const string ModificationTimeExpired = "{ResourceName} đã bị khoá do quá hạn chỉnh sửa/xoá.";
     public const string NegativeRemainingDebtAmount = "Với giá trị đã nhập, khoản nợ còn lại của khách hàng này sẽ trở thành số âm.";

@@ -4,7 +4,7 @@ internal class BrandListValidator : Validator<BrandListRequestDto>
 {
     public BrandListValidator(IBrandService service)
     {
-        RuleFor(dto => dto.SortingByField)
+        RuleFor(dto => dto.SortingByFieldName)
             .IsOneOfFieldOptions(service.GetListSortingOptions().FieldOptions)
             .WithName(DisplayNames.SortingByField);
         RuleFor(dto => dto.Page)

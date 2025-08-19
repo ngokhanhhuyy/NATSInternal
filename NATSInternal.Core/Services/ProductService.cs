@@ -27,7 +27,7 @@ internal class ProductService
         IQueryable<Product> query = _context.Products;
         
         // Determine the field and the direction the sort.
-        string sortingByField = requestDto.SortingByField
+        string sortingByField = requestDto.SortingByFieldName
                                 ?? GetListSortingOptions().DefaultFieldName;
         bool sortingByAscending = requestDto.SortingByAscending
                                   ?? GetListSortingOptions().DefaultAscending;
