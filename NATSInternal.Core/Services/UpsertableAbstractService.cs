@@ -10,8 +10,8 @@ namespace NATSInternal.Core.Services;
 /// The type of the request DTO used in the list retrieving operation.
 /// </typeparam>
 /// <typeparam name="TExistingAuthorizationResponseDto">
-/// The type of response DTO which contains the authorization information for an existing
-/// <typeparamref name="T"/> entity.
+/// The type of response DTO which contains the authorization information for an existing <typeparamref name="T"/>
+/// entity.
 /// </typeparam>
 internal abstract class UpsertableAbstractService<
             T,
@@ -21,13 +21,18 @@ internal abstract class UpsertableAbstractService<
         where TListRequestDto : ISortableListRequestDto
         where TExistingAuthorizationResponseDto : IUpsertableExistingAuthorizationResponseDto, new()
 {
+    #region Fields
     private readonly IAuthorizationInternalService _authorizationService;
+    #endregion
 
+    #region Constructors
     protected UpsertableAbstractService(IAuthorizationInternalService authorizationService)
     {
         _authorizationService = authorizationService;
     }
+    #endregion
 
+    #region Methods
     /// <summary>
     /// Get all fields those are used as options to order the results in list retrieving
     /// operation.
@@ -51,44 +56,21 @@ internal abstract class UpsertableAbstractService<
     }
 
     /// <summary>
-    /// Gets a list of entities, based on the specified query and paginating conditions.
+    /// Retrieve the authorization information for an existing <typeparamref name="T"/> entity.
     /// </summary>
-    /// <param name="query">
-    /// An instance of query which can be translated into SQL.
-    /// </param>
-    /// <param name="requestDto">
-    /// A DTO containing conditions for the results.
+    /// <param name="entity">
+    /// The instance of the <typeparamref name="T"/> entity to retrieve the authorization information.
     /// </param>
     /// <returns>
-    /// A <see cref="Task"/> which representing the asynchronous operation, which result is a
-    /// DTO, containing a list of entities and the additional information for pagination.
+    /// A DTO containing the authorization information.
     /// </returns>
-    protected virtual async Task<EntityListDto<T>> GetListOfEntitiesAsync(
-            IQueryable<T> query,
-            TListRequestDto requestDto)
+    protected virtual TExistingAuthorizationResponseDto GetExistingAuthorization(T entity)
     {
-        // Initialize response dto.
-        EntityListDto<T> entitiesDto = new EntityListDto<T>();
-
-        // Fetch the result count.
-        int resultCount = await query.CountAsync();
-        if (resultCount == 0)
-        {
-            entitiesDto.PageCount = 0;
-            return entitiesDto;
-        }
-
-        entitiesDto.PageCount = (int)Math.Ceiling(
-            (double)resultCount / requestDto.ResultsPerPage);
-        entitiesDto.Items = await query
-            .Skip(requestDto.ResultsPerPage * (requestDto.Page - 1))
-            .Take(requestDto.ResultsPerPage)
-            .AsSplitQuery()
-            .ToListAsync();
-
-        return entitiesDto;
+        return _authorizationService.GetExistingAuthorization<T, TExistingAuthorizationResponseDto>();
     }
+    #endregion
 
+    #region StaticMethods
     /// <summary>
     /// Get the name of a specific property from an expressing in string.
     /// </summary>
@@ -104,8 +86,7 @@ internal abstract class UpsertableAbstractService<
     /// <exception cref="ArgumentException">
     /// Throws when the lambda expression cannot be read or is invalid.
     /// </exception>
-    protected static string GetPropertyName<TParent>(
-            Expression<Func<TParent, object>> propertySelector)
+    protected static string GetPropertyName<TParent>(Expression<Func<TParent, object>> propertySelector)
     {
         if (propertySelector.Body is MemberExpression memberExpression)
         {
@@ -121,20 +102,5 @@ internal abstract class UpsertableAbstractService<
 
         throw new ArgumentException("Invalid property expression.");
     }
-
-    /// <summary>
-    /// Retrieve the authorization information for an existing <typeparamref name="T"/> entity.
-    /// </summary>
-    /// <param name="entity">
-    /// The instance of the <typeparamref name="T"/> entity to retrieve the authorization
-    /// information.
-    /// </param>
-    /// <returns>
-    /// A DTO containing the authorization information.
-    /// </returns>
-    protected virtual TExistingAuthorizationResponseDto GetExistingAuthorization(T entity)
-    {
-        return _authorizationService
-            .GetExistingAuthorization<T, TExistingAuthorizationResponseDto>();
-    }
+    #endregion
 }

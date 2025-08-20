@@ -10,7 +10,6 @@ internal class UserService : IUserService
     private readonly IListQueryService _listQueryService;
     private readonly IPasswordHashingService _passwordHashingService;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly ISinglePhotoService<User> _photoService;
     private readonly IDbExceptionHandler _exceptionHandler;
     #endregion
 
@@ -20,14 +19,12 @@ internal class UserService : IUserService
             IListQueryService listQueryService,
             IPasswordHashingService passwordHashingService,
             IAuthorizationInternalService authorizationService,
-            ISinglePhotoService<User> photoService,
             IDbExceptionHandler exceptionHandler)
     {
         _context = context;
         _listQueryService = listQueryService;
         _passwordHashingService = passwordHashingService;
         _authorizationService = authorizationService;
-        _photoService = photoService;
         _exceptionHandler = exceptionHandler;
     }
     #endregion
@@ -242,12 +239,8 @@ internal class UserService : IUserService
         catch (DbUpdateException exception)
         {
             DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
-            if (handledResult is null)
-            {
-                throw;
-            }
-
-            if (handledResult.IsForeignKeyConstraintViolation || handledResult.IsConcurrencyConflict)
+            if (handledResult is not null &&
+                (handledResult.IsForeignKeyConstraintViolation || handledResult.IsConcurrencyConflict))
             {
                 throw new ConcurrencyException();
             }
@@ -256,7 +249,44 @@ internal class UserService : IUserService
         }
     }
 
+    /// <inheritdoc />
+    public async Task RemoveFromRolesAsync(
+            Guid id,
+            RemoveFromRolesRequestDto requestDto,
+            CancellationToken cancellationToken = default)
+    {
+        User user = await _context.Users
+            .Include(u => u.Roles)
+            .SingleOrDefaultAsync(u => u.Id == id, cancellationToken)
+            ?? throw new NotFoundException();
 
+        for (int i = 0; i < requestDto.RoleNames.Count; i++)
+        {
+            string roleName = requestDto.RoleNames[i];
+            Role role = user.Roles
+                .SingleOrDefault(r => r.Name == roleName)
+                ?? throw new OperationException(
+                    new object[] { nameof(requestDto.RoleNames), i },
+                    ErrorMessages.UserNotInRole.Replace("{RoleName}", roleName));
+
+            user.Roles.Remove(role);
+        }
+
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception)
+        {
+            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+            if (handledResult is not null && handledResult.IsConcurrencyConflict)
+            {
+                throw new ConcurrencyException();
+            }
+
+            throw;
+        }
+    }
 
     /// <inheritdoc />
     public async Task ChangePasswordAsync(
@@ -370,30 +400,25 @@ internal class UserService : IUserService
         }
 
         // Performing deleting operation.
-        try
+        bool deletionSucceeded = await ExecuteDeleteWithDbExceptionHandlingAsync(
+            async (token) => await query.ExecuteDeleteAsync(token),
+            true,
+            cancellationToken
+        );
+
+        if (deletionSucceeded)
         {
-            await query.ExecuteDeleteAsync(cancellationToken);
+            return;
         }
-        catch (DbException exception)
-        {
-            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
-            if (handledResult is null)
-            {
-                throw;
-            }
-
-            if (handledResult.IsConcurrencyConflict)
-            {
-                throw new ConcurrencyException();
-            }
-
-            if (!handledResult.IsForeignKeyConstraintViolation)
-            {
-                throw;
-            }
-
-            await query.ExecuteUpdateAsync(setters => setters.SetProperty(u => u.IsDeleted, true), cancellationToken);
-        }
+        
+        await ExecuteDeleteWithDbExceptionHandlingAsync(
+            async (token) => await query.ExecuteUpdateAsync(
+                setters => setters.SetProperty(u => u.IsDeleted, true),
+                cancellationToken
+            ),
+            false,
+            cancellationToken
+        );
     }
 
     /// <inheritdoc />
@@ -462,6 +487,46 @@ internal class UserService : IUserService
             ?? throw new NotFoundException();
 
         return _authorizationService.CanResetUserPassword(user);
+    }
+    #endregion
+
+    #region PrivateMethods
+    private async Task<bool> ExecuteDeleteWithDbExceptionHandlingAsync(
+            Func<CancellationToken, Task> action,
+            bool handleForeignKeyConstraintViolation,
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await action(cancellationToken);
+            return true;
+        }
+        catch (DbException exception)
+        {
+            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+            if (handledResult is null)
+            {
+                throw;
+            }
+
+            if (handledResult.IsConcurrencyConflict)
+            {
+                throw new ConcurrencyException();
+            }
+
+            if (!handledResult.IsForeignKeyConstraintViolation)
+            {
+                throw;
+            }
+
+            if (handleForeignKeyConstraintViolation)
+            {
+                return false;
+            }
+
+
+            throw OperationException.DeleteRestricted(Array.Empty<object>(), DisplayNames.User);
+        }
     }
     #endregion
 }

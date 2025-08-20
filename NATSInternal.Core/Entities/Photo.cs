@@ -1,7 +1,7 @@
 namespace NATSInternal.Core.Entities;
 
 [Table("photos")]
-internal class Photo : AbstractHasIdEntity<Photo>
+internal class Photo : AbstractEntity<Photo>, IHasIdEntity<Photo>
 {
     #region Fields
     private Brand? _brand;
@@ -14,7 +14,7 @@ internal class Photo : AbstractHasIdEntity<Photo>
     #region Properties
     [Column("id")]
     [Key]
-    public override Guid Id { get; protected set; } = Guid.NewGuid();
+    public Guid Id { get; protected set; } = Guid.NewGuid();
     
     [Column("url")]
     [Required]

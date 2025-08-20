@@ -49,19 +49,19 @@ internal static class RuleValidators
         return ruleBuilder.LessThanOrEqualTo(currentDateTime).WithMessage(errorMessage);
     }
 
-    public static IRuleBuilderOptions<T, string> IsOneOfFieldOptions<T>(
-            this IRuleBuilder<T, string> ruleBuilder,
-            ICollection<ListSortingByFieldResponseDto> fieldOptions)
+    public static IRuleBuilderOptions<T, string?> IsOneOfFieldsToSort<T, TFieldToSort>(
+        this IRuleBuilder<T, string?> ruleBuilder) where TFieldToSort : struct, Enum
     {
         return ruleBuilder
-            .Must(field =>
+            .Must(sortByFieldName =>
             {
-                if (field == null || fieldOptions == null || !fieldOptions.Any())
+                if (sortByFieldName is null)
                 {
                     return true;
                 }
-                
-                return fieldOptions.Select(option => option.Name).Contains(field);
+
+                List<string> fieldNames = Enum.GetNames<TFieldToSort>().ToList();
+                return fieldNames.Any(name => name.Equals(sortByFieldName, StringComparison.OrdinalIgnoreCase));
             }).WithMessage(ErrorMessages.Invalid);
     }
 

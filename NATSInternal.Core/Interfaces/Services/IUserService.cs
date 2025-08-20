@@ -132,6 +132,23 @@ public interface IUserService
     Task AddToRolesAsync(Guid id, AddToRolesRequestDto requestDto, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Remove an existing user, specified by id, from the roles specified by names.
+    /// </summary>
+    /// <param name="requestDto">
+    /// A DTO containing the names of the roles to remove from.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// A cancellation token.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation.
+    /// </returns>
+    Task RemoveFromRolesAsync(
+            Guid id,
+            RemoveFromRolesRequestDto requestDto,
+            CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Changes the password of the requested user.
     /// </summary>
     /// <param name="requestDto">

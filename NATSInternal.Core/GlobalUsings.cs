@@ -25,11 +25,13 @@ global using NATSInternal.Core.Handlers;
 global using NATSInternal.Core.Interfaces;
 global using NATSInternal.Core.Interfaces.Dtos;
 global using NATSInternal.Core.Interfaces.Entities;
+global using NATSInternal.Core.Interfaces.Providers;
 global using NATSInternal.Core.Interfaces.Services;
 global using NATSInternal.Core.Identity;
 global using NATSInternal.Core.Localization;
 global using NATSInternal.Core.Services;
 global using NATSInternal.Core.Utilities;
+global using NATSInternal.Core.Validation.Rules;
 global using NATSInternal.Core.Validation;
 
 global using FluentValidation;

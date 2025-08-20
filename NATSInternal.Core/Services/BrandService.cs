@@ -10,11 +10,11 @@ internal class BrandService
         IBrandService
 {
     private readonly DatabaseContext _context;
-    private readonly ISinglePhotoService<Brand> _photoService;
+    private readonly IPhotoService<Brand> _photoService;
 
     public BrandService(
             DatabaseContext context,
-            ISinglePhotoService<Brand> photoService,
+            IPhotoService<Brand> photoService,
             IAuthorizationInternalService authorizationService) : base(authorizationService)
     {
         _context = context;

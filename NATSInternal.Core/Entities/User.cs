@@ -3,7 +3,7 @@ using Bogus.Extensions;
 namespace NATSInternal.Core.Entities;
 
 [Table("users")]
-internal class User : AbstractEntity<User>, IHasThumbnailEntity<User>
+internal class User : AbstractEntity<User>
 {
     #region Fields
     private string _userName = string.Empty;
@@ -60,7 +60,6 @@ internal class User : AbstractEntity<User>, IHasThumbnailEntity<User>
     public List<Expense> Expenses { get; protected set; } = new();
     public List<Order> Orders { get; protected set; } = new();
     public List<Debt> Debts { get; protected set; } = new();
-    public List<Photo> Photos { get; protected set; } = new();
     public List<UpdateHistory> UpdateHistories { get; protected set; } = new();
     public List<UpdateHistory> OrderUpdateHistories { get; protected set; } = new();
     public List<Announcement> CreatedAnnouncements { get; protected set; } = new();
@@ -96,9 +95,6 @@ internal class User : AbstractEntity<User>, IHasThumbnailEntity<User>
         .Where(uh => uh.UpdatedUserId == Id && uh.DebtId.HasValue)
         .Select(uh => uh.Debt)
         .ToList();
-
-    [NotMapped]
-    public string? ThumbnailUrl => Photos.Where(p => p.IsThumbnail).Select(p => p.Url).SingleOrDefault();
     #endregion
 
     #region Methods

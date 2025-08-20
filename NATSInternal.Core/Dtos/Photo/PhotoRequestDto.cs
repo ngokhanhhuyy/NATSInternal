@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Dtos;
 
-public class PhotoRequestDto : IPhotoRequestDto
+public class PhotoRequestDto
 {
     #region Properties
     public required Guid? Id { get; set; }

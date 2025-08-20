@@ -1,7 +1,14 @@
+using Humanizer;
+
 namespace NATSInternal.Core.Localization;
 
 public static class DisplayNames
 {
+    #region Fields
+    private static readonly Dictionary<string, string> _names;
+    #endregion
+
+    #region Constants
     public const string User = "Người dùng";
     public const string Role = "Vị trí";
     public const string Customer = "Khách hàng";
@@ -133,43 +140,51 @@ public static class DisplayNames
     public const string PurchasedAmount = "Số tiền đã mua";
     public const string PurchasedTransactionCount = "Số lượng giao dịch mua";
     public const string Quantity = "Số lượng";
+    public const string SortByAscending = "Sắp xếp từ nhỏ đến lớn";
+    public const string SortByFieldName = "Trường sắp xếp";
+    #endregion
 
-    private static readonly Dictionary<string, string> _names;
-
+    #region StaticConstructors
     static DisplayNames()
     {
         _names = new Dictionary<string, string>();
-        FieldInfo[] fields = typeof(DisplayNames)
-            .GetFields(BindingFlags.Public | BindingFlags.Static);
-        foreach (var field in fields)
+        FieldInfo[] fields = typeof(DisplayNames).GetFields(BindingFlags.Public | BindingFlags.Static);
+        foreach (FieldInfo field in fields)
         {
-            _names.Add(field.Name, (string)field.GetValue(null));
+            string? fieldName = field.GetValue(null)?.ToString();
+            if (fieldName is null)
+            {
+                continue;
+            }
+
+            _names.Add(field.Name, fieldName);
         }
     }
+    #endregion
 
+    #region StaticMethods
     public static string Get(string objectName)
     {
         ArgumentNullException.ThrowIfNull(objectName);
         return _names
-            .Where(pair => pair.Key == objectName.CapitalizeFirstLetter())
+            .Where(pair => pair.Key == objectName.Transform(To.SentenceCase))
             .Select(pair => pair.Value)
             .SingleOrDefault()
-            ?? throw new InvalidOperationException(
-                $"There is no display name for {objectName}");
+            ?? throw new InvalidOperationException($"There is no display name for {objectName}");
     }
 
     public static string Get(object[] objectName)
     {
         if (objectName == null || objectName.Length == 0)
         {
-            const string errorMessage = $"{nameof(objectName)} must be non-null and contain " +
-                "at least 1 element.";
+            const string errorMessage = $"{nameof(objectName)} must be non-null and contain at least 1 element.";
             throw new ArgumentException(errorMessage);
         }
+
         return Get(objectName
             .Reverse()
             .Where(name => name != null)
-            .Select(name => name.ToString().CapitalizeFirstLetter())
+            .Select(name => name.ToString().Transform(To.SentenceCase))
             .First());
     }
 
@@ -177,4 +192,5 @@ public static class DisplayNames
     {
         return _names;
     }
+    #endregion
 }

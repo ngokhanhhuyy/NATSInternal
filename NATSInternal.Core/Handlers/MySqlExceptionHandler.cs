@@ -1,8 +1,5 @@
 using System.Data.Common;
 using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore;
-using NATSInternal.Core.DbContext;
-using MySqlConnector;
 
 namespace NATSInternal.Core.Handlers;
 
@@ -47,58 +44,83 @@ internal partial class MySqlExceptionHandler : IDbExceptionHandler
 
         DbExceptionHandledResult handledResult = new();
         Match match;
+        string? tableName = null;
+        string? columnName = null;
         switch (mysqlException.Number)
         {
             case 1062:
                 handledResult.IsUniqueConstraintViolation = true;
                 match = GetUniqueConstraintRegex().Match(exception.Message);
-                if (match.Success)
+                if (!match.Success)
                 {
-                    string violatedConstraintName = match.Groups["constraintName"].Value;
-                    handledResult.ViolatedTableName = match.Groups["tableName"].Value;
-                    handledResult.ViolatedFieldName = violatedConstraintName.Split("__").Last();
-                    handledResult.ViolatedEntityName = _context.Model
-                        .GetEntityTypes()
-                        .Select(type => type.GetTableName())
-                        .Single(name => name == match.Groups["tableName"].Value);
+                    return handledResult;
                 }
+
+                string violatedConstraintName = match.Groups["constraintName"].Value;
+                tableName = match.Groups["tableName"].Value;
+                columnName = violatedConstraintName.Split("__").Last();
 
                 break;
 
             case 1364:
                 handledResult.IsNotNullConstraintViolation = true;
                 match = GetNotNullConstraintRegex().Match(exception.Message);
-                if (match.Success)
+                if (!match.Success)
                 {
-                    handledResult.ViolatedFieldName = match.Groups["columnName"].Value;
+                    return handledResult;
                 }
+
+                columnName = match.Groups["columnName"].Value;
 
                 break;
             case 1451:
                 handledResult.IsForeignKeyConstraintViolation = true;
                 match = GetDeleteOrUpdateRestrictedRegex().Match(exception.Message);
-                if (match.Success)
+                if (!match.Success)
                 {
-                    handledResult.ViolatedTableName = match.Groups["tableName"].Value;
-                    handledResult.ViolatedFieldName = match.Groups["columnName"].Value;
+                    return handledResult;
                 }
+
+                tableName = match.Groups["tableName"].Value;
+                columnName = match.Groups["columnName"].Value;
 
                 break;
 
             case 1452:
                 handledResult.IsForeignKeyConstraintViolation = true;
                 match = GetForeignKeyNotFoundRegex().Match(exception.Message);
-                if (match.Success)
+                if (!match.Success)
                 {
-                    handledResult.ViolatedTableName = match.Groups["tableName"].Value;
-                    handledResult.ViolatedFieldName = match.Groups["columnName"].Value;
-                    handledResult.ViolatedEntityName = _context.Model
-                        .GetEntityTypes()
-                        .Select(type => type.GetTableName())
-                        .Single(name => name == match.Groups["tableName"].Value);
+                    return handledResult;
                 }
 
+                tableName = match.Groups["tableName"].Value;
+                columnName = match.Groups["columnName"].Value;
+
                 break;
+            default:
+                throw new NotImplementedException();
+        }
+        
+        if (!match.Success)
+        {
+            return handledResult;
+        }
+
+
+        Microsoft.EntityFrameworkCore.Metadata.IEntityType? entityType = _context.Model
+            .GetEntityTypes()
+            .Where(et => et.GetTableName() == tableName)
+            .SingleOrDefault();
+
+        if (entityType is not null)
+        {
+            handledResult.ViolatedEntityName = entityType.ClrType.Name;
+            handledResult.ViolatedPropertyName = entityType
+                .GetProperties()
+                .Where(p => p.GetColumnName() == columnName)
+                .Select(p => p.Name)
+                .SingleOrDefault();
         }
 
         return handledResult;
