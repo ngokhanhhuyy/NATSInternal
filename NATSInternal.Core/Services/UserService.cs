@@ -11,6 +11,12 @@ internal class UserService : IUserService
     private readonly IPasswordHashingService _passwordHashingService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IDbExceptionHandler _exceptionHandler;
+    private readonly IValidator<UserListRequestDto> _listValidator;
+    private readonly IValidator<UserCreateRequestDto> _createValidator;
+    private readonly IValidator<UserAddToRolesRequestDto> _addToRolesValidator;
+    private readonly IValidator<UserRemoveFromRolesRequestDto> _removeFromRolesValidator;
+    private readonly IValidator<UserPasswordChangeRequestDto> _passwordChangeValidator;
+    private readonly IValidator<UserPasswordResetRequestDto> _passwordResetValidator;
     #endregion
 
     #region Constructors
@@ -19,13 +25,25 @@ internal class UserService : IUserService
             IListQueryService listQueryService,
             IPasswordHashingService passwordHashingService,
             IAuthorizationInternalService authorizationService,
-            IDbExceptionHandler exceptionHandler)
+            IDbExceptionHandler exceptionHandler,
+            IValidator<UserListRequestDto> listValidator,
+            IValidator<UserCreateRequestDto> createValidator,
+            IValidator<UserAddToRolesRequestDto> addToRolesValidator,
+            IValidator<UserRemoveFromRolesRequestDto> removeFromRolesValidator,
+            IValidator<UserPasswordChangeRequestDto> passwordChangeValidator,
+            IValidator<UserPasswordResetRequestDto> passwordResetValidator)
     {
         _context = context;
         _listQueryService = listQueryService;
         _passwordHashingService = passwordHashingService;
         _authorizationService = authorizationService;
         _exceptionHandler = exceptionHandler;
+        _listValidator = listValidator;
+        _createValidator = createValidator;
+        _addToRolesValidator = addToRolesValidator;
+        _removeFromRolesValidator = removeFromRolesValidator;
+        _passwordChangeValidator = passwordChangeValidator;
+        _passwordResetValidator = passwordResetValidator;
     }
     #endregion
 
@@ -35,6 +53,10 @@ internal class UserService : IUserService
             UserListRequestDto requestDto,
             CancellationToken cancellationToken = default)
     {
+        // Validate the request.
+        requestDto.TransformValues();
+        _listValidator.ValidateAndThrow(requestDto);
+        
         // Initialize query.
         IQueryable<User> query = _context.Users.Include(u => u.Roles);
 
@@ -132,6 +154,10 @@ internal class UserService : IUserService
     /// <inheritdoc />
     public async Task<Guid> CreateAsync(UserCreateRequestDto requestDto, CancellationToken cancellationToken = default)
     {
+        // Validate the data from the request.
+        requestDto.TransformValues();
+        _createValidator.ValidateAndThrow(requestDto);
+
         // Initialize the entity.
         User user = new User
         {
@@ -197,9 +223,12 @@ internal class UserService : IUserService
     /// <inheritdoc />
     public async Task AddToRolesAsync(
             Guid id,
-            AddToRolesRequestDto requestDto,
+            UserAddToRolesRequestDto requestDto,
             CancellationToken cancellationToken = default)
     {
+        requestDto.TransformValues();
+        _addToRolesValidator.ValidateAndThrow(requestDto);
+
         User user = await _context.Users
             .Include(u => u.Roles)
             .SingleOrDefaultAsync(u => u.Id == id, cancellationToken)
@@ -252,9 +281,12 @@ internal class UserService : IUserService
     /// <inheritdoc />
     public async Task RemoveFromRolesAsync(
             Guid id,
-            RemoveFromRolesRequestDto requestDto,
+            UserRemoveFromRolesRequestDto requestDto,
             CancellationToken cancellationToken = default)
     {
+        requestDto.TransformValues();
+        _removeFromRolesValidator.ValidateAndThrow(requestDto);
+
         User user = await _context.Users
             .Include(u => u.Roles)
             .SingleOrDefaultAsync(u => u.Id == id, cancellationToken)
@@ -293,6 +325,10 @@ internal class UserService : IUserService
             UserPasswordChangeRequestDto requestDto,
             CancellationToken cancellationToken = default)
     {
+        // Validate the data from the request.
+        requestDto.TransformValues();
+        _passwordChangeValidator.ValidateAndThrow(requestDto);
+
         // Fetch the entity with given id and ensure the entity exists.
         Guid id = _authorizationService.GetUserId();
         User user = await _context.Users
@@ -345,6 +381,10 @@ internal class UserService : IUserService
             UserPasswordResetRequestDto requestDto,
             CancellationToken cancellationToken)
     {
+        // Validate the data from the request.
+        requestDto.TransformValues();
+        _passwordResetValidator.ValidateAndThrow(requestDto);
+        
         // Fetch the entity with given id and ensure the entity exists.
         User user = await _context.Users
             .Include(u => u.Roles).ThenInclude(u => u.Permissions)

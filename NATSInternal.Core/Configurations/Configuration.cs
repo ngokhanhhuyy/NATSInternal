@@ -55,7 +55,7 @@ public static class ConfigurationExtensions
         services.AddScoped<IRoleService, RoleService>();
 
         // Photo services.
-        services.AddScoped<IPhotoService<Brand>, SinglePhotoService<Brand>>();
+        services.AddScoped<IPhotoService<Brand>, PhotoService<Brand>>();
         services.AddScoped<
             IMultiplePhotosService<Supply, SupplyPhoto>,
             MultiplePhotosService<Supply, SupplyPhoto>>();
@@ -90,8 +90,8 @@ public static class ConfigurationExtensions
             .GetRequiredService<AuthorizationService>());
 
         // Photo services.
-        services.AddScoped<IPhotoService<User>, SinglePhotoService<User>>();
-        services.AddScoped<IPhotoService<Brand>, SinglePhotoService<Brand>>();
+        services.AddScoped<IPhotoService<User>, PhotoService<User>>();
+        services.AddScoped<IPhotoService<Brand>, PhotoService<Brand>>();
         services.AddScoped<
             IMultiplePhotosService<Product, ProductPhoto>,
             MultiplePhotosService<Product, ProductPhoto>>();

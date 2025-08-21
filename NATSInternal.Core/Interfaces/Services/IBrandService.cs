@@ -6,8 +6,7 @@
 public interface IBrandService
 {
     /// <summary>
-    /// Retrives a list which contains the basic information of brands based on the sorting
-    /// and paginating conditions.
+    /// Retrives a list which contains the basic information of brands based on the sorting and paginating conditions.
     /// </summary>
     /// <param name="requestDto">
     /// (Optional) A DTO containing the conditions for the results.
@@ -15,7 +14,9 @@ public interface IBrandService
     /// <returns>
     /// An instance of the <see cref="BrandListResponseDto"/> class, containing the results.
     /// </returns>
-    Task<BrandListResponseDto> GetListAsync(BrandListRequestDto requestDto);
+    Task<BrandListResponseDto> GetListAsync(
+            BrandListRequestDto requestDto,
+            CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrives a list of all brands with minimal information.
@@ -23,52 +24,57 @@ public interface IBrandService
     /// <returns>
     /// A list of DTO, containing the minimal information of the all brands.
     /// </returns>
-    Task<List<BrandMinimalResponseDto>> GetAllAsync();
+    Task<List<BrandMinimalResponseDto>> GetAllAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrives the details of a specific brand.
     /// </summary>
     /// <param name="id">
-    /// A <see cref="int"/> represening the id of the brand.
+    /// A <see cref="Guid"/> represening the id of the brand.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// A cancellation token.
     /// </param>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is an
-    /// instance of the <see cref="BrandDetailResponseDto"/>, containing the details of the
-    /// brand.
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is an instance of the
+    /// <see cref="BrandDetailResponseDto"/>, containing the details of the brand.
     /// </returns>
     /// <exception cref="NotFoundException">
     /// Throws when the brand with the specified id doesn't exist or has already been deleted.
     /// </exception>
-    Task<BrandDetailResponseDto> GetDetailAsync(int id);
+    Task<BrandDetailResponseDto> GetDetailAsync(Guid id, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Create a new brand with the data provided in the request.
+    /// Creates a new brand with the data provided in the request.
     /// </summary>
     /// <param name="requestDto">
-    /// An instance of the <see cref="BrandUpsertRequestDto"/>, containing the data for the new
-    /// brand.
+    /// An instance of the <see cref="BrandUpsertRequestDto"/>, containing the data for the new brand.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// A cancellation token.
     /// </param>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is an
-    /// <see cref="int"/> representing the id of the new brand.
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is an <see cref="int"/> representing
+    /// the id of the new brand.
     /// </returns>
     /// <exception cref="OperationException">
-    /// Throws when the country with the id specified by the value of the property
-    /// <c>Country.Id</c> in the <paramref name="requestDto"/> argument doesn't
-    /// exist or when the name specified by the value of the property <c>Name</c> in the
-    /// <paramref name="requestDto"/> argument already exists.
+    /// Throws when the country with the id specified by the value of the property <c>Country.Id</c> in the
+    /// <paramref name="requestDto"/> argument doesn't exist or when the name specified by the value of the property
+    /// <c>Name</c> in the <paramref name="requestDto"/> argument already exists.
     /// </exception>
-    Task<int> CreateAsync(BrandUpsertRequestDto requestDto);
+    Task<Guid> CreateAsync(BrandUpsertRequestDto requestDto, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Update an existing brand.
+    /// Updates an existing brand.
     /// </summary>
     /// <param name="id">
-    /// A <see cref="int"/> representing the id of the brand to be updated.
+    /// The id of the brand to be updated.
     /// </param>
     /// <param name="requestDto">
-    /// An instance of the <see cref="BrandUpsertRequestDto"/>, containing the data for the brand
-    /// to be updated.
+    /// An instance of the <see cref="BrandUpsertRequestDto"/>, containing the data for the brand to be updated.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// A cancellation token.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -77,17 +83,20 @@ public interface IBrandService
     /// Throws when the brand with the specified id doesn't exist or has already been deleted.
     /// </exception>
     /// <exception cref="OperationException">
-    /// Throws when the country with the id specified by the value of the property
-    /// <c>Country.Id</c> doesn't exist or when the specified name by the property <c>Name</c>
-    /// in the <paramref name="requestDto"/> argument already exists.
+    /// Throws when the country with the id specified by the value of the property <c>Country.Id</c> doesn't exist or
+    /// when the specified name by the property <c>Name</c> in the <paramref name="requestDto"/> argument already
+    /// exists.
     /// </exception>
-    Task UpdateAsync(int id, BrandUpsertRequestDto requestDto);
+    Task UpdateAsync(Guid id, BrandUpsertRequestDto requestDto, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Delete an existing brand.
+    /// Deletes an existing brand.
     /// </summary>
     /// <param name="id">
-    /// An <see cref="int"/> representing the id of the brand to be deleted.
+    /// The id of the brand to be deleted.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// A cancellation token.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -95,15 +104,14 @@ public interface IBrandService
     /// <exception cref="NotFoundException">
     /// Throws when the brand with the specified id doesn't exist or has already been deleted.
     /// </exception>
-    Task DeleteAsync(int id);
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Get all fields those are used as options to order the results in list retrieving
-    /// operation.
+    /// Get all fields those are used as options to order the results in list retrieving operation.
     /// </summary>
     /// <returns>
-    /// An instance of the <see cref="ListSortingOptionsResponseDto"/> DTO, containing the
-    /// options with name and display names of the fields and the default field.
+    /// An instance of the <see cref="ListSortingOptionsResponseDto"/> DTO, containing the options with name and display
+    /// names of the fields and the default field.
     /// </returns>
     ListSortingOptionsResponseDto GetListSortingOptions();
 

@@ -1,30 +1,32 @@
 ﻿namespace NATSInternal.Core.Dtos;
 
-public class BrandUpsertRequestDto : IRequestDto
+public class BrandUpsertRequestDto : IHasPhotosUpsertRequestDto
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Website { get; set; }
-    public string SocialMediaUrl { get; set; }
-    public string PhoneNumber { get; set; }
-    public string Email { get; set; }
-    public string Address { get; set; }
-    public byte[] ThumbnailFile { get; set; }
-    public bool ThumbnailChanged { get; set; }
-    public int? CountryId { get; set; }
+    #region Properties
+    public required Guid Id { get; set; }
+    public required string Name { get; set; }
+    public required string? Website { get; set; }
+    public required string? SocialMediaUrl { get; set; }
+    public required string? PhoneNumber { get; set; }
+    public required string? Email { get; set; }
+    public required string? Address { get; set; }
+    public Guid? CountryId { get; set; }
+    public List<PhotoRequestDto> Photos { get; set; } = new();
+    #endregion
 
+    #region Methods
     public void TransformValues()
     {
-        Name = Name?.ToNullIfEmpty();
-        Website = Website?.ToNullIfEmpty();
-        SocialMediaUrl = SocialMediaUrl?.ToNullIfEmpty();
-        PhoneNumber = PhoneNumber?.ToNullIfEmpty();
-        Email = Email?.ToNullIfEmpty();
-        Address = Address?.ToNullIfEmpty();
-        
-        if (CountryId == 0)
+        Website = Website?.ToNullIfEmptyOrWhiteSpace();
+        SocialMediaUrl = SocialMediaUrl?.ToNullIfEmptyOrWhiteSpace();
+        PhoneNumber = PhoneNumber?.ToNullIfEmptyOrWhiteSpace();
+        Email = Email?.ToNullIfEmptyOrWhiteSpace();
+        Address = Address?.ToNullIfEmptyOrWhiteSpace();
+
+        if (CountryId == Guid.Empty)
         {
             CountryId = null;
         }
     }
+    #endregion
 }

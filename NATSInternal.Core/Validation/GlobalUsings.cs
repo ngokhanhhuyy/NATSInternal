@@ -2,6 +2,7 @@ global using System;
 global using System.Collections.Generic;
 global using System.Linq;
 global using Microsoft.Extensions.DependencyInjection;
+global using NATSInternal.Core.Contracts;
 global using NATSInternal.Core.Dtos;
 global using NATSInternal.Core.Enums;
 global using NATSInternal.Core.Extensions;

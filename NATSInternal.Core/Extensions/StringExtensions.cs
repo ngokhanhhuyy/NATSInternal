@@ -5,7 +5,7 @@ namespace NATSInternal.Core.Extensions;
 public static class StringExtensions
 {
     #region ExtensionMethods
-    public static string? ToNullIfEmpty(this string? value)
+    public static string? ToNullIfEmptyOrWhiteSpace(this string? value)
     {
         return string.IsNullOrWhiteSpace(value?.Trim()) ? null : value.Trim();
     }

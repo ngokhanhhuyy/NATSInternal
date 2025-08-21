@@ -5,28 +5,27 @@ public class BrandBasicResponseDto
         IUpsertableBasicResponseDto<BrandExistingAuthorizationResponseDto>,
         IHasThumbnailBasicResponseDto
 {
-    public int Id { get; set; }
+    #region Properties
+    public Guid Id { get; set; }
     public string Name { get; set; }
-    public string ThumbnailUrl { get; set; }
-    public BrandExistingAuthorizationResponseDto Authorization { get; set; }
+    public string? ThumbnailUrl { get; set; }
+    public BrandExistingAuthorizationResponseDto? Authorization { get; set; }
+    #endregion
 
+    #region Constructors
     internal BrandBasicResponseDto(Brand brand)
-    {
-        MapFromEntity(brand);
-    }
-
-    internal BrandBasicResponseDto(
-            Brand brand,
-            BrandExistingAuthorizationResponseDto authorization)
-    {
-        MapFromEntity(brand);
-        Authorization = authorization;
-    }
-
-    private void MapFromEntity(Brand brand)
     {
         Id = brand.Id;
         Name = brand.Name;
-        ThumbnailUrl = brand.ThumbnailUrl;
+        ThumbnailUrl = brand.Photos
+            .Where(p => p.IsThumbnail)
+            .Select(p => p.Url)
+            .SingleOrDefault();
     }
+
+    internal BrandBasicResponseDto(Brand brand, BrandExistingAuthorizationResponseDto authorization) : this(brand)
+    {
+        Authorization = authorization;
+    }
+    #endregion
 }

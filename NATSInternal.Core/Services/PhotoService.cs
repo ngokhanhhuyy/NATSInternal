@@ -3,12 +3,12 @@ using Humanizer;
 namespace NATSInternal.Core.Services;
 
 /// <summary>
-/// A service to handle single-photo-related operations.
+/// A service to handle photo-related operations.
 /// </summary>
 /// <typeparam name="T">
 /// The type of the entity with which the photos are associate.
 /// </typeparam>
-internal class SinglePhotoService<T> : IPhotoService<T> where T : class, IHasPhotosEntity<T>
+internal class PhotoService<T> : IPhotoService<T> where T : class, IHasPhotosEntity<T>
 {
     #region Fields
     private readonly string _rootPath;
@@ -16,7 +16,7 @@ internal class SinglePhotoService<T> : IPhotoService<T> where T : class, IHasPho
     #endregion
 
     #region Constructors
-    public SinglePhotoService(IPhotoStoragePathProvider pathProvider)
+    public PhotoService(IPhotoStoragePathProvider pathProvider)
     {
         _rootPath = pathProvider.GetRootImageFolder();
     }
@@ -63,7 +63,7 @@ internal class SinglePhotoService<T> : IPhotoService<T> where T : class, IHasPho
 
         CropToAspectRatio(image, aspectRatio);
 
-        // Determine the path where the image would be savedv
+        // Determine the path where the image would be saved.
         string path = Path.Combine(_rootPath, "images");
 
         if (!Directory.Exists(path))
@@ -96,7 +96,7 @@ internal class SinglePhotoService<T> : IPhotoService<T> where T : class, IHasPho
     }
 
     /// <inheritdoc />
-    public virtual async Task CreateMultipleAsync(
+    public async Task CreateMultipleAsync(
             T entity,
             List<PhotoRequestDto> requestDtos,
             CancellationToken cancellationToken = default)
@@ -106,7 +106,8 @@ internal class SinglePhotoService<T> : IPhotoService<T> where T : class, IHasPho
             string url = await CreateAsync(requestDto.File, false, cancellationToken);
             Photo photo = new()
             {
-                Url = url
+                Url = url,
+                IsThumbnail = requestDto.IsThumbnail
             };
 
             entity.Photos.Add(photo);
@@ -114,7 +115,7 @@ internal class SinglePhotoService<T> : IPhotoService<T> where T : class, IHasPho
     }
 
     /// <inheritdoc />
-    public virtual async Task<(List<string>, List<string>)> UpdateMultipleAsync(
+    public async Task<(List<string>, List<string>)> UpdateMultipleAsync(
             T entity,
             List<PhotoRequestDto> requestDtos,
             CancellationToken cancellationToken = default)

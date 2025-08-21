@@ -12,8 +12,8 @@ public class ExpenseUpsertRequestDto : IHasStatsUpsertRequestDto
     
     public void TransformValues()
     {
-        PayeeName = PayeeName?.ToNullIfEmpty();
-        UpdatedReason = UpdatedReason?.ToNullIfEmpty();
+        PayeeName = PayeeName?.ToNullIfEmptyOrWhiteSpace();
+        UpdatedReason = UpdatedReason?.ToNullIfEmptyOrWhiteSpace();
         
         if (Photos != null)
         {

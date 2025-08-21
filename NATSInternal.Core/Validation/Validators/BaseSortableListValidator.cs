@@ -1,11 +1,11 @@
 namespace NATSInternal.Core.Validation.Validators;
 
-internal abstract class AbstractSortableListValidator<TListRequestDto, TFieldToSort> : Validator<TListRequestDto>
+internal class BaseSortableListValidator<TListRequestDto, TFieldToSort> : Validator<TListRequestDto>
         where TListRequestDto : ISortableListRequestDto
         where TFieldToSort : struct, Enum
 {
     #region Constructors
-    protected AbstractSortableListValidator()
+    public BaseSortableListValidator()
     {
         RuleFor(dto => dto.SortingByFieldName)
             .IsOneOfFieldsToSort<TListRequestDto, TFieldToSort>()

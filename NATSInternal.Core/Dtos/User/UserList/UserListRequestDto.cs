@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Dtos;
 
-public class UserListRequestDto : ISortableAndPagableListRequestDto
+public class UserListRequestDto : ISortableAndPageableListRequestDto
 {
     #region Properties
     public bool? SortingByAscending { get; set; }
@@ -14,8 +14,8 @@ public class UserListRequestDto : ISortableAndPagableListRequestDto
     #region Methods
     public void TransformValues()
     {
-        SortingByFieldName = SortingByFieldName?.ToNullIfEmpty();
-        SearchContent = SearchContent?.ToNullIfEmpty();
+        SortingByFieldName = SortingByFieldName?.ToNullIfEmptyOrWhiteSpace();
+        SearchContent = SearchContent?.ToNullIfEmptyOrWhiteSpace();
     }
     #endregion
 

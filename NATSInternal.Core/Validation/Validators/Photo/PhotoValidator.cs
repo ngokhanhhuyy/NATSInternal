@@ -1,8 +1,9 @@
 ﻿namespace NATSInternal.Core.Validation.Validators;
 
-internal class SupplyPhotoValidator : Validator<SupplyPhotoRequestDto>
+internal class PhotoValidator : Validator<PhotoRequestDto>
 {
-    public SupplyPhotoValidator()
+    #region Constructors
+    public PhotoValidator()
     {
         RuleSet("Create", () =>
         {
@@ -11,7 +12,7 @@ internal class SupplyPhotoValidator : Validator<SupplyPhotoRequestDto>
                 .WithName(DisplayNames.File);
         });
 
-        RuleSet("Update", () =>
+        RuleSet("CreateAndUpdate", () =>
         {
             RuleFor(dto => dto.File)
                 .NotNull()
@@ -21,4 +22,5 @@ internal class SupplyPhotoValidator : Validator<SupplyPhotoRequestDto>
                 .WithName(DisplayNames.File);
         });
     }
+    #endregion
 }

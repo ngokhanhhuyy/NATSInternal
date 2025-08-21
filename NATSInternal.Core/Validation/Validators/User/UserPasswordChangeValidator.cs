@@ -2,6 +2,7 @@
 
 internal class UserPasswordChangeValidator : Validator<UserPasswordChangeRequestDto>
 {
+    #region Constructors
     public UserPasswordChangeValidator()
     {
         RuleFor(dto => dto.CurrentPassword)
@@ -18,4 +19,5 @@ internal class UserPasswordChangeValidator : Validator<UserPasswordChangeRequest
                 .Replace("{ComparisonPropertyName}", DisplayNames.Get(nameof(dto.NewPassword))))
             .WithName(dto => DisplayNames.Get(nameof(dto.ConfirmationPassword)));
     }
+    #endregion
 }

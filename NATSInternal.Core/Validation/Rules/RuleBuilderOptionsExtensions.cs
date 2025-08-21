@@ -1,7 +1,8 @@
 namespace NATSInternal.Core.Validation.Rules;
 
-internal static class RuleValidators
+internal static class RuleBuilderOptionsExtensions
 {
+    #region ExtensionMethods
     public static IRuleBuilderOptions<T, DateTime?> LaterThanDateTime<T>(
             this IRuleBuilder<T, DateTime?> ruleBuilder,
             DateTime comparisonDateTime)
@@ -136,6 +137,19 @@ internal static class RuleValidators
             .When(dto => dto.MonthYear.Year < DateTime.UtcNow.ToApplicationTime().Year);
     }
 
+    public static IRuleBuilderOptions<T, List<PhotoRequestDto>> ContainsNoOrOneThumbnail<T>(
+            this IRuleBuilder<T, List<PhotoRequestDto>> ruleBuilder) where T : IHasPhotosUpsertRequestDto
+    {
+        return ruleBuilder
+            .Must((_, photos) => photos.Count(p => p.IsThumbnail) <= 1)
+            .WithMessage(ErrorMessages.PhotosCannotContainsMoreThanOneThumbnail
+                .Replace("{Photos}", DisplayNames.Photo.ToLower())
+                .Replace("{Thumbnail}", DisplayNames.Thumbnail.ToLower()))
+            .WithName(DisplayNames.Photo);
+    }
+    #endregion
+
+        #region PrivateMethods
     private static DateTime MinimumStatsDateTime
     {
         get
@@ -147,4 +161,5 @@ internal static class RuleValidators
                 1, 0, 0, 0);
         }
     }
+    #endregion
 }

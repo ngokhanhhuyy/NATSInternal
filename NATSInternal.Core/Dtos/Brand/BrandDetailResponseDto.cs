@@ -1,20 +1,22 @@
 ﻿namespace NATSInternal.Core.Dtos;
 
-public class BrandDetailResponseDto
-    : IUpsertableDetailResponseDto<BrandExistingAuthorizationResponseDto>
+public class BrandDetailResponseDto : IUpsertableDetailResponseDto<BrandExistingAuthorizationResponseDto>
 {
-    public int Id { get; set; }
+    #region Properties
+    public Guid Id { get; set; }
     public string Name { get; set; }
-    public string Website { get; set; }
-    public string SocialMediaUrl { get; set; }
-    public string PhoneNumber { get; set; }
-    public string Email { get; set; }
-    public string Address { get; set; }
+    public string? Website { get; set; }
+    public string? SocialMediaUrl { get; set; }
+    public string? PhoneNumber { get; set; }
+    public string? Email { get; set; }
+    public string? Address { get; set; }
     public DateTime CreatedDateTime { get; set; }
-    public string ThumbnailUrl { get; set; }
-    public CountryResponseDto Country { get; set; }
-    public BrandExistingAuthorizationResponseDto Authorization { get; set; }
+    public string? ThumbnailUrl { get; set; }
+    public CountryResponseDto? Country { get; set; }
+    public BrandExistingAuthorizationResponseDto? Authorization { get; set; }
+    #endregion
 
+    #region Constructors
     internal BrandDetailResponseDto(
             Brand brand,
             BrandExistingAuthorizationResponseDto authorization)
@@ -26,7 +28,11 @@ public class BrandDetailResponseDto
         PhoneNumber = brand.PhoneNumber;
         Email = brand.Email;
         Address = brand.Address;
-        ThumbnailUrl = brand.ThumbnailUrl;
+        CreatedDateTime = brand.CreatedDateTime;
+        ThumbnailUrl = brand.Photos
+            .Where(p => p.IsThumbnail)
+            .Select(p => p.Url)
+            .SingleOrDefault();
         Authorization = authorization;
 
         if (brand.Country != null)
@@ -34,4 +40,5 @@ public class BrandDetailResponseDto
             Country = new CountryResponseDto(brand.Country);
         }
     }
+    #endregion
 }

@@ -6,6 +6,6 @@ public class RoleRequestDto : IRequestDto
 
     public void TransformValues()
     {
-        Name = Name?.ToNullIfEmpty();
+        Name = Name?.ToNullIfEmptyOrWhiteSpace();
     }
 }

@@ -41,6 +41,6 @@ public class DebtIncurrenceUpsertRequestDto : IDebtUpsertRequestDto
     /// <inheritdoc/>
     public void TransformValues()
     {
-        Note = Note?.ToNullIfEmpty();
+        Note = Note?.ToNullIfEmptyOrWhiteSpace();
     }
 }

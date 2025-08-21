@@ -1,12 +1,14 @@
 ﻿namespace NATSInternal.Core.Validation.Validators.ProductCategory;
 
-internal class ProductCategoryUpsertValidator : Validator<ProductCategoryRequestDto>
+internal class ProductCategoryUpsertValidator : Validator<ProductCategoryUpsertRequestDto>
 {
+    #region Constructors
     public ProductCategoryUpsertValidator()
     {
         RuleFor(dto => dto.Name)
             .NotEmpty()
-            .MaximumLength(30)
-            .WithName(dto => DisplayNames.Get(nameof(dto.Name)));
+            .MaximumLength(ProductCategoryContracts.NameMaxLength)
+            .WithName(dto => DisplayNames.Name);
     }
+    #endregion
 }

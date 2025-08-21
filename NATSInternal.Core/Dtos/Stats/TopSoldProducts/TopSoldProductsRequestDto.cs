@@ -22,8 +22,8 @@ public class TopSoldProductListRequestDto : IRequestDto
 
     public TopSoldProductListRequestDto TransformValues()
     {
-        RangeType = RangeType?.ToNullIfEmpty();
-        Creteria = Creteria?.ToNullIfEmpty();
+        RangeType = RangeType?.ToNullIfEmptyOrWhiteSpace();
+        Creteria = Creteria?.ToNullIfEmptyOrWhiteSpace();
 
         return this;
     }

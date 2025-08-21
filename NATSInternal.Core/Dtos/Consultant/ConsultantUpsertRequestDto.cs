@@ -12,6 +12,6 @@ public class ConsultantUpsertRequestDto : IHasStatsUpsertRequestDto
 
     public void TransformValues()
     {
-        Note = Note?.ToNullIfEmpty();
+        Note = Note?.ToNullIfEmptyOrWhiteSpace();
     }
 }

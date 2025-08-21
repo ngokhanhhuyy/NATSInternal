@@ -2,23 +2,24 @@
 
 public class ProductUpsertRequestDto : IRequestDto
 {
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public string Unit { get; set; }
-    public long DefaultPrice { get; set; }
+    #region Properties
+    public required string Name { get; set; }
+    public string? Description { get; set; }
+    public required string Unit { get; set; }
+    public long DefaultAmountBeforeVatPerUnit { get; set; }
     public int DefaultVatPercentage { get; set; }
     public bool IsForRetail { get; set; }
     public bool IsDiscontinued { get; set; }
-    public byte[] ThumbnailFile { get; set; }
     public bool ThumbnailChanged { get; set; }
-    public int? CategoryId { get; set; }
-    public int? BrandId { get; set; }
-    public List<ProductPhotoRequestDto> Photos { get; set; }
+    public ProductCategoryUpsertRequestDto? Category { get; set; }
+    public Guid? BrandId { get; set; }
+    public List<PhotoRequestDto> Photos { get; set; } = new();
+    #endregion
 
+    #region Methods
     public void TransformValues()
     {
-        Name = Name?.ToNullIfEmpty();
-        Description = Description?.ToNullIfEmpty();
-        Unit = Unit?.ToNullIfEmpty();
+        Description = Description?.ToNullIfEmptyOrWhiteSpace();
     }
+    #endregion
 }

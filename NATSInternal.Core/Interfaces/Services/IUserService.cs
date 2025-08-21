@@ -101,9 +101,8 @@ public interface IUserService
     /// <returns>
     /// The id of the new user.
     /// </returns>
-    /// <exception cref="DuplicatedException">
-    /// Throws when the username specified in the argument for the
-    /// <paramref name="requestDto"/> already exists.
+    /// <exception cref="OperationException">
+    /// Throws when the username specified in the argument for the <paramref name="requestDto"/> already exists.
     /// </exception>
     /// <exception cref="NotFoundException">
     /// Throws when the name of the role, specified by the value of the property <c>UserInformation.Role.Name</c> in the
@@ -129,7 +128,7 @@ public interface IUserService
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    Task AddToRolesAsync(Guid id, AddToRolesRequestDto requestDto, CancellationToken cancellationToken = default);
+    Task AddToRolesAsync(Guid id, UserAddToRolesRequestDto requestDto, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Remove an existing user, specified by id, from the roles specified by names.
@@ -145,7 +144,7 @@ public interface IUserService
     /// </returns>
     Task RemoveFromRolesAsync(
             Guid id,
-            RemoveFromRolesRequestDto requestDto,
+            UserRemoveFromRolesRequestDto requestDto,
             CancellationToken cancellationToken = default);
 
     /// <summary>

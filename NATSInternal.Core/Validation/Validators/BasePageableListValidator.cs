@@ -1,11 +1,10 @@
 namespace NATSInternal.Core.Validation.Validators;
 
-internal abstract class AbstractPageableListValidator<TListRequestDto, TFieldToSort> : Validator<TListRequestDto>
+internal class BasePageableListValidator<TListRequestDto> : Validator<TListRequestDto>
         where TListRequestDto : IPageableListRequestDto
-        where TFieldToSort : struct, Enum
 {
     #region Constructors
-    protected AbstractPageableListValidator(
+    public BasePageableListValidator(
         int pageMinValue = 1,
         int resultsPerPageMinValue = 5,
         int resultsPerPageMaxValue = 50)

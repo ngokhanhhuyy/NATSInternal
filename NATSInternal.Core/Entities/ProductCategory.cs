@@ -11,7 +11,7 @@ internal class ProductCategory : AbstractEntity<ProductCategory>, IUpsertableEnt
 
     [Column("name")]
     [Required]
-    [StringLength(30)]
+    [StringLength(ProductCategoryContracts.NameMaxLength)]
     public required string Name { get; set; }
 
     [Column("created_datetime")]

@@ -1,12 +1,10 @@
 ﻿namespace NATSInternal.Core.Dtos;
 
-public class ProductCategoryRequestDto : IRequestDto
+public class ProductCategoryUpsertRequestDto : IRequestDto
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
+    #region Properties
+    public required string Name { get; set; }
+    #endregion
 
-    public void TransformValues()
-    {
-        Name = Name?.ToNullIfEmpty();
-    }
+    public void TransformValues() { }
 }

@@ -12,8 +12,8 @@ public class SupplyUpsertRequestDto
 
     public void TransformValues()
     {
-        Note = Note?.ToNullIfEmpty();
-        UpdatedReason = UpdatedReason?.ToNullIfEmpty();
+        Note = Note?.ToNullIfEmptyOrWhiteSpace();
+        UpdatedReason = UpdatedReason?.ToNullIfEmptyOrWhiteSpace();
         Items.ForEach(i => i.TransformValues());
         Photos.ForEach(p => p.TransformValues());
     }

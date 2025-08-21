@@ -7,5 +7,7 @@ public class UserPasswordResetRequestDto : IRequestDto
     public required string ConfirmationPassword { get; set; }
     #endregion
 
+    #region Methods
     public void TransformValues() { }
+    #endregion
 }

@@ -6,6 +6,6 @@ public class IntroducerSearchRequestDto : IRequestDto {
     public int ResultsPerPage { get; set; } = 15;
 
     public void TransformValues() {
-        SearchByContent = SearchByContent?.ToNullIfEmpty();
+        SearchByContent = SearchByContent?.ToNullIfEmptyOrWhiteSpace();
     }
 }

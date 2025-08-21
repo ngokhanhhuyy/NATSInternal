@@ -24,8 +24,9 @@ public static class ErrorMessages
     public const string EarlierThanOrEqualToNow = "{PropertyName} phải là ngày giờ trước hoặc trùng với thời điểm hiện tại ({ComparisonValue}).";
     public const string EarlierThanOrEqualToToday = "{PropertyName} phải là ngày trước hoặc trùng với ngày hôm nay ({ComparisonValue}).";
     public const string Null = "{PropertyName} phải chứa giá trị null.";
+    public const string PhotosCannotContainsMoreThanOneThumbnail = "Danh sách {Photos} không thể chứa nhiều hơn 1 ảnh {Thumbnail}.";
     #endregion
-    
+
     #region MessagesForBusinessOperations
     public const string Undefined = "Đã xảy ra lỗi không xác định.";
     public const string Duplicated = "{PropertyName} đã tồn tại.";

@@ -7,13 +7,13 @@ public class ProductCategoryController : ControllerBase
 {
     private readonly IProductCategoryService _service;
     private readonly IValidator<ProductCategoryListRequestDto> _listValidator;
-    private readonly IValidator<ProductCategoryRequestDto> _upsertValidator;
+    private readonly IValidator<ProductCategoryUpsertRequestDto> _upsertValidator;
     private readonly INotifier _notifier;
 
     public ProductCategoryController(
             IProductCategoryService service,
             IValidator<ProductCategoryListRequestDto> listValidator,
-            IValidator<ProductCategoryRequestDto> upsertValidator,
+            IValidator<ProductCategoryUpsertRequestDto> upsertValidator,
             INotifier notifier)
     {
         _service = service;
@@ -70,7 +70,7 @@ public class ProductCategoryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> ProductCategoryCreate(
-            [FromBody] ProductCategoryRequestDto requestDto)
+            [FromBody] ProductCategoryUpsertRequestDto requestDto)
     {
         // Validate data from the request.
         requestDto.TransformValues();
@@ -111,7 +111,7 @@ public class ProductCategoryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> ProductCategoryUpdate(
             int id,
-            [FromBody] ProductCategoryRequestDto requestDto)
+            [FromBody] ProductCategoryUpsertRequestDto requestDto)
     {
         // Validate data from the request.
         requestDto.TransformValues();

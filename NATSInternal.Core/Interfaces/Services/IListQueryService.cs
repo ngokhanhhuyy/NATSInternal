@@ -15,7 +15,7 @@ internal interface IListQueryService
 
     Task<TListResponseDto> GetPagedListAsync<TEntity, TListResponseDto>(
             IQueryable<TEntity> query,
-            ISortableAndPagableListRequestDto requestDto,
+            ISortableAndPageableListRequestDto requestDto,
             Func<ICollection<TEntity>, int, TListResponseDto> responseDtoInitializer,
             CancellationToken cancellationToken = default) where TEntity : class;
     #endregion

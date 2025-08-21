@@ -10,7 +10,7 @@ public class AnnouncementUpsertRequestDto : IRequestDto
 
     public void TransformValues()
     {
-        Title = Title?.ToNullIfEmpty();
-        Content = Content?.ToNullIfEmpty();
+        Title = Title?.ToNullIfEmptyOrWhiteSpace();
+        Content = Content?.ToNullIfEmptyOrWhiteSpace();
     }
 }

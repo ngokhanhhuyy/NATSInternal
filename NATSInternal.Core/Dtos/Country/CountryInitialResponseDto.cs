@@ -2,6 +2,8 @@ namespace NATSInternal.Core.Dtos;
 
 public class CountryInitialResponseDto : IHasOptionsInitialResponseDto<CountryResponseDto>
 {
-    public string DisplayName => DisplayNames.Country;
+    #region Properties
+    public string DisplayName { get; } = DisplayNames.Country;
     public required List<CountryResponseDto> AllAsOptions { get; set; }
+    #endregion
 }

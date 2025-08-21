@@ -15,7 +15,7 @@ internal class ProductUpsertValidator : Validator<ProductUpsertRequestDto>
             .NotEmpty()
             .MaximumLength(12)
             .WithName(DisplayNames.Unit);
-        RuleFor(dto => dto.DefaultPrice)
+        RuleFor(dto => dto.DefaultAmountBeforeVatPerUnit)
             .GreaterThanOrEqualTo(0)
             .WithName(DisplayNames.DefaultPrice);
         RuleFor(dto => dto.DefaultVatPercentage)

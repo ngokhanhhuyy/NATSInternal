@@ -1,10 +1,11 @@
 namespace NATSInternal.Core.Dtos;
 
-public class PhotoRequestDto
+public class PhotoRequestDto : IRequestDto
 {
     #region Properties
     public required Guid? Id { get; set; }
     public required byte[] File { get; set; }
+    public required bool IsThumbnail { get; set; }
     public required bool HasBeenChanged { get; set; }
     public required bool HasBeenDeleted { get; set; }
     #endregion

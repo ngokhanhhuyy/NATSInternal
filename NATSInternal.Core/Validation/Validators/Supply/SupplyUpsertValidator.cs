@@ -22,7 +22,7 @@ internal class SupplyUpsertValidator : Validator<SupplyUpsertRequestDto>
         RuleSet("Create", () =>
         {
             RuleForEach(dto => dto.Photos)
-                .SetValidator(new SupplyPhotoValidator(), ruleSets: "Create");
+                .SetValidator(new PhotoValidator(), ruleSets: "Create");
         });
 
         RuleSet("Update", () =>
@@ -32,7 +32,7 @@ internal class SupplyUpsertValidator : Validator<SupplyUpsertRequestDto>
                 .MaximumLength(255)
                 .WithName(DisplayNames.Reason);
             RuleForEach(dto => dto.Photos)
-                .SetValidator(new SupplyPhotoValidator(), ruleSets: "Update");
+                .SetValidator(new PhotoValidator(), ruleSets: "Update");
         });
     }
 }

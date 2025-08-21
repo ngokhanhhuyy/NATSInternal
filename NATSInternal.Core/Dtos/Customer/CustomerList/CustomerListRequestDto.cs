@@ -12,7 +12,7 @@ public class CustomerListRequestDto : ICreatorTrackableListRequestDto
 
     public void TransformValues()
     {
-        SortingByFieldName = SortingByFieldName?.ToNullIfEmpty();
-        SearchByContent = SearchByContent?.ToNullIfEmpty();
+        SortingByFieldName = SortingByFieldName?.ToNullIfEmptyOrWhiteSpace();
+        SearchByContent = SearchByContent?.ToNullIfEmptyOrWhiteSpace();
     }
 }

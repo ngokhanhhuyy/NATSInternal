@@ -15,7 +15,7 @@ public class DebtIncurrenceListRequestDto
 
     public void TransformValues()
     {
-        SortingByFieldName = SortingByFieldName?.ToNullIfEmpty();
+        SortingByFieldName = SortingByFieldName?.ToNullIfEmptyOrWhiteSpace();
 
         if (CreatedUserId == 0)
         {

@@ -16,16 +16,16 @@ public class CustomerUpsertRequestDto : IRequestDto {
     public int? IntroducerId { get; set; }
 
     public void TransformValues() {
-        FirstName = FirstName?.ToNullIfEmpty();
-        MiddleName = MiddleName?.ToNullIfEmpty();
-        LastName = LastName?.ToNullIfEmpty();
-        NickName = NickName?.ToNullIfEmpty();
-        PhoneNumber = PhoneNumber?.ToNullIfEmpty();
-        ZaloNumber = ZaloNumber?.ToNullIfEmpty();
-        FacebookUrl = FacebookUrl?.ToNullIfEmpty();
-        Email = Email?.ToNullIfEmpty();
-        Address = Address?.ToNullIfEmpty();
-        Note = Note?.ToNullIfEmpty();
+        FirstName = FirstName?.ToNullIfEmptyOrWhiteSpace();
+        MiddleName = MiddleName?.ToNullIfEmptyOrWhiteSpace();
+        LastName = LastName?.ToNullIfEmptyOrWhiteSpace();
+        NickName = NickName?.ToNullIfEmptyOrWhiteSpace();
+        PhoneNumber = PhoneNumber?.ToNullIfEmptyOrWhiteSpace();
+        ZaloNumber = ZaloNumber?.ToNullIfEmptyOrWhiteSpace();
+        FacebookUrl = FacebookUrl?.ToNullIfEmptyOrWhiteSpace();
+        Email = Email?.ToNullIfEmptyOrWhiteSpace();
+        Address = Address?.ToNullIfEmptyOrWhiteSpace();
+        Note = Note?.ToNullIfEmptyOrWhiteSpace();
         IntroducerId = !IntroducerId.HasValue || IntroducerId.Value == 0
             ? null : IntroducerId.Value;
     }

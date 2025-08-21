@@ -12,7 +12,7 @@ public class SupplyListRequestDto : IHasProductListRequestDto
 
     public void TransformValues()
     {
-        SortingByFieldName = SortingByFieldName?.ToNullIfEmpty();
+        SortingByFieldName = SortingByFieldName?.ToNullIfEmptyOrWhiteSpace();
 
         if (CreatedUserId == 0)
         {

@@ -40,7 +40,7 @@ public class DebtPaymentUpsertRequestDto : IDebtUpsertRequestDto
     /// <inheritdoc/>
     public void TransformValues()
     {
-        Note = Note?.ToNullIfEmpty();
-        UpdatedReason?.ToNullIfEmpty();
+        Note = Note?.ToNullIfEmptyOrWhiteSpace();
+        UpdatedReason?.ToNullIfEmptyOrWhiteSpace();
     }
 }

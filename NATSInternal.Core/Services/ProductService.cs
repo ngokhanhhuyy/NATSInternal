@@ -120,7 +120,7 @@ internal class ProductService
             Name = requestDto.Name,
             Description = requestDto.Description,
             Unit = requestDto.Unit,
-            DefaultAmountBeforeVatPerUnit = requestDto.DefaultPrice,
+            DefaultAmountBeforeVatPerUnit = requestDto.DefaultAmountBeforeVatPerUnit,
             DefaultVatPercentage = requestDto.DefaultVatPercentage,
             IsForRetail = requestDto.IsForRetail,
             IsDiscontinued = requestDto.IsDiscontinued,
@@ -199,7 +199,7 @@ internal class ProductService
         product.Name = requestDto.Name;
         product.Description = requestDto.Description;
         product.Unit = requestDto.Unit;
-        product.DefaultAmountBeforeVatPerUnit = requestDto.DefaultPrice;
+        product.DefaultAmountBeforeVatPerUnit = requestDto.DefaultAmountBeforeVatPerUnit;
         product.DefaultVatPercentage = requestDto.DefaultVatPercentage;
         product.IsForRetail = requestDto.IsForRetail;
         product.IsDiscontinued = requestDto.IsDiscontinued;

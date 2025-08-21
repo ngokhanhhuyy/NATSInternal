@@ -7,7 +7,7 @@ public class AccessTokenExchangeRequestDto : IRequestDto
 
     public void TransformValues()
     {
-        ExpiredAccessToken = ExpiredAccessToken?.ToNullIfEmpty();
-        RefreshToken = ExpiredAccessToken?.ToNullIfEmpty();
+        ExpiredAccessToken = ExpiredAccessToken?.ToNullIfEmptyOrWhiteSpace();
+        RefreshToken = ExpiredAccessToken?.ToNullIfEmptyOrWhiteSpace();
     }
 }

@@ -1,16 +1,9 @@
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
 
-# C# files
-[*.cs]
-
-[*]
-# Named color format
-guidelines_style = 1px dashed 33ffffff
-
 # All files
 [*]
-guidelines = 120
+guidelines = 120 dashed
 
 [*.razor]
 indent_size = 2
