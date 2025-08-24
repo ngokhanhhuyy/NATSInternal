@@ -29,7 +29,7 @@ internal class Customer : AbstractEntity<Customer>, IUpsertableEntity<Customer>
         set
         {
             ComputeFullNameAndNormalizedFullName();
-            NormalizedFirstName = value.RemoveDiacritics();
+            NormalizedFirstName = value.RemoveDiacritics().ToUpper();
             _firstName = value;
         }
     }
@@ -48,7 +48,7 @@ internal class Customer : AbstractEntity<Customer>, IUpsertableEntity<Customer>
         set
         {
             ComputeFullNameAndNormalizedFullName();
-            NormalizedMiddleName = value.RemoveDiacritics();
+            NormalizedMiddleName = value.RemoveDiacritics().ToUpper();
             _middleName = value;
         }
     }
@@ -67,7 +67,7 @@ internal class Customer : AbstractEntity<Customer>, IUpsertableEntity<Customer>
         set
         {
             ComputeFullNameAndNormalizedFullName();
-            NormalizedLastName = value.RemoveDiacritics();
+            NormalizedLastName = value.RemoveDiacritics().ToUpper();
             _lastName = value;
         }
     }
@@ -122,12 +122,12 @@ internal class Customer : AbstractEntity<Customer>, IUpsertableEntity<Customer>
     [Required]
     public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow.ToApplicationTime();
 
-    [Column("updated_datetime")]
-    public DateTime? UpdatedDateTime { get; set; }
+    [Column("last_updated_datetime")]
+    public DateTime? LastUpdatedDateTime { get; set; }
 
     [Column("note")]
     [StringLength(CustomerContracts.NoteMaxLength)]
-    public required string Note { get; set; }
+    public string? Note { get; set; }
 
     [Column("is_deleted")]
     [Required]
@@ -168,10 +168,14 @@ internal class Customer : AbstractEntity<Customer>, IUpsertableEntity<Customer>
     }
 
     [BackingField(nameof(_introducer))]
-    public Customer Introducer
+    public Customer? Introducer
     {
-        get => GetFieldOrThrowIfNull(_introducer);
-        set => _introducer = value;
+        get => _introducer;
+        set
+        {
+            IntroducerId = value?.Id;
+            _introducer = value;
+        }
     }
 
     public List<Customer> IntroducedCustomers { get; protected set; } = new();
@@ -193,7 +197,7 @@ internal class Customer : AbstractEntity<Customer>, IUpsertableEntity<Customer>
     public long DebtPaidAmount => DebtPayments.Sum(d => d.Amount);
 
     [NotMapped]
-    public long DebtAmount => DebtIncurredAmount - DebtPaidAmount;
+    public long RemainingDebtAmount => DebtIncurredAmount - DebtPaidAmount;
 
     [NotMapped]
     public long CachedDebtAmount => CachedIncurredDebtAmount - CachedPaidDebtAmount;
@@ -204,7 +208,7 @@ internal class Customer : AbstractEntity<Customer>, IUpsertableEntity<Customer>
     {
         string?[] names = new[] { FirstName, MiddleName, LastName };
         FullName = string.Join(" ", names.Where(n => n is not null));
-        NormalizedFullName = FullName.RemoveDiacritics();
+        NormalizedFullName = FullName.RemoveDiacritics().ToUpper();
     }
     #endregion
 }

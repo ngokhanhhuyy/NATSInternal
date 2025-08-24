@@ -4,7 +4,7 @@ internal class ConsultantListValidator : Validator<ConsultantListRequestDto>
 {
     public ConsultantListValidator(IConsultantService service)
     {
-        RuleFor(dto => dto.SortingByFieldName)
+        RuleFor(dto => dto.SortByFieldName)
             .IsOneOfFieldOptions(service.GetListSortingOptions().FieldOptions)
             .WithName(DisplayNames.SortingByField);
         RuleFor(dto => dto.MonthYear)

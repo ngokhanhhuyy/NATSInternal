@@ -1,7 +1,7 @@
 namespace NATSInternal.Core.Services;
 
-/// <inheritdoc cref="IStatsInternalService" />
-internal class StatsInternalService : StatsService, IStatsInternalService
+/// <inheritdoc cref="ISummaryInternalService" />
+internal class StatsInternalService : StatsService, ISummaryInternalService
 {
     public StatsInternalService(IDbContextFactory<DatabaseContext> contextFactory)
             : base(contextFactory)

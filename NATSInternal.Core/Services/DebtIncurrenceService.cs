@@ -5,17 +5,17 @@ internal class DebtIncurrenceService
     :
         DebtAbstractService<Debt, DebtUpdateHistory,
             DebtIncurrenceListRequestDto, DebtIncurrenceUpsertRequestDto,
-            DebtIncurrenceListResponseDto, DebtIncurrenceBasicResponseDto,
-            DebtIncurrenceDetailResponseDto, DebtIncurrenceUpdateHistoryResponseDto,
-            DebtIncurrenceUpdateHistoryDataDto, DebtIncurrenceCreatingAuthorizationResponseDto,
-            DebtIncurrenceExistingAuthorizationResponseDto>,
+            DebtIncurrenceListResponseDto, DebtBasicResponseDto,
+            DebtDetailResponseDto, DebtUpdateHistoryResponseDto,
+            DebtIncurrenceUpdateHistoryDataDto, DebtCreatingAuthorizationResponseDto,
+            DebtExistingAuthorizationResponseDto>,
         IDebtIncurrenceService
 {
 
     public DebtIncurrenceService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService statsService)
+            ISummaryInternalService statsService)
         : base(context, authorizationService, statsService)
     {
     }
@@ -32,23 +32,23 @@ internal class DebtIncurrenceService
             Items = entityListDto.Items?
                 .Select(di =>
                 {
-                    DebtIncurrenceExistingAuthorizationResponseDto authorization;
+                    DebtExistingAuthorizationResponseDto authorization;
                     authorization = GetExistingAuthorization(di);
-                    return new DebtIncurrenceBasicResponseDto(di, authorization);
+                    return new DebtBasicResponseDto(di, authorization);
                 }).ToList()
-                ?? new List<DebtIncurrenceBasicResponseDto>(),
+                ?? new List<DebtBasicResponseDto>(),
         };
     }
 
     /// <inheritdoc />
-    public async Task<DebtIncurrenceDetailResponseDto> GetDetailAsync(int id)
+    public async Task<DebtDetailResponseDto> GetDetailAsync(int id)
     {
         Debt debtIncurrence = await GetEntityAsync(id);
 
-        DebtIncurrenceExistingAuthorizationResponseDto authorization;
+        DebtExistingAuthorizationResponseDto authorization;
         authorization = GetExistingAuthorization(debtIncurrence);
 
-        return new DebtIncurrenceDetailResponseDto(debtIncurrence, authorization);
+        return new DebtDetailResponseDto(debtIncurrence, authorization);
     }
 
     /// <inheritdoc />
@@ -67,7 +67,7 @@ internal class DebtIncurrenceService
     /// <inheritdoc />
     protected override async Task AdjustStatsAsync(
             Debt debtIncurrence,
-            IStatsInternalService service,
+            ISummaryInternalService service,
             bool isIncrement)
     {
         long amountToIncrement = isIncrement ? debtIncurrence.Amount : -debtIncurrence.Amount;

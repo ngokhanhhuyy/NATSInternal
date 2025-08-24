@@ -2,7 +2,7 @@ namespace NATSInternal.Core.Validation.Validators;
 
 internal class DebtPaymentUpsertValidator : Validator<DebtPaymentUpsertRequestDto>
 {
-    public DebtPaymentUpsertValidator(IStatsService statsService)
+    public DebtPaymentUpsertValidator(ISummaryService statsService)
     {
         RuleFor(dto => dto.Amount)
             .NotEmpty()

@@ -12,6 +12,7 @@ global using NATSInternal.Core.Constants;
 global using NATSInternal.Core.Dtos;
 global using NATSInternal.Core.Enums;
 global using NATSInternal.Core.Exceptions;
+global using NATSInternal.Core.Interfaces.Notifiers;
 global using NATSInternal.Core.Interfaces.Providers;
 global using NATSInternal.Core.Interfaces.Services;
 

@@ -133,13 +133,13 @@ internal abstract class ExportProductAbstractService<
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IMultiplePhotosService<T, TPhoto> _photoService;
-    private readonly IStatsInternalService _statsService;
+    private readonly ISummaryInternalService _statsService;
 
     protected ExportProductAbstractService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
             IMultiplePhotosService<T, TPhoto> photoService,
-            IStatsInternalService statsService)
+            ISummaryInternalService statsService)
         : base(context, authorizationService)
     {
         _context = context;
@@ -539,9 +539,9 @@ internal abstract class ExportProductAbstractService<
             .Include(t => t.Photos);
 
         // Determine the field and the direction the sort.
-        string sortingByField = requestDto.SortingByFieldName
+        string sortingByField = requestDto.SortByFieldName
                                 ?? GetListSortingOptions().DefaultFieldName;
-        bool sortingByAscending = requestDto.SortingByAscending
+        bool sortingByAscending = requestDto.SortByAscending
                                   ?? GetListSortingOptions().DefaultAscending;
         switch (sortingByField)
         {
@@ -766,6 +766,6 @@ internal abstract class ExportProductAbstractService<
     /// </returns>
     protected abstract Task AdjustStatsAsync(
             T entity,
-            IStatsInternalService statsService,
+            ISummaryInternalService statsService,
             bool isIncrementing);
 }

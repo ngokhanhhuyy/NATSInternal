@@ -2,6 +2,7 @@
 
 internal class ProductUpsertValidator : Validator<ProductUpsertRequestDto>
 {
+    #region Constructors
     public ProductUpsertValidator()
     {
         RuleFor(dto => dto.Name)
@@ -22,9 +23,19 @@ internal class ProductUpsertValidator : Validator<ProductUpsertRequestDto>
             .GreaterThanOrEqualTo(0)
             .LessThanOrEqualTo(100)
             .WithName(DisplayNames.DefaultVatPercentage);
-        RuleFor(dto => dto.ThumbnailFile)
-            .Must(IsValidImage)
-            .When(dto => dto.ThumbnailFile != null)
-            .WithName(DisplayNames.ThumbnailFile);
+        RuleFor(dto => dto.Photos).ContainsNoOrOneThumbnail();
+
+        RuleSet("Create", () =>
+        {
+            RuleForEach(dto => dto.Photos)
+                .SetValidator(new PhotoValidator(), ruleSets: "Create");
+        });
+
+        RuleSet("CreateAndUpdate", () =>
+        {
+            RuleForEach(dto => dto.Photos)
+                .SetValidator(new PhotoValidator(), ruleSets: "CreateAndUpdate");
+        });
     }
+    #endregion
 }

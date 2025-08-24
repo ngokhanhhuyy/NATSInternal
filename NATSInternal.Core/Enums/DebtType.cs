@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Enums;
 
-internal enum DebtType
+public enum DebtType
 {
     #region Elements
     Incurrence,

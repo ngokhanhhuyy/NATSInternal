@@ -11,7 +11,7 @@ internal class CustomerEntityConfiguration : IEntityTypeConfiguration<Customer>
             .WithMany(i => i.IntroducedCustomers)
             .HasForeignKey(c => c.IntroducerId)
             .HasConstraintName("FK__customers__customers__introducer_id")
-            .OnDelete(DeleteBehavior.Restrict)
+            .OnDelete(DeleteBehavior.SetNull)
             .IsRequired();
         entityBuilder
             .HasOne(c => c.CreatedUser)

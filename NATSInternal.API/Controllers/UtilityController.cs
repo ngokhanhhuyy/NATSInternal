@@ -22,7 +22,7 @@ public class UtilityController : ControllerBase
     private readonly ISupplyService _supplyService;
     private readonly ITreatmentService _treatmentService;
     private readonly IUserService _userService;
-    private readonly IStatsService _statsService;
+    private readonly ISummaryService _statsService;
 
     public UtilityController(
             IAnnouncementService announcementService,
@@ -41,7 +41,7 @@ public class UtilityController : ControllerBase
             ISupplyService supplyService,
             ITreatmentService treatmentService,
             IUserService userService,
-            IStatsService statsService)
+            ISummaryService statsService)
     {
         _announcementService = announcementService;
         _authorizationService = authorizationService;

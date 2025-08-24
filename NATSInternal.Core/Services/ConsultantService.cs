@@ -14,12 +14,12 @@ internal class ConsultantService
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService _statsService;
+    private readonly ISummaryInternalService _statsService;
 
     public ConsultantService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService statsService)
+            ISummaryInternalService statsService)
         : base(context, authorizationService)
     {
         _context = context;
@@ -36,9 +36,9 @@ internal class ConsultantService
             .Include(c => c.Customer);
 
         // Determine the field and the direction the sort.
-        string sortingByField = requestDto.SortingByFieldName
+        string sortingByField = requestDto.SortByFieldName
                                 ?? GetListSortingOptions().DefaultFieldName;
-        bool sortingByAscending = requestDto.SortingByAscending
+        bool sortingByAscending = requestDto.SortByAscending
                                   ?? GetListSortingOptions().DefaultAscending;
         Expression<Func<Consultant, long>> amountExpression = (consultant) =>
             consultant.AmountBeforeVat + consultant.VatAmount;

@@ -15,7 +15,7 @@ internal class DebtPaymentService
     public DebtPaymentService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService statsService)
+            ISummaryInternalService statsService)
         : base(context, authorizationService, statsService)
     {
     }
@@ -68,7 +68,7 @@ internal class DebtPaymentService
     /// <inheritdoc />
     protected override async Task AdjustStatsAsync(
             DebtPayment debtPayment,
-            IStatsInternalService service,
+            ISummaryInternalService service,
             bool isIncrement)
     {
         long amountToIncrement = isIncrement ? debtPayment.Amount : -debtPayment.Amount;

@@ -2,8 +2,8 @@ namespace NATSInternal.Core.Dtos;
 
 public class ExpenseListRequestDto : IHasStatsListRequestDto
 {
-    public bool? SortingByAscending { get; set; }
-    public string SortingByFieldName { get; set; }
+    public bool? SortByAscending { get; set; }
+    public string SortByFieldName { get; set; }
     public ListMonthYearRequestDto MonthYear { get; set; }
     public ExpenseCategory? Category { get; set; }
     public int? CreatedUserId { get; set; }
@@ -12,7 +12,7 @@ public class ExpenseListRequestDto : IHasStatsListRequestDto
     
     public void TransformValues()
     {
-        SortingByFieldName = SortingByFieldName?.ToNullIfEmptyOrWhiteSpace();
+        SortByFieldName = SortByFieldName?.ToNullIfEmptyOrWhiteSpace();
 
         if (CreatedUserId == 0)
         {

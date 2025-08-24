@@ -1,196 +1,154 @@
 ﻿namespace NATSInternal.Core.Services;
 
-/// <inheritdoc cref="ICustomerService" />
-internal class CustomerService
-    :
-        UpsertableAbstractService<
-            Customer,
-            CustomerListRequestDto,
-            CustomerExistingAuthorizationResponseDto>,
-        ICustomerService
+/// <inheritdoc />
+internal class CustomerService : ICustomerService
 {
+    #region Fields
     private readonly IDbContextFactory<DatabaseContext> _contextFactory;
+    private readonly IListQueryService _listQueryService;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService _statsService;
+    private readonly ISummaryInternalService _summaryService;
+    private readonly IDbExceptionHandler _exceptionHandler;
+    private readonly IValidator<CustomerListRequestDto> _listValidator;
+    private readonly IValidator<CustomerUpsertRequestDto> _upsertValidator;
+    #endregion
 
+    #region Constructors
     public CustomerService(
             IDbContextFactory<DatabaseContext> contextFactory,
+            IListQueryService listQueryService,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService statsService) : base(authorizationService)
-    { 
-        _contextFactory = contextFactory;
-        _authorizationService = authorizationService;
-        _statsService = statsService;
-    }
-
-    public async Task<CustomerListResponseDto> GetListAsync(CustomerListRequestDto requestDto)
+            ISummaryInternalService summaryService,
+            IDbExceptionHandler exceptionHandler,
+            IValidator<CustomerListRequestDto> listValidator,
+            IValidator<CustomerUpsertRequestDto> upsertValidator)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        _contextFactory = contextFactory;
+        _listQueryService = listQueryService;
+        _authorizationService = authorizationService;
+        _summaryService = summaryService;
+        _exceptionHandler = exceptionHandler;
+        _listValidator = listValidator;
+        _upsertValidator = upsertValidator;
+    }
+    #endregion
 
-        // Initialize query.
+    #region Methods
+    public async Task<CustomerListResponseDto> GetListAsync(
+            CustomerListRequestDto requestDto,
+            CancellationToken cancellationToken = default)
+    {
+        // Validate the data from the request.
+        requestDto.TransformValues();
+        _listValidator.ValidateAndThrow(requestDto);
+
+        // Generate a new instance of DbContext.
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+
+        // Preparing the query.
         IQueryable<Customer> query = context.Customers
             .Include(c => c.CreatedUser).ThenInclude(u => u.Roles)
-            .Include(c => c.Debts)
-            .Include(c => c.DebtPayments);
+            .Include(c => c.Debts);
 
-        // Filter by search content.
-        if (requestDto.SearchByContent != null)
+        // Add filter for search content.
+        if (requestDto.SearchContent != null)
         {
-            bool isValidBirthday = DateOnly.TryParse(
-                requestDto.SearchByContent,
-                out DateOnly birthday);
+            bool isValidBirthday = DateOnly.TryParse(requestDto.SearchContent, out DateOnly birthday);
             query = query.Where(c =>
-                c.NormalizedFullName
-                    .ToLower()
-                    .Contains(requestDto.SearchByContent.ToLower()) ||
-                c.PhoneNumber.Contains(requestDto.SearchByContent) ||
+                c.NormalizedFullName.Contains(requestDto.SearchContent.ToUpper()) ||
+                c.PhoneNumber == null ? true : c.PhoneNumber.Contains(requestDto.SearchContent) ||
                 (isValidBirthday && c.Birthday.HasValue && c.Birthday.Value == birthday));
         }
 
         // Filter by remaining debt amount.
-        if (requestDto.HasRemainingDebtAmountOnly)
+        if (requestDto.HasRemainingDebtAmountOnly is true)
         {
-            query = query.Where(c => c.Debts
-                .Where(di => !di.IsDeleted)
-                .Sum(di => di.Amount) - c.DebtPayments
-                .Where(dp => !dp.IsDeleted)
-                .Sum(dp => dp.Amount) > 0);
+            query = query.Where(c => c.CachedDebtAmount > 0);
         }
 
-        // Filter by not deleted.
-        query = query.Where(c => !c.IsDeleted);
-
         // Determine the field and the direction the sort.
-        string sortingByField = requestDto.SortingByFieldName
-                                ?? GetListSortingOptions().DefaultFieldName;
-        bool sortingByAscending = requestDto.SortingByAscending
-                                  ?? GetListSortingOptions().DefaultAscending;
-        switch (sortingByField)
+        string sortByFieldName = requestDto.SortByFieldName ?? GetListSortingOptions().DefaultFieldName;
+        bool sortByAscending = requestDto.SortByAscending ?? GetListSortingOptions().DefaultAscending;
+        switch (sortByFieldName)
         {
-            case nameof(OrderByFieldOption.FirstName):
-                query = sortingByAscending
-                    ? query.OrderBy(c => c.FirstName)
-                    : query.OrderByDescending(c => c.FirstName);
+            case nameof(CustomerListRequestDto.FieldToSort.FirstName):
+                query = query.ApplySorting(c => c.FirstName, sortByAscending);
                 break;
-            case nameof(OrderByFieldOption.Birthday):
-                query = sortingByAscending
-                    ? query.OrderBy(c => c.Birthday)
-                    : query.OrderByDescending(c => c.Birthday);
+            case nameof(CustomerListRequestDto.FieldToSort.Birthday):
+                query = query.ApplySorting(c => c.Birthday, sortByAscending);
                 break;
-            case nameof(OrderByFieldOption.CreatedDateTime):
-                query = sortingByAscending
-                    ? query.OrderBy(c => c.CreatedDateTime)
-                    : query.OrderByDescending(c => c.CreatedDateTime);
+            case nameof(CustomerListRequestDto.FieldToSort.CreatedDateTime):
+                query = query.ApplySorting(c => c.CreatedDateTime, sortByAscending);
                 break;
-            case nameof(OrderByFieldOption.DebtRemainingAmount):
-                query = sortingByAscending
-                    ? query.OrderBy(c => c.Debts
-                            .Where(d => !d.IsDeleted)
-                            .Sum(d => d.Amount) - c.DebtPayments
-                            .Where(dp => !dp.IsDeleted)
-                            .Sum(dp => dp.Amount))
-                        .ThenBy(c => c.Id)
-                    : query.OrderByDescending(c => c.Debts
-                            .Where(d => !d.IsDeleted)
-                            .Sum(d => d.Amount) - c.DebtPayments
-                            .Where(dp => !dp.IsDeleted)
-                            .Sum(dp => dp.Amount))
-                        .ThenByDescending(c => c.Id);
+            case nameof(CustomerListRequestDto.FieldToSort.DebtRemainingAmount):
+                query = query.ApplySorting(c => c.CachedIncurredDebtAmount - c.CachedPaidDebtAmount, sortByAscending);
                 break;
-            case nameof(OrderByFieldOption.LastName):
-                query = sortingByAscending
-                    ? query.OrderBy(c => c.LastName).ThenBy(c => c.FirstName)
-                    : query.OrderByDescending(c => c.LastName)
-                        .ThenByDescending(c => c.FirstName);
+            case nameof(CustomerListRequestDto.FieldToSort.LastName):
+                query = query
+                    .ApplySorting(c => c.LastName, sortByAscending)
+                    .ApplySorting(c => c.FirstName, sortByAscending);
                 break;
             default:
                 throw new NotImplementedException();
-
         }
 
-        // Fetch the list of the entities.
-        EntityListDto<Customer> listDto = await GetListOfEntitiesAsync(query, requestDto);
-
-        return new CustomerListResponseDto
-        {
-            PageCount = listDto.PageCount,
-            Items = listDto.Items?
-                .Select(c => new CustomerBasicResponseDto(c, GetExistingAuthorization(c)))
-                .ToList()
-        };
+        return await _listQueryService.GetPagedListAsync(
+            query,
+            requestDto,
+            (customers, pageCount) => new CustomerListResponseDto(customers, pageCount),
+            cancellationToken
+        );
     }
 
     /// <inheritdoc />
-    public async Task<CustomerBasicResponseDto> GetBasicAsync(int id)
+    public async Task<CustomerBasicResponseDto> GetBasicAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        
-        return await context.Customers
+        // Generate a new instance of the DbContext.
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+
+        // 
+        Customer customer = await context.Customers
             .Include(c => c.Debts)
-            .Include(c => c.DebtPayments)
-            .Where(c => c.Id == id)
-            .Select(c => new CustomerBasicResponseDto(c, GetExistingAuthorization(c)))
-            .SingleOrDefaultAsync()
-            ?? throw new NotFoundException(
-                nameof(Customer),
-                nameof(id),
-                id.ToString());
+            .SingleOrDefaultAsync(c => c.Id == id, cancellationToken)
+            ?? throw new NotFoundException();
+
+        CustomerExistingAuthorizationResponseDto authorizationResponseDto = _authorizationService
+            .GetExistingAuthorization<Customer, CustomerExistingAuthorizationResponseDto>();
+
+        return new CustomerBasicResponseDto(customer, authorizationResponseDto);
     }
 
     /// <inheritdoc />
-    public async Task<CustomerDetailResponseDto> GetDetailAsync(int id)
+    public async Task<CustomerDetailResponseDto> GetDetailAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+
         Customer customer = await context.Customers
             .Include(customer => customer.Introducer)
             .Include(customer => customer.CreatedUser).ThenInclude(u => u.Roles)
-            .Include(customer => customer.Debts
-                .OrderByDescending(di => di.StatsDateTime))
-            .Include(customer => customer.DebtPayments
-                .OrderByDescending(dp => dp.StatsDateTime))
-            .Where(c => !c.IsDeleted && c.Id == id)
-            .SingleOrDefaultAsync()
-            ?? throw new NotFoundException(
-                nameof(Customer),
-                nameof(id),
-                id.ToString());
+            .Include(customer => customer.Debts.OrderByDescending(di => di.StatsDateTime))
+            .SingleOrDefaultAsync(c => c.Id == id, cancellationToken)
+            ?? throw new NotFoundException();
 
-        return new CustomerDetailResponseDto(
-            customer,
-            GetExistingAuthorization(customer),
-            _authorizationService.GetExistingAuthorization<
-                Debt,
-                DebtUpdateHistory,
-                DebtIncurrenceExistingAuthorizationResponseDto>,
-            _authorizationService.GetExistingAuthorization<
-                DebtPayment,
-                DebtPaymentUpdateHistory,
-                DebtPaymentExistingAuthorizationResponseDto>);
+        CustomerExistingAuthorizationResponseDto authorizationResponseDto = _authorizationService
+            .GetExistingAuthorization<Customer, CustomerExistingAuthorizationResponseDto>();
+
+        return new CustomerDetailResponseDto(customer, authorizationResponseDto);
     }
 
     /// <inheritdoc />
-    public async Task<int> CreateAsync(CustomerUpsertRequestDto requestDto)
+    public async Task<Guid> CreateAsync(
+            CustomerUpsertRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        await using IDbContextTransaction transaction = await context.Database
-            .BeginTransactionAsync();
-        
-        string fullName = PersonNameUtility.GetFullNameFromNameElements(
-            requestDto.FirstName,
-            requestDto.MiddleName,
-            requestDto.LastName);
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        await using IDbContextTransaction transaction = await context.Database.BeginTransactionAsync(cancellationToken);
 
         Customer customer = new Customer
         {
             FirstName = requestDto.FirstName,
-            NormalizedFirstName = requestDto.FirstName.ToNonDiacritics().ToUpper(),
             MiddleName = requestDto.MiddleName,
-            NormalizedMiddleName = requestDto.MiddleName?.ToNonDiacritics().ToUpper(),
             LastName = requestDto.LastName,
-            NormalizedLastName = requestDto.LastName?.ToNonDiacritics().ToUpper(),
-            FullName = fullName,
-            NormalizedFullName = fullName.ToNonDiacritics().ToUpper(),
             NickName = requestDto.NickName,
             Gender = requestDto.Gender,
             Birthday = requestDto.Birthday,
@@ -201,29 +159,38 @@ internal class CustomerService
             Address = requestDto.Address,
             CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),
             Note = requestDto.Note,
-            IntroducerId = null,
+            IntroducerId = requestDto.IntroducerId,
             CreatedUserId = _authorizationService.GetUserId(),
         };
+
         context.Customers.Add(customer);
-        
+
         try
         {
-            await context.SaveChangesAsync();
-            await _statsService.IncrementNewCustomerAsync(1);
-            await transaction.CommitAsync();
+            await context.SaveChangesAsync(cancellationToken);
+            await _summaryService.IncrementNewCustomerCountAsync(1, null, cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
             return customer.Id;
         }
         catch (DbUpdateException exception)
         {
-            if (exception.InnerException is MySqlException sqlException)
+            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+            if (handledResult is null)
             {
-                SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(sqlException);
-                if (exceptionHandler.IsForeignKeyNotFound)
-                {
-                    throw new OperationException(
-                        nameof(requestDto.IntroducerId),
-                        ErrorMessages.NotFound.ReplaceResourceName(DisplayNames.Introducer));
-                }
+                throw;
+            }
+
+            if (handledResult.IsConcurrencyConflict)
+            {
+                throw new ConcurrencyException();
+            }
+
+            if (handledResult.IsForeignKeyConstraintViolation)
+            {
+                throw OperationException.NotFound(
+                    new object[] { nameof(requestDto.IntroducerId) },
+                    DisplayNames.Introducer
+                );
             }
 
             throw;
@@ -231,66 +198,58 @@ internal class CustomerService
     }
 
     /// <inheritdoc />
-    public async Task UpdateAsync(int id, CustomerUpsertRequestDto requestDto)
+    public async Task UpdateAsync(
+            Guid id,
+            CustomerUpsertRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        
-        string fullName = PersonNameUtility.GetFullNameFromNameElements(
-            requestDto.FirstName,
-            requestDto.MiddleName,
-            requestDto.LastName);
-        DateTime updatedDateTime = DateTime.UtcNow.ToApplicationTime();
+        requestDto.TransformValues();
+        _upsertValidator.ValidateAndThrow(requestDto);
+
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+
+        Customer customer = await context.Customers
+            .SingleOrDefaultAsync(c => c.Id == id, cancellationToken)
+            ?? throw new NotFoundException();
+
+        customer.FirstName = requestDto.FirstName;
+        customer.MiddleName = requestDto.MiddleName;
+        customer.LastName = requestDto.LastName;
+        customer.NickName = requestDto.NickName;
+        customer.Gender = requestDto.Gender;
+        customer.Birthday = requestDto.Birthday;
+        customer.PhoneNumber = requestDto.PhoneNumber;
+        customer.ZaloNumber = requestDto.ZaloNumber;
+        customer.FacebookUrl = requestDto.FacebookUrl;
+        customer.Email = requestDto.Email;
+        customer.Address = requestDto.Address;
+        customer.CreatedDateTime = DateTime.UtcNow.ToApplicationTime();
+        customer.Note = requestDto.Note;
+        customer.IntroducerId = requestDto.IntroducerId;
 
         try
         {
-            int affactedRows = await context.Customers
-                .Where(c => !c.IsDeleted && c.Id == id)
-                .ExecuteUpdateAsync(setters => setters
-                    .SetProperty(c => c.FirstName, requestDto.FirstName)
-                    .SetProperty(c => c.NormalizedFirstName, requestDto.FirstName
-                        .ToNonDiacritics()
-                        .ToUpper())
-                    .SetProperty(c => c.MiddleName, requestDto.MiddleName)
-                    .SetProperty(c => c.NormalizedMiddleName, requestDto.MiddleName
-                        .ToNonDiacritics()
-                        .ToUpper())
-                    .SetProperty(c => c.LastName, requestDto.LastName)
-                    .SetProperty(c => c.NormalizedLastName, requestDto.LastName
-                        .ToNonDiacritics()
-                        .ToUpper())
-                    .SetProperty(c => c.FullName, fullName)
-                    .SetProperty(c => c.NormalizedFullName, fullName
-                        .ToNonDiacritics()
-                        .ToUpper())
-                    .SetProperty(c => c.NickName, requestDto.NickName)
-                    .SetProperty(c => c.Gender, requestDto.Gender)
-                    .SetProperty(c => c.Birthday, requestDto.Birthday)
-                    .SetProperty(c => c.PhoneNumber, requestDto.PhoneNumber)
-                    .SetProperty(c => c.ZaloNumber, requestDto.ZaloNumber)
-                    .SetProperty(c => c.FacebookUrl, requestDto.FacebookUrl)
-                    .SetProperty(c => c.Email, requestDto.Email)
-                    .SetProperty(c => c.Address, requestDto.Address)
-                    .SetProperty(c => c.UpdatedDateTime, updatedDateTime)
-                    .SetProperty(c => c.Note, requestDto.Note)
-                    .SetProperty(c => c.IntroducerId, requestDto.IntroducerId));
-            
-            // Check if the c has been updated.
-            if (affactedRows == 0)
-            {
-                throw new NotFoundException(
-                    nameof(Customer),
-                    nameof(id),
-                    id.ToString());
-            }
+            await context.SaveChangesAsync(cancellationToken);
         }
-        catch (MySqlException sqlException)
+        catch (DbUpdateException exception)
         {
-            SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(sqlException);
-            if (exceptionHandler.IsForeignKeyNotFound)
+            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+            if (handledResult is null)
             {
-                throw new OperationException(
-                    nameof(requestDto.IntroducerId),
-                    ErrorMessages.NotFound.ReplaceResourceName(DisplayNames.Introducer));
+                throw;
+            }
+
+            if (handledResult.IsConcurrencyConflict)
+            {
+                throw new ConcurrencyException();
+            }
+
+            if (handledResult.IsForeignKeyConstraintViolation)
+            {
+                throw OperationException.NotFound(
+                    new object[] { nameof(requestDto.IntroducerId) },
+                    DisplayNames.Introducer
+                );
             }
 
             throw;
@@ -298,78 +257,102 @@ internal class CustomerService
     }
 
     /// <inheritdoc />
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        await using IDbContextTransaction transaction = await context.Database
-            .BeginTransactionAsync();
+        await using IDbContextTransaction transaction = await context.Database.BeginTransactionAsync(cancellationToken);
 
-        DateTime updatedDateTime = DateTime.UtcNow.ToApplicationTime();
-        
-        int affectedRows = await context.Customers
-            .Where(c => !c.IsDeleted && c.Id == id)
-            .ExecuteUpdateAsync(setters => setters
-                .SetProperty(c => c.UpdatedDateTime, updatedDateTime)
-                .SetProperty(c => c.IntroducerId, (int?)null)
-                .SetProperty(c => c.IsDeleted, true));
+        IQueryable<Customer> query = context.Customers.Where(c => c.Id == id);
+        DateTime lastUpdatedDateTime = DateTime.UtcNow.ToApplicationTime();
 
-        if (affectedRows != 1)
+        bool isHardDeletionSuccessful = await TryExecuteDeleteAsync(
+            async (token) =>
+            {
+                int updatedRecordCount = await query.ExecuteDeleteAsync(token);
+                if (updatedRecordCount == 0)
+                {
+                    throw new NotFoundException();
+                }
+            },
+            false,
+            cancellationToken
+        );
+
+        if (!isHardDeletionSuccessful)
         {
-            throw new NotFoundException(
-                nameof(Customer),
-                nameof(id),
-                id.ToString());
+            await TryExecuteDeleteAsync(
+                async (token) =>
+                {
+                    int deletedRecordCount = await query.ExecuteUpdateAsync(
+                        setters => setters
+                            .SetProperty(c => c.LastUpdatedDateTime, lastUpdatedDateTime)
+                            .SetProperty(c => c.IsDeleted, true),
+                        token);
+
+                    if (deletedRecordCount == 0)
+                    {
+                        throw new NotFoundException();
+                    }
+                },
+                false,
+                cancellationToken
+            );
         }
-
-        await _statsService.IncrementNewCustomerAsync(-1);
-        await transaction.CommitAsync();
+        await transaction.CommitAsync(cancellationToken);
     }
-    
-    /// <inheritdoc cref="ICustomerService.GetListSortingOptions" />
-    public override ListSortingOptionsResponseDto GetListSortingOptions()
+
+    /// <inheritdoc />
+    public ListSortingOptionsResponseDto GetListSortingOptions()
     {
-        List<ListSortingByFieldResponseDto> fieldOptions;
-        fieldOptions = new List<ListSortingByFieldResponseDto>
+        List<ListSortingByFieldResponseDto> fieldOptions = new()
         {
-            new ListSortingByFieldResponseDto
+            new()
             {
                 Name = nameof(OrderByFieldOption.FirstName),
                 DisplayName = DisplayNames.FirstName
             },
-            new ListSortingByFieldResponseDto
+            new()
             {
                 Name = nameof(OrderByFieldOption.Birthday),
                 DisplayName = DisplayNames.Birthday
             },
-            new ListSortingByFieldResponseDto
+            new()
             {
                 Name = nameof(OrderByFieldOption.CreatedDateTime),
                 DisplayName = DisplayNames.CreatedDateTime
             },
-            new ListSortingByFieldResponseDto
+            new()
             {
                 Name = nameof(OrderByFieldOption.DebtRemainingAmount),
                 DisplayName = DisplayNames.DebtRemainingAmount
             },
-            new ListSortingByFieldResponseDto
+            new()
             {
                 Name = nameof(OrderByFieldOption.LastName),
                 DisplayName = DisplayNames.LastName
             }
         };
 
-        return new ListSortingOptionsResponseDto
+        return new()
         {
             FieldOptions = fieldOptions,
             DefaultFieldName = fieldOptions
-                .Single(i => i.Name == nameof(OrderByFieldOption.LastName))
-                .Name,
+                .Where(fo => fo.Name == nameof(OrderByFieldOption.LastName))
+                .Select(fo => fo.Name)
+                .Single(),
             DefaultAscending = true
         };
     }
 
-    /// <inheritdoc cref="ICustomerService.GetNewStatsAsync" />
-    public async Task<NewCustomerCountResponseDto> GetNewStatsAsync()
+    /// <inheritdoc />
+    public bool GetCreatingPermission()
+    {
+        return _authorizationService.CanCreate<Customer>();
+    }
+
+    /// <inheritdoc />
+    public async Task<NewCustomerCountResponseDto> GetNewCustomerSummaryThisMonthAsync(
+            CancellationToken cancellationToken = default)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
         DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
@@ -384,7 +367,7 @@ internal class CustomerService
                 LastMonthCount = group.Count(customer =>
                     customer.CreatedDateTime.Month == today.AddMonths(-1).Month &&
                     customer.CreatedDateTime.Year == today.AddMonths(-1).Year)
-            }).FirstOrDefaultAsync()
+            }).FirstOrDefaultAsync(cancellationToken)
             ?? new
             {
                 ThisMonthCount = 0,
@@ -410,4 +393,44 @@ internal class CustomerService
             PercentageComparedToLastMonth = ratioInPercentage
         };
     }
+    #endregion
+
+    #region PrivateMethods
+    private async Task<bool> TryExecuteDeleteAsync(
+            Func<CancellationToken, Task> deleteAction,
+            bool throwOnFailure,
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await deleteAction(cancellationToken);
+            return true;
+        }
+        catch (DbException exception)
+        {
+            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+            if (handledResult is null)
+            {
+                throw;
+            }
+
+            if (handledResult.IsConcurrencyConflict)
+            {
+                throw new ConcurrencyException();
+            }
+
+            if (handledResult.IsForeignKeyConstraintViolation)
+            {
+                if (throwOnFailure)
+                {
+                    throw OperationException.DeleteRestricted([], DisplayNames.Customer);
+                }
+
+                return false;
+            }
+
+            throw;
+        }
+    }
+    #endregion
 }

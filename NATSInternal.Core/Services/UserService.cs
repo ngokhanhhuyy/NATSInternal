@@ -61,18 +61,18 @@ internal class UserService : IUserService
         IQueryable<User> query = _context.Users.Include(u => u.Roles);
 
         // Determine the field and the direction the sort.
-        string sortingByField = requestDto.SortingByFieldName ?? GetListSortingOptions().DefaultFieldName;
-        bool sortingByAscending = requestDto.SortingByAscending ?? GetListSortingOptions().DefaultAscending;
+        string sortingByField = requestDto.SortByFieldName ?? GetListSortingOptions().DefaultFieldName;
+        bool sortingByAscending = requestDto.SortByAscending ?? GetListSortingOptions().DefaultAscending;
         switch (sortingByField)
         {
             case nameof(UserListRequestDto.FieldToSort.UserName) or null:
-                query = _listQueryService.ApplySorting(query, u => u.UserName, sortingByAscending);
+                query = query.ApplySorting(u => u.UserName, sortingByAscending);
                 break;
             case nameof(UserListRequestDto.FieldToSort.RoleMaxPowerLevel):
-                query = _listQueryService.ApplySorting(query, u => u.Roles.Max(r => r.PowerLevel), sortingByAscending);
+                query = query.ApplySorting(u => u.Roles.Max(r => r.PowerLevel), sortingByAscending);
                 break;
             case nameof(OrderByFieldOption.CreatedDateTime):
-                query = _listQueryService.ApplySorting(query, u => u.CreatedDateTime, sortingByAscending);
+                query = query.ApplySorting(u => u.CreatedDateTime, sortingByAscending);
                 break;
             default:
                 throw new NotImplementedException();
@@ -87,7 +87,7 @@ internal class UserService : IUserService
         // Filter by search content.
         if (requestDto.SearchContent != null && requestDto.SearchContent.Length >= 3)
         {
-            query = query.Where(u => u.NormalizedUserName.Contains(requestDto.SearchContent));
+            query = query.Where(u => u.NormalizedUserName.Contains(requestDto.SearchContent.ToUpper()));
         }
 
         return await _listQueryService.GetPagedListAsync(

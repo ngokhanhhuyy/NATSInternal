@@ -2,8 +2,8 @@ namespace NATSInternal.Core.Dtos;
 
 public class OrderListRequestDto : IProductExportableListRequestDto
 {
-    public bool? SortingByAscending { get; set; }
-    public string SortingByFieldName { get; set; }
+    public bool? SortByAscending { get; set; }
+    public string SortByFieldName { get; set; }
     public ListMonthYearRequestDto MonthYear { get; set; }
     public int? CreatedUserId { get; set; }
     public int? CustomerId { get; set; }
@@ -13,7 +13,7 @@ public class OrderListRequestDto : IProductExportableListRequestDto
 
     public void TransformValues()
     {
-        SortingByFieldName = SortingByFieldName?.ToNullIfEmptyOrWhiteSpace();
+        SortByFieldName = SortByFieldName?.ToNullIfEmptyOrWhiteSpace();
 
         if (CreatedUserId == 0)
         {

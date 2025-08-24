@@ -1,6 +1,6 @@
 ﻿namespace NATSInternal.Core.Dtos;
 
-public class ProductUpsertRequestDto : IRequestDto
+public class ProductUpsertRequestDto : IHasPhotosUpsertRequestDto
 {
     #region Properties
     public required string Name { get; set; }

@@ -4,7 +4,7 @@ internal class NotificationListValidator : Validator<NotificationListRequestDto>
 {
     public NotificationListValidator(INotificationService service)
     {
-        RuleFor(dto => dto.SortingByFieldName)
+        RuleFor(dto => dto.SortByFieldName)
             .IsOneOfFieldOptions(service.GetListSortingOptions().FieldOptions)
             .WithName(DisplayNames.SortingByField);
         RuleFor(dto => dto.Page)

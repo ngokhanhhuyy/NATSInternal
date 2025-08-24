@@ -3,13 +3,18 @@
 /// <inheritdoc />
 internal class RoleService : IRoleService
 {
+    #region Fields
     private readonly DatabaseContext _context;
+    #endregion
 
+    #region Constructors
     public RoleService(DatabaseContext context)
     {
         _context = context;
     }
+    #endregion
 
+    #region Methods
     /// <inheritdoc />
     public async Task<List<RoleMinimalResponseDto>> GetAllAsync()
     {
@@ -17,4 +22,5 @@ internal class RoleService : IRoleService
             .Select(role => new RoleMinimalResponseDto(role))
             .ToListAsync();
     }
+    #endregion
 }

@@ -26,7 +26,7 @@ internal class TreatmentService
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
             IMultiplePhotosService<Treatment, TreatmentPhoto> photoService,
-            IStatsInternalService statsService)
+            ISummaryInternalService statsService)
         : base(context, authorizationService, photoService, statsService)
     {
     }
@@ -78,7 +78,7 @@ internal class TreatmentService
     /// <inheritdoc />
     protected override async Task AdjustStatsAsync(
             Treatment treatment,
-            IStatsInternalService statsService,
+            ISummaryInternalService statsService,
             bool isIncrementing)
     {
         DateOnly statsDate = DateOnly.FromDateTime(treatment.StatsDateTime);

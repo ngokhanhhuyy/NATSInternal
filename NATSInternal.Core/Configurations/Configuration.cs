@@ -110,9 +110,9 @@ public static class ConfigurationExtensions
 
         // Stats services.
         services.AddScoped<StatsService>();
-        services.AddScoped<IStatsService>(provider => provider
+        services.AddScoped<ISummaryService>(provider => provider
             .GetRequiredService<StatsService>());
-        services.AddScoped<IStatsInternalService, StatsInternalService>();
+        services.AddScoped<ISummaryInternalService, StatsInternalService>();
 
         // Month-year services.
         services.AddScoped<

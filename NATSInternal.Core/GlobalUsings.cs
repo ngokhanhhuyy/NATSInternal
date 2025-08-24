@@ -27,6 +27,7 @@ global using NATSInternal.Core.Handlers;
 global using NATSInternal.Core.Interfaces;
 global using NATSInternal.Core.Interfaces.Dtos;
 global using NATSInternal.Core.Interfaces.Entities;
+global using NATSInternal.Core.Interfaces.Notifiers;
 global using NATSInternal.Core.Interfaces.Providers;
 global using NATSInternal.Core.Interfaces.Services;
 global using NATSInternal.Core.Identity;

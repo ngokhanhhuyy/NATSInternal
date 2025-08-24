@@ -28,14 +28,14 @@ public interface IDebtIncurrenceService
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is an
-    /// instance of the <see cref="DebtIncurrenceDetailResponseDto"/>, containing the details
+    /// instance of the <see cref="DebtDetailResponseDto"/>, containing the details
     /// of the debt incurrence.
     /// </returns>
     /// <exception cref="NotFoundException">
     /// Throws when the debt incurrence, specified by the value of the <paramref name="id"/>,
     /// doesn't exist or has already been deleted.
     /// </exception>
-    Task<DebtIncurrenceDetailResponseDto> GetDetailAsync(int id);
+    Task<DebtDetailResponseDto> GetDetailAsync(int id);
     
     /// <summary>
     /// Creates a new debt incurrence based on the specified data.
@@ -164,9 +164,9 @@ public interface IDebtIncurrenceService
     /// operation.
     /// </summary>
     /// <returns>
-    /// An instance of the <see cref="DebtIncurrenceCreatingAuthorizationResponseDto"/> DTO
+    /// An instance of the <see cref="DebtCreatingAuthorizationResponseDto"/> DTO
     /// containing the authorization information for the operation when the requesting user has
     /// permission to perform the operation. Otherwise, <c>null</c>.
     /// </returns>
-    DebtIncurrenceCreatingAuthorizationResponseDto GetCreatingAuthorization();
+    DebtCreatingAuthorizationResponseDto GetCreatingAuthorization();
 }

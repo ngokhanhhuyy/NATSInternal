@@ -1,55 +1,66 @@
-﻿namespace NATSInternal.Core.Services;
+﻿using Bogus.Extensions;
 
-/// <inheritdoc cref="IProductService" />
-internal class ProductService
-    :
-        UpsertableAbstractService<
-            Product,
-            ProductListRequestDto,
-            ProductExistingAuthorizationResponseDto>,
-        IProductService
+namespace NATSInternal.Core.Services;
+
+/// <inheritdoc />
+internal class ProductService : IProductService
 {
+    #region Fields
     private readonly DatabaseContext _context;
-    private readonly IMultiplePhotosService<Product, ProductPhoto> _photoService;
+    private readonly IListQueryService _listQueryService;
+    private readonly IPhotoService<Product> _photoService;
+    private readonly IAuthorizationInternalService _authorizationService;
+    private readonly IDbExceptionHandler _exceptionHandler;
+    private readonly IValidator<ProductListRequestDto> _listValidator;
+    private readonly IValidator<ProductUpsertRequestDto> _upsertValidator;
+    #endregion
 
+    #region Constructors
     public ProductService(
             DatabaseContext context,
-            IMultiplePhotosService<Product, ProductPhoto> photoService,
-            IAuthorizationInternalService authorizationService) : base(authorizationService)
+            IListQueryService listQueryService,
+            IPhotoService<Product> photoService,
+            IAuthorizationInternalService authorizationService,
+            IDbExceptionHandler exceptionHandler,
+            IValidator<ProductListRequestDto> listValidator,
+            IValidator<ProductUpsertRequestDto> upsertValidator)
     {
         _context = context;
+        _listQueryService = listQueryService;
         _photoService = photoService;
+        _authorizationService = authorizationService;
+        _exceptionHandler = exceptionHandler;
+        _listValidator = listValidator;
+        _upsertValidator = upsertValidator;
     }
+    #endregion
 
+    #region Methods
     /// <inheritdoc />
-    public async Task<ProductListResponseDto> GetListAsync(ProductListRequestDto requestDto)
+    public async Task<ProductListResponseDto> GetListAsync(
+            ProductListRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
+        requestDto.TransformValues();
+        _listValidator.ValidateAndThrow(requestDto);
+
         IQueryable<Product> query = _context.Products;
         
-        // Determine the field and the direction the sort.
-        string sortingByField = requestDto.SortingByFieldName
-                                ?? GetListSortingOptions().DefaultFieldName;
-        bool sortingByAscending = requestDto.SortingByAscending
-                                  ?? GetListSortingOptions().DefaultAscending;
+        string sortingByField = requestDto.SortByFieldName ?? GetListSortingOptions().DefaultFieldName;
+        bool sortByAscending = requestDto.SortByAscending ?? GetListSortingOptions().DefaultAscending;
         switch (sortingByField)
         {
-            case nameof(OrderByFieldOption.CreatedDateTime):
-                query = sortingByAscending
-                    ? query
-                        .OrderBy(p => p.CreatedDateTime)
-                        .ThenBy(p => p.StockingQuantity)
-                    : query
-                        .OrderBy(p => p.CreatedDateTime)
-                        .ThenByDescending(p => p.StockingQuantity);
+            case nameof(ProductListRequestDto.FieldToSort.CreatedDateTime) or null:
+                query = query
+                    .ApplySorting(p => p.CreatedDateTime, sortByAscending)
+                    .ThenApplySorting(p => p.StockingQuantity, sortByAscending);
+
                 break;
-            case nameof(OrderByFieldOption.StockingQuantity):
-                query = sortingByAscending
-                    ? query
-                        .OrderBy(p => p.StockingQuantity)
-                        .ThenBy(p => p.NormalizedName)
-                    : query
-                        .OrderBy(p => p.StockingQuantity)
-                        .ThenByDescending(p => p.NormalizedName);
+            case nameof(ProductListRequestDto.FieldToSort.StockingQuantity):
+                query = query
+                    .ApplySorting(p => p.StockingQuantity, sortByAscending)
+                    .ThenApplySorting(p => p.NormalizedName, sortByAscending);
+
                 break;
             default:
                 throw new NotImplementedException();
@@ -58,8 +69,7 @@ internal class ProductService
         // Filter by category name.
         if (requestDto.CategoryId != null)
         {
-            query = query
-                .Where(p => p.Category != null && p.Category.Id == requestDto.CategoryId);
+            query = query.Where(p => p.Category != null && p.Category.Id == requestDto.CategoryId);
         }
 
         // Filter by brand id.
@@ -72,48 +82,45 @@ internal class ProductService
         if (requestDto.ProductName != null)
         {
             string productNonDiacriticsName = requestDto.ProductName
-                .ToNonDiacritics()
+                .RemoveDiacritics()
                 .ToUpper();
             query = query.Where(p => p.NormalizedName.Contains(productNonDiacriticsName));
         }
 
-        // Fetch the list of the entities.
-        EntityListDto<Product> listDto = await GetListOfEntitiesAsync(query, requestDto);
-
-        return new ProductListResponseDto
-        {
-            PageCount = listDto.PageCount,
-            Items = listDto.Items?
-                .Select(p => new ProductBasicResponseDto(p, GetExistingAuthorization(p)))
-                .ToList()
-                ?? new List<ProductBasicResponseDto>()
-        };
+        return await _listQueryService.GetPagedListAsync(
+            query,
+            requestDto,
+            (products, pageCount) => new ProductListResponseDto(products, pageCount),
+            cancellationToken
+        );
     }
 
     /// <inheritdoc />
-    public async Task<ProductDetailResponseDto> GetDetailAsync(
-            int id,
-            ProductDetailRequestDto requestDto)
+    public async Task<ProductDetailResponseDto> GetDetailAsync(Guid id, CancellationToken cancellationToken = default)
     {
         Product product = await _context.Products
             .Include(p => p.Brand)
             .Include(p => p.Category)
-            .Where(p => p.Id == id)
-            .SingleOrDefaultAsync()
-            ?? throw new NotFoundException(
-                nameof(Product),
-                nameof(id),
-                id.ToString());
+            .SingleOrDefaultAsync(p => p.Id == id, cancellationToken)
+            ?? throw new NotFoundException();
 
-        ProductExistingAuthorizationResponseDto authorizationResponseDto;
-        authorizationResponseDto = GetExistingAuthorization(product);
+        ProductExistingAuthorizationResponseDto authorizationResponseDto = _authorizationService
+            .GetExistingAuthorization<Product, ProductExistingAuthorizationResponseDto>();
 
         return new ProductDetailResponseDto(product, authorizationResponseDto);
     }
 
     /// <inheritdoc />
-    public async Task<int> CreateAsync(ProductUpsertRequestDto requestDto)
+    public async Task<Guid> CreateAsync(
+            ProductUpsertRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
+        // Validate the data from the request.
+        requestDto.TransformValues();
+        _upsertValidator.Validate(
+            requestDto,
+            options => options.ThrowOnFailures().IncludeRuleSets("Create").IncludeRulesNotInRuleSet());
+
         // Initialize product entity.
         Product product = new Product
         {
@@ -124,76 +131,67 @@ internal class ProductService
             DefaultVatPercentage = requestDto.DefaultVatPercentage,
             IsForRetail = requestDto.IsForRetail,
             IsDiscontinued = requestDto.IsDiscontinued,
-            CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),
             LastUpdatedDateTime = null,
             StockingQuantity = 0,
-            BrandId = requestDto.BrandId,
-            CategoryId = requestDto.CategoryId,
-            Photos = new List<ProductPhoto>()
+            BrandId = requestDto.BrandId
         };
         _context.Products.Add(product);
 
-        // Create thumbnail if specified.
-        if (requestDto.ThumbnailFile != null)
+        // Fetch product category or initialize if not exists.
+        if (requestDto.Category is not null)
         {
-            product.ThumbnailUrl = await _photoService
-                .CreateAsync(requestDto.ThumbnailFile, true);
+            product.Category = await _context.ProductCategories
+                .SingleOrDefaultAsync(pc => pc.Name == requestDto.Category.Name, cancellationToken)
+                ?? new() { Name = requestDto.Category.Name };
         }
 
-        // Create photos if specified.
-        if (requestDto.Photos != null)
-        {
-            await _photoService.CreateMultipleAsync(product, requestDto.Photos);
-        }
+        // Create photos.
+        await _photoService.CreateMultipleAsync(product, requestDto.Photos, cancellationToken);
 
         try
         {
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
             return product.Id;
         }
-        catch (DbUpdateException exception)
+        catch (Exception exception)
         {
-            // Delete the recently created thumbnail if exists.
-            if (product.ThumbnailUrl != null)
+            foreach (Photo photo in product.Photos)
             {
-                _photoService.Delete(product.ThumbnailUrl);
+                _photoService.Delete(photo.Url);
             }
 
-            // Delete the recently created photos if exists.
-            if (product.Photos?.Count > 0)
+            if (exception is not DbUpdateException dbUpdateException)
             {
-                foreach (ProductPhoto photo in product.Photos)
-                {
-                    _photoService.Delete(photo.Url);
-                }
+                throw;
             }
 
-            
-            // Handle the concurrency-related operation.
-            if (exception is DbUpdateConcurrencyException)
+            CoreException? convertedException = TryConvertDbUpdateException(dbUpdateException);
+            if (convertedException is null)
             {
-                throw new ConcurrencyException();
+                throw;
             }
 
-            // Handle the business-logic-related exception.
-            if (exception.InnerException is MySqlException sqlException)
-            {
-                HandleDeleteOrUpdateException(sqlException);
-            }
-
-            throw;
+            throw convertedException;
         }
     }
 
     /// <inheritdoc />
-    public async Task UpdateAsync(int id, ProductUpsertRequestDto requestDto)
+    public async Task UpdateAsync(
+            Guid id,
+            ProductUpsertRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
+        // Validate the data from the request.
+        requestDto.TransformValues();
+        _upsertValidator.Validate(
+            requestDto,
+            options => options.ThrowOnFailures().IncludeRuleSets("CreateAndUpdate").IncludeRulesNotInRuleSet());
+
         // Fetch the entity with given id from the database and ensure that it exists.
-        Product product = await _context.Products.FindAsync(id)
-            ?? throw new NotFoundException(
-                nameof(Product),
-                nameof(id),
-                id.ToString());
+        Product product = await _context.Products
+            .Include(p => p.Category)
+            .SingleOrDefaultAsync(p => p.Id == id, cancellationToken)
+            ?? throw new NotFoundException();
 
         // Update the entity's properties.
         product.Name = requestDto.Name;
@@ -203,73 +201,102 @@ internal class ProductService
         product.DefaultVatPercentage = requestDto.DefaultVatPercentage;
         product.IsForRetail = requestDto.IsForRetail;
         product.IsDiscontinued = requestDto.IsDiscontinued;
-        product.CategoryId = requestDto.CategoryId;
         product.BrandId = requestDto.BrandId;
         product.LastUpdatedDateTime = DateTime.UtcNow.ToApplicationTime();
 
-        // Prepare lists of urls to be deleted later when the operation
-        // is succeeded or failed.
-        List<string> urlsToBeDeletedWhenFailed = new List<string>();
-        List<string> urlsToBeDeletedWhenSucceeded = new List<string>();
-
-        // Update the thumbnail if changed.
-        if (requestDto.ThumbnailChanged)
+        if (requestDto.Category == null)
         {
-            // Delete the current thumbnail if exists.
-            if (product.ThumbnailUrl != null)
+            product.Category = null;
+        }
+        else if (product.Category?.Name != requestDto.Category.Name)
+        {
+            ProductCategory? oldCategory = product.Category;
+            if (oldCategory is not null)
             {
-                urlsToBeDeletedWhenSucceeded.Add(product.ThumbnailUrl);
+                _context.ProductCategories.Remove(oldCategory);
             }
 
-            // Create a new one if the request contains data for it.
-            if (requestDto.ThumbnailFile != null)
-            {
-                string thumbnailUrl = await _photoService
-                    .CreateAsync(requestDto.ThumbnailFile, true);
-                product.ThumbnailUrl = thumbnailUrl;
-                urlsToBeDeletedWhenFailed.Add(product.ThumbnailUrl);
-            }
+            product.Category = await _context.ProductCategories
+                .SingleOrDefaultAsync(pc => pc.Name == requestDto.Category.Name, cancellationToken)
+                ?? new() { Name = requestDto.Category.Name };
         }
 
-        // Update the photos if changed.
-        if (requestDto.Photos?.Count > 0)
-        {
-            (List<string>, List<string>) photoUpdateResult = await _photoService
-                .UpdateMultipleAsync(product, requestDto.Photos);
-            urlsToBeDeletedWhenSucceeded.AddRange(photoUpdateResult.Item1);
-            urlsToBeDeletedWhenFailed.AddRange(photoUpdateResult.Item2);
-        }
+        // Prepare lists of urls to be deleted later when the operation is succeeded or failed.
+        List<string> urlsToBeDeletedWhenFailed = new();
+        List<string> urlsToBeDeletedWhenSucceeded = new();
+        (urlsToBeDeletedWhenSucceeded, urlsToBeDeletedWhenFailed) = await _photoService.UpdateMultipleAsync(
+            product,
+            requestDto.Photos,
+            cancellationToken);
 
         // Save changes or throw exeption if any error occurs.
         try
         {
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
-            // The product can be updated successfully.
-            // Delete the specified thumbnail and associated photos.
+            // The product can be updated successfully, delete the specified thumbnail and associated photos.
             foreach (string url in urlsToBeDeletedWhenSucceeded)
             {
                 _photoService.Delete(url);
             }
         }
-        catch (DbUpdateException exception)
+        catch (Exception exception)
         {
             // Delete the recently added thumbnail and photos.
             foreach (string url in urlsToBeDeletedWhenFailed)
             {
                 _photoService.Delete(url);
             }
-            
-            // Handle the concurrency-related operation.
-            if (exception is DbUpdateConcurrencyException)
+
+            if (exception is not DbUpdateException dbUpdateException)
             {
-                throw new ConcurrencyException();
+                throw;
             }
 
-            // Handle the business-logic-related exception.
-            if (exception.InnerException is MySqlException sqlException)
+            CoreException? convertedException = TryConvertDbUpdateException(dbUpdateException);
+            if (convertedException is null)
             {
-                HandleDeleteOrUpdateException(sqlException);
+                throw;
+            }
+
+            throw convertedException;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        // Fetch the entity from the database and ensure the entity exists.
+        Product product = await _context.Products
+            .Include(p => p.Photos)
+            .SingleOrDefaultAsync(p => p.Id == id)
+            ?? throw new NotFoundException();
+
+        // Remove the product and all associated photos.
+        _context.Products.Remove(product);
+
+        // Performing deleting operation.
+        try
+        {
+            await _context.SaveChangesAsync();
+
+            // The product can be deleted successfully, delete all the photos in the storage.
+            foreach (string url in product.Photos.Select(p => p.Url))
+            {
+                _photoService.Delete(url);
+            }
+        }
+        catch (DbUpdateException exception)
+        {
+            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+            if (handledResult is null)
+            {
+                throw;
+            }
+
+            if (handledResult.IsForeignKeyConstraintViolation)
+            {
+                throw OperationException.DeleteRestricted(DisplayNames.Product);
             }
 
             throw;
@@ -277,129 +304,83 @@ internal class ProductService
     }
 
     /// <inheritdoc />
-    public async Task DeleteAsync(int id)
+    public bool GetCreatingPermission()
     {
-        // Fetch the entity from the database and ensure the entity exists.
-        Product product = await _context.Products
-            .Include(p => p.Photos)
-            .SingleOrDefaultAsync(p => p.Id == id && !p.IsDeleted)
-            ?? throw new NotFoundException();
-
-        // Remove the product and all associated photos.
-        _context.Products.Remove(product);
-
-        foreach (ProductPhoto photo in product.Photos)
-        {
-            _context.ProductPhotos.Remove(photo);
-        }
-
-        // Performing deleting operation.
-        try
-        {
-            await _context.SaveChangesAsync();
-
-            // The product can be deleted successfully.
-            // Delete the thumbnail.
-            if (product.ThumbnailUrl != null)
-            {
-                _photoService.Delete(product.ThumbnailUrl);
-            }
-
-            // Delete the photos.
-            foreach (ProductPhoto photo in product.Photos)
-            {
-                _photoService.Delete(photo.Url);
-            }
-        }
-        catch (DbUpdateException exception)
-        {
-            // Handle the concurrency-related exception.
-            if (exception is DbUpdateConcurrencyException)
-            {
-                throw new ConcurrencyException();
-            }
-            
-            // Handle the business-logic-related exception.
-            if (exception.InnerException is MySqlException sqlException)
-            {
-                SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(sqlException);
-                // Entity is referenced by some other column's entity, perform soft delete
-                // instead.
-                if (exceptionHandler.IsDeleteOrUpdateRestricted)
-                {
-                    product.IsDeleted = true;
-                    await _context.SaveChangesAsync();
-                    return;
-                }
-            }
-
-            throw;
-        }
+        return _authorizationService.CanCreate<Product>();
     }
 
-    /// <inheritdoc cref="IProductService.GetListSortingOptions" />
-    public override ListSortingOptionsResponseDto GetListSortingOptions()
+    /// <inheritdoc />
+    public ListSortingOptionsResponseDto GetListSortingOptions()
     {
-        List<ListSortingByFieldResponseDto> fieldOptions;
-        fieldOptions = new List<ListSortingByFieldResponseDto>
+        List<ListSortingByFieldResponseDto> fieldOptions = new()
         {
-            new ListSortingByFieldResponseDto
+            new()
             {
-                Name = nameof(OrderByFieldOption.CreatedDateTime),
+                Name = nameof(ProductListRequestDto.FieldToSort.CreatedDateTime),
                 DisplayName = DisplayNames.Amount
             },
-            new ListSortingByFieldResponseDto
+            new()
             {
-                Name = nameof(OrderByFieldOption.StockingQuantity),
+                Name = nameof(ProductListRequestDto.FieldToSort.StockingQuantity),
                 DisplayName = DisplayNames.StatsDateTime
             }
         };
 
-        return new ListSortingOptionsResponseDto
+        return new()
         {
             FieldOptions = fieldOptions,
             DefaultFieldName = fieldOptions
-                .Single(i => i.Name == nameof(OrderByFieldOption.CreatedDateTime))
-                .Name,
+                .Where(i => i.Name == nameof(ProductListRequestDto.FieldToSort.CreatedDateTime))
+                .Select(i => i.Name)
+                .Single(),
             DefaultAscending = false
         };
     }
+    #endregion
 
+    #region PrivateMethods
     /// <summary>
-    /// Handle delete or update operation exception from the database and
-    /// convert it into appropriate OperationException.
+    /// Convert the exception which is thrown by the database during the creating or updating operation into an instance
+    /// of <see cref="CoreException"/> .
     /// </summary>
     /// <param name="exception">
-    /// The inner exception of the DbUpdateExeception, thrown by the database
-    /// after committing changes.
+    /// An instance of the <see cref="DbUpdateException"/> class, contanining the details of the error.
     /// </param>
-    /// <exception cref="OperationException"></exception>
-    private void HandleDeleteOrUpdateException(MySqlException exception)
+    /// <returns>
+    /// An instance of the <see cref="CoreException"/> class, representing the converted exception (when successful) or
+    /// <see langword="null"/> (if failure).
+    /// </returns>
+    private CoreException? TryConvertDbUpdateException(DbUpdateException exception)
     {
-        SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(exception);
-        // Handle foreign key exception.
-        if (exceptionHandler.IsForeignKeyNotFound)
+        DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+        if (handledResult is null)
         {
-            string errorMessage;
-            if (exceptionHandler.ViolatedFieldName == "brand_id")
-            {
-                errorMessage = ErrorMessages.NotFound
-                    .ReplaceResourceName(DisplayNames.Get(nameof(Brand)));
-                throw new OperationException(errorMessage);
-            }
-
-            errorMessage = ErrorMessages.NotFound
-                .ReplaceResourceName(DisplayNames.Get(nameof(ProductCategory)));
-
-            throw new OperationException(errorMessage);
+            return null;
         }
 
-        // Handle unique conflict exception.
-        if (exceptionHandler.IsUniqueConstraintViolated)
+        if (handledResult.IsConcurrencyConflict)
         {
-            string errorMessage = ErrorMessages.Duplicated
-                .ReplacePropertyName(DisplayNames.Get(nameof(Product.Name)));
-            throw new OperationException(nameof(Product.Name), errorMessage);
+            return new ConcurrencyException();
         }
+
+        if (handledResult.IsForeignKeyConstraintViolation &&
+            handledResult.ViolatedPropertyName == nameof(ProductUpsertRequestDto.BrandId))
+        {
+            return OperationException.NotFound(
+                new object[] { nameof(ProductUpsertRequestDto.BrandId) },
+                DisplayNames.Brand
+            );
+        }
+
+        if (handledResult.IsUniqueConstraintViolation)
+        {
+            return OperationException.Duplicated(
+                new object[] { nameof(ProductUpsertRequestDto.Name) },
+                DisplayNames.Name
+            );
+        }
+
+        return null;
     }
+    #endregion
 }

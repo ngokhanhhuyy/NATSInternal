@@ -26,5 +26,11 @@ public class OperationException : CoreException
         string message = ErrorMessages.DeleteRestricted.Replace("{ResourceName}", resourceDisplayName);
         return new(propertyPathElements, message);
     }
+
+    public static OperationException DeleteRestricted(string resourceDisplayName)
+    {
+        string message = ErrorMessages.DeleteRestricted.Replace("{ResourceName}", resourceDisplayName);
+        return new(Array.Empty<object>(), message);
+    }
     #endregion
 }

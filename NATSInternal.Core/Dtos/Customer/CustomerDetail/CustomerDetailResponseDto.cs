@@ -1,38 +1,33 @@
 namespace NATSInternal.Core.Dtos;
 
-using DebtIncurrenceAuthorizationGetter = Func<Debt, DebtIncurrenceExistingAuthorizationResponseDto>;
-using DebtPaymentAuthorizationGetter = Func<DebtPayment, DebtPaymentExistingAuthorizationResponseDto>;
-
-public record CustomerDetailResponseDto
-    : IUpsertableDetailResponseDto<CustomerExistingAuthorizationResponseDto>
+public record CustomerDetailResponseDto : IUpsertableDetailResponseDto<CustomerExistingAuthorizationResponseDto>
 {
-    public int Id { get; set; }
+    #region Properties
+    public Guid Id { get; set; }
     public string FirstName { get; set; }
-    public string MiddleName { get; set; }
+    public string? MiddleName { get; set; }
     public string LastName { get; set; }
     public string FullName { get; set; }
-    public string NickName { get; set; }
+    public string? NickName { get; set; }
     public Gender Gender { get; set; }
     public DateOnly? Birthday { get; set; }
-    public string PhoneNumber { get; set; }
-    public string ZaloNumber { get; set; }
-    public string FacebookUrl { get; set; }
-    public string Email { get; set; }
-    public string Address { get; set; }
-    public string Note { get; set; }
+    public string? PhoneNumber { get; set; }
+    public string? ZaloNumber { get; set; }
+    public string? FacebookUrl { get; set; }
+    public string? Email { get; set; }
+    public string? Address { get; set; }
+    public string? Note { get; set; }
     public UserBasicResponseDto CreatedUser { get; set; }
     public DateTime CreatedDateTime { get; set; }
-    public DateTime? UpdatedDateTime { get; set; }
-    public CustomerBasicResponseDto Introducer { get; set; }
-    public long? DebtAmount { get; set; }
-    public List<CustomerDebtOperationResponseDto> DebtOperations { get; set; }
+    public DateTime? LastUpdatedDateTime { get; set; }
+    public CustomerBasicResponseDto? Introducer { get; set; }
+    public long? RemainingDebtAmount { get; set; }
+    public List<DebtBasicResponseDto> Debts { get; set; }
     public CustomerExistingAuthorizationResponseDto Authorization { get; set; }
+    #endregion
 
-    internal CustomerDetailResponseDto(
-            Customer customer,
-            CustomerExistingAuthorizationResponseDto authorization,
-            DebtIncurrenceAuthorizationGetter getDebtIncurrenceAuthorization,
-            DebtPaymentAuthorizationGetter getDebtPaymentAuthorization)
+    #region Constructors
+    internal CustomerDetailResponseDto(Customer customer, CustomerExistingAuthorizationResponseDto authorization)
     {
         Id = customer.Id;
         FirstName = customer.FirstName;
@@ -50,43 +45,11 @@ public record CustomerDetailResponseDto
         Note = customer.Note;
         CreatedUser = new UserBasicResponseDto(customer.CreatedUser);
         CreatedDateTime = customer.CreatedDateTime;
-        UpdatedDateTime = customer.UpdatedDateTime;
-        DebtAmount = customer.DebtAmount;
+        LastUpdatedDateTime = customer.LastUpdatedDateTime;
+        RemainingDebtAmount = customer.RemainingDebtAmount;
         Authorization = authorization;
-
-        if (customer.Introducer != null)
-        {
-            Introducer = new CustomerBasicResponseDto(customer.Introducer);
-        }
-        
-        if (customer.Debts != null)
-        {
-            DebtOperations = new List<CustomerDebtOperationResponseDto>();
-            foreach (Debt debtIncurrence in customer.Debts)
-            {
-                CustomerDebtOperationResponseDto operationResponseDto;
-                operationResponseDto = new CustomerDebtOperationResponseDto(
-                    debtIncurrence,
-                    getDebtIncurrenceAuthorization(debtIncurrence));
-                DebtOperations.Add(operationResponseDto);
-            }
-        }
-        
-        if (customer.DebtPayments != null)
-        {
-            DebtOperations ??= new List<CustomerDebtOperationResponseDto>();
-            foreach (DebtPayment debtPayment in customer.DebtPayments)
-            {
-                CustomerDebtOperationResponseDto operationResponseDto;
-                operationResponseDto = new CustomerDebtOperationResponseDto(
-                    debtPayment,
-                    getDebtPaymentAuthorization(debtPayment));
-                DebtOperations.Add(operationResponseDto);
-            }
-        }
-
-        DebtOperations = DebtOperations?
-            .OrderByDescending(dp => dp.OperatedDateTime)
-            .ToList();
+        Introducer = customer.Introducer is not null ? new CustomerBasicResponseDto(customer.Introducer) : null;
+        Debts = customer.Debts.Select(d => new DebtBasicResponseDto(d)).ToList();
     }
+    #endregion
 }

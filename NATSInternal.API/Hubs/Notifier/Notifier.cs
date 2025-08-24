@@ -16,18 +16,17 @@ public class Notifier : INotifier
 
     /// <inheritdoc />
     public async Task Notify(
-            NotificationType notificationType, params int[] resourceIds)
+            NotificationType notificationType,
+            Guid[] resourceIds,
+            CancellationToken cancellationToken)
     {
         // Create the notification.
-        List<int> userIds;
-        int notificationId;
-        (userIds, notificationId) = await _notificationService.CreateAsync(
-            notificationType,
-            resourceIds.ToList());
+        List<Guid> userIds;
+        Guid notificationId;
+        (userIds, notificationId) = await _notificationService.CreateAsync(notificationType, resourceIds.ToList());
 
         // Get the created notification data.
-        NotificationResponseDto responseDto = await _notificationService
-            .GetSingleAsync(notificationId);
+        NotificationResponseDto responseDto = await _notificationService.GetSingleAsync(notificationId);
 
         // Distribute the notification to the users.
         foreach (int userId in userIds)

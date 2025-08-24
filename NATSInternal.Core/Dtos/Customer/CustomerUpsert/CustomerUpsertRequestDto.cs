@@ -1,24 +1,26 @@
 namespace NATSInternal.Core.Dtos;
 
 public class CustomerUpsertRequestDto : IRequestDto {
-    public string FirstName { get; set; }
-    public string MiddleName { get; set; }
-    public string LastName { get; set; }
-    public string NickName { get; set; }
-    public Gender Gender { get; set; }
-    public DateOnly? Birthday { get; set; }
-    public string PhoneNumber { get; set; }
-    public string ZaloNumber { get; set; }
-    public string FacebookUrl { get; set; }
-    public string Email { get; set; }
-    public string Address { get; set; }
-    public string Note { get; set; }
-    public int? IntroducerId { get; set; }
+    #region Properties
+    public required string FirstName { get; set; }
+    public required string? MiddleName { get; set; }
+    public required string LastName { get; set; }
+    public required string? NickName { get; set; }
+    public required Gender Gender { get; set; }
+    public required DateOnly? Birthday { get; set; }
+    public required string? PhoneNumber { get; set; }
+    public required string? ZaloNumber { get; set; }
+    public required string? FacebookUrl { get; set; }
+    public required string? Email { get; set; }
+    public required string? Address { get; set; }
+    public required string? Note { get; set; }
+    public required Guid? IntroducerId { get; set; }
+    #endregion
 
-    public void TransformValues() {
-        FirstName = FirstName?.ToNullIfEmptyOrWhiteSpace();
+    #region Methods
+    public void TransformValues()
+    {
         MiddleName = MiddleName?.ToNullIfEmptyOrWhiteSpace();
-        LastName = LastName?.ToNullIfEmptyOrWhiteSpace();
         NickName = NickName?.ToNullIfEmptyOrWhiteSpace();
         PhoneNumber = PhoneNumber?.ToNullIfEmptyOrWhiteSpace();
         ZaloNumber = ZaloNumber?.ToNullIfEmptyOrWhiteSpace();
@@ -26,7 +28,7 @@ public class CustomerUpsertRequestDto : IRequestDto {
         Email = Email?.ToNullIfEmptyOrWhiteSpace();
         Address = Address?.ToNullIfEmptyOrWhiteSpace();
         Note = Note?.ToNullIfEmptyOrWhiteSpace();
-        IntroducerId = !IntroducerId.HasValue || IntroducerId.Value == 0
-            ? null : IntroducerId.Value;
+        IntroducerId = IntroducerId == Guid.Empty ? null : IntroducerId;
     }
+    #endregion
 }

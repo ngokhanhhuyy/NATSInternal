@@ -3,8 +3,8 @@ namespace NATSInternal.Core.Dtos;
 public class UserListRequestDto : ISortableAndPageableListRequestDto
 {
     #region Properties
-    public bool? SortingByAscending { get; set; }
-    public string? SortingByFieldName { get; set; }
+    public bool? SortByAscending { get; set; }
+    public string? SortByFieldName { get; set; }
     public Guid? RoleId { get; set; }
     public string? SearchContent { get; set; }
     public int? Page { get; set; }
@@ -14,7 +14,7 @@ public class UserListRequestDto : ISortableAndPageableListRequestDto
     #region Methods
     public void TransformValues()
     {
-        SortingByFieldName = SortingByFieldName?.ToNullIfEmptyOrWhiteSpace();
+        SortByFieldName = SortByFieldName?.ToNullIfEmptyOrWhiteSpace();
         SearchContent = SearchContent?.ToNullIfEmptyOrWhiteSpace();
     }
     #endregion

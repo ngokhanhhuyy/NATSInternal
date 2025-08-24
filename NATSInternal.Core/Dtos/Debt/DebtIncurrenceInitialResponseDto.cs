@@ -1,12 +1,12 @@
 namespace NATSInternal.Core.Dtos;
 
 public class DebtIncurrenceInitialResponseDto
-        : IHasStatsInitialResponseDto<DebtIncurrenceCreatingAuthorizationResponseDto>
+        : IHasStatsInitialResponseDto<DebtCreatingAuthorizationResponseDto>
 {
     public string DisplayName { get; } = DisplayNames.DebtIncurrence;
     public required ListSortingOptionsResponseDto ListSortingOptions { get; init; }
     public required ListMonthYearOptionsResponseDto ListMonthYearOptions { get; init; }
-    public required DebtIncurrenceCreatingAuthorizationResponseDto CreatingAuthorization
+    public required DebtCreatingAuthorizationResponseDto CreatingAuthorization
     {
         get;
         init;

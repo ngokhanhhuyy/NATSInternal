@@ -86,12 +86,12 @@ internal abstract class DebtAbstractService<
 {
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService _statsService;
+    private readonly ISummaryInternalService _statsService;
 
     protected DebtAbstractService(
             DatabaseContext context,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService statsService)
+            ISummaryInternalService statsService)
         : base(context, authorizationService)
     {
         _context = context;
@@ -145,9 +145,9 @@ internal abstract class DebtAbstractService<
 
 
         // Determine the field and the direction the sort.
-        string sortingByField = requestDto.SortingByFieldName
+        string sortingByField = requestDto.SortByFieldName
                                 ?? GetListSortingOptions().DefaultFieldName;
-        bool sortingByAscending = requestDto.SortingByAscending
+        bool sortingByAscending = requestDto.SortByAscending
                                   ?? GetListSortingOptions().DefaultAscending;
         switch (sortingByField)
         {
@@ -370,7 +370,7 @@ internal abstract class DebtAbstractService<
                 if (requestDto.Amount != entity.Amount)
                 {
                     entity.Amount = requestDto.Amount;
-                    if (entity.Customer.DebtAmount < 0)
+                    if (entity.Customer.RemainingDebtAmount < 0)
                     {
                         throw new OperationException(
                             nameof(requestDto.Amount),
@@ -401,7 +401,7 @@ internal abstract class DebtAbstractService<
 
         // Verify that with the new paid amount, the customer's remaining debt amount will
         // not be negative.
-        if (entity.Customer.DebtAmount < 0)
+        if (entity.Customer.RemainingDebtAmount < 0)
         {
             const string amountErrorMessage = ErrorMessages.NegativeRemainingDebtAmount;
             throw new OperationException(nameof(requestDto.Amount), amountErrorMessage);
@@ -497,7 +497,7 @@ internal abstract class DebtAbstractService<
         }
         
         // Ensure the remaining debt amount of the customer isn't negative after the operation.
-        if (entity.Customer.DebtAmount < entity.Amount)
+        if (entity.Customer.RemainingDebtAmount < entity.Amount)
         {
             throw new OperationException(ErrorMessages.NegativeRemainingDebtAmount);
         }
@@ -612,7 +612,7 @@ internal abstract class DebtAbstractService<
     /// </returns>
     protected abstract Task AdjustStatsAsync(
             T entity,
-            IStatsInternalService service,
+            ISummaryInternalService service,
             bool isIncrementing);
 
     /// <summary>

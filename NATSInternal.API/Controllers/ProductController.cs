@@ -5,59 +5,36 @@
 [Authorize]
 public class ProductController : ControllerBase
 {
+    #region Fields
     private readonly IProductService _service;
-    private readonly IValidator<ProductListRequestDto> _listValidator;
-    private readonly IValidator<ProductUpsertRequestDto> _upsertValidator;
     private readonly INotifier _notifier;
+    #endregion
 
-    public ProductController(
-            IProductService productService,
-            IValidator<ProductListRequestDto> listValidator,
-            IValidator<ProductUpsertRequestDto> upsertValidator,
-            INotifier notifier)
+    #region Constructors
+    public ProductController(IProductService productService, INotifier notifier)
     {
         _service = productService;
-        _listValidator = listValidator;
-        _upsertValidator = upsertValidator;
         _notifier = notifier;
     }
+    #endregion
 
+    #region Methods
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ProductList(
-            [FromQuery] ProductListRequestDto requestDto)
+    public async Task<IActionResult> List(
+            [FromQuery] ProductListRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        // Validate data from the request.
-        requestDto.TransformValues();
-        ValidationResult validationResult = _listValidator.Validate(requestDto);
-        if (!validationResult.IsValid)
-        {
-            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
-            return BadRequest(ModelState);
-        }
-
-        return Ok(await _service.GetListAsync(requestDto));
+        return Ok(await _service.GetListAsync(requestDto, cancellationToken));
     }
 
-    [HttpGet("{id:int}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ProductDetail(
-            int id,
-            [FromQuery] ProductDetailRequestDto requestDto)
+    public async Task<IActionResult> Detail(Guid id, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            ProductDetailResponseDto responseDto;
-            responseDto = await _service.GetDetailAsync(id, requestDto);
-            return Ok(responseDto);
-        }
-        catch (NotFoundException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return NotFound(ModelState);
-        }
+        return Ok(await _service.GetDetailAsync(id, cancellationToken));
     }
 
     [HttpPost]
@@ -65,104 +42,42 @@ public class ProductController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> ProductCreate(
-            [FromBody] ProductUpsertRequestDto requestDto)
+    public async Task<IActionResult> Create(
+            [FromBody] ProductUpsertRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        // Validate the data from the request.
-        requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto);
-        if (!validationResult.IsValid)
-        {
-            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
-            return BadRequest(ModelState);
-        }
+        Guid id = await _service.CreateAsync(requestDto, cancellationToken);
+        await _notifier.Notify(NotificationType.ProductCreation, id);
 
-        // Performing creating operation.
-        try
-        {
-            // Create the product.
-            int createdId = await _service.CreateAsync(requestDto);
-            string createdResourceUrl = Url.Action(
-                "ProductDetail",
-                "Product",
-                new { id = createdId });
-
-            // Create and distribute the notification to the users.
-            await _notifier.Notify(NotificationType.ProductCreation, createdId);
-
-            return Created(createdResourceUrl, createdId);
-        }
-        catch (OperationException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return UnprocessableEntity(ModelState);
-        }
+        return CreatedAtAction(nameof(Detail), new { id }, id);
     }
 
-    [HttpPut("{id:int}")]
+    [HttpPut("{id:guid}")]
     [Authorize(Policy = "CanEditProduct")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> ProductUpdate(
-            int id,
-            [FromBody] ProductUpsertRequestDto requestDto)
+            Guid id,
+            [FromBody] ProductUpsertRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        // Validate data from the request.
-        requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto);
-        if (!validationResult.IsValid)
-        {
-            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
-            return BadRequest(ModelState);
-        }
+        await _service.UpdateAsync(id, requestDto, cancellationToken);
+        await _notifier.Notify(NotificationType.ProductModification, id);
 
-        // Perform updating operation.
-        try
-        {
-            // Update the product.
-            await _service.UpdateAsync(id, requestDto);
-
-            // Create and distribute the notification to the users.
-            await _notifier.Notify(NotificationType.ProductModification, id);
-
-            return Ok();
-        }
-        catch (NotFoundException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return NotFound(ModelState);
-        }
-        catch (OperationException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return UnprocessableEntity(ModelState);
-        }
+        return Ok();
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id:guid}")]
     [Authorize(Policy = "CanDeleteProduct")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ProductDelete(int id)
+    public async Task<IActionResult> ProductDelete(Guid id, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            // Delete the product.
-            await _service.DeleteAsync(id);
+        await _service.DeleteAsync(id, cancellationToken);
+        await _notifier.Notify(NotificationType.ProductDeletion, id);
 
-            // Create and distribute the notification to the users.
-            await _notifier.Notify(NotificationType.ProductDeletion, id);
-
-            return NoContent();
-        }
-        catch (NotFoundException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return NotFound(ModelState);
-        }
+        return Ok();
     }
 
     [HttpGet("CreatingPermission")]
@@ -171,4 +86,5 @@ public class ProductController : ControllerBase
     {
         return Ok(_service.GetCreatingPermission());
     }
+    #endregion
 }

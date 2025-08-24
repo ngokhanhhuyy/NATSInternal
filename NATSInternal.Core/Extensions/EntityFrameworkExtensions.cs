@@ -13,5 +13,25 @@ internal static class EntityFrameworkExtensions
             json => JsonSerializer.Deserialize<TData>(json, serializerOptions)!
         );
     }
+    
+    public static IOrderedQueryable<TEntity> ApplySorting<TEntity>(
+            this IQueryable<TEntity> query,
+            Expression<Func<TEntity, object?>> propertySelector,
+            bool sortByAscending)
+    {
+        return sortByAscending
+            ? query.OrderBy(propertySelector)
+            : query.OrderByDescending(propertySelector);
+    }
+
+    public static IOrderedQueryable<TEntity> ThenApplySorting<TEntity>(
+            this IOrderedQueryable<TEntity> query,
+            Expression<Func<TEntity, object?>> propertySelector,
+            bool sortByAscending)
+    {
+        return sortByAscending
+            ? query.ThenBy(propertySelector)
+            : query.ThenByDescending(propertySelector);
+    }
     #endregion
 }

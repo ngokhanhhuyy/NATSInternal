@@ -3,26 +3,6 @@ namespace NATSInternal.Core.Services;
 internal class ListQueryService : IListQueryService
 {
     #region Methods
-    public IOrderedQueryable<TEntity> ApplySorting<TEntity>(
-            IQueryable<TEntity> query,
-            Expression<Func<TEntity, object?>> propertySelector,
-            bool sortByAscending)
-    {
-        return sortByAscending
-            ? query.OrderBy(propertySelector)
-            : query.OrderByDescending(propertySelector);
-    }
-
-    public IOrderedQueryable<TEntity> ThenApplySorting<TEntity>(
-            IOrderedQueryable<TEntity> query,
-            Expression<Func<TEntity, object?>> propertySelector,
-            bool sortByAscending)
-    {
-        return sortByAscending
-            ? query.ThenBy(propertySelector)
-            : query.ThenByDescending(propertySelector);
-    }
-
     public async Task<TListResponseDto> GetPagedListAsync<TEntity, TListResponseDto>(
             IQueryable<TEntity> query,
             ISortableAndPageableListRequestDto requestDto,

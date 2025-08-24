@@ -15,13 +15,13 @@ internal class ExpenseService
     private readonly DatabaseContext _context;
     private readonly IMultiplePhotosService<Expense, ExpensePhoto> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService _statsService;
+    private readonly ISummaryInternalService _statsService;
 
     public ExpenseService(
             DatabaseContext context,
             IMultiplePhotosService<Expense, ExpensePhoto> photoService,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService statsService)
+            ISummaryInternalService statsService)
         : base(context, authorizationService)
     {
         _context = context;
@@ -39,9 +39,9 @@ internal class ExpenseService
 
 
         // Determine the field and the direction the sort.
-        string sortingByField = requestDto.SortingByFieldName
+        string sortingByField = requestDto.SortByFieldName
                                 ?? GetListSortingOptions().DefaultFieldName;
-        bool sortingByAscending = requestDto.SortingByAscending
+        bool sortingByAscending = requestDto.SortByAscending
                                   ?? GetListSortingOptions().DefaultAscending;
         
         switch (sortingByField)

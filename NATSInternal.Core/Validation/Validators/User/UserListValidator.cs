@@ -4,7 +4,7 @@ internal class UserListValidator : Validator<UserListRequestDto>
 {
     public UserListValidator(IUserService service)
     {
-        RuleFor(dto => dto.SortingByFieldName)
+        RuleFor(dto => dto.SortByFieldName)
             .IsOneOfFieldOptions(service.GetListSortingOptions().FieldOptions)
             .WithName(DisplayNames.SortingByField);
         RuleFor(dto => dto.SearchContent)

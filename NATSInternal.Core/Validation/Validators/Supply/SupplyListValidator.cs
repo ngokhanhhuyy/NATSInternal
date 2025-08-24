@@ -4,7 +4,7 @@ internal class SupplyListValidator : Validator<SupplyListRequestDto>
 {
     public SupplyListValidator(ISupplyService service)
     {
-        RuleFor(dto => dto.SortingByFieldName)
+        RuleFor(dto => dto.SortByFieldName)
             .IsOneOfFieldOptions(service.GetListSortingOptions().FieldOptions)
             .WithName(DisplayNames.SortingByField);
         RuleFor(dto => dto.MonthYear)

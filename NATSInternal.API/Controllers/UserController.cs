@@ -5,111 +5,54 @@
 [Authorize]
 public class UserController : ControllerBase
 {
+    #region Fields
     private readonly IUserService _userService;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IValidator<UserListRequestDto> _listValidator;
-    private readonly IValidator<UserCreateRequestDto> _createValidator;
-    private readonly IValidator<UserUpdateRequestDto> _updateValidator;
-    private readonly IValidator<UserPasswordChangeRequestDto> _passwordChangeValidator;
-    private readonly IValidator<UserPasswordResetRequestDto> _passwordResetValidator;
     private readonly INotifier _notifier;
+    #endregion
 
-    public UserController(
-            IUserService userService,
-            IAuthorizationService authorizationService,
-            IValidator<UserListRequestDto> listValidator,
-            IValidator<UserCreateRequestDto> createValidator,
-            IValidator<UserUpdateRequestDto> updateValidator,
-            IValidator<UserPasswordChangeRequestDto> passwordChangeValidator,
-            IValidator<UserPasswordResetRequestDto> passwordResetValidator,
-            INotifier notifier)
+    #region Constructors
+    public UserController(IUserService userService, IAuthorizationService authorizationService, INotifier notifier)
     {
         _userService = userService;
         _authorizationService = authorizationService;
-        _listValidator = listValidator;
-        _createValidator = createValidator;
-        _updateValidator = updateValidator;
-        _passwordChangeValidator = passwordChangeValidator;
-        _passwordResetValidator = passwordResetValidator;
         _notifier = notifier;
     }
+    #endregion
 
+    #region Methods
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UserList([FromQuery] UserListRequestDto requestDto)
+    public async Task<IActionResult> UserList(
+            [FromQuery] UserListRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        // Validate data from request.
-        requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _listValidator.Validate(requestDto);
-        if (!validationResult.IsValid)
-        {
-            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
-            return BadRequest(ModelState);
-        }
-
-        // Perform fetching operation.
-        UserListResponseDto responseDto = await _userService.GetListAsync(requestDto);
-        return Ok(responseDto);
+        return Ok(await _userService.GetListAsync(requestDto, cancellationToken));
     }
 
-    [HttpGet("JoinedRecently")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> JoinedRecentlyUserList()
-    {
-        UserListResponseDto responseDto = await _userService.GetJoinedRecentlyListAsync();
-        return Ok(responseDto);
-    }
-
-    [HttpGet("UpcomingBirthday")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpcomingBirthdayUserList()
-    {
-        UserListResponseDto responseDto = await _userService.GetUpcomingBirthdayListAsync();
-        return Ok(responseDto);
-    }
-
-    [HttpGet("{id:int}/Role")]
+    [HttpGet("{id:guid}/Role")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UserRole(int id)
+    public async Task<IActionResult> Role(Guid id, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            return Ok(await _userService.GetRoleAsync(id));
-        }
-        catch (NotFoundException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return NotFound(exception);
-        }
+        return Ok(await _userService.GetRoleAsync(id, cancellationToken));
     }
 
-    [HttpGet("{id:int}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UserDetail(int id)
+    public async Task<IActionResult> Detail(Guid id, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            UserDetailResponseDto responseDto;
-            responseDto = await _userService.GetDetailAsync(id);
-            return Ok(responseDto);
-        }
-        catch (NotFoundException)
-        {
-            return NotFound();
-        }
+        return Ok(await _userService.GetDetailAsync(id, cancellationToken));
     }
 
     [HttpGet("Caller")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> CallerDetail()
+    public async Task<IActionResult> CallerDetail(CancellationToken cancellationToken = default)
     {
-        int callerId = _authorizationService.GetUserId();
-        UserDetailResponseDto responseDto = await _userService.GetDetailAsync(callerId);
-        return Ok(responseDto);
+        Guid callerId = _authorizationService.GetUserId();
+        return Ok(await _userService.GetDetailAsync(callerId, cancellationToken));
     }
 
     [HttpPost]
@@ -118,93 +61,15 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> UserCreate([FromBody] UserCreateRequestDto requestDto)
-    {
-        // Validate data from the request.
-        requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _createValidator.Validate(requestDto);
-        if (!validationResult.IsValid)
-        {
-            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
-            return BadRequest(ModelState);
-        }
-
-        // Perform creating operation.
-        try
-        {
-            // Create the user.
-            int createdId = await _userService.CreateAsync(requestDto);
-            string createdResourceUrl = Url.Action("UserDetail", "User", createdId);
-
-            // Create and distribute the notification to the users.
-            await _notifier.Notify(NotificationType.UserCreation, createdId);
-
-            return Created(createdResourceUrl, createdId);
-        }
-        catch (DuplicatedException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return Conflict(ModelState);
-        }
-        catch (NotFoundException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return NotFound(ModelState);
-        }
-        catch (InvalidOperationException exception)
-        {
-            ModelState.Clear();
-            ModelState.AddModelError("", exception.Message);
-            return UnprocessableEntity(ModelState);
-        }
-    }
-
-    [HttpPut("{id:int}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> UpdateUser(
-            int id,
-            [FromBody] UserUpdateRequestDto requestDto)
+    public async Task<IActionResult> Create(
+            [FromBody] UserCreateRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        // Validate data from the request.
-        requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _updateValidator.Validate(requestDto);
-        if (!validationResult.IsValid)
-        {
-            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
-            return BadRequest(ModelState);
-        }
+        Guid id = await _userService.CreateAsync(requestDto, cancellationToken);
+        await _notifier.Notify(NotificationType.UserCreation, id);
 
-        // Perform the updating operation.
-        try
-        {
-            // Update the user.
-            await _userService.UpdateAsync(id, requestDto);
-
-            // Create and distribute the notification to the users.
-            await _notifier.Notify(NotificationType.UserModification, id);
-
-            return Ok();
-        }
-        catch (NotFoundException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return NotFound(ModelState);
-        }
-        catch (AuthorizationException)
-        {
-            return Forbid();
-        }
-        catch (OperationException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return UnprocessableEntity(ModelState);
-        }
+        return CreatedAtAction(nameof(Detail), new { id }, id);
     }
 
     [HttpPut("ChangePassword")]
@@ -214,41 +79,14 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> ChangeUserPassword(
-            [FromBody] UserPasswordChangeRequestDto requestDto)
+            [FromBody] UserPasswordChangeRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        // Validate data from the request.
-        requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _passwordChangeValidator.Validate(requestDto);
-        if (!validationResult.IsValid)
-        {
-            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
-            return BadRequest(ModelState);
-        }
-
-        // Perform the password change operation.
-        try
-        {
-            await _userService.ChangePasswordAsync(requestDto);
-            return Ok();
-        }
-        catch (NotFoundException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return NotFound(ModelState);
-        }
-        catch (AuthorizationException)
-        {
-            return Forbid();
-        }
-        catch (OperationException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return UnprocessableEntity(ModelState);
-        }
+        await _userService.ChangePasswordAsync(requestDto, cancellationToken);
+        return Ok();
     }
 
-    [HttpPut("{id:int}/ResetPassword")]
+    [HttpPut("{id:guid}/ResetPassword")]
     [Authorize(Policy = "CanResetPassword")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -256,95 +94,25 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> ResetUserPassword(
-            int id,
-            [FromBody] UserPasswordResetRequestDto requestDto)
+            Guid id,
+            [FromBody] UserPasswordResetRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        // Validate data from the request.
-        requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _passwordResetValidator.Validate(requestDto);
-        if (!validationResult.IsValid)
-        {
-            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
-            return BadRequest(ModelState);
-        }
-
-        // Perform the password reset operation.
-        try
-        {
-            await _userService.ResetPasswordAsync(id, requestDto);
-            return Ok();
-        }
-        catch (NotFoundException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return NotFound(ModelState);
-        }
-        catch (AuthorizationException)
-        {
-            return Forbid();
-        }
-        catch (OperationException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return UnprocessableEntity(exception);
-        }
+        await _userService.ResetPasswordAsync(id, requestDto, cancellationToken);
+        return Ok();
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id:guid}")]
     [Authorize(Policy = "CanDeleteUser")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> DeleteUser(int id)
+    public async Task<IActionResult> DeleteUser(Guid id, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            // Delete the user.
-            await _userService.DeleteAsync(id);
-
-            // Create and distribute the notification to the users.
-            await _notifier.Notify(NotificationType.UserDeletion, id);
-            return Ok();
-        }
-        catch (NotFoundException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return NotFound(ModelState);
-        }
-        catch (AuthorizationException)
-        {
-            return Forbid();
-        }
-        catch (OperationException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return UnprocessableEntity(exception);
-        }
-    }
-
-    [HttpPost("{id:int}/Restore")]
-    [Authorize(Policy = "CanRestore")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> RestoreUser(int id)
-    {
-        try
-        {
-            await _userService.RestoreAsync(id);
-            return Ok();
-        }
-        catch (NotFoundException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return NotFound(ModelState);
-        }
-        catch (AuthorizationException)
-        {
-            return Forbid();
-        }
+        await _userService.DeleteAsync(id, cancellationToken);
+        await _notifier.Notify(NotificationType.UserDeletion, id);
+        return Ok();
     }
 
     [HttpGet("ListSortingOptions")]
@@ -354,9 +122,9 @@ public class UserController : ControllerBase
         return Ok(_userService.GetListSortingOptions());
     }
 
-    [HttpGet("{id:int}/PasswordResetPermission")]
+    [HttpGet("{id:guid}/PasswordResetPermission")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetPasswordResetPermission(int id)
+    public async Task<IActionResult> GetPasswordResetPermission(Guid id)
     {
         return Ok(await _userService.GetPasswordResetPermission(id));
     }
@@ -367,4 +135,5 @@ public class UserController : ControllerBase
     {
         return Ok(_userService.GetCreatingPermission());
     }
+    #endregion
 }

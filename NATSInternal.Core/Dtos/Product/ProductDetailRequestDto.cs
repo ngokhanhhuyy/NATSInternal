@@ -3,9 +3,9 @@ namespace NATSInternal.Core.Dtos;
 public class ProductDetailRequestDto : IRequestDto
 {
     #region Properties
-    public int RecentSuppliesResultCount { get; set; } = 5;
-    public int RecentOrdersResultCount { get; set; } = 5;
-    public int RecentTreatmentsResultCount { get; set; } = 5;
+    public int? RecentSuppliesResultCount { get; set; }
+    public int? RecentOrdersResultCount { get; set; }
+    public int? RecentTreatmentsResultCount { get; set; }
     #endregion
 
     #region Methods

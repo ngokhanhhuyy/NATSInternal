@@ -5,63 +5,43 @@
 [Authorize]
 public class ProductCategoryController : ControllerBase
 {
+    #region Fields
     private readonly IProductCategoryService _service;
-    private readonly IValidator<ProductCategoryListRequestDto> _listValidator;
-    private readonly IValidator<ProductCategoryUpsertRequestDto> _upsertValidator;
     private readonly INotifier _notifier;
+    #endregion
 
-    public ProductCategoryController(
-            IProductCategoryService service,
-            IValidator<ProductCategoryListRequestDto> listValidator,
-            IValidator<ProductCategoryUpsertRequestDto> upsertValidator,
-            INotifier notifier)
+    #region Constructors
+    public ProductCategoryController(IProductCategoryService service, INotifier notifier)
     {
         _service = service;
-        _listValidator = listValidator;
-        _upsertValidator = upsertValidator;
         _notifier = notifier;
     }
+    #endregion
 
+    #region Methods
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ProductCategoryList(
-            [FromQuery] ProductCategoryListRequestDto requestDto)
+    public async Task<IActionResult> List(
+            [FromQuery] ProductCategoryListRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        // Validate data from the request.
-
-        requestDto.TransformValues();
-        ValidationResult validationResult = _listValidator.Validate(requestDto);
-        if (!validationResult.IsValid)
-        {
-            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
-            return BadRequest(ModelState);
-        }
-
-        return Ok(await _service.GetListAsync(requestDto));
+        return Ok(await _service.GetListAsync(requestDto, cancellationToken));
     }
 
     [HttpGet("All")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> ProductCategoryAll()
+    public async Task<IActionResult> All(CancellationToken cancellationToken = default)
     {
-        return Ok(await _service.GetAllAsync());
+        return Ok(await _service.GetAllAsync(cancellationToken));
     }
 
-    [HttpGet("{id:int}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ProductCategoryDetail(int id)
+    public async Task<IActionResult> Detail(Guid id, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            return Ok(await _service.GetDetailAsync(id));
-        }
-        catch (NotFoundException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return NotFound(ModelState);
-        }
+        return Ok(await _service.GetDetailAsync(id, cancellationToken));
     }
 
     [HttpPost]
@@ -69,103 +49,41 @@ public class ProductCategoryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> ProductCategoryCreate(
-            [FromBody] ProductCategoryUpsertRequestDto requestDto)
+    public async Task<IActionResult> Create(
+            [FromBody] ProductCategoryUpsertRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        // Validate data from the request.
-        requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto);
-        if (!validationResult.IsValid)
-        {
-            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
-            return BadRequest(ModelState);
-        }
+        Guid id = await _service.CreateAsync(requestDto, cancellationToken);
+        await _notifier.Notify(NotificationType.ProductCategoryCreation, id);
 
-        // Perform the creating operation.
-        try
-        {
-            // Create the product category.
-            int createdId = await _service.CreateAsyns(requestDto);
-            string createdResourceUrl = Url.Action(
-                "ProductCategoryDetail",
-                "ProductCategory",
-                new { id = createdId });
-
-            // Create and distribute the notification to the users.
-            await _notifier.Notify(NotificationType.ProductCategoryCreation, createdId);
-
-            return Created(createdResourceUrl, createdId);
-        }
-        catch (OperationException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return UnprocessableEntity(exception);
-        }
+        return CreatedAtAction(nameof(Detail), new { id }, id);
     }
 
-    [HttpPut("{id:int}")]
+    [HttpPut("{id:guid}")]
     [Authorize(Policy = "CanEditProductCategory")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> ProductCategoryUpdate(
-            int id,
-            [FromBody] ProductCategoryUpsertRequestDto requestDto)
+    public async Task<IActionResult> Update(
+            Guid id,
+            [FromBody] ProductCategoryUpsertRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        // Validate data from the request.
-        requestDto.TransformValues();
-        ValidationResult validationResult;
-        validationResult = _upsertValidator.Validate(requestDto);
-        if (!validationResult.IsValid)
-        {
-            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
-            return BadRequest(ModelState);
-        }
+        await _service.UpdateAsync(id, requestDto, cancellationToken);
+        await _notifier.Notify(NotificationType.ProductCategoryModification, id);
 
-        // Perform the updating operation.
-        try
-        {
-            // Update the product category.
-            await _service.UpdateAsync(id, requestDto);
-
-            // Create and distribute the notification to the users.
-            await _notifier.Notify(NotificationType.ProductCategoryModification, id);
-
-            return Ok();
-        }
-        catch (NotFoundException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return NotFound(ModelState);
-        }
-        catch (OperationException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return UnprocessableEntity(ModelState);
-        }
+        return Ok();
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id:guid}")]
     [Authorize(Policy = "CanDeleteProductCategory")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ProductCategoryDelete(int id)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            // Delete the product category.
-            await _service.DeleteAsync(id);
+        await _service.DeleteAsync(id, cancellationToken);
+        await _notifier.Notify(NotificationType.ProductCategoryDeletion, id);
 
-            // Create and distribute the notification to the users.
-            await _notifier.Notify(NotificationType.ProductCategoryDeletion, id);
-
-            return Ok();
-        }
-        catch (NotFoundException exception)
-        {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return NotFound(ModelState);
-        }
+        return Ok();
     }
 
     [HttpGet("CreatingPermission")]
@@ -174,4 +92,5 @@ public class ProductCategoryController : ControllerBase
     {
         return Ok(_service.GetCreatingPermission());
     }
+    #endregion
 }

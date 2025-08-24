@@ -5,7 +5,7 @@ namespace NATSInternal.Controllers;
 [Authorize]
 public class StatsController : ControllerBase
 {
-    private readonly IStatsService _service;
+    private readonly ISummaryService _service;
     private readonly IValidator<MonthlyStatsRequestDto> _monthlyValidator;
     private readonly IValidator<LatestMonthlyStatsRequestDto> _lastestMonthlyStatsValidator;
     private readonly IValidator<LatestDailyStatsRequestDto> _lastestDailyStatsValidator;
@@ -14,7 +14,7 @@ public class StatsController : ControllerBase
     private readonly IValidator<LatestTransactionsRequestDto> _latestTransactionValidator;
 
     public StatsController(
-            IStatsService service,
+            ISummaryService service,
             IValidator<MonthlyStatsRequestDto> monthlyValidator,
             IValidator<LatestMonthlyStatsRequestDto> lastestMonthlyStatsValidator,
             IValidator<LatestDailyStatsRequestDto> lastestDailyStatsValidator,

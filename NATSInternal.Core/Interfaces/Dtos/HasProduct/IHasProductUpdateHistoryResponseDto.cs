@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Interfaces.Dtos;
 
-internal interface IHasProductUpdateHistoryResponseDto<TItemDataDto> : IHasStatsUpdateHistoryResponseDto
+internal interface IHasProductUpdateHistoryResponseDto<TItemDataDto> : IHasStatsUpdateHistoryDataResponseDto
     where TItemDataDto : IHasProductItemUpdateHistoryDataDto
 {
     List<TItemDataDto> OldItems { get; }

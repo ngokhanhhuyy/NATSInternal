@@ -7,7 +7,7 @@ internal class BaseSortableListValidator<TListRequestDto, TFieldToSort> : Valida
     #region Constructors
     public BaseSortableListValidator()
     {
-        RuleFor(dto => dto.SortingByFieldName)
+        RuleFor(dto => dto.SortByFieldName)
             .IsOneOfFieldsToSort<TListRequestDto, TFieldToSort>()
             .WithName(DisplayNames.SortByFieldName);
     }

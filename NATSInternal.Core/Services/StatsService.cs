@@ -1,7 +1,7 @@
 ﻿namespace NATSInternal.Core.Services;
 
 /// <inheritdoc />
-internal class StatsService : IStatsService
+internal class StatsService : ISummaryService
 {
     protected readonly IDbContextFactory<DatabaseContext> _contextFactory;
 

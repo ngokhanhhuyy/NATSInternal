@@ -17,13 +17,13 @@ internal class SupplyService
     private readonly DatabaseContext _context;
     private readonly IMultiplePhotosService<Supply, SupplyPhoto> _photoService;
     private readonly IAuthorizationInternalService _authorizationService;
-    private readonly IStatsInternalService _statsService;
+    private readonly ISummaryInternalService _statsService;
 
     public SupplyService(
             DatabaseContext context,
             IMultiplePhotosService<Supply, SupplyPhoto> photoservice,
             IAuthorizationInternalService authorizationService,
-            IStatsInternalService statsService)
+            ISummaryInternalService statsService)
         : base(context, authorizationService)
     {
         _context = context;
@@ -42,9 +42,9 @@ internal class SupplyService
             .Include(s => s.Photos);
 
         // Determine the field and the direction the sort.
-        string sortingByField = requestDto.SortingByFieldName
+        string sortingByField = requestDto.SortByFieldName
                                 ?? GetListSortingOptions().DefaultFieldName;
-        bool sortingByAscending = requestDto.SortingByAscending
+        bool sortingByAscending = requestDto.SortByAscending
                                   ?? GetListSortingOptions().DefaultAscending;
         Expression<Func<Supply, long>> amountExpression = (supply) =>
             supply.Items.Sum(s => s.AmountPerUnit * s.Quantity) + supply.ShipmentFee;

@@ -6,26 +6,33 @@ namespace NATSInternal.Core.Interfaces.Services;
 public interface ICustomerService
 {
     /// <summary>
-    /// Retrieves a list of customers with the basic information, based on the filtering,
-    /// sorting and paginating conditions.
+    /// Retrieves a list of customers with the basic information, based on the filtering, sorting and paginating
+    /// conditions.
     /// </summary>
     /// <param name="requestDto">
-    /// An instance of the <see cref="CustomerListRequestDto"/> class, containing the
-    /// conditions for the results.
+    /// An instance of the <see cref="CustomerListRequestDto"/> class, containing the conditions for the results.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// (Optional) A cancellation token.
     /// </param>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is
-    /// an instance of the <see cref="CustomerListResponseDto"/> class, containing the results
-    /// and the additional information for the pagination.
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is an instance of the
+    /// <see cref="CustomerListResponseDto"/> class, containing the results and the additional information for the
+    /// pagination.
     /// </returns>
-    Task<CustomerListResponseDto> GetListAsync(CustomerListRequestDto requestDto);
+    Task<CustomerListResponseDto> GetListAsync(
+            CustomerListRequestDto requestDto,
+            CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves the basic information of a specific customer based on the id.
     /// </summary>
     /// <param name="id">
-    /// A <see cref="int"/> representing the id of the customer to retrieve.
-    /// </param>`
+    /// A <see cref="Guid"/> value representing the id of the customer to retrieve.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// (Optional) A cancellation token.
+    /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is
     /// an instance of the <see cref="CustomerBasicResponseDto"/> class, containing the basic
@@ -35,69 +42,59 @@ public interface ICustomerService
     /// Throws when the customer with the specified id doesn't exist or has already been
     /// deleted.
     /// </exception>
-    Task<CustomerBasicResponseDto> GetBasicAsync(int id);
+    Task<CustomerBasicResponseDto> GetBasicAsync(
+            Guid id,
+            CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves the details of a specific customer based on the id.
     /// </summary>
     /// <param name="id">
-    /// A <see cref="int"/> representing the id of the customer to retrieve.
+    /// A <see cref="Guid"/> representing the id of the customer to retrieve.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// (Optional) A cancellation token.
     /// </param>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is
-    /// an instance of the <see cref="CustomerBasicResponseDto"/> class, containing the details
-    /// of the customer.
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is an instance of the
+    /// <see cref="CustomerBasicResponseDto"/> class, containing the details of the customer.
     /// </returns>
     /// <exception cref="NotFoundException">
-    /// Throws when the customer with the specified id doesn't exist or has already been
-    /// deleted.
+    /// Throws when the customer with the specified id doesn't exist or has already been deleted.
     /// </exception>
-    Task<CustomerDetailResponseDto> GetDetailAsync(int id);
+    Task<CustomerDetailResponseDto> GetDetailAsync(Guid id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Creates a new customer based on the specified data.
     /// </summary>
     /// <param name="requestDto">
-    /// An instance of the <see cref="CustomerUpsertRequestDto"/> class, containing the data
-    /// for the new customer.
+    /// An instance of the <see cref="CustomerUpsertRequestDto"/> class, containing the data for the new customer.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// (Optional) A cancellation token.
     /// </param>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is
-    /// an <see cref="int"/> representing the id of the new customer.
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is a <see cref="Guid"/> representing
+    /// the id of the new customer.
     /// </returns>
     /// <exception cref="OperationException">
-    /// Throws when the customer who is this customer's introducer, specified by the value of
-    /// the property <c>IntroducerId</c> in the <c>requestDto</c>, doesn't exist or has already
-    /// been deleted.
+    /// Throws when the customer who is this customer's introducer, specified by the value of the property
+    /// <c>IntroducerId</c> in the <c>requestDto</c>, doesn't exist or has already been deleted.
     /// </exception>
-    Task<int> CreateAsync(CustomerUpsertRequestDto requestDto);
+    Task<Guid> CreateAsync(CustomerUpsertRequestDto requestDto, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Updates an existing customer based on the specified data.
     /// </summary>
     /// <param name="id">
-    /// An <see cref="int"/> representing the id of the customer to update.
+    /// A <see cref="Guid"/> representing the id of the customer to update.
     /// </param>
     /// <param name="requestDto">
-    /// An instance of the <see cref="CustomerUpsertRequestDto"/> class, containing the data
-    /// for the customer to be updated.
+    /// An instance of the <see cref="CustomerUpsertRequestDto"/> class, containing the data for the customer to be
+    /// updated.
     /// </param>
-    /// <returns></returns>
-    /// <exception cref="NotFoundException">
-    /// The customer with the specified id doesn't exist or has already been deleted.
-    /// </exception>
-    /// <exception cref="OperationException">
-    /// Throws when the customer who is this customer's introducer, specified by the value of
-    /// the property <c>IntroducerId</c> in the <c>requestDto</c>, doesn't exist or has already
-    /// been deleted.
-    /// </exception>
-    Task UpdateAsync(int id, CustomerUpsertRequestDto requestDto);
-
-    /// <summary>
-    /// Deletes an existing customer.
-    /// </summary>
-    /// <param name="id">
-    /// An <see cref="int"/> representing the id of the customer to be deleted.
+    /// <param name="cancellationToken">
+    /// (Optional) A cancellation token.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -105,7 +102,25 @@ public interface ICustomerService
     /// <exception cref="NotFoundException">
     /// The customer with the specified id doesn't exist or has already been deleted.
     /// </exception>
-    Task DeleteAsync(int id);
+    /// <exception cref="OperationException">
+    /// Throws when the customer who is this customer's introducer, specified by the value of the property
+    /// <c>IntroducerId</c> in the <c>requestDto</c>, doesn't exist or has already been deleted.
+    /// </exception>
+    Task UpdateAsync(Guid id, CustomerUpsertRequestDto requestDto, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Deletes an existing customer.
+    /// </summary>
+    /// <param name="id">
+    /// A <see cref="Guid"/> representing the id of the customer to be deleted.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation.
+    /// </returns>
+    /// <exception cref="NotFoundException">
+    /// The customer with the specified id doesn't exist or has already been deleted.
+    /// </exception>
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Get all fields those are used as options to order the results in list retrieving
@@ -126,12 +141,15 @@ public interface ICustomerService
     bool GetCreatingPermission();
 
     /// <summary>
-    /// Get statistics about the new customers this month and the ratio in percentage compared
-    /// to last month.
+    /// Get statistics about the new customers this month and the ratio in percentage compared to last month.
     /// </summary>
+    /// <param name="cancellationToken">
+    /// (Optional) A cancellation token.
+    /// </param>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation, which result is a DTO
-    /// containing the statistics and ratio.
+    /// A <see cref="Task"/> representing the asynchronous operation, which result is a DTO containing the statistics
+    /// and ratio.
     /// </returns>
-    Task<NewCustomerCountResponseDto> GetNewStatsAsync();
+    Task<NewCustomerCountResponseDto> GetNewCustomerSummaryThisMonthAsync(
+            CancellationToken cancellationToken = default);
 }

@@ -30,12 +30,14 @@ internal class BrandUpsertValidator : Validator<BrandUpsertRequestDto>
 
         RuleSet("Create", () =>
         {
-            RuleForEach(dto => dto.Photos).SetValidator(new PhotoValidator(), ruleSets: "Create");
+            RuleForEach(dto => dto.Photos)
+                .SetValidator(new PhotoValidator(), ruleSets: "Create");
         });
 
         RuleSet("CreateAndUpdate", () =>
         {
-            RuleForEach(dto => dto.Photos).SetValidator(new PhotoValidator(), ruleSets: "CreateAndUpdate");
+            RuleForEach(dto => dto.Photos)
+                .SetValidator(new PhotoValidator(), ruleSets: "CreateAndUpdate");
         });
     }
     #endregion
