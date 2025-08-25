@@ -4,8 +4,8 @@
 internal class DebtIncurrenceService
     :
         DebtAbstractService<Debt, DebtUpdateHistory,
-            DebtIncurrenceListRequestDto, DebtIncurrenceUpsertRequestDto,
-            DebtIncurrenceListResponseDto, DebtBasicResponseDto,
+            DebtListRequestDto, DebtUpsertRequestDto,
+            DebtListResponseDto, DebtBasicResponseDto,
             DebtDetailResponseDto, DebtUpdateHistoryResponseDto,
             DebtIncurrenceUpdateHistoryDataDto, DebtCreatingAuthorizationResponseDto,
             DebtExistingAuthorizationResponseDto>,
@@ -21,12 +21,12 @@ internal class DebtIncurrenceService
     }
 
     /// <inheritdoc />
-    public async Task<DebtIncurrenceListResponseDto> GetListAsync(
-            DebtIncurrenceListRequestDto requestDto)
+    public async Task<DebtListResponseDto> GetListAsync(
+            DebtListRequestDto requestDto)
     {
         EntityListDto<Debt> entityListDto = await GetListOfEntitiesAsync(requestDto);
 
-        return new DebtIncurrenceListResponseDto
+        return new DebtListResponseDto
         {
             PageCount = entityListDto.PageCount,
             Items = entityListDto.Items?

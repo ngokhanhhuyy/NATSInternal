@@ -4,8 +4,11 @@
 [ApiController]
 public class HealthCheckController : ControllerBase
 {
+    #region StaticFields
     private static readonly DateTime _startedDateTime = DateTime.UtcNow.ToApplicationTime();
+    #endregion
 
+    #region Methods
     [HttpGet("Ping")]
     public IActionResult Ping()
     {
@@ -23,4 +26,5 @@ public class HealthCheckController : ControllerBase
     {
         return Ok(DateTime.UtcNow.ToApplicationTime() - _startedDateTime);
     }
+    #endregion
 }

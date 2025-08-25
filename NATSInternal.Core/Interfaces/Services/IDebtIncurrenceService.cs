@@ -10,15 +10,15 @@ public interface IDebtIncurrenceService
     /// filtering, sorting and paginating conditions.
     /// </summary>
     /// <param name="requestDto">
-    /// An instance of the <see cref="DebtIncurrenceListRequestDto"/> class, containing the
+    /// An instance of the <see cref="DebtListRequestDto"/> class, containing the
     /// conditions for the results.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is an
-    /// instance of the <see cref="DebtIncurrenceListResponseDto"/>, containing the results
+    /// instance of the <see cref="DebtListResponseDto"/>, containing the results
     /// of the operation and the additional information for pagination.
     /// </returns>
-    Task<DebtIncurrenceListResponseDto> GetListAsync(DebtIncurrenceListRequestDto requestDto);
+    Task<DebtListResponseDto> GetListAsync(DebtListRequestDto requestDto);
 
     /// <summary>
     /// Retrieves the details of a specific debt incurrence by its id.
@@ -41,7 +41,7 @@ public interface IDebtIncurrenceService
     /// Creates a new debt incurrence based on the specified data.
     /// </summary>
     /// <param name="requestDto">
-    /// An instance of the <see cref="DebtIncurrenceUpsertRequestDto"/> class, containing the
+    /// An instance of the <see cref="DebtUpsertRequestDto"/> class, containing the
     /// data for the creating operation.
     /// </param>
     /// <returns>
@@ -59,7 +59,7 @@ public interface IDebtIncurrenceService
     /// property in the <paramref name="requestDto"/> doesn't exist or has already been
     /// deleted.
     /// </exception>
-    Task<int> CreateAsync(DebtIncurrenceUpsertRequestDto requestDto);
+    Task<int> CreateAsync(DebtUpsertRequestDto requestDto);
     
     /// <summary>
     /// Updates an existing debt incurrence, based on its id and the specified data.
@@ -68,7 +68,7 @@ public interface IDebtIncurrenceService
     /// An <see cref="int"/> representing the id of the debt incurrence to update.
     /// </param>
     /// <param name="requestDto">
-    /// An instance of the <see cref="DebtIncurrenceUpsertRequestDto"/> class, containing the
+    /// An instance of the <see cref="DebtUpsertRequestDto"/> class, containing the
     /// data for the updating operation.
     /// </param>
     /// <returns>
@@ -101,7 +101,7 @@ public interface IDebtIncurrenceService
     /// - The remaining debt amount of the specified customer becomes negative after the
     /// operation.
     /// </exception>
-    Task UpdateAsync(int id, DebtIncurrenceUpsertRequestDto requestDto);
+    Task UpdateAsync(int id, DebtUpsertRequestDto requestDto);
     
     /// <summary>
     /// Deletes an existing debt incurrence based on its id.

@@ -1,20 +1,20 @@
 namespace NATSInternal.Core.Dtos;
 
-public class AnnouncementResponseDto
-        : IUpsertableBasicResponseDto<AnnouncementExistingAuthorizationResponseDto>
+public class AnnouncementResponseDto : IUpsertableBasicResponseDto<AnnouncementExistingAuthorizationResponseDto>
 {
-    public int Id { get; set; }
-    public AnnouncementCategory Category { get; set; }
-    public string Title { get; set; }
-    public string Content { get; set; }
-    public DateTime StartingDateTime { get; set; }
-    public DateTime EndingDateTime { get; set; }
-    public UserBasicResponseDto CreatedUser { get; set; }
-    public AnnouncementExistingAuthorizationResponseDto Authorization { get; set; }
+    #region Properties
+    public Guid Id { get; internal set; }
+    public AnnouncementCategory Category { get; internal set; }
+    public string Title { get; internal set; }
+    public string Content { get; internal set; }
+    public DateTime StartingDateTime { get; internal set; }
+    public DateTime EndingDateTime { get; internal set; }
+    public UserBasicResponseDto CreatedUser { get; internal set; }
+    public AnnouncementExistingAuthorizationResponseDto? AuthorizationResponseDto { get; internal set; }
+    #endregion
 
-    internal AnnouncementResponseDto(
-            Announcement announcement,
-            AnnouncementExistingAuthorizationResponseDto authorization)
+    #region Constructors
+    internal AnnouncementResponseDto(Announcement announcement)
     {
         Id = announcement.Id;
         Category = announcement.Category;
@@ -22,7 +22,14 @@ public class AnnouncementResponseDto
         Content = announcement.Content;
         StartingDateTime = announcement.StartingDateTime;
         EndingDateTime = announcement.EndingDateTime;
-        CreatedUser = new UserBasicResponseDto(announcement.CreatedUser);
-        Authorization = authorization;
+        CreatedUser = new(announcement.CreatedUser);
     }
+
+    internal AnnouncementResponseDto(
+            Announcement announcement,
+            AnnouncementExistingAuthorizationResponseDto authorizationResponseDto) : this(announcement)
+    {
+        AuthorizationResponseDto = authorizationResponseDto;
+    }
+    #endregion
 }

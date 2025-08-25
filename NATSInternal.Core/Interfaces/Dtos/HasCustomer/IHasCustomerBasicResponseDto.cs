@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Interfaces.Dtos;
 
-internal interface IHasCustomerBasicResponseDto<TExistingAuthorization>
+internal interface IHasCustomerBasicResponseDto<out TExistingAuthorization>
     : IHasStatsBasicResponseDto<TExistingAuthorization>
     where TExistingAuthorization : IHasStatsExistingAuthorizationResponseDto
 {

@@ -47,6 +47,7 @@ internal class BrandService : IBrandService
         return await _listQueryService.GetPagedListAsync(
             query,
             requestDto,
+            (brand) => new BrandBasicResponseDto(brand, _authorizationService.GetExistingAuthorization<>)
             (entities, pageCount) => new BrandListResponseDto(entities, pageCount),
             cancellationToken
         );

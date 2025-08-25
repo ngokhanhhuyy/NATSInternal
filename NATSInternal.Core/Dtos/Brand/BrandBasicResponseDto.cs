@@ -9,7 +9,7 @@ public class BrandBasicResponseDto
     public Guid Id { get; set; }
     public string Name { get; set; }
     public string? ThumbnailUrl { get; set; }
-    public BrandExistingAuthorizationResponseDto? Authorization { get; set; }
+    public BrandExistingAuthorizationResponseDto? AuthorizationResponseDto { get; set; }
     #endregion
 
     #region Constructors
@@ -23,9 +23,11 @@ public class BrandBasicResponseDto
             .SingleOrDefault();
     }
 
-    internal BrandBasicResponseDto(Brand brand, BrandExistingAuthorizationResponseDto authorization) : this(brand)
+    internal BrandBasicResponseDto(
+            Brand brand,
+            BrandExistingAuthorizationResponseDto authorizationResponseDto) : this(brand)
     {
-        Authorization = authorization;
+        AuthorizationResponseDto = authorizationResponseDto;
     }
     #endregion
 }

@@ -3,51 +3,49 @@
 /// <inheritdoc cref="IAuthorizationInternalService"/>
 internal class AuthorizationService : IAuthorizationInternalService
 {
+    #region Fields
     private readonly DatabaseContext _context;
-    private User _user;
+    private User? _user;
+    #endregion
 
+    #region Constructors
     public AuthorizationService(DatabaseContext context)
     {
         _context = context;
     }
+    #endregion
+    
+    #region PrivateProeperties
+    private User User => _user ?? throw new InvalidOperationException("User has not been loaded yet."); 
+    #endregion
 
-    /// <inheritdoc />
-    public void SetUserId(int id)
+    #region Methods
+    /// <inheritdoc cref="IAuthorizationService" />
+    public async Task SetUserId(Guid id, CancellationToken cancellationToken = default)
     {
-        _user = _context.Users
-            .Include(u => u.Roles).ThenInclude(r => r.Claims)
-            .Single(u => u.Id == id);
+        _user = await _context.Users
+            .Include(u => u.Roles).ThenInclude(r => r.Permissions)
+            .SingleAsync(u => u.Id == id, cancellationToken);
     }
     
     /// <inheritdoc />
-    public int GetUserId()
+    public Guid GetUserId()
     {
-        if (_user is null)
-        {
-            throw new InvalidOperationException("User has not been loaded yet.");
-        }
-        
-        return _user.Id;
+        return User.Id;
     }
 
     /// <inheritdoc />
     public UserDetailResponseDto GetUserDetail()
     {
-        if (_user is null)
-        {
-            throw new InvalidOperationException("User has not been loaded yet.");
-        }
-        
-        return new UserDetailResponseDto(_user);
+        return new(User);
     }
 
     // Authorization for users.
     public UserBasicAuthorizationResponseDto GetUserBasicAuthorization(User targetUser)
     {
-        return new UserBasicAuthorizationResponseDto
+        return new()
         {
-            CanEdit = CanEditUserPersonalInformation(targetUser) ||
-                CanEditUserUserInformation(targetUser),
+            CanEdit = CanEditUserPersonalInformation(targetUser) || CanEditUserUserInformation(targetUser),
             CanChangePassword = CanChangeUserPassword(targetUser),
             CanResetPassword = CanResetUserPassword(targetUser),
             CanDelete = CanDeleteUser(targetUser)
@@ -56,11 +54,10 @@ internal class AuthorizationService : IAuthorizationInternalService
 
     public UserDetailAuthorizationResponseDto GetUserDetailAuthorization(User targetUser)
     {
-        return new UserDetailAuthorizationResponseDto
+        return new()
         {
             CanGetNote = CanGetNote(targetUser.PowerLevel),
-            CanEdit = CanEditUserPersonalInformation(targetUser) ||
-                CanEditUserUserInformation(targetUser),
+            CanEdit = CanEditUserPersonalInformation(targetUser) || CanEditUserUserInformation(targetUser),
             CanEditUserPersonalInformation = CanEditUserPersonalInformation(targetUser),
             CanEditUserUserInformation = CanEditUserUserInformation(targetUser),
             CanAssignRole = CanAssignRole(),
@@ -71,22 +68,20 @@ internal class AuthorizationService : IAuthorizationInternalService
     }
 
     // Authorization for other resources.
-    public TResponseDto GetCreatingAuthorization<TEntity, TUpdateHistoryEntity, TResponseDto>()
-            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
-            where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new()
+    public TResponseDto GetCreatingAuthorization<TEntity, TData, TResponseDto>()
+            where TEntity : class, IHasStatsEntity<TEntity, TData>
+            where TData : class
             where TResponseDto : IHasStatsCreatingAuthorizationResponseDto, new()
     {
-        return new TResponseDto
+        return new()
         {
-            CanSetStatsDateTime = CanSetStatsDateTimeWhenCreating<
-                TEntity,
-                TUpdateHistoryEntity>()
+            CanSetStatsDateTime = CanSetStatsDateTimeWhenCreating<TEntity, TData>()
         };
     }
 
     /// <inheritdoc />
     public TResponseDto GetExistingAuthorization<TEntity, TResponseDto>()
-            where TEntity : class, IUpsertableEntity<TEntity>, new()
+            where TEntity : class, IUpsertableEntity<TEntity>
             where TResponseDto : IUpsertableExistingAuthorizationResponseDto, new()
     {
         return new TResponseDto
@@ -96,46 +91,37 @@ internal class AuthorizationService : IAuthorizationInternalService
         };
     }
 
-    public TResponseDto GetExistingAuthorization<TEntity, TUpdateHistoryEntity, TResponseDto>(
+    public TResponseDto GetExistingAuthorization<TEntity, TData, TResponseDto>(
             TEntity entity)
-                where TEntity :
-                    class,
-                    IHasStatsEntity<TEntity, TUpdateHistoryEntity>,
-                    new()
-                where TUpdateHistoryEntity :
-                    class,
-                    IUpdateHistoryEntity<TUpdateHistoryEntity>,
-                    new()
+                where TEntity : class, IHasStatsEntity<TEntity, TData>
+                where TData : class
                 where TResponseDto : IHasStatsExistingAuthorizationResponseDto, new()
     {
         return new TResponseDto
         {
-            CanEdit = CanEdit<TEntity, TUpdateHistoryEntity>(entity),
-            CanDelete = CanDelete<TEntity, TUpdateHistoryEntity>(entity),
-            CanSetStatsDateTime = CanSetStatsDateTimeWhenEditing<
-                TEntity,
-                TUpdateHistoryEntity>(entity)
+            CanEdit = CanEdit<TEntity, TData>(entity),
+            CanDelete = CanDelete<TEntity, TData>(entity),
+            CanSetStatsDateTime = CanSetStatsDateTimeWhenEditing<TEntity, TData>(entity)
         };
     }
 
     // Permissions to interact with users.
     public bool CanCreateUser()
     {
-        return _user.HasPermission(PermissionNameConstants.CreateUser);
+        return User.HasPermission(PermissionNameConstants.CreateUser);
     }
     
     public bool CanEditUserPersonalInformation(User targetUser)
     {
         // Check permission when the user is editing himself.
-        if (_user.Id == targetUser.Id &&
-            _user.HasPermission(PermissionNameConstants.EditSelfPersonalInformation))
+        if (User.Id == targetUser.Id && User.HasPermission(PermissionNameConstants.EditSelfPersonalInformation))
         {
             return true;
         }
 
         // Check permission when the user is editing another user.
-        else if (_user.HasPermission(PermissionNameConstants.EditOtherUserPersonalInformation) &&
-                _user.PowerLevel > targetUser.PowerLevel)
+        if (User.HasPermission(PermissionNameConstants.EditOtherUserPersonalInformation) &&
+            User.PowerLevel > targetUser.PowerLevel)
         {
             return true;
         }
@@ -146,15 +132,14 @@ internal class AuthorizationService : IAuthorizationInternalService
     public bool CanEditUserUserInformation(User targetUser)
     {
         // Check permission when the user is editing himself.
-        if (_user.Id == targetUser.Id &&
-            _user.HasPermission(PermissionNameConstants.EditSelfUserInformation))
+        if (User.Id == targetUser.Id && User.HasPermission(PermissionNameConstants.EditSelfUserInformation))
         {
             return true;
         }
 
         // Check permission when the user is editing another user.
-        else if (_user.HasPermission(PermissionNameConstants.EditOtherUserUserInformation) &&
-                _user.PowerLevel > targetUser.PowerLevel)
+        if (User.HasPermission(PermissionNameConstants.EditOtherUserUserInformation) &&
+            User.PowerLevel > targetUser.PowerLevel)
         {
             return true;
         }
@@ -164,103 +149,98 @@ internal class AuthorizationService : IAuthorizationInternalService
 
     public bool CanChangeUserPassword(User targetUser)
     {
-        return _user.Id == targetUser.Id;
+        return User.Id == targetUser.Id;
     }
 
     public bool CanResetUserPassword(User targetUser)
     {
-        return _user.Id != targetUser.Id &&
-            _user.HasPermission(PermissionNameConstants.ResetOtherUserPassword) &&
-            _user.PowerLevel > targetUser.PowerLevel;
+        return User.Id != targetUser.Id &&
+            User.HasPermission(PermissionNameConstants.ResetOtherUserPassword) &&
+            User.PowerLevel > targetUser.PowerLevel;
     }
 
     public bool CanDeleteUser(User targetUser)
     {
-        return _user.Id != targetUser.Id &&
-            _user.HasPermission(PermissionNameConstants.DeleteUser) &&
-            !_user.IsDeleted &&
-            _user.PowerLevel > targetUser.PowerLevel;
+        return User.Id != targetUser.Id &&
+            User.HasPermission(PermissionNameConstants.DeleteUser) &&
+            !User.IsDeleted &&
+            User.PowerLevel > targetUser.PowerLevel;
     }
 
     public bool CanRestoreUser(User targetUser)
     {
-        return _user.Id != targetUser.Id &&
-                _user.IsDeleted &&
-                _user.HasPermission(PermissionNameConstants.RestoreUser);
+        return User.Id != targetUser.Id &&
+            User.IsDeleted &&
+            User.HasPermission(PermissionNameConstants.RestoreUser);
     }
 
     public bool CanAssignToRole(Role role)
     {
-        return _user.Role.Name == RoleNameConstants.Developer ||
-            _user.Role.Name == RoleNameConstants.Manager ||
-            _user.PowerLevel > role.PowerLevel;
+        List<string> roleNames = User.Roles.Select(r => r.Name).ToList();
+        return roleNames.Contains(RoleNameConstants.Developer) ||
+            roleNames.Contains(RoleNameConstants.Manager) ||
+            User.PowerLevel > role.PowerLevel;
     }
 
     public bool CanAssignRole()
     {
-        return _user.HasPermission(PermissionNameConstants.AssignRole);
+        return User.HasPermission(PermissionNameConstants.AssignRole);
     }
 
     public bool CanGetNote(int powerLevel)
     {
-        return _user.HasPermission(PermissionNameConstants.GetOtherUserNote) &&
-            _user.PowerLevel > powerLevel;
+        return User.HasPermission(PermissionNameConstants.GetOtherUserNote) && User.PowerLevel > powerLevel;
     }
 
     // Permissions to interact with other resources.
-    public bool CanCreate<TEntity>() where TEntity : class, IUpsertableEntity<TEntity>, new()
+    public bool CanCreate<TEntity>() where TEntity : class, IUpsertableEntity<TEntity>
     {
-        return _user.HasPermission($"Create{typeof(TEntity).Name}");
+        return User.HasPermission($"Create{typeof(TEntity).Name}");
     }
 
-    public bool CanEdit<TEntity>() where TEntity : class, IUpsertableEntity<TEntity>, new()
+    public bool CanEdit<TEntity>() where TEntity : class, IUpsertableEntity<TEntity>
     {
-        return _user.HasPermission($"Edit{typeof(TEntity).Name}");
+        return User.HasPermission($"Edit{typeof(TEntity).Name}");
     }
 
-    public bool CanEdit<TEntity, TUpdateHistoryEntity>(TEntity entity)
-            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
-            where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new()
+    public bool CanEdit<TEntity, TData>(TEntity entity)
+            where TEntity : class, IHasStatsEntity<TEntity, TData>
+            where TData : class
     {
-        return _user.HasPermission($"Edit{typeof(TEntity).Name}") &&
-            !entity.IsLocked &&
-            !entity.IsDeleted;
+        return User.HasPermission($"Edit{typeof(TEntity).Name}") && !entity.IsLocked() && !entity.IsDeleted;
     }
 
-    public bool CanDelete<TEntity>() where TEntity : class, IUpsertableEntity<TEntity>, new()
+    public bool CanDelete<TEntity>() where TEntity : class, IUpsertableEntity<TEntity>
     {
-        return _user.HasPermission($"Delete{typeof(TEntity).Name}");
+        return User.HasPermission($"Delete{typeof(TEntity).Name}");
     }
 
-    public bool CanDelete<TEntity, TUpdateHistoryEntity>(TEntity entity)
-            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
-            where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new()
+    public bool CanDelete<TEntity, TData>(TEntity entity)
+            where TEntity : class, IHasStatsEntity<TEntity, TData>
+            where TData : class
     {
-        return _user.HasPermission($"Edit{typeof(TEntity).Name}") &&
-            !entity.IsLocked &&
-            !entity.IsDeleted;
+        return User.HasPermission($"Edit{typeof(TEntity).Name}") && !entity.IsLocked() && !entity.IsDeleted;
     }
 
-    public bool CanSetStatsDateTimeWhenCreating<TEntity, TUpdateHistoryEntity>()
-            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
-            where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new()
+    public bool CanSetStatsDateTimeWhenCreating<TEntity, TData>()
+            where TEntity : class, IHasStatsEntity<TEntity, TData>
+            where TData : class
     {
-        return _user.HasPermission($"Set{typeof(TEntity).Name}StatsDateTime");
+        return User.HasPermission($"Set{typeof(TEntity).Name}StatsDateTime");
     }
 
-    public bool CanSetStatsDateTimeWhenEditing<TEntity, TUpdateHistoryEntity>(TEntity entity)
-            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
-            where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new()
+    public bool CanSetStatsDateTimeWhenEditing<TEntity, TData>(TEntity entity)
+            where TEntity : class, IHasStatsEntity<TEntity, TData>
+            where TData : class
     {
-        return _user.HasPermission($"Set{typeof(TEntity).Name}StatsDateTime") &&
-            !entity.IsLocked &&
-            !entity.IsDeleted;
+        return User.HasPermission($"Set{typeof(TEntity).Name}StatsDateTime") && !entity.IsLocked() && !entity.IsDeleted;
     }
 
-    public bool CanAccessUpdateHistory<TEntity, TUpdateHistoryEntity>()
-            where TEntity : class, IHasStatsEntity<TEntity, TUpdateHistoryEntity>, new()
-            where TUpdateHistoryEntity : class, IUpdateHistoryEntity<TUpdateHistoryEntity>, new()
+    public bool CanAccessUpdateHistory<TEntity, TData>()
+            where TEntity : class, IHasStatsEntity<TEntity, TData>
+            where TData : class
     {
-        return _user.HasPermission($"Access{typeof(TEntity).Name}UpdateHistories");
+        return User.HasPermission($"Access{typeof(TEntity).Name}UpdateHistories");
     }
+    #endregion
 }

@@ -9,7 +9,7 @@ public class SupplyBasicResponseDto
     public bool IsLocked { get; set; }
     public UserBasicResponseDto CreatedUser { get; set; }
     public string ThumbnailUrl { get; set; }
-    public SupplyExistingAuthorizationResponseDto Authorization { get; set; }
+    public AnnouncementExistingAuthorizationResponseDto? Authorization { get; set; }
 
     internal SupplyBasicResponseDto(Supply supply)
     {

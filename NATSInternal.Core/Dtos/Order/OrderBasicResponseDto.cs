@@ -7,7 +7,7 @@ public class OrderBasicResponseDto : IHasStatsBasicResponseDto<OrderExistingAuth
     public long Amount { get; set; }
     public bool IsLocked { get; set; }  
     public CustomerBasicResponseDto Customer { get; set; }
-    public OrderExistingAuthorizationResponseDto Authorization { get; set; }
+    public AnnouncementExistingAuthorizationResponseDto? Authorization { get; set; }
 
     internal OrderBasicResponseDto(Order order)
     {

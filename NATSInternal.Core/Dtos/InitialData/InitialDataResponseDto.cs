@@ -8,7 +8,7 @@ public class InitialDataResponseDto
     public required ConsultantInitialResponseDto Consultant { get; set; }
     public required CountryInitialResponseDto Country { get; set; }
     public required CustomerInitialResponseDto Customer { get; set; }
-    public required DebtIncurrenceInitialResponseDto DebtIncurrence { get; set; }
+    public required DebtInitialResponseDto Debt { get; set; }
     public required DebtPaymentInitialResponseDto DebtPayment { get; set; }
     public required ExpenseInitialResponseDto Expense { get; set; }
     public required OrderInitialResponseDto Order { get; set; }

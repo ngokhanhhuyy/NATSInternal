@@ -67,7 +67,7 @@ internal class ProductCategoryService : IProductCategoryService
         ProductCategoryExistingAuthorizationResponseDto authorizationResponseDto = _authorizationService
             .GetExistingAuthorization<ProductCategory, ProductCategoryExistingAuthorizationResponseDto>();
 
-        return new ProductCategoryResponseDto(category, authorizationResponseDto);
+        return new(category, authorizationResponseDto);
     }
 
     /// <inheritdoc />

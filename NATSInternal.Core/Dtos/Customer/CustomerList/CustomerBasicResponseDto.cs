@@ -10,7 +10,7 @@ public class CustomerBasicResponseDto : IUpsertableBasicResponseDto<CustomerExis
     public DateOnly? Birthday { get; set; }
     public string? PhoneNumber { get; set; }
     public long? RemainingDebtAmount { get; set; }
-    public CustomerExistingAuthorizationResponseDto? Authorization { get; set; }
+    public AnnouncementExistingAuthorizationResponseDto? Authorization { get; set; }
     #endregion
 
     #region Constructors

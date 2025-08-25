@@ -1,70 +1,55 @@
-﻿using System.Security.Claims;
+﻿namespace NATSInternal.Core.Services;
 
-namespace NATSInternal.Core.Services;
-
-/// <inheritdoc cref="IAuthenticationService" />
+/// <inheritdoc />
 internal class AuthenticationService : IAuthenticationService
 {
-    private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
+    #region Fields
+    private readonly DatabaseContext _context;
+    private readonly IPasswordHashingService _passwordHashingService;
+    private readonly IValidator<SignInRequestDto> _validator;
+    #endregion
 
+    #region Constructors
     public AuthenticationService(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager)
+            DatabaseContext context,
+            IPasswordHashingService passwordHashingService,
+            IValidator<SignInRequestDto> validator)
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
+        _context = context;
+        _passwordHashingService = passwordHashingService;
+        _validator = validator;
     }
+    #endregion
 
+    #region Methods
     /// <inheritdoc />
-    public async Task<int> SignInAsync(SignInRequestDto requestDto)
+    public async Task<UserDetailResponseDto> VerifyUserNameAndPasswordAsync(
+            SignInRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        // Check if user exists.
-        User user = await _userManager.Users
-            .Include(u => u.Roles).ThenInclude(r => r.Claims)
-            .AsSplitQuery()
-            .SingleOrDefaultAsync(u => u.UserName == requestDto.UserName && !u.IsDeleted);
+        // Validate the data from the request.
+        requestDto.TransformValues();
+        _validator.ValidateAndThrow(requestDto);
 
-        string errorMessage;
-        if (user == null)
+        // Fetch the password hash of the user.
+        User user = await _context.Users
+            .Include(u => u.Roles).ThenInclude(r => r.Permissions)
+            .SingleOrDefaultAsync(u => u.UserName == requestDto.UserName, cancellationToken)
+            ?? throw OperationException.NotFound(
+                new object[] { nameof(requestDto.UserName) },
+                DisplayNames.UserName);
+
+        // Verify the password.
+        bool isPasswordCorrect = _passwordHashingService.VerifyPassword(requestDto.Password, user.PasswordHash);
+        if (!isPasswordCorrect)
         {
-            errorMessage = ErrorMessages.NotFoundByProperty
-                .ReplaceResourceName(DisplayNames.User)
-                .ReplacePropertyName(DisplayNames.UserName)
-                .ReplaceAttemptedValue(requestDto.UserName);
-            throw new OperationException(nameof(requestDto.UserName), errorMessage);
+            throw new OperationException(
+                new object[] { nameof(requestDto.Password) },
+                ErrorMessages.Incorrect.ReplacePropertyName(DisplayNames.Password)
+            );
         }
 
-        // Check the password.
-        SignInResult signInResult = await _signInManager
-            .CheckPasswordSignInAsync(user, requestDto.Password, lockoutOnFailure: false);
-        if (!signInResult.Succeeded)
-        {
-            errorMessage = ErrorMessages.Incorrect.ReplacePropertyName(DisplayNames.Password);
-            throw new OperationException(nameof(requestDto.Password), errorMessage);
-        }
-
-        // Prepare the claims to be added in to the generating cookie.
-        List<Claim> claims =
-        [
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName!),
-            new Claim(ClaimTypes.Role, user.Role.Name!),
-            .. user.Role.Permissions.Select(c => new Claim("Permission", c.ClaimValue!))
-        ];
-        claims.AddRange(user.Role.Permissions
-            .Where(c => c.ClaimType == "Permission")
-            .Select(c => new Claim("Permission", c.ClaimValue!)));
-
-        // Perform sign in operation.
-        await _signInManager.SignInWithClaimsAsync(user, false, claims);
-
-        return user.Id;
+        return new UserDetailResponseDto(user);
     }
-
-    /// <inheritdoc />
-    public async Task SignOutAsync()
-    {
-        await _signInManager.SignOutAsync();
-    }
+    #endregion
 }

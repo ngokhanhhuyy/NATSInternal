@@ -2,5 +2,7 @@ namespace NATSInternal.Core.Interfaces.Dtos;
 
 public interface ICreatorTrackableListRequestDto : ISortableAndPageableListRequestDto
 {
-    int? CreatedUserId { get; set; }
+    #region Properties
+    Guid? CreatedUserId { get; set; }
+    #endregion
 }

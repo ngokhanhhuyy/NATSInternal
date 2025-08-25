@@ -14,27 +14,29 @@ public class DebtDetailResponseDto
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
     public UserBasicResponseDto CreatedUser { get; set; }
-    public DebtExistingAuthorizationResponseDto Authorization { get; set; }
+    public DebtExistingAuthorizationResponseDto? AuthorizationResponseDto { get; set; }
     public List<DebtUpdateHistoryResponseDto> UpdateHistories { get; set; }
     #endregion
 
     #region Constructors
-    internal DebtDetailResponseDto(
-            Debt debtIncurrence,
-            DebtExistingAuthorizationResponseDto authorization)
+    internal DebtDetailResponseDto(Debt debt)
     {
-        Id = debtIncurrence.Id;
-        Amount = debtIncurrence.Amount;
-        Note = debtIncurrence.Note;
-        StatsDateTime = debtIncurrence.StatsDateTime;
-        CreatedDateTime = debtIncurrence.CreatedDateTime;
-        IsLocked = debtIncurrence.IsLocked();
-        Customer = new CustomerBasicResponseDto(debtIncurrence.Customer);
-        CreatedUser = new UserBasicResponseDto(debtIncurrence.CreatedUser);
-        Authorization = authorization;
-        UpdateHistories = debtIncurrence.UpdateHistories
+        Id = debt.Id;
+        Amount = debt.Amount;
+        Note = debt.Note;
+        StatsDateTime = debt.StatsDateTime;
+        CreatedDateTime = debt.CreatedDateTime;
+        IsLocked = debt.IsLocked();
+        Customer = new CustomerBasicResponseDto(debt.Customer);
+        CreatedUser = new UserBasicResponseDto(debt.CreatedUser);
+        UpdateHistories = debt.UpdateHistories
             .Select(updateHistory => new DebtUpdateHistoryResponseDto(updateHistory))
             .ToList();
+    }
+    
+    internal DebtDetailResponseDto(Debt debt, DebtExistingAuthorizationResponseDto authorizationResponseDto) : this(debt)
+    {
+        AuthorizationResponseDto = authorizationResponseDto;
     }
     #endregion
 }

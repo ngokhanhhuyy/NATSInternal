@@ -10,9 +10,9 @@ public class BrandListResponseDto : IUpsertableListResponseDto<
     #endregion
 
     #region Constructors
-    internal BrandListResponseDto(ICollection<Brand> brands, int pageCount)
+    internal BrandListResponseDto(ICollection<BrandBasicResponseDto> responseDtos, int pageCount)
     {
-        Items.AddRange(brands.Select(b => new BrandBasicResponseDto(b)));
+        Items.AddRange(responseDtos);
         PageCount = pageCount;
     }
     #endregion

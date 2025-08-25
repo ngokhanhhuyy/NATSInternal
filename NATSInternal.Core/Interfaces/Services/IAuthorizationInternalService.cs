@@ -14,16 +14,16 @@ internal interface IAuthorizationInternalService : IAuthorizationService
     TResponseDto GetCreatingAuthorization<TEntity, TData, TResponseDto>()
             where TEntity : class, IHasStatsEntity<TEntity, TData>
             where TData : class
-            where TResponseDto : IHasStatsCreatingAuthorizationResponseDto;
+            where TResponseDto : IHasStatsCreatingAuthorizationResponseDto, new();
 
     TResponseDto GetExistingAuthorization<TEntity, TResponseDto>()
             where TEntity : class, IUpsertableEntity<TEntity>
-            where TResponseDto : IUpsertableExistingAuthorizationResponseDto;
+            where TResponseDto : IUpsertableExistingAuthorizationResponseDto, new();
 
     TResponseDto GetExistingAuthorization<TEntity, TData, TResponseDto>(TEntity entity)
             where TEntity : class, IHasStatsEntity<TEntity, TData>
             where TData : class
-            where TResponseDto : IHasStatsExistingAuthorizationResponseDto;
+            where TResponseDto : IHasStatsExistingAuthorizationResponseDto, new();
 
     // Permissions to interact with users.
     bool CanCreateUser();

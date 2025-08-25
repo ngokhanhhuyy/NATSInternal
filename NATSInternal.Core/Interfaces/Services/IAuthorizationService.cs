@@ -12,10 +12,13 @@ public interface IAuthorizationService
     /// A <see cref="Guid"/> value, which is extracted from the request's credentials, representing the id of the
     /// requesting user.
     /// </param>
+    /// <param name="cancellationToken">
+    /// (Optional) A cancellation token.
+    /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
-    void SetUserId(Guid id);
+    Task SetUserId(Guid id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the id of the requesting user.

@@ -1,29 +1,41 @@
 namespace NATSInternal.Core.Services;
 
-/// <inheritdoc cref="IAnnouncementService" />
-internal class AnnouncementService
-    :
-        UpsertableAbstractService<
-            Announcement,
-            AnnouncementListRequestDto,
-            AnnouncementExistingAuthorizationResponseDto>,
-        IAnnouncementService
+/// <inheritdoc />
+internal class AnnouncementService : IAnnouncementService
 {
+    #region Fields
     private readonly DatabaseContext _context;
     private readonly IAuthorizationInternalService _authorizationService;
+    private readonly IListQueryService _listQueryService;
+    private readonly IDbExceptionHandler _exceptionHandler;
+    private readonly IValidator<AnnouncementListRequestDto> _listValidator;
+    #endregion
 
+    #region Constructors
     public AnnouncementService(
             DatabaseContext context,
-            IAuthorizationInternalService authorizationService) : base(authorizationService)
+            IAuthorizationInternalService authorizationService,
+            IListQueryService listQueryService,
+            IDbExceptionHandler exceptionHandler,
+            IValidator<AnnouncementListRequestDto> listValidator)
     {
         _context = context;
         _authorizationService = authorizationService;
+        _listQueryService = listQueryService;
+        _exceptionHandler = exceptionHandler;
+        _listValidator = listValidator;
     }
+    #endregion
 
     /// <inheritdoc />
     public async Task<AnnouncementListResponseDto> GetListAsync(
-            AnnouncementListRequestDto requestDto)
+            AnnouncementListRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
+        // Validate the data from the request.
+        requestDto.TransformValues();
+        _listValidator.ValidateAndThrow(requestDto);
+        
         // Initialize query statement.
         IQueryable<Announcement> query = _context.Announcements
             .Include(a => a.CreatedUser)
@@ -31,69 +43,80 @@ internal class AnnouncementService
                 .ThenByDescending(a => a.EndingDateTime)
                 .ThenByDescending(a => a.CreatedDateTime);
 
-        EntityListDto<Announcement> entityListDto;
-        entityListDto = await GetListOfEntitiesAsync(query, requestDto);
+        return await _listQueryService.GetPagedListAsync(
+            query,
+            requestDto,
+            (announcement) =>
+            {
+                AnnouncementExistingAuthorizationResponseDto authorizationResponseDto = _authorizationService
+                    .GetExistingAuthorization<Announcement, AnnouncementExistingAuthorizationResponseDto>();
 
-        return new AnnouncementListResponseDto
-        {
-            PageCount = entityListDto.PageCount,
-            Items = entityListDto.Items?
-                .Select(a => new AnnouncementResponseDto(a, GetExistingAuthorization(a)))
-                .ToList()
-                ?? new List<AnnouncementResponseDto>()
-        };
+                return new AnnouncementResponseDto(announcement, authorizationResponseDto);
+            },
+            (announcementResponseDtos, pageCount) =>
+            {
+                return new AnnouncementListResponseDto(announcementResponseDtos, pageCount);
+            },
+            cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<AnnouncementResponseDto> GetDetailAsync(int id)
+    public async Task<AnnouncementResponseDto> GetDetailAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.Announcements
+        Announcement announcement = await _context.Announcements
             .Include(a => a.CreatedUser)
-            .Where(a => a.Id == id)
-            .Select(a => new AnnouncementResponseDto(a, GetExistingAuthorization(a)))
-            .SingleOrDefaultAsync()
+            .SingleOrDefaultAsync(a => a.Id == id, cancellationToken)
             ?? throw new NotFoundException();
+
+        AnnouncementExistingAuthorizationResponseDto authorizationResponseDto = _authorizationService
+            .GetExistingAuthorization<Announcement, AnnouncementExistingAuthorizationResponseDto>();
+
+        return new(announcement, authorizationResponseDto);
     }
 
     /// <inheritdoc />
-    public async Task<int> CreateAsync(AnnouncementUpsertRequestDto requestDto)
+    public async Task<Guid> CreateAsync(
+            AnnouncementUpsertRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
         // Initialize the entity.
-        DateTime startingDateTime = requestDto.StartingDateTime
-            ?? DateTime.UtcNow.ToApplicationTime();
+        DateTime startingDateTime = requestDto.StartingDateTime ?? DateTime.UtcNow.ToApplicationTime();
         Announcement announcement = new Announcement
         {
             Category = requestDto.Category,
             Title = requestDto.Title,
             Content = requestDto.Content,
             StartingDateTime = startingDateTime,
-            EndingDateTime = startingDateTime
-                .AddMinutes(requestDto.IntervalInMinutes),
+            EndingDateTime = startingDateTime.AddMinutes(requestDto.IntervalInMinutes),
             CreatedUserId = _authorizationService.GetUserId()
         };
+
         _context.Announcements.Add(announcement);
 
         // Perform the creating opeartion.
         try
         {
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
             return announcement.Id;
         }
         catch (DbUpdateException exception)
         when (exception.InnerException is MySqlException sqlException)
         {
-            HandleCreateOrUpdateException(sqlException);
+            TryConvertDbUpdateException(sqlException);
 
             throw;
         }
     }
 
     /// <inheritdoc />
-    public async Task UpdateAsync(int id, AnnouncementUpsertRequestDto requestDto)
+    public async Task UpdateAsync(
+            Guid id,
+            AnnouncementUpsertRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
         // Fetch the entity from the database and ensure it exists.
         Announcement announcement = await _context.Announcements
-            .SingleOrDefaultAsync(a => a.Id == id)
+            .SingleOrDefaultAsync(a => a.Id == id, cancellationToken)
             ?? throw new NotFoundException();
 
         // Updating the entity's properties.
@@ -103,21 +126,19 @@ internal class AnnouncementService
         
         if (requestDto.StartingDateTime.HasValue)
         {
-            announcement.StartingDateTime = requestDto.StartingDateTime
-                ?? DateTime.UtcNow.ToApplicationTime();
-            announcement.EndingDateTime = announcement.StartingDateTime
-                .AddMinutes(requestDto.IntervalInMinutes); 
+            announcement.StartingDateTime = requestDto.StartingDateTime ?? DateTime.UtcNow.ToApplicationTime();
+            announcement.EndingDateTime = announcement.StartingDateTime.AddMinutes(requestDto.IntervalInMinutes); 
         }
         
         // Save changes.
         try
         {
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
         catch (DbUpdateException exception)
         when (exception.InnerException is MySqlException sqlException)
         {
-            HandleCreateOrUpdateException(sqlException);
+            TryConvertDbUpdateException(sqlException);
 
             throw;
         }
@@ -158,8 +179,8 @@ internal class AnnouncementService
     }
 
     /// <summary>
-    /// Handle the exception thrown from the database during the creating or updating operation
-    /// and convert it into the appropriate exception.
+    /// Handle the exception thrown from the database during the creating or updating operation and convert it into the
+    /// appropriate exception.
     /// </summary>
     /// <param name="exception">
     /// The exception thrown by the database.
@@ -167,7 +188,7 @@ internal class AnnouncementService
     /// <exception cref="ConcurrencyException">
     /// Thrown when there is some concurrent conflict during the operation.
     /// </exception>
-    private static void HandleCreateOrUpdateException(MySqlException exception)
+    private static void TryConvertDbUpdateException(MySqlException exception)
     {
         SqlExceptionHandler exceptionHandler = new SqlExceptionHandler(exception);
         if (exceptionHandler.IsForeignKeyNotFound)

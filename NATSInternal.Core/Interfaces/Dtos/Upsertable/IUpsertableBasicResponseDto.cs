@@ -1,9 +1,9 @@
 namespace NATSInternal.Core.Interfaces.Dtos;
 
-internal interface IUpsertableBasicResponseDto<TExistingAuthorization> : IBasicResponseDto
+internal interface IUpsertableBasicResponseDto<out TExistingAuthorization> : IBasicResponseDto
     where TExistingAuthorization : IUpsertableExistingAuthorizationResponseDto
 {
     #region Properties
-    TExistingAuthorization? Authorization { get; }
+    TExistingAuthorization? AuthorizationResponseDto { get; }
     #endregion
 }

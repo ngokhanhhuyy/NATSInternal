@@ -6,8 +6,7 @@ public class UserBasicResponseDto : IUpsertableBasicResponseDto<UserBasicAuthori
     public Guid Id { get; internal set; }
     public string UserName { get; internal set; }
     public ICollection<RoleMinimalResponseDto> Roles { get; internal set; }
-    public UserBasicAuthorizationResponseDto? Authorization { get; internal set; }
-    public string? ThumbnailUrl { get; internal set; }
+    public AnnouncementExistingAuthorizationResponseDto? Authorization { get; internal set; }
     #endregion
 
     #region Constructors
@@ -16,7 +15,6 @@ public class UserBasicResponseDto : IUpsertableBasicResponseDto<UserBasicAuthori
         Id = user.Id;
         UserName = user.UserName;
         Roles = user.Roles.Select(r => new RoleMinimalResponseDto(r)).ToList();
-        ThumbnailUrl = user.ThumbnailUrl;
     }
 
     internal UserBasicResponseDto(User user, UserBasicAuthorizationResponseDto authorizationResponseDto) : this(user)

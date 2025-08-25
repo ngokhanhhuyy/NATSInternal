@@ -1,8 +1,10 @@
 namespace NATSInternal.Core.Interfaces.Dtos;
 
-internal interface IUpsertableDetailResponseDto<TExistingAuthorization>
+internal interface IUpsertableDetailResponseDto<out TExistingAuthorization>
     where TExistingAuthorization : IUpsertableExistingAuthorizationResponseDto
 {
+    #region Properties
     DateTime CreatedDateTime { get; }
-    TExistingAuthorization? Authorization { get; }
+    TExistingAuthorization? AuthorizationResponseDto { get; }
+    #endregion
 }

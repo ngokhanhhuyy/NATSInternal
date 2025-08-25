@@ -6,14 +6,14 @@ namespace NATSInternal.Controllers;
 public class DebtIncurrenceController : ControllerBase
 {
     private readonly IDebtIncurrenceService _service;
-    private readonly IValidator<DebtIncurrenceListRequestDto> _listValidator;
-    private readonly IValidator<DebtIncurrenceUpsertRequestDto> _upsertValidator;
+    private readonly IValidator<DebtListRequestDto> _listValidator;
+    private readonly IValidator<DebtUpsertRequestDto> _upsertValidator;
     private readonly INotifier _notifier;
 
     public DebtIncurrenceController(
             IDebtIncurrenceService service,
-            IValidator<DebtIncurrenceListRequestDto> listValidator,
-            IValidator<DebtIncurrenceUpsertRequestDto> upsertValidator,
+            IValidator<DebtListRequestDto> listValidator,
+            IValidator<DebtUpsertRequestDto> upsertValidator,
             INotifier notifier)
     {
         _service = service;
@@ -26,7 +26,7 @@ public class DebtIncurrenceController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetListAsync(
-            [FromQuery] DebtIncurrenceListRequestDto requestDto)
+            [FromQuery] DebtListRequestDto requestDto)
     {
         // Validate data from the request.
         requestDto.TransformValues();
@@ -65,7 +65,7 @@ public class DebtIncurrenceController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> DebtIncurrenceCreate(
-            [FromBody] DebtIncurrenceUpsertRequestDto requestDto)
+            [FromBody] DebtUpsertRequestDto requestDto)
     {
         // Validate data from the request.
         requestDto.TransformValues();
@@ -118,7 +118,7 @@ public class DebtIncurrenceController : ControllerBase
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> DebtIncurrenceUpdate(
             int id,
-            [FromBody] DebtIncurrenceUpsertRequestDto requestDto)
+            [FromBody] DebtUpsertRequestDto requestDto)
     {
         // Validate data from the request.
         requestDto.TransformValues();

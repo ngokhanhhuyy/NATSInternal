@@ -1,47 +1,58 @@
-﻿namespace NATSInternal.Controllers;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
+using IAuthenticationService = NATSInternal.Core.Interfaces.Services.IAuthenticationService;
+
+namespace NATSInternal.Controllers;
 
 [Route("/Api/Authentication")]
 [ApiController]
 public class AuthenticationController : ControllerBase
 {
+    #region Fields
     private readonly IAuthenticationService _authenticationService;
-    private readonly IValidator<SignInRequestDto> _signInValidator;
+    #endregion
 
-    public AuthenticationController(
-            IAuthenticationService authenticationService,
-            IValidator<SignInRequestDto> signInValidator)
+    #region Constructors
+    public AuthenticationController(IAuthenticationService authenticationService)
     {
         _authenticationService = authenticationService;
-        _signInValidator = signInValidator;
     }
+    #endregion
 
+    #region Methods
     [HttpPost("GetAccessCookie")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> GetAccessCookie(SignInRequestDto requestDto)
+    public async Task<IActionResult> GetAccessCookie(
+            SignInRequestDto requestDto,
+            CancellationToken cancellationToken)
     {
-        // Validate data from request.
-        requestDto.TransformValues();
-        ValidationResult validationResult = _signInValidator.Validate(requestDto);
-        if (!validationResult.IsValid)
-        {
-            ModelState.AddModelErrorsFromValidationErrors(validationResult.Errors);
-            return BadRequest(ModelState);
-        }
+        UserDetailResponseDto responseDto = await _authenticationService
+            .VerifyUserNameAndPasswordAsync(requestDto, cancellationToken);
 
-        // Performing login request verification operation.
-        try
+        List<Claim> claims = new()
         {
-            int userId = await _authenticationService.SignInAsync(requestDto);
-            return Ok(userId);
-        }
-        catch (OperationException exception)
+            new Claim(ClaimTypes.NameIdentifier, responseDto.Id.ToString()),
+            new Claim(ClaimTypes.Name, responseDto.UserName)
+        };
+
+        IEnumerable<string> permissionNames = responseDto.Roles.SelectMany(r => r.PermissionNames);
+        claims.AddRange(permissionNames.Select(pn => new Claim("Permission", pn)));
+            
+        ClaimsIdentity identity = new(claims, IdentityConstants.ApplicationScheme);
+        ClaimsPrincipal principal = new(identity);
+        AuthenticationProperties properties = new()
         {
-            ModelState.AddModelErrorsFromServiceException(exception);
-            return UnprocessableEntity(ModelState);
-        }
+            IsPersistent = true,
+            ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1)
+        };
+
+        await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal, properties);
+
+        return Ok();
     }
 
     [HttpPost("ClearAccessCookie")]
@@ -49,7 +60,7 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> ClearAccessCookie()
     {
-        await _authenticationService.SignOutAsync();
+        await HttpContext.SignOutAsync();
         return Ok();
     }
 
@@ -60,4 +71,5 @@ public class AuthenticationController : ControllerBase
     {
         return Ok();
     }
+    #endregion
 }

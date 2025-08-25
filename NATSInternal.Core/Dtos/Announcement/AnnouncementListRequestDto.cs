@@ -1,13 +1,22 @@
 namespace NATSInternal.Core.Dtos;
 
-public class AnnouncementListRequestDto : ISortableListRequestDto
+public class AnnouncementListRequestDto : ISortableAndPageableListRequestDto
 {
+    #region Properties
     public bool? SortByAscending { get; set; }
-    public string SortByFieldName { get; set; }
-    public int Page { get; set; } = 1;
-    public int ResultsPerPage { get; set; } = 15;
+    public string? SortByFieldName { get; set; }
+    public int? Page { get; set; }
+    public int? ResultsPerPage { get; set; }
+    #endregion
 
-    public void TransformValues()
+    #region Methods
+    public void TransformValues() { }
+    #endregion
+    
+    #region Enums
+    public enum FieldToSort
     {
+        StartingDateTime
     }
+    #endregion
 }

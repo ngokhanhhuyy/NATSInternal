@@ -69,7 +69,7 @@ public class CustomerController : ControllerBase
             CancellationToken cancellationToken = default)
     {
         await _service.UpdateAsync(id, requestDto, cancellationToken);
-        await _notifier.Notify(NotificationType.CustomerModification, id);
+        await _notifier.Notify(NotificationType.CustomerModification, new[] { id }, cancellationToken);
 
         return Ok();
     }
@@ -78,10 +78,10 @@ public class CustomerController : ControllerBase
     [Authorize(Policy = "CanDeleteCustomer")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
     {
-        await _service.DeleteAsync(id);
-        await _notifier.Notify(NotificationType.CustomerDeletion, id);
+        await _service.DeleteAsync(id, cancellationToken);
+        await _notifier.Notify(NotificationType.CustomerDeletion, new[] { id }, cancellationToken);
 
         return Ok();
     }
@@ -102,8 +102,8 @@ public class CustomerController : ControllerBase
 
     [HttpGet("NewStatistics")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetNewStatistics()
+    public async Task<IActionResult> GetNewCustomerSummaryThisMonth(CancellationToken cancellationToken = default)
     {
-        return Ok(await _service.GetNewCustomerSummaryThisMonthAsync());
+        return Ok(await _service.GetNewCustomerSummaryThisMonthAsync(cancellationToken));
     }
 }

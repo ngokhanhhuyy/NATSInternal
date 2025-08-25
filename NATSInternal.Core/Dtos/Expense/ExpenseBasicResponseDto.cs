@@ -11,7 +11,7 @@ public class ExpenseBasicResponseDto
     public ExpenseCategory Category { get; set; }
     public bool IsLocked { get; set; }
     public string ThumbnailUrl { get; set; }
-    public ExpenseExistingAuthorizationResponseDto Authorization { get; set; }
+    public AnnouncementExistingAuthorizationResponseDto? Authorization { get; set; }
 
     internal ExpenseBasicResponseDto(Expense expense)
     {

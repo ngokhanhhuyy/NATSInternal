@@ -10,7 +10,7 @@ public class ProductBasicResponseDto : IUpsertableBasicResponseDto<ProductExisti
     public int DefaultVatPercentage { get; set; }
     public int StockingQuantity { get; set; }
     public string? ThumbnailUrl { get; set; }
-    public ProductExistingAuthorizationResponseDto? Authorization { get; set; }
+    public AnnouncementExistingAuthorizationResponseDto? Authorization { get; set; }
     #endregion
 
     #region Constructors

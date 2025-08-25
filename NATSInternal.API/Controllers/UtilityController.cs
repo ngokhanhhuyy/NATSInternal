@@ -93,7 +93,7 @@ public class UtilityController : ControllerBase
                 ListSortingOptions = _customerService.GetListSortingOptions(),
                 CreatingPermission = _customerService.GetCreatingPermission()
             },
-            DebtIncurrence = new DebtIncurrenceInitialResponseDto
+            Debt = new DebtInitialResponseDto
             {
                 ListSortingOptions = _debtIncurrenceService.GetListSortingOptions(),
                 ListMonthYearOptions = await _debtIncurrenceService
