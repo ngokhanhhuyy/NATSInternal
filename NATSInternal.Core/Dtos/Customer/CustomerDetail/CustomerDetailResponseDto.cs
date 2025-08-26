@@ -23,7 +23,7 @@ public record CustomerDetailResponseDto : IUpsertableDetailResponseDto<CustomerE
     public CustomerBasicResponseDto? Introducer { get; set; }
     public long? RemainingDebtAmount { get; set; }
     public List<DebtBasicResponseDto> Debts { get; set; }
-    public CustomerExistingAuthorizationResponseDto AuthorizationResponseDto { get; set; }
+    public CustomerExistingAuthorizationResponseDto Authorization { get; set; }
     #endregion
 
     #region Constructors
@@ -47,7 +47,7 @@ public record CustomerDetailResponseDto : IUpsertableDetailResponseDto<CustomerE
         CreatedDateTime = customer.CreatedDateTime;
         LastUpdatedDateTime = customer.LastUpdatedDateTime;
         RemainingDebtAmount = customer.RemainingDebtAmount;
-        AuthorizationResponseDto = authorizationResponseDto;
+        Authorization = authorizationResponseDto;
         Introducer = customer.Introducer is not null ? new CustomerBasicResponseDto(customer.Introducer) : null;
         Debts = customer.Debts.Select(d => new DebtBasicResponseDto(d)).ToList();
     }

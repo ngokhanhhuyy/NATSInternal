@@ -1,16 +1,36 @@
 ﻿namespace NATSInternal.Core.Entities;
 
 [Table("daily_summaries")]
-internal class DailySummary : AbstractEntity<DailySummary>, IHasIdEntity<DailySummary>
+internal class DailySummary : AbstractEntity<DailySummary>
 {
     #region Fields
-    private MonthlySummary? _monthly;
+    private MonthlySummary? _monthlySummary;
+    #endregion
+
+    #region Constructors
+    protected DailySummary() { }
+
+    public DailySummary(DateOnly recordedDate)
+    {
+        RecordedDay = recordedDate.Day;
+        RecordedMonth = recordedDate.Month;
+        RecordedYear = recordedDate.Year;
+        RecordedDate = recordedDate;
+    }
     #endregion
 
     #region Properties
-    [Column("id")]
+    [Column("recorded_day")]
     [Key]
-    public Guid Id { get; private set; } = Guid.NewGuid();
+    public int RecordedDay { get; protected init; }
+
+    [Column("record_month")]
+    [Key]
+    public int RecordedMonth { get; protected init; }
+
+    [Column("recorded_year")]
+    [Key]
+    public int RecordedYear { get; protected init; }
 
     [Column("retail_gross_revenuue")]
     [Required]
@@ -64,10 +84,6 @@ internal class DailySummary : AbstractEntity<DailySummary>, IHasIdEntity<DailySu
     [Required]
     public int NewCustomerCount { get; set; }
 
-    [Column("recorded_date")]
-    [Required]
-    public DateOnly RecordedDate { get; set; }
-
     [Column("created_datetime")]
     [Required]
     public DateTime CreatedDateTime { get; set; }
@@ -79,22 +95,12 @@ internal class DailySummary : AbstractEntity<DailySummary>, IHasIdEntity<DailySu
     public DateTime? OfficiallyClosedDateTime { get; set; }
     #endregion
 
-    #region ForeignKeyProperties
-    [Column("monthly_id")]
-    [Required]
-    public Guid MonthlyId { get; set; }
-    #endregion
-
     #region NavigationProperties
-    [BackingField(nameof(_monthly))]
-    public MonthlySummary Monthly
+    [BackingField(nameof(_monthlySummary))]
+    public MonthlySummary MonthlySummary
     {
-        get => GetFieldOrThrowIfNull(_monthly);
-        set
-        {
-            MonthlyId = value.Id;
-            _monthly = value;
-        }
+        get => GetFieldOrThrowIfNull(_monthlySummary);
+        init =>_monthlySummary = value;
     }
     #endregion
 
@@ -128,5 +134,8 @@ internal class DailySummary : AbstractEntity<DailySummary>, IHasIdEntity<DailySu
 
     [NotMapped]
     public bool IsOfficiallyClosed => OfficiallyClosedDateTime.HasValue;
+
+    [NotMapped]
+    public DateOnly RecordedDate { get; }
     #endregion
 }

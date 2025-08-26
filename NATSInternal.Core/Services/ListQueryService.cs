@@ -6,7 +6,7 @@ internal class ListQueryService : IListQueryService
     public async Task<TListResponseDto> GetPagedListAsync<TEntity, TListResponseDto, TBasicResponseDto>(
         IQueryable<TEntity> query,
         ISortableAndPageableListRequestDto requestDto,
-        Func<TEntity, TBasicResponseDto> basicDtoInitializer,
+        Func<TEntity, TBasicResponseDto> basicResponseDtoInitializer,
         Func<ICollection<TBasicResponseDto>, int, TListResponseDto> listResponseDtoInitializer,
         CancellationToken cancellationToken = default)
         where TEntity : class
@@ -27,7 +27,7 @@ internal class ListQueryService : IListQueryService
             .Take(resultsPerPage)
             .ToListAsync(cancellationToken);
 
-        return listResponseDtoInitializer(entities.Select(basicDtoInitializer).ToList(), pageCount);
+        return listResponseDtoInitializer(entities.Select(basicResponseDtoInitializer).ToList(), pageCount);
     }
     #endregion
 }

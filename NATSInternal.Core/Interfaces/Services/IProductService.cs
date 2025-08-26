@@ -13,7 +13,7 @@ public interface IProductService
     /// An instance of the <see cref="ProductListRequestDto"/> class, containing the conditions for the results.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is an instance of the
@@ -31,7 +31,7 @@ public interface IProductService
     /// A <see cref="Guid"/> value representing the id of the product to retrieve.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is an instance of the
@@ -49,7 +49,7 @@ public interface IProductService
     /// An instance of the <see cref="ProductUpsertRequestDto"/> class, contanining the data for the operation.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is an <see cref="int"/> representing
@@ -78,7 +78,7 @@ public interface IProductService
     /// An instance of the <see cref="ProductUpsertRequestDto"/> class, containing the data for the operation.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -107,7 +107,7 @@ public interface IProductService
     /// A <see cref="Guid"/> representing the id of the product to delete.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.

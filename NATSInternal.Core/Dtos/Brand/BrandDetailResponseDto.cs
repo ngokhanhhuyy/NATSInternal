@@ -13,7 +13,7 @@ public class BrandDetailResponseDto : IUpsertableDetailResponseDto<BrandExisting
     public DateTime CreatedDateTime { get; set; }
     public string? ThumbnailUrl { get; set; }
     public CountryResponseDto? Country { get; set; }
-    public BrandExistingAuthorizationResponseDto? AuthorizationResponseDto { get; set; }
+    public BrandExistingAuthorizationResponseDto? Authorization { get; set; }
     #endregion
 
     #region Constructors
@@ -33,7 +33,7 @@ public class BrandDetailResponseDto : IUpsertableDetailResponseDto<BrandExisting
             .Where(p => p.IsThumbnail)
             .Select(p => p.Url)
             .SingleOrDefault();
-        AuthorizationResponseDto = authorizationResponseDto;
+        Authorization = authorizationResponseDto;
 
         if (brand.Country != null)
         {

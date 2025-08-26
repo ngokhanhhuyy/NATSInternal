@@ -13,7 +13,7 @@ public interface ICustomerService
     /// An instance of the <see cref="CustomerListRequestDto"/> class, containing the conditions for the results.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is an instance of the
@@ -31,7 +31,7 @@ public interface ICustomerService
     /// A <see cref="Guid"/> value representing the id of the customer to retrieve.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is
@@ -53,7 +53,7 @@ public interface ICustomerService
     /// A <see cref="Guid"/> representing the id of the customer to retrieve.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is an instance of the
@@ -71,7 +71,7 @@ public interface ICustomerService
     /// An instance of the <see cref="CustomerUpsertRequestDto"/> class, containing the data for the new customer.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is a <see cref="Guid"/> representing
@@ -94,7 +94,7 @@ public interface ICustomerService
     /// updated.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -144,7 +144,7 @@ public interface ICustomerService
     /// Get statistics about the new customers this month and the ratio in percentage compared to last month.
     /// </summary>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is a DTO containing the statistics

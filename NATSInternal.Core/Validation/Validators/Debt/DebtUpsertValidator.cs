@@ -1,15 +1,16 @@
 namespace NATSInternal.Core.Validation.Validators;
 
-internal class DebtIncurrenceUpsertValidator : Validator<DebtUpsertRequestDto>
+internal class DebtUpsertValidator : Validator<DebtUpsertRequestDto>
 {
-    public DebtIncurrenceUpsertValidator()
+    #region Constructors
+    public DebtUpsertValidator()
     {
         RuleFor(dto => dto.Amount)
             .NotEmpty()
             .GreaterThan(0)
             .WithName(DisplayNames.Amount);
         RuleFor(dto => dto.Note)
-            .MaximumLength(255)
+            .MaximumLength(HasStatsContracts.NoteMaxLength)
             .WithName(DisplayNames.Note);
         RuleFor(dto => dto.StatsDateTime)
             .IsValidStatsDateTime()
@@ -19,7 +20,6 @@ internal class DebtIncurrenceUpsertValidator : Validator<DebtUpsertRequestDto>
         {
             RuleFor(dto => dto.CustomerId)
                 .NotEmpty()
-                .GreaterThan(0)
                 .WithName(DisplayNames.Customer);
         });
 
@@ -27,8 +27,9 @@ internal class DebtIncurrenceUpsertValidator : Validator<DebtUpsertRequestDto>
         {
             RuleFor(dto => dto.UpdatedReason)
                 .NotEmpty()
-                .MaximumLength(255)
-                .WithName(DisplayNames.Reason);
+                .MaximumLength(HasStatsContracts.UpdatedReasonMaxLength)
+                .WithName(DisplayNames.UpdatedReason);
         });
     }
+    #endregion
 }

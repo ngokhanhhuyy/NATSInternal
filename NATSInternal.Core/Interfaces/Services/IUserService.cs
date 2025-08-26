@@ -13,7 +13,7 @@ public interface IUserService
     /// An instance of the <see cref="UserListRequestDto"/> class, containing the conditions for the results.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is an instance of the
@@ -31,7 +31,7 @@ public interface IUserService
     /// representing the ids of the customers to retrieve.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="List{T}"/>>of the <see cref="UserListResponseDto"/> class instances, containing the results.
@@ -50,7 +50,7 @@ public interface IUserService
     /// The id of the user whose role is to be retrieved.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// An instance of the <see cref="RoleDetailResponseDto"/> class, containing the details of the role to retrieve.
@@ -64,7 +64,7 @@ public interface IUserService
     /// The id of the user to retrieve.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// An instance of the <see cref="UserBasicResponseDto"/> class, containing the basic information of the retrieving
@@ -82,7 +82,7 @@ public interface IUserService
     /// An <see cref="int"/> representing the id of the user to retrieve.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// An instance of the <see cref="UserDetailResponseDto"/> class, containing the details of the user.
@@ -123,7 +123,7 @@ public interface IUserService
     /// A DTO containing the names of the roles to add.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -137,7 +137,7 @@ public interface IUserService
     /// A DTO containing the names of the roles to remove from.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -174,7 +174,7 @@ public interface IUserService
     /// confirmation password for the operation.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the operation.

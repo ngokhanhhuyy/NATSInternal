@@ -5,7 +5,7 @@
 /// </summary>
 public interface ISummaryService
 {
-    Task<MonthlyStatsBasicResponseDto> GetMonthlyBasicAsync(
+    Task<MonthlySummaryBasicResponseDto> GetMonthlyBasicAsync(
             MonthlyStatsRequestDto requestDto,
             CancellationToken cancellationToken = default);
     
@@ -17,13 +17,13 @@ public interface ISummaryService
     /// The date when the daily stats was recorded.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchonous operation, which result is a DTO containing the detail
     /// information of the daily stats.
     /// </returns>
-    Task<DailyStatsDetailResponseDto> GetDailyDetailAsync(
+    Task<DailySummaryDetailResponseDto> GetDailyDetailAsync(
             DateOnly? recordedDate,
             CancellationToken cancellationToken = default);
 
@@ -35,13 +35,13 @@ public interface ISummaryService
     /// A DTO indicating the count number of dates and whether today's data should be included.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchonous operation, which result is a DTO containing the basic
     /// information of the dates' stats.
     /// </returns>
-    Task<List<DailyStatsBasicResponseDto>> GetLastestDailyBasicAsync(
+    Task<List<DailySummaryBasicResponseDto>> GetLastestDailyBasicAsync(
             LatestDailyStatsRequestDto requestDto,
             CancellationToken cancellationToken = default);
 
@@ -53,13 +53,13 @@ public interface ISummaryService
     /// A DTO indicating the count number of dates and whether today's data should be included.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchonous operation, which result is a DTO containing the basic
     /// information of the dates' stats.
     /// </returns>
-    Task<List<DailyStatsDetailResponseDto>> GetLastestDailyDetailAsync(
+    Task<List<DailySummaryDetailResponseDto>> GetLastestDailyDetailAsync(
             LatestDailyStatsRequestDto requestDto,
             CancellationToken cancellationToken = default);
 
@@ -71,7 +71,7 @@ public interface ISummaryService
     /// A DTO instance containing expected recorded year and month when the monthly stats was recorded.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task" /> representing the asynchronous operation, which result is a DTO containing the detail
@@ -92,13 +92,13 @@ public interface ISummaryService
     /// A DTO instance indicating the count number of months and whethere the this month data should be included.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchonous operation, which result is a DTO containing the basic
     /// information of the months' stats.
     /// </returns>
-    Task<List<MonthlyStatsBasicResponseDto>> GetLastestMonthlyAsync(
+    Task<List<MonthlySummaryBasicResponseDto>> GetLastestMonthlyAsync(
             LatestMonthlyStatsRequestDto requestDto,
             CancellationToken cancellationToken = default);
 
@@ -110,7 +110,7 @@ public interface ISummaryService
     /// A DTO instance containing the conditions for the results.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is a DTO containing the results and
@@ -146,7 +146,7 @@ public interface ISummaryService
     /// A DTO instance containing the conditions for the results.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is a DTO containing the results and
@@ -182,7 +182,7 @@ public interface ISummaryService
     /// A DTO containing the conditions for the results.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is a <see cref="List{T}"/> of DTOs,
@@ -196,7 +196,7 @@ public interface ISummaryService
     /// Retrieves the statistics date as options.
     /// </summary>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is a <see cref="List{T}"/> of

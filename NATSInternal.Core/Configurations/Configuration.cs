@@ -76,7 +76,7 @@ public static class ConfigurationExtensions
         services.AddScoped<IExpenseService, ExpenseService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<ITreatmentService, TreatmentService>();
-        services.AddScoped<IDebtIncurrenceService, DebtIncurrenceService>();
+        services.AddScoped<IDebtService, DebtService>();
         services.AddScoped<IDebtPaymentService, DebtPaymentService>();
         services.AddScoped<IConsultantService, ConsultantService>();
         services.AddScoped<IAnnouncementService, AnnouncementService>();
@@ -109,9 +109,9 @@ public static class ConfigurationExtensions
             MultiplePhotosService<Treatment, TreatmentPhoto>>();
 
         // Stats services.
-        services.AddScoped<StatsService>();
+        services.AddScoped<SummaryService>();
         services.AddScoped<ISummaryService>(provider => provider
-            .GetRequiredService<StatsService>());
+            .GetRequiredService<SummaryService>());
         services.AddScoped<ISummaryInternalService, StatsInternalService>();
 
         // Month-year services.

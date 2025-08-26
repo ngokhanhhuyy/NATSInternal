@@ -3,13 +3,18 @@
 /// <inheritdoc />
 internal class CountryService : ICountryService
 {
+    #region Fields
     private readonly DatabaseContext _context;
+    #endregion
 
+    #region Constructors
     public CountryService(DatabaseContext context)
     {
         _context = context;
     }
+    #endregion
 
+    #region Methods
     /// <inheritdoc />
     public async Task<List<CountryResponseDto>> GetAllAsync()
     {
@@ -18,4 +23,5 @@ internal class CountryService : ICountryService
             .Select(c => new CountryResponseDto(c))
             .ToListAsync();
     }
+    #endregion
 }

@@ -381,7 +381,7 @@ internal abstract class DebtAbstractService<
                 // Validate the specified StatsDateTime from the request.
                 try
                 {
-                    _statsService.ValidateStatsDateTime<T, TUpdateHistory>(
+                    _statsService.IsStatsDateTimeValid<T, TUpdateHistory>(
                         entity,
                         requestDto.StatsDateTime.Value);
                 }

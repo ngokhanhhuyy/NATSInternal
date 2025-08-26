@@ -4,6 +4,6 @@ internal interface IUpsertableBasicResponseDto<out TExistingAuthorization> : IBa
     where TExistingAuthorization : IUpsertableExistingAuthorizationResponseDto
 {
     #region Properties
-    TExistingAuthorization? AuthorizationResponseDto { get; }
+    TExistingAuthorization? Authorization { get; }
     #endregion
 }

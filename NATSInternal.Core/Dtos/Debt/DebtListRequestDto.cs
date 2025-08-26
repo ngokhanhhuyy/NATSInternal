@@ -9,6 +9,7 @@ public class DebtListRequestDto
     public bool? SortByAscending { get; set; }
     public string? SortByFieldName { get; set; }
     public ListMonthYearRequestDto? MonthYear { get; set; }
+    public DebtType? Type { get; set; }
     public Guid? CustomerId  { get; set; }
     public Guid? CreatedUserId { get; set; }
     public int? Page { get; set; }
@@ -39,6 +40,14 @@ public class DebtListRequestDto
         {
             CreatedUserId = null;
         }
+    }
+    #endregion
+
+    #region Enums
+    public enum FieldToSort
+    {
+        Amount,
+        StatsDateTime
     }
     #endregion
 }

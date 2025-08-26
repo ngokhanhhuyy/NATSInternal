@@ -33,7 +33,7 @@ public interface IBrandService
     /// A <see cref="Guid"/> represening the id of the brand.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is an instance of the
@@ -51,7 +51,7 @@ public interface IBrandService
     /// An instance of the <see cref="BrandUpsertRequestDto"/>, containing the data for the new brand.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is an <see cref="int"/> representing
@@ -74,7 +74,7 @@ public interface IBrandService
     /// An instance of the <see cref="BrandUpsertRequestDto"/>, containing the data for the brand to be updated.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -96,7 +96,7 @@ public interface IBrandService
     /// The id of the brand to be deleted.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.

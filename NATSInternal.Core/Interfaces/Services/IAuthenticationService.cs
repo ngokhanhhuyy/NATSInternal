@@ -13,7 +13,7 @@ public interface IAuthenticationService
     /// in operation.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// An instance of the <see cref="UserDetailResponseDto"/> containing the detailed information of the user who has

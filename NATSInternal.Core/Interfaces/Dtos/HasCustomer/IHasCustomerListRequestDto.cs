@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Interfaces.Dtos;
 
-public interface IHasCustomerListRequestDto : ISortableListRequestDto
+public interface IHasCustomerListRequestDto : ISortableAndPageableListRequestDto
 {
     #region Properties
     Guid? CustomerId { get; set; }

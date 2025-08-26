@@ -2,7 +2,7 @@
 
 [EntityTypeConfiguration(typeof(DebtEntityConfiguration))]
 [Table("debts")]
-internal class Debt : AbstractEntity<Debt>, IDebtEntity<Debt, DebtUpdateHistoryData>
+internal class Debt : AbstractEntity<Debt>, IHasCustomerEntity<Debt, DebtUpdateHistoryData>
 {
     #region Fields
     private User? _createdUser;

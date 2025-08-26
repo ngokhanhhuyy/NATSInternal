@@ -13,7 +13,7 @@ public interface IAuthorizationService
     /// requesting user.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.

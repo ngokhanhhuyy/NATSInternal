@@ -2,6 +2,7 @@ namespace NATSInternal.Core.Validation.Validators;
 
 internal class AnnouncementUpsertValidator : Validator<AnnouncementUpsertRequestDto>
 {
+    #region Constructors
     public AnnouncementUpsertValidator()
     {
         RuleFor(dto => dto.Category)
@@ -9,12 +10,13 @@ internal class AnnouncementUpsertValidator : Validator<AnnouncementUpsertRequest
             .WithName(DisplayNames.Category);
         RuleFor(dto => dto.Title)
             .NotEmpty()
-            .MaximumLength(80)
+            .MaximumLength(AnnouncementContracts.TitleMaxLength)
             .WithName(DisplayNames.Title);
         RuleFor(dto => dto.Content)
             .NotEmpty()
-            .MaximumLength(5000)
+            .MaximumLength(AnnouncementContracts.ContentMaxLength)
             .WithName(DisplayNames.Content);
+
         RuleSet("Create", () =>
         {
             RuleFor(dto => dto.IntervalInMinutes)
@@ -23,6 +25,7 @@ internal class AnnouncementUpsertValidator : Validator<AnnouncementUpsertRequest
                 .LessThanOrEqualTo(30 * 24 * 60)
                 .WithName(DisplayNames.IntervalInMinutes);
         });
+
         RuleSet("Update", () =>
         {
             RuleFor(dto => dto.IntervalInMinutes)
@@ -33,4 +36,5 @@ internal class AnnouncementUpsertValidator : Validator<AnnouncementUpsertRequest
                 .WithName(DisplayNames.IntervalInMinutes);
         });
     }
+    #endregion
 }

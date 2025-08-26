@@ -12,7 +12,7 @@ public class UtilityController : ControllerBase
     private readonly IConsultantService _consultantService;
     private readonly ICountryService _countryService;
     private readonly ICustomerService _customerService;
-    private readonly IDebtIncurrenceService _debtIncurrenceService;
+    private readonly IDebtService _debtIncurrenceService;
     private readonly IDebtPaymentService _debtPaymentService;
     private readonly IExpenseService _expenseService;
     private readonly IOrderService _orderService;
@@ -31,7 +31,7 @@ public class UtilityController : ControllerBase
             IConsultantService consultantService,
             ICountryService countryService,
             ICustomerService customerService,
-            IDebtIncurrenceService debtIncurrenceService,
+            IDebtService debtIncurrenceService,
             IDebtPaymentService debtPaymentService,
             IExpenseService expenseService,
             IOrderService orderService,

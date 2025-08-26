@@ -5,13 +5,13 @@ namespace NATSInternal.Controllers;
 [Authorize]
 public class DebtIncurrenceController : ControllerBase
 {
-    private readonly IDebtIncurrenceService _service;
+    private readonly IDebtService _service;
     private readonly IValidator<DebtListRequestDto> _listValidator;
     private readonly IValidator<DebtUpsertRequestDto> _upsertValidator;
     private readonly INotifier _notifier;
 
     public DebtIncurrenceController(
-            IDebtIncurrenceService service,
+            IDebtService service,
             IValidator<DebtListRequestDto> listValidator,
             IValidator<DebtUpsertRequestDto> upsertValidator,
             INotifier notifier)

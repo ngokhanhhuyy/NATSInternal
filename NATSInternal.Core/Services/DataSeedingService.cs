@@ -906,7 +906,7 @@ internal sealed class DataSeedingService
         // Generating stats data.
         DailySummary dailyStats = await SelectOrSeedDailyStatsAsync(createdDateTime);
         dailyStats.NewCustomerCount += 1;
-        dailyStats.Monthly.NewCustomerCount += 1;
+        dailyStats.MonthlySummary.NewCustomerCount += 1;
 
         if (logResult)
         {
@@ -921,7 +921,7 @@ internal sealed class DataSeedingService
         DateOnly statsDate = DateOnly.FromDateTime(statsDateTime);
 
         DailySummary dailyStats = await _context.DailyStats
-            .Include(ds => ds.Monthly)
+            .Include(ds => ds.MonthlySummary)
             .SingleOrDefaultAsync(ds => ds.RecordedDate == statsDate);
 
         if (dailyStats is not null)
@@ -951,7 +951,7 @@ internal sealed class DataSeedingService
             RecordedDate = statsDate,
             CreatedDateTime = DateTime.UtcNow.ToApplicationTime()
         };
-        monthlyStats.DailyStats.Add(dailyStats);
+        monthlyStats.DailySummaries.Add(dailyStats);
         _context.DailyStats.Add(dailyStats);
 
         await _context.SaveChangesAsync();
@@ -1159,8 +1159,8 @@ internal sealed class DataSeedingService
             DailySummary dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
             dailyStats.SupplyCost += supply.ItemAmount;
             dailyStats.ShipmentCost += supply.ShipmentFee;
-            dailyStats.Monthly.SupplyCost += supply.ItemAmount;
-            dailyStats.Monthly.ShipmentCost += supply.ShipmentFee;
+            dailyStats.MonthlySummary.SupplyCost += supply.ItemAmount;
+            dailyStats.MonthlySummary.ShipmentCost += supply.ShipmentFee;
 
             await _context.SaveChangesAsync();
             if (logResult)
@@ -1233,19 +1233,19 @@ internal sealed class DataSeedingService
         {
             case ExpenseCategory.Utilities:
                 dailyStats.UtilitiesExpenses += expense.Amount;
-                dailyStats.Monthly.UtilitiesExpenses += expense.Amount;
+                dailyStats.MonthlySummary.UtilitiesExpenses += expense.Amount;
                 break;
             case ExpenseCategory.Equipment:
                 dailyStats.EquipmentExpenses += expense.Amount;
-                dailyStats.Monthly.EquipmentExpenses += expense.Amount;
+                dailyStats.MonthlySummary.EquipmentExpenses += expense.Amount;
                 break;
             case ExpenseCategory.Office:
                 dailyStats.OfficeExpense += expense.Amount;
-                dailyStats.Monthly.OfficeExpense += expense.Amount;
+                dailyStats.MonthlySummary.OfficeExpense += expense.Amount;
                 break;
             case ExpenseCategory.Staff:
                 dailyStats.StaffExpense += expense.Amount;
-                dailyStats.Monthly.StaffExpense += expense.Amount;
+                dailyStats.MonthlySummary.StaffExpense += expense.Amount;
                 break;
         }
 
@@ -1334,8 +1334,8 @@ internal sealed class DataSeedingService
             DailySummary dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
             dailyStats.RetailGrossRevenue += order.ProductAmountBeforeVat;
             dailyStats.VatCollectedAmount += order.ProductVatAmount;
-            dailyStats.Monthly.RetailGrossRevenue += order.ProductAmountBeforeVat;
-            dailyStats.Monthly.VatCollectedAmount += order.ProductVatAmount;
+            dailyStats.MonthlySummary.RetailGrossRevenue += order.ProductAmountBeforeVat;
+            dailyStats.MonthlySummary.VatCollectedAmount += order.ProductVatAmount;
 
             await _context.SaveChangesAsync();
 
@@ -1447,8 +1447,8 @@ internal sealed class DataSeedingService
             DailySummary dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
             dailyStats.TreatmentGrossRevenue += treatment.AmountBeforeVat;
             dailyStats.VatCollectedAmount += treatment.ProductVatAmount;
-            dailyStats.Monthly.TreatmentGrossRevenue += treatment.AmountBeforeVat;
-            dailyStats.Monthly.VatCollectedAmount += treatment.ProductVatAmount;
+            dailyStats.MonthlySummary.TreatmentGrossRevenue += treatment.AmountBeforeVat;
+            dailyStats.MonthlySummary.VatCollectedAmount += treatment.ProductVatAmount;
 
             await _context.SaveChangesAsync();
 
@@ -1519,7 +1519,7 @@ internal sealed class DataSeedingService
         // Generating stats data.
         DailySummary dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
         dailyStats.ConsultantGrossRevenue += consultant.AmountBeforeVat;
-        dailyStats.Monthly.ConsultantGrossRevenue += consultant.AmountBeforeVat;
+        dailyStats.MonthlySummary.ConsultantGrossRevenue += consultant.AmountBeforeVat;
 
         await _context.SaveChangesAsync();
 
@@ -1660,7 +1660,7 @@ internal sealed class DataSeedingService
         // Generating stats data.
         DailySummary dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
         dailyStats.DebtIncurredAmount += debtIncurrence.Amount;
-        dailyStats.Monthly.DebtIncurredAmount += debtIncurrence.Amount;
+        dailyStats.MonthlySummary.DebtIncurredAmount += debtIncurrence.Amount;
 
         await _context.SaveChangesAsync();
 
@@ -1690,7 +1690,7 @@ internal sealed class DataSeedingService
             // Generating stats data.
             DailySummary dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
             dailyStats.DebtPaidAmount += debtPayment.Amount;
-            dailyStats.Monthly.DebtPaidAmount += debtPayment.Amount;
+            dailyStats.MonthlySummary.DebtPaidAmount += debtPayment.Amount;
 
             await _context.SaveChangesAsync();
 

@@ -2,7 +2,9 @@ namespace NATSInternal.Core.Interfaces.Dtos;
 
 public interface IHasStatsUpsertRequestDto : IRequestDto
 {
+    #region Properties
     string Note { get; }
     DateTime? StatsDateTime { get; }
     string UpdatedReason { get; }
+    #endregion
 }

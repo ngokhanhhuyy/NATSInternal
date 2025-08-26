@@ -10,7 +10,7 @@ public class AnnouncementResponseDto : IUpsertableBasicResponseDto<AnnouncementE
     public DateTime StartingDateTime { get; internal set; }
     public DateTime EndingDateTime { get; internal set; }
     public UserBasicResponseDto CreatedUser { get; internal set; }
-    public AnnouncementExistingAuthorizationResponseDto? AuthorizationResponseDto { get; internal set; }
+    public AnnouncementExistingAuthorizationResponseDto? Authorization { get; internal set; }
     #endregion
 
     #region Constructors
@@ -29,7 +29,7 @@ public class AnnouncementResponseDto : IUpsertableBasicResponseDto<AnnouncementE
             Announcement announcement,
             AnnouncementExistingAuthorizationResponseDto authorizationResponseDto) : this(announcement)
     {
-        AuthorizationResponseDto = authorizationResponseDto;
+        Authorization = authorizationResponseDto;
     }
     #endregion
 }

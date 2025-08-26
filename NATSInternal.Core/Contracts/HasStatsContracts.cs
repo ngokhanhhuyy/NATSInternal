@@ -4,5 +4,6 @@ public static class HasStatsContracts
 {
     #region Constants
     public const int NoteMaxLength = 5000;
+    public const int UpdatedReasonMaxLength = 1000;
     #endregion
 }

@@ -1,37 +1,43 @@
 ﻿namespace NATSInternal.Core.Services;
 
 /// <inheritdoc />
-internal class StatsService : ISummaryService
+internal class SummaryService : ISummaryInternalService
 {
+    #region Fields
     protected readonly IDbContextFactory<DatabaseContext> _contextFactory;
+    #endregion
 
-    public StatsService(IDbContextFactory<DatabaseContext> contextFactory)
+    #region Constructors
+    public SummaryService(IDbContextFactory<DatabaseContext> contextFactory)
     {
         _contextFactory = contextFactory;
     }
+    #endregion
 
+    #region Methods
     /// <inheritdoc />
-    public async Task<MonthlyStatsBasicResponseDto> GetMonthlyBasicAsync(
-            MonthlyStatsRequestDto requestDto)
+    public async Task<MonthlySummaryBasicResponseDto> GetMonthlyBasicAsync(
+            MonthlyStatsRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         return await context.MonthlyStats
-           .Select(ms => new MonthlyStatsBasicResponseDto(ms))
-           .SingleOrDefaultAsync()
+           .Select(ms => new MonthlySummaryBasicResponseDto(ms))
+           .SingleOrDefaultAsync(cancellationToken)
            ?? throw new NotFoundException();
     }
 
     /// <inheritdoc />
     public async Task<MonthlyStatsDetailResponseDto> GetMonthlyDetailAsync(
-            MonthlyStatsRequestDto requestDto)
+            MonthlyStatsRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         MonthlySummary monthlyStats = await context.MonthlyStats
-            .Include(ms => ms.DailyStats)
-            .Where(ms =>
-                ms.RecordedYear == requestDto.RecordedYear &&
-                ms.RecordedMonth == requestDto.RecordedMonth)
-            .SingleOrDefaultAsync();
+            .Include(ms => ms.DailySummaries)
+            .Where(ms => ms.RecordedYear == requestDto.RecordedYear && ms.RecordedMonth == requestDto.RecordedMonth)
+            .SingleOrDefaultAsync(cancellationToken)
+            ?? new(requestDto.RecordedYear, requestDto.RecordedMonth);
 
         DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
         int daysInMonth;
@@ -41,65 +47,14 @@ internal class StatsService : ISummaryService
         }
         else
         {
-            daysInMonth = DateTime.DaysInMonth(
-                requestDto.RecordedYear,
-                requestDto.RecordedMonth);
-        }
-
-        if (monthlyStats != null)
-        {
-            List<int> recordedDays = monthlyStats.DailyStats
-                .Select(ds => ds.RecordedDate.Day)
-                .ToList();
-
-            for (int day = 1; day <= daysInMonth; day++)
-            {
-                if (!recordedDays.Contains(day))
-                {
-                    monthlyStats.DailyStats.Add(new DailySummary
-                    {
-                        RecordedDate = new DateOnly(
-                            requestDto.RecordedYear,
-                            requestDto.RecordedMonth,
-                            day)
-                    });
-                }
-            }
-
-            monthlyStats.DailyStats = monthlyStats.DailyStats
-                .Where(ds => ds.RecordedDate <= today)
-                .OrderBy(ds => ds.RecordedDate.Day)
-                .ToList();
-        }
-        else
-        {
-            // Generate an empty stats when the stats with the sppecified date doesn't exist.
-            monthlyStats = new MonthlySummary
-            {
-                DailyStats = new List<DailySummary>(),
-                RecordedMonth = requestDto.RecordedMonth,
-                RecordedYear = requestDto.RecordedYear
-            };
-
-            for (int day = 1; day <= daysInMonth; day++)
-            {
-                DailySummary dailyStats = new DailySummary
-                {
-                    RecordedDate = new DateOnly(
-                        requestDto.RecordedYear,
-                        requestDto.RecordedMonth,
-                        day)
-                };
-
-                monthlyStats.DailyStats.Add(dailyStats);
-            }
+            daysInMonth = DateTime.DaysInMonth(requestDto.RecordedYear, requestDto.RecordedMonth);
         }
 
         return new MonthlyStatsDetailResponseDto(monthlyStats);
     }
 
     /// <inheritdoc />
-    public async Task<DailyStatsDetailResponseDto> GetDailyDetailAsync(DateOnly? recordedDate)
+    public async Task<DailySummaryDetailResponseDto> GetDailyDetailAsync(DateOnly? recordedDate)
     {
         await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
 
@@ -108,16 +63,17 @@ internal class StatsService : ISummaryService
         DailySummary dailyStats = await context.DailyStats
             .Where(d => d.RecordedDate == date)
             .SingleOrDefaultAsync()
-            ?? new DailySummary { RecordedDate = date };
+            ?? new DailySummary(date);
 
-        return new DailyStatsDetailResponseDto(dailyStats);
+        return new DailySummaryDetailResponseDto(dailyStats);
     }
 
     /// <inheritdoc />
-    public async Task<List<MonthlyStatsBasicResponseDto>> GetLastestMonthlyAsync(
-            LatestMonthlyStatsRequestDto requestDto)
+    public async Task<List<MonthlySummaryBasicResponseDto>> GetLastestMonthlyAsync(
+            LatestMonthlyStatsRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         DateOnly startingDate = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
         if (!requestDto.IncludeThisMonth)
         {
@@ -126,7 +82,7 @@ internal class StatsService : ISummaryService
 
         // Generate a series of month and year from this month (or last month if the request
         // DTO indicates not to include this month), back to the past.
-        List <(int Month, int Year)> monthYearSeries = new List<(int, int)>();
+        List<(int Month, int Year)> monthYearSeries = new();
         DateOnly evaluatingDate = startingDate;
         for (int i = 0; i < requestDto.MonthCount; i++)
         {
@@ -138,37 +94,33 @@ internal class StatsService : ISummaryService
         List<MonthlySummary> monthlyStatsList = await context.MonthlyStats
             .OrderByDescending(ms => ms.RecordedYear).ThenByDescending(ms => ms.RecordedMonth)
             .Where(ms => ms.RecordedYear >= endingYear)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
-        return monthYearSeries.Select(mys =>
+        return monthYearSeries.Select(monthYear =>
         {
-            MonthlySummary stats = monthlyStatsList.SingleOrDefault(ms =>
-                ms.RecordedMonth == mys.Month &&
-                ms.RecordedYear == mys.Year);
+            MonthlySummary stats = monthlyStatsList
+                .SingleOrDefault(ms => ms.RecordedYear == monthYear.Year && ms.RecordedMonth == monthYear.Month)
+                ?? new(monthYear.Year, monthYear.Month);
 
-            if (stats == null)
-            {
-                return null;
-            }
-
-            return new MonthlyStatsBasicResponseDto(stats);
+            return new MonthlySummaryBasicResponseDto(stats);
         }).ToList();
 
     }
 
     /// <inheritdoc />
-    public async Task<List<DailyStatsBasicResponseDto>> GetLastestDailyBasicAsync(
-            LatestDailyStatsRequestDto requestDto)
+    public async Task<List<DailySummaryBasicResponseDto>> GetLastestDailyBasicAsync(
+            LatestDailyStatsRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         DateOnly evaluatingDate = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
         if (!requestDto.IncludeToday)
         {
             evaluatingDate = evaluatingDate.AddDays(-1);
         }
 
-        // Generate a series of dates from today (or yesterday if the request DTO indicates
-        // not to include today), back to the past.
+        // Generate a series of dates from today (or yesterday if the request DTO indicates not to include today), back
+        // to the past.
         List<DateOnly> dateSeries = new List<DateOnly>();
         for (int i = 0; i < requestDto.DayCount; i++)
         {
@@ -179,65 +131,61 @@ internal class StatsService : ISummaryService
         List<DailySummary> dailyStatsList = await context.DailyStats
             .OrderByDescending(ds => ds.RecordedDate)
             .Where(ds => dateSeries.Contains(ds.RecordedDate))
-            .ToListAsync();
-
-        return dateSeries.Select(seriesDate =>
-        {
-            DailySummary stats = dailyStatsList
-                .SingleOrDefault(ds => ds.RecordedDate == seriesDate);
-
-            if (stats == null)
-            {
-                return null;
-            }
-
-            return new DailyStatsBasicResponseDto(stats);
-        }).ToList();
-    }
-
-    /// <inheritdoc />
-    public async Task<List<DailyStatsDetailResponseDto>> GetLastestDailyDetailAsync(
-            LatestDailyStatsRequestDto requestDto)
-    {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DateOnly evaluatingDate = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
-        if (!requestDto.IncludeToday)
-        {
-            evaluatingDate = evaluatingDate.AddDays(-1);
-        }
-
-        // Generate a series of dates from today (or yesterday if the request DTO indicates
-        // not to include today), back to the past.
-        List<DateOnly> dateSeries = new List<DateOnly>();
-        for (int i = 0; i < requestDto.DayCount; i++)
-        {
-            dateSeries.Add(evaluatingDate);
-            evaluatingDate = evaluatingDate.AddDays(-1);
-        }
-
-        List<DailySummary> dailyStatsList = await context.DailyStats
-            .OrderByDescending(ds => ds.RecordedDate)
-            .Where(ds => dateSeries.Contains(ds.RecordedDate))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         return dateSeries.Select(seriesDate =>
         {
             DailySummary stats = dailyStatsList
                 .SingleOrDefault(ds => ds.RecordedDate == seriesDate)
-                ?? new DailySummary { RecordedDate = seriesDate };
+                ?? new(seriesDate);
 
-            return new DailyStatsDetailResponseDto(stats);
+            return new DailySummaryBasicResponseDto(stats);
+        }).ToList();
+    }
+
+    /// <inheritdoc />
+    public async Task<List<DailySummaryDetailResponseDto>> GetLastestDailyDetailAsync(
+            LatestDailyStatsRequestDto requestDto,
+            CancellationToken cancellationToken = default)
+    {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        DateOnly evaluatingDate = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
+        if (!requestDto.IncludeToday)
+        {
+            evaluatingDate = evaluatingDate.AddDays(-1);
+        }
+
+        // Generate a series of dates from today (or yesterday if the request DTO indicates not to include today), back
+        // to the past.
+        List<DateOnly> dateSeries = new List<DateOnly>();
+        for (int i = 0; i < requestDto.DayCount; i++)
+        {
+            dateSeries.Add(evaluatingDate);
+            evaluatingDate = evaluatingDate.AddDays(-1);
+        }
+
+        List<DailySummary> dailyStatsList = await context.DailyStats
+            .OrderByDescending(ds => ds.RecordedDate)
+            .Where(ds => dateSeries.Contains(ds.RecordedDate))
+            .ToListAsync(cancellationToken);
+
+        return dateSeries.Select(seriesDate =>
+        {
+            DailySummary stats = dailyStatsList
+                .SingleOrDefault(ds => ds.RecordedDate == seriesDate)
+                ?? new(seriesDate);
+
+            return new DailySummaryDetailResponseDto(stats);
         }).ToList();
     }
 
     /// <inheritdoc />
     public async Task<TopSoldProductListResponseDto> GetTopSoldProductListAsync(
-            TopSoldProductListRequestDto requestDto)
+            TopSoldProductListRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext orderContext = await _contextFactory
-            .CreateDbContextAsync();
-        await using DatabaseContext treatmentContext = await _contextFactory
-            .CreateDbContextAsync();
+        await using DatabaseContext orderContext = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        await using DatabaseContext treatmentContext = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
         DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
         DateTime maxDateTime, minDateTime;
@@ -263,32 +211,27 @@ internal class StatsService : ISummaryService
             minDateTime = maxDateTime.AddMonths(-requestDto.RangeLength);
         }
 
-        Task<List<Order>> ordersTask = orderContext.Orders
-            .Include(o => o.OrderProducts).ThenInclude(oi => oi.Product)
-            .Where(o =>
-                o.StatsDateTime.Date >= minDateTime &&
-                o.StatsDateTime.Date <= maxDateTime)
-            .ToListAsync();
-        Task<List<Treatment>> treatmentsTask = treatmentContext.Treatments
-            .Include(o => o.Items).ThenInclude(ti => ti.Product)
-            .Where(o =>
-                o.StatsDateTime.Date >= minDateTime &&
-                o.StatsDateTime.Date <= maxDateTime)
-            .ToListAsync();
+        List<Order> orders = await orderContext.Orders
+            .Include(o => o.Items).ThenInclude(oi => oi.Product)
+            .Where(o => o.StatsDateTime.Date >= minDateTime && o.StatsDateTime.Date <= maxDateTime)
+            .ToListAsync(cancellationToken);
 
-        await Task.WhenAll(ordersTask, treatmentsTask);
-
-        List<TopSoldProductResponseDto> responseDtos = new List<TopSoldProductResponseDto>();
+        List<TopSoldProductResponseDto> responseDtos = new();
         
-        foreach (Order order in ordersTask.Result)
+        foreach (Order order in orders)
         {
-            foreach (OrderItem orderItem in order.OrderProducts)
+            foreach (OrderItem orderItem in order.Items)
             {
-                TopSoldProductResponseDto responseDto = responseDtos
-                    .SingleOrDefault(dto => dto.Id == orderItem.Product.Id);
+                Product? product = orderItem.Product;
+                if (product is null)
+                {
+                    continue;
+                }
+
+                TopSoldProductResponseDto? responseDto = responseDtos.SingleOrDefault(dto => dto.Id == product.Id);
                 if (responseDto == null)
                 {
-                    responseDto = new TopSoldProductResponseDto(orderItem.Product, 0, 0);
+                    responseDto = new TopSoldProductResponseDto(product, 0, 0);
                     responseDtos.Add(responseDto);
                 }
 
@@ -382,7 +325,7 @@ internal class StatsService : ISummaryService
             .ToListAsync();
         Task<List<Order>> ordersTask = orderContext.Orders
             .Include(o => o.Customer)
-            .Include(o => o.OrderProducts)
+            .Include(o => o.Items)
             .Where(o =>
                 o.StatsDateTime.Date >= minDateTime &&
                 o.StatsDateTime.Date <= maxDateTime)
@@ -506,7 +449,7 @@ internal class StatsService : ISummaryService
             .ToListAsync();
 
         Task<List<Order>> ordersTask = orderContext.Orders
-            .Include(order => order.OrderProducts)
+            .Include(order => order.Items)
             .OrderByDescending(order => order.StatsDateTime)
             .Take(requestDto.Count)
             .ToListAsync();
@@ -602,9 +545,243 @@ internal class StatsService : ISummaryService
         return dateOptions;
     }
 
+    /// <inheritdoc />
+    public void ValidateStatsDateTime<T, TUpdateHistory>(T entity, DateTime statsDateTime)
+        where T : class, IHasStatsEntity<T, TUpdateHistory>, new()
+        where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
+    {
+        string errorMessage;
+        if (statsDateTime > entity.CreatedDateTime)
+        {
+            errorMessage = ErrorMessages.EarlierThanOrEqual
+                .ReplaceComparisonValue(entity.CreatedDateTime.ToVietnameseString());
+            throw new ArgumentException(errorMessage);
+        }
+
+        DateTime minimumAssignableDateTime;
+        minimumAssignableDateTime = new DateTime(
+            entity.CreatedDateTime.AddMonths(-1).Year,
+            entity.CreatedDateTime.AddMonths(-1).Month,
+            1, 0, 0, 0);
+        if (statsDateTime < minimumAssignableDateTime)
+        {
+            errorMessage = ErrorMessages.GreaterThanOrEqual
+                .ReplaceComparisonValue(minimumAssignableDateTime.ToVietnameseString());
+            throw new ValidationException(errorMessage);
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task IncrementRetailGrossRevenueAsync(long value, DateOnly? date = null)
+    {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        dailyStats.RetailGrossRevenue += value;
+        dailyStats.MonthlySummary.RetailGrossRevenue += value;
+        await context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task IncrementTreatmentGrossRevenueAsync(long value, DateOnly? date = null)
+    {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        dailyStats.TreatmentGrossRevenue += value;
+        dailyStats.MonthlySummary.TreatmentGrossRevenue += value;
+        await context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task IncrementConsultantGrossRevenueAsync(long value, DateOnly? date = null)
+    {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        dailyStats.ConsultantGrossRevenue += value;
+        dailyStats.MonthlySummary.ConsultantGrossRevenue += value;
+        await context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task IncrementDebtIncurredAmountAsync(long value, DateOnly? date = null)
+    {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        dailyStats.DebtIncurredAmount += value;
+        dailyStats.MonthlySummary.DebtIncurredAmount += value;
+        await context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task IncrementDebtPaidAmountAsync(long value, DateOnly? date = null)
+    {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        dailyStats.DebtPaidAmount += value;
+        dailyStats.MonthlySummary.DebtPaidAmount += value;
+        await context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task IncrementVatCollectedAmountAsync(long amount, DateOnly? date = null)
+    {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        dailyStats.VatCollectedAmount += amount;
+        dailyStats.MonthlySummary.VatCollectedAmount += amount;
+        await context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task IncrementShipmentCostAsync(long value, DateOnly? date = null)
+    {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        dailyStats.ShipmentCost += value;
+        dailyStats.MonthlySummary.ShipmentCost += value;
+        await context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task IncrementSupplyCostAsync(long value, DateOnly? date = null)
+    {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        dailyStats.SupplyCost += value;
+        dailyStats.MonthlySummary.SupplyCost += value;
+        await context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task IncrementExpenseAsync(
+            long value,
+            ExpenseCategory category,
+            DateOnly? date = null)
+    {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        switch (category)
+        {
+            case ExpenseCategory.Equipment:
+                dailyStats.EquipmentExpenses += value;
+                dailyStats.MonthlySummary.EquipmentExpenses += value;
+                break;
+            case ExpenseCategory.Office:
+                dailyStats.OfficeExpense += value;
+                dailyStats.MonthlySummary.OfficeExpense += value;
+                break;
+            case ExpenseCategory.Utilities:
+                dailyStats.UtilitiesExpenses += value;
+                dailyStats.MonthlySummary.UtilitiesExpenses += value;
+                break;
+            case ExpenseCategory.Staff:
+                dailyStats.StaffExpense += value;
+                dailyStats.MonthlySummary.StaffExpense += value;
+                break;
+            default:
+                string message = $"\"{nameof(category)}\" argument has invalid" +
+                                $"value ({category})";
+                throw new ArgumentException(message);
+        }
+        await context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task IncrementNewCustomerAsync(int value = 1, DateOnly? date = null)
+    {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        dailyStats.NewCustomerCount += value;
+        dailyStats.MonthlySummary.NewCustomerCount += value;
+        await context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task TemporarilyCloseAsync(DateOnly date)
+    {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        dailyStats.TemporarilyClosedDateTime = DateTime.UtcNow.ToApplicationTime();
+        await context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
+    public DateTime GetResourceMinimumOpenedDateTime()
+    {
+        DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
+        DateTime lastMonthEditableMaxDateTime = new DateTime(
+            currentDateTime.Year, currentDateTime.Month, 4,
+            2, 0, 0);
+        if (currentDateTime < lastMonthEditableMaxDateTime)
+        {
+            return new DateTime(
+                currentDateTime.AddMonths(-2).Year,
+                currentDateTime.AddMonths(-2).Month,
+                1,
+                0, 0, 0);
+        }
+
+        return new DateTime(
+            currentDateTime.AddMonths(-1).Year,
+            currentDateTime.AddMonths(-1).Month,
+            1,
+            0, 0, 0);
+    }
+    #endregion
+
+    #region StaticMethods
+
     /// <summary>
-    /// Calculates the amount of an product export item, which is the total between the item's
-    /// product amount before VAT per unit and the item's VAT amount per unit.
+    /// Get the daily stats entity by the given recorded date. If the recorded date
+    /// is not specified, the date will be today's date value.
+    /// </summary>
+    /// <param name="date">
+    /// Optional - The date when the stats entity is recorded. If not specified,
+    /// the entity will be fetched based on today's date.</param>
+    /// <returns>The DailyStats entity.</returns>
+    protected async Task<DailySummary> FetchStatisticsEntitiesAsync(DateOnly? date = null)
+    {
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+
+        DateOnly dateValue = date
+            ?? DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
+        DailySummary dailyStats = await context.DailyStats
+            .Include(ds => ds.MonthlySummary)
+            .Where(ds => ds.RecordedDate == dateValue)
+            .SingleOrDefaultAsync();
+
+        if (dailyStats == null)
+        {
+            dailyStats = new DailySummary
+            {
+                RecordedDate = dateValue,
+                CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),
+            };
+            context.DailyStats.Add(dailyStats);
+
+            MonthlySummary monthlyStats = await context.MonthlyStats
+                .Where(ms => ms.RecordedYear == dateValue.Year)
+                .Where(ms => ms.RecordedMonth == dateValue.Month)
+                .SingleOrDefaultAsync();
+            if (monthlyStats == null)
+            {
+                monthlyStats = new MonthlySummary
+                {
+                    RecordedMonth = dateValue.Month,
+                    RecordedYear = dateValue.Year
+                };
+                context.MonthlyStats.Add(monthlyStats);
+            }
+
+            dailyStats.MonthlySummary = monthlyStats;
+            await context.SaveChangesAsync();
+        }
+
+        return dailyStats;
+    }
+
+    /// <summary>
+    /// Calculates the amount of an product export item, which is the total between the item's product amount before VAT
+    /// per unit and the item's VAT amount per unit.
     /// </summary>
     /// <typeparam name="TItemEntity">
     /// The type of the item entity.
@@ -620,4 +797,5 @@ internal class StatsService : ISummaryService
     {
         return (item.AmountPerUnit + item.VatAmountPerUnit) * item.Quantity;
     }
+    #endregion
 }

@@ -5,6 +5,6 @@ internal interface IUpsertableDetailResponseDto<out TExistingAuthorization>
 {
     #region Properties
     DateTime CreatedDateTime { get; }
-    TExistingAuthorization? AuthorizationResponseDto { get; }
+    TExistingAuthorization? Authorization { get; }
     #endregion
 }

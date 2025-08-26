@@ -26,7 +26,7 @@ internal class OrderUpsertValidator : Validator<OrderUpsertRequestDto>
             RuleFor(dto => dto.UpdatedReason)
                 .NotEmpty()
                 .MaximumLength(255)
-                .WithName(DisplayNames.Reason);
+                .WithName(DisplayNames.UpdatedReason);
         });
     }
 }

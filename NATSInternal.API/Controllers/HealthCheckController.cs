@@ -4,7 +4,7 @@
 [ApiController]
 public class HealthCheckController : ControllerBase
 {
-    #region StaticFields
+    #region Fields
     private static readonly DateTime _startedDateTime = DateTime.UtcNow.ToApplicationTime();
     #endregion
 

@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Interfaces.Dtos;
 
-internal interface IStatsBasicResponseDto
+internal interface ISummaryBasicResponseDto
 {
     #region Properties
     long Cost { get; set; }

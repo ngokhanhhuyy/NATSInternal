@@ -10,7 +10,7 @@ public class DebtBasicResponseDto : IHasCustomerBasicResponseDto<DebtExistingAut
     public DateTime StatsDateTime { get; set; }
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
-    public AnnouncementExistingAuthorizationResponseDto? Authorization { get; set; }
+    public DebtExistingAuthorizationResponseDto? Authorization { get; set; }
     #endregion
 
     #region Constructors

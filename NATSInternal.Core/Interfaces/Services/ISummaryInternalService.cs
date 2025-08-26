@@ -15,7 +15,7 @@ internal interface ISummaryInternalService : ISummaryService
     /// (Optional) The date for which to update the statistics. If not provided, today's date is used.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -40,7 +40,7 @@ internal interface ISummaryInternalService : ISummaryService
     /// (Optional) The date for which to update the statistics. If not provided, today's date is used.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -65,7 +65,7 @@ internal interface ISummaryInternalService : ISummaryService
     /// (Optional) The date for which to update the statistics. If not provided, today's date is used.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -90,7 +90,7 @@ internal interface ISummaryInternalService : ISummaryService
     /// (Optional) The date for which the statistics is updated. If not specified, today's date is used.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -115,7 +115,7 @@ internal interface ISummaryInternalService : ISummaryService
     /// (Optional) The date for which to update the statistics. If not provided, today's date is used.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -140,7 +140,7 @@ internal interface ISummaryInternalService : ISummaryService
     /// (Optional) The date for which to update the statistics. If not provided, today's date is used.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -165,7 +165,7 @@ internal interface ISummaryInternalService : ISummaryService
     /// (Optional) The date for which to update the statistics. If not provided, today's date is used.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -193,7 +193,7 @@ internal interface ISummaryInternalService : ISummaryService
     /// (Optional) The date for which to update the statistics. If not provided, today's date is used.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -219,7 +219,7 @@ internal interface ISummaryInternalService : ISummaryService
     /// (Optional) The date for which to update the statistics. If not provided, today's date is used.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -244,15 +244,15 @@ internal interface ISummaryInternalService : ISummaryService
     /// (Optional) The date for which to update the statistics. If not provided, today's date is used.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
     /// </returns>
     Task IncrementNewCustomerCountAsync(
-            int value,
-            DateOnly? date = null,
-            CancellationToken cancellationToken = default);
+        int value,
+        DateOnly? date = null,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Close daily stats by given date. This will write the datetime value when this method is called to the daily
@@ -279,14 +279,14 @@ internal interface ISummaryInternalService : ISummaryService
     DateTime GetResourceMinimumOpenedDateTime();
 
     /// <summary>
-    /// Validates if the specified <paramref name="statsDateTime"/> is valid for an entity so that its locking status
-    /// won't change after the assignment.
+    /// Checks if the specified <paramref name="statsDateTime"/> is valid for an entity so that its locking status won't
+    /// change after the assignment.
     /// </summary>
     /// <typeparam name="T">
     /// The type of the entity class to which the stats belongs.
     /// </typeparam>
-    /// <typeparam name="TUpdateHistory">
-    /// The type of the update history with which the stats is associated.
+    /// <typeparam name="TData">
+    /// The type of the update history data entity which contains the data for <typeparamref name="T"/>.
     /// </typeparam>
     /// <param name="entity">
     /// An instance of the entity class to which the <paramref name="statsDateTime"/> is assigned.
@@ -295,10 +295,11 @@ internal interface ISummaryInternalService : ISummaryService
     /// A <see cref="DateTime"/> value specified in the request representing the date and time for the field in the
     /// entity which is used to calculate the statistics.
     /// </param>
-    /// <exception cref="ValidationException">
-    /// Throws when the value specified by the <paramref name="statsDateTime"/> is invalid.
+    /// <return>
+    /// A <see langword="bool"/> value indicating whether the value specified by the <paramref name="statsDateTime"/> is
+    /// invalid.
     /// </exception>
-    void ValidateStatsDateTime<T, TData>(T entity, DateTime statsDateTime)
+    bool IsStatsDateTimeValid<T, TData>(T entity, DateTime statsDateTime)
         where T : class, IHasStatsEntity<T, TData>
         where TData : class;
 }

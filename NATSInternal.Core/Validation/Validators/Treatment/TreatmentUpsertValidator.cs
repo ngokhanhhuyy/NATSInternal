@@ -21,7 +21,7 @@ internal class TreatmentUpsertValidator : Validator<TreatmentUpsertRequestDto>
             .WithName(DisplayNames.Customer);
         RuleFor(dto => dto.UpdatedReason)
             .MaximumLength(255)
-            .WithName(DisplayNames.Reason);
+            .WithName(DisplayNames.UpdatedReason);
         RuleFor(dto => dto.Items)
             .NotEmpty()
             .WithName(DisplayNames.TreatmentItem);
@@ -40,7 +40,7 @@ internal class TreatmentUpsertValidator : Validator<TreatmentUpsertRequestDto>
             RuleFor(dto => dto.UpdatedReason)
                 .NotEmpty()
                 .MaximumLength(255)
-                .WithName(DisplayNames.Reason);
+                .WithName(DisplayNames.UpdatedReason);
         });
     }
 }

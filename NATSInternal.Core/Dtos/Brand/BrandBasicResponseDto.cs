@@ -9,7 +9,7 @@ public class BrandBasicResponseDto
     public Guid Id { get; set; }
     public string Name { get; set; }
     public string? ThumbnailUrl { get; set; }
-    public BrandExistingAuthorizationResponseDto? AuthorizationResponseDto { get; set; }
+    public BrandExistingAuthorizationResponseDto? Authorization { get; set; }
     #endregion
 
     #region Constructors
@@ -27,7 +27,7 @@ public class BrandBasicResponseDto
             Brand brand,
             BrandExistingAuthorizationResponseDto authorizationResponseDto) : this(brand)
     {
-        AuthorizationResponseDto = authorizationResponseDto;
+        Authorization = authorizationResponseDto;
     }
     #endregion
 }

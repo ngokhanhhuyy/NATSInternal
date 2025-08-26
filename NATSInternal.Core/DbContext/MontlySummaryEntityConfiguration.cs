@@ -5,11 +5,7 @@ internal class MonthlySummaryEntityConfiguration : IEntityTypeConfiguration<Mont
     #region Methods
     public void Configure(EntityTypeBuilder<MonthlySummary> entityBuilder)
     {
-        entityBuilder.HasKey(ms => ms.Id);
-        entityBuilder
-            .HasIndex(dfs => new { dfs.RecordedMonth, dfs.RecordedYear })
-            .HasDatabaseName("IX__monthly_summaries__recorded_month__recorded_year")
-            .IsUnique();
+        entityBuilder.HasKey(ms => new { ms.RecordedYear, ms.RecordedMonth });
     }
     #endregion
 }

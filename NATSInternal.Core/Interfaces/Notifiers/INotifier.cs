@@ -16,7 +16,7 @@ public interface INotifier
     /// The ids of the resource if the notification type is to indicate that some resource has been interacted.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.

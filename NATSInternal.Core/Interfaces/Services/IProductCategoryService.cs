@@ -12,7 +12,7 @@ public interface IProductCategoryService
     /// A DTO containing the paginating conditions for the results.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is an instance of the
@@ -39,7 +39,7 @@ public interface IProductCategoryService
     /// The id of the product category to retrieve.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is an instance of the
@@ -58,7 +58,7 @@ public interface IProductCategoryService
     /// operation.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation, which result is a <see cref="Guid"/> representing
@@ -83,7 +83,7 @@ public interface IProductCategoryService
     /// operation.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.
@@ -109,7 +109,7 @@ public interface IProductCategoryService
     /// A <see cref="Guid"/> representing the id of the product category to delete.
     /// </param>
     /// <param name="cancellationToken">
-    /// A cancellation token.
+    /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchronous operation.

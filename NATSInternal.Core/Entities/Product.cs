@@ -4,7 +4,7 @@ namespace NATSInternal.Core.Entities;
 
 [EntityTypeConfiguration(typeof(ProductEntityConfiguration))]
 [Table("products")]
-internal class Product : AbstractEntity<Product>, IHasPhotosEntity<Product>
+internal class Product : AbstractEntity<Product>, IHasThumbnailEntity<Product>
 {
     #region Fields
     private string _name = string.Empty;
@@ -110,5 +110,13 @@ internal class Product : AbstractEntity<Product>, IHasPhotosEntity<Product>
     public List<SupplyItem> SupplyItems { get; protected set; } = new();
     public List<OrderItem> OrderItems { get; protected set; } = new();
     public List<Photo> Photos { get; protected set; } = new();
+    #endregion
+
+    #region ComputedProperties
+    [NotMapped]
+    public string? ThumbnailUrl => Photos
+        .Where(p => p.IsThumbnail)
+        .Select(p => p.Url)
+        .SingleOrDefault();
     #endregion
 }

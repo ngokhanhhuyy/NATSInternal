@@ -5,6 +5,7 @@
 /// </summary>
 public interface IAnnouncementService
 {
+    #region Methods
     /// <summary>
     /// Retrieves a list of announcements, based on the specified filtering, sorting and paginating conditions.
     /// </summary>
@@ -12,7 +13,7 @@ public interface IAnnouncementService
     /// An instance of the <see cref="AnnouncementListRequestDto"/> class, contaning the conditions for the results.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// An instance of the <see cref="AnnouncementListResponseDto"/> class, containing the results and the additional
@@ -29,7 +30,7 @@ public interface IAnnouncementService
     /// A <see cref="Guid"/> representing the id of the announcement to retrieve.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// An instance of the <see cref="AnnouncementResponseDto"/> class, containing the details of the announcement.
@@ -47,7 +48,7 @@ public interface IAnnouncementService
     /// operation.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Guid"/> represeting the id of the new announcement.
@@ -55,7 +56,7 @@ public interface IAnnouncementService
     /// <exception cref="ConcurrencyException">
     /// Throws when a concurrency-related conflict occurs during the operation.
     /// </exception>
-    Task<int> CreateAsync(AnnouncementUpsertRequestDto requestDto, CancellationToken cancellationToken = default);
+    Task<Guid> CreateAsync(AnnouncementUpsertRequestDto requestDto, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Updates an existing announcement based on its id and the specified data.
@@ -68,7 +69,7 @@ public interface IAnnouncementService
     /// operation.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <exception cref="NotFoundException">
     /// Throws when the announcement with the specified id doesn't exist or has already been deleted.
@@ -76,7 +77,7 @@ public interface IAnnouncementService
     /// <exception cref="ConcurrencyException">
     /// Throws when a concurrency-related conflict occurs during the operation.
     /// </exception>
-    Task UpdateAsync(int id, AnnouncementUpsertRequestDto requestDto, CancellationToken cancellationToken = default);
+    Task UpdateAsync(Guid id, AnnouncementUpsertRequestDto requestDto, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Deletes an existing announcement based on its id.
@@ -85,7 +86,7 @@ public interface IAnnouncementService
     /// An <see cref="Guid"/> representing the id of the announcement to delete.
     /// </param>
     /// <param name="cancellationToken">
-    /// (Optional) A cancellation token.
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <exception cref="NotFoundException">
     /// Throws when the announcement with the specified id doesn't exist or has already been deleted.
@@ -108,4 +109,5 @@ public interface IAnnouncementService
     /// <c>true</c> if the requesting user has the permission. Otherwise, <c>false</c>.
     /// </returns>
     bool GetCreatingPermission();
+    #endregion
 }

@@ -27,7 +27,7 @@ internal class DebtPaymentUpsertValidator : Validator<DebtPaymentUpsertRequestDt
             RuleFor(dto => dto.UpdatedReason)
                 .NotEmpty()
                 .MaximumLength(255)
-                .WithName(DisplayNames.Reason);
+                .WithName(DisplayNames.UpdatedReason);
         });
     }
 }

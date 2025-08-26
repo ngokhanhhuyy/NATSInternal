@@ -5,18 +5,14 @@ internal class DailySummaryConfiguration : IEntityTypeConfiguration<DailySummary
     #region Methods
     public void Configure(EntityTypeBuilder<DailySummary> entityBuilder)
     {
-        entityBuilder.HasKey(ds => ds.Id);
+        entityBuilder.HasKey(ds => new { ds.RecordedYear, ds.RecordedMonth, ds.RecordedDay });
         entityBuilder
-            .HasOne(dfs => dfs.Monthly)
-            .WithMany(mfs => mfs.DailyStats)
-            .HasForeignKey(dfs => dfs.MonthlyId)
-            .HasConstraintName("FK__daily_summaries__monthly_summaries__monthly_summary_id")
+            .HasOne(ds => ds.MonthlySummary)
+            .WithMany(ms => ms.DailySummaries)
+            .HasForeignKey(ds => new { ds.RecordedYear, ds.RecordedMonth })
+            .HasConstraintName("FK__daily_summaries__monthly_summaries__recorded_year__recorded_month")
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
-        entityBuilder
-            .HasIndex(dfs => dfs.RecordedDate)
-            .IsUnique()
-            .HasDatabaseName("IX__daily_summaries__recorded_date");
     }
     #endregion
 }

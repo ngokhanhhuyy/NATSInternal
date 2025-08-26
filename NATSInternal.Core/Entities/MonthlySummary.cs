@@ -1,12 +1,32 @@
 ﻿namespace NATSInternal.Core.Entities;
 
 [Table("monthly_summaries")]
-internal class MonthlySummary : AbstractEntity<MonthlySummary>, IHasIdEntity<MonthlySummary>
+internal class MonthlySummary : AbstractEntity<MonthlySummary>
 {
+    #region Constructors
+    protected MonthlySummary() { }
+
+    public MonthlySummary(int recordedYear, int recordedMonth)
+    {
+        RecordedYear = recordedYear;
+        RecordedMonth = recordedMonth;
+    }
+
+    public MonthlySummary(DateOnly recordedDate)
+    {
+        RecordedYear = recordedDate.Year;
+        RecordedMonth = recordedDate.Month;
+    }
+    #endregion
+
     #region Properties
-    [Column("id")]
+    [Column("record_month")]
     [Key]
-    public Guid Id { get; private set; } = Guid.NewGuid();
+    public int RecordedMonth { get; protected init; }
+
+    [Column("recorded_year")]
+    [Key]
+    public int RecordedYear { get; protected init; }
 
     [Column("retail_gross_revenue")]
     [Required]
@@ -60,14 +80,6 @@ internal class MonthlySummary : AbstractEntity<MonthlySummary>, IHasIdEntity<Mon
     [Required]
     public int NewCustomerCount { get; set; }
 
-    [Column("record_month")]
-    [Required]
-    public int RecordedMonth { get; set; }
-
-    [Column("recorded_year")]
-    [Required]
-    public int RecordedYear { get; set; }
-
     [Column("created_datetime")]
     [Required]
     public DateTime CreatedDateTime { get; set; }
@@ -80,7 +92,7 @@ internal class MonthlySummary : AbstractEntity<MonthlySummary>, IHasIdEntity<Mon
     #endregion
 
     #region NavigationProperties
-    public List<DailySummary> DailyStats { get; protected set; } = new();
+    public List<DailySummary> DailySummaries { get; protected set; } = new();
     #endregion
 
     #region ComputedProperties

@@ -2,6 +2,12 @@
 
 public class LatestMonthlyStatsRequestDto : IRequestDto
 {
-    public int MonthCount { get; set; } = 1;
+    #region Properties
+    public int MonthCount { get; set; }
     public bool IncludeThisMonth { get; set; } = true;
+    #endregion
+
+    #region Methods
+    public void TransformValues() { }
+    #endregion
 }

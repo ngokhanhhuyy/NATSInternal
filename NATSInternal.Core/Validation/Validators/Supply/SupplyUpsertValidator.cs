@@ -30,7 +30,7 @@ internal class SupplyUpsertValidator : Validator<SupplyUpsertRequestDto>
             RuleFor(dto => dto.UpdatedReason)
                 .NotEmpty()
                 .MaximumLength(255)
-                .WithName(DisplayNames.Reason);
+                .WithName(DisplayNames.UpdatedReason);
             RuleForEach(dto => dto.Photos)
                 .SetValidator(new PhotoValidator(), ruleSets: "Update");
         });

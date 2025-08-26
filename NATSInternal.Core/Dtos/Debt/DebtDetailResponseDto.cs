@@ -14,7 +14,7 @@ public class DebtDetailResponseDto
     public bool IsLocked { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
     public UserBasicResponseDto CreatedUser { get; set; }
-    public DebtExistingAuthorizationResponseDto? AuthorizationResponseDto { get; set; }
+    public DebtExistingAuthorizationResponseDto? Authorization { get; set; }
     public List<DebtUpdateHistoryResponseDto> UpdateHistories { get; set; }
     #endregion
 
@@ -36,7 +36,7 @@ public class DebtDetailResponseDto
     
     internal DebtDetailResponseDto(Debt debt, DebtExistingAuthorizationResponseDto authorizationResponseDto) : this(debt)
     {
-        AuthorizationResponseDto = authorizationResponseDto;
+        Authorization = authorizationResponseDto;
     }
     #endregion
 }

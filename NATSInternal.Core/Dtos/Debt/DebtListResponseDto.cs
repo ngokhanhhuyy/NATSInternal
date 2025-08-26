@@ -10,9 +10,9 @@ public class DebtListResponseDto : IHasStatsResponseDto<DebtBasicResponseDto, De
     #region Constructors
     internal DebtListResponseDto() { }
     
-    internal DebtListResponseDto(IEnumerable<Debt> debts, int pageCount)
+    internal DebtListResponseDto(IEnumerable<DebtBasicResponseDto> basicResponseDtos, int pageCount)
     {
-        Items.AddRange(debts.Select(d => new DebtBasicResponseDto(d)));
+        Items.AddRange(basicResponseDtos);
         PageCount = pageCount;
     }
     #endregion

@@ -34,7 +34,7 @@ internal class ExpenseUpsertValidator : Validator<ExpenseUpsertRequestDto>
             RuleFor(dto => dto.UpdatedReason)
                 .NotEmpty()
                 .MaximumLength(255)
-                .WithName(DisplayNames.Reason);
+                .WithName(DisplayNames.UpdatedReason);
         });
     }
 }
