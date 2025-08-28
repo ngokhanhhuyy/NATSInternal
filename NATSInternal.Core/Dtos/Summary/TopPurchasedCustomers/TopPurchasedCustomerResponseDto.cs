@@ -2,13 +2,7 @@
 
 public class TopPurchasedCustomerResponseDto
 {
-    public int Id { get; set; }
-    public string FullName { get; set; }
-    public string NickName { get; set; }
-    public Gender Gender { get; set; }
-    public long PurchasedAmount { get; set; }
-    public int PurchasedTransactionCount { get; set; }
-
+    #region Constructors
     internal TopPurchasedCustomerResponseDto(
             Customer customer,
             long? purchasedAmount = null,
@@ -29,4 +23,14 @@ public class TopPurchasedCustomerResponseDto
             PurchasedTransactionCount = purchasedTransactionCount.Value;
         }
     }
+    #endregion
+
+    #region Properties
+    public Guid Id { get; set; }
+    public string FullName { get; set; }
+    public string? NickName { get; set; }
+    public Gender Gender { get; set; }
+    public long PurchasedAmount { get; set; }
+    public int PurchasedTransactionCount { get; set; }
+    #endregion
 }

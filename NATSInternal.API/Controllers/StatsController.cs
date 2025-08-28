@@ -126,7 +126,7 @@ public class StatsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetStatsDateOptions()
     {
-        return Ok(await _service.GetStatsDateOptionsAsync());
+        return Ok(await _service.GetSummaryDateOptionsAsync());
     }
 
     [HttpGet("TopSoldProductList")]

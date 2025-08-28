@@ -8,9 +8,9 @@ public class ProductCategoryListResponseDto : IPageableListResponseDto<ProductCa
     #endregion
 
     #region Constructors
-    internal ProductCategoryListResponseDto(ICollection<ProductCategory> productCategories, int pageCount)
+    internal ProductCategoryListResponseDto(ICollection<ProductCategoryResponseDto> basicResponseDto, int pageCount)
     {
-        Items.AddRange(productCategories.Select(pc => new ProductCategoryResponseDto(pc)));
+        Items.AddRange(basicResponseDto);
         PageCount = pageCount;
     }
     #endregion

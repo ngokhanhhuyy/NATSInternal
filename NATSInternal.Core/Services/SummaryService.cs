@@ -54,16 +54,18 @@ internal class SummaryService : ISummaryInternalService
     }
 
     /// <inheritdoc />
-    public async Task<DailySummaryDetailResponseDto> GetDailyDetailAsync(DateOnly? recordedDate)
+    public async Task<DailySummaryDetailResponseDto> GetDailyDetailAsync(
+            DateOnly? recordedDate,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
         DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
         DateOnly date = recordedDate ?? DateOnly.FromDateTime(currentDateTime);
         DailySummary dailyStats = await context.DailyStats
             .Where(d => d.RecordedDate == date)
-            .SingleOrDefaultAsync()
-            ?? new DailySummary(date);
+            .SingleOrDefaultAsync(cancellationToken)
+            ?? new(date);
 
         return new DailySummaryDetailResponseDto(dailyStats);
     }
@@ -89,6 +91,7 @@ internal class SummaryService : ISummaryInternalService
             monthYearSeries.Add((evaluatingDate.Month, evaluatingDate.Year));
             evaluatingDate = evaluatingDate.AddMonths(-1);
         }
+
         int endingYear = monthYearSeries.Min(mys => mys.Year);
 
         List<MonthlySummary> monthlyStatsList = await context.MonthlyStats
@@ -235,25 +238,9 @@ internal class SummaryService : ISummaryInternalService
                     responseDtos.Add(responseDto);
                 }
 
-                responseDto.Amount += CalculateExportProductItemAmount(orderItem);
+                responseDto.Amount +=
+                    (orderItem.AmountBeforeVatPerUnit + orderItem.VatAmountPerUnit) * orderItem.Quantity;
                 responseDto.Quantity += orderItem.Quantity;
-            }
-        }
-
-        foreach (Treatment treatment in treatmentsTask.Result)
-        {
-            foreach (TreatmentItem treatmentItem in treatment.Items)
-            {
-                TopSoldProductResponseDto responseDto = responseDtos
-                    .SingleOrDefault(dto => dto.Id == treatmentItem.Product.Id);
-                if (responseDto == null)
-                {
-                    responseDto = new TopSoldProductResponseDto(treatmentItem.Product, 0, 0);
-                    responseDtos.Add(responseDto);
-                }
-                
-                responseDto.Amount += CalculateExportProductItemAmount(treatmentItem);
-                responseDto.Quantity += treatmentItem.Quantity;
             }
         }
 
@@ -284,14 +271,10 @@ internal class SummaryService : ISummaryInternalService
 
     /// <inheritdoc />
     public async Task<TopPurchasedCustomerListResponseDto> GetTopPurchasedCustomerListAsync(
-            TopPurchasedCustomerListRequestDto requestDto)
+            TopPurchasedCustomerListRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext consultantContext = await _contextFactory
-            .CreateDbContextAsync();
-        await using DatabaseContext orderContext = await _contextFactory
-            .CreateDbContextAsync();
-        await using DatabaseContext treatmentContext = await _contextFactory
-            .CreateDbContextAsync();
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
         DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
         DateTime maxDateTime, minDateTime;
@@ -317,74 +300,25 @@ internal class SummaryService : ISummaryInternalService
             minDateTime = maxDateTime.AddMonths(-requestDto.RangeLength);
         }
 
-        Task<List<Consultant>> consultantsTask = consultantContext.Consultants
-            .Include(c => c.Customer)
-            .Where(c =>
-                c.StatsDateTime.Date >= minDateTime &&
-                c.StatsDateTime.Date <= maxDateTime)
-            .ToListAsync();
-        Task<List<Order>> ordersTask = orderContext.Orders
+        List<Order> orders = await context.Orders
             .Include(o => o.Customer)
-            .Include(o => o.Items)
-            .Where(o =>
-                o.StatsDateTime.Date >= minDateTime &&
-                o.StatsDateTime.Date <= maxDateTime)
-            .ToListAsync();
-        Task<List<Treatment>> treatmentsTask = treatmentContext.Treatments
-            .Include(t => t.Customer)
-            .Include(t => t.Items)
-            .Where(o =>
-                o.StatsDateTime.Date >= minDateTime &&
-                o.StatsDateTime.Date <= maxDateTime)
-            .ToListAsync();
+            .Where(o => o.StatsDateTime.Date >= minDateTime && o.StatsDateTime.Date <= maxDateTime)
+            .ToListAsync(cancellationToken);
 
-        await Task.WhenAll(consultantsTask, ordersTask, treatmentsTask);
+        List<TopPurchasedCustomerResponseDto> responseDtos = new();
 
-        List<TopPurchasedCustomerResponseDto> responseDtos;
-        responseDtos = new List<TopPurchasedCustomerResponseDto>();
-
-        foreach (Consultant consultant in consultantsTask.Result)
+        foreach (Order order in orders)
         {
-            TopPurchasedCustomerResponseDto responseDto = responseDtos
-                .SingleOrDefault(dto => dto.Id == consultant.Customer.Id);
-
-            if (responseDto == null)
-            {
-                responseDto = new TopPurchasedCustomerResponseDto(consultant.Customer);
-                responseDtos.Add(responseDto);
-            }
-
-            responseDto.PurchasedAmount += consultant.AmountBeforeVat + consultant.VatAmount;
-            responseDto.PurchasedTransactionCount += 1;
-        }
-
-        foreach (Order order in ordersTask.Result)
-        {
-            TopPurchasedCustomerResponseDto responseDto = responseDtos
+            TopPurchasedCustomerResponseDto? responseDto = responseDtos
                 .SingleOrDefault(dto => dto.Id == order.Customer.Id);
 
-            if (responseDto == null)
+            if (responseDto is null)
             {
                 responseDto = new TopPurchasedCustomerResponseDto(order.Customer);
                 responseDtos.Add(responseDto);
             }
 
-            responseDto.PurchasedAmount += order.AmountAfterVat;
-            responseDto.PurchasedTransactionCount += 1;
-        }
-
-        foreach (Treatment treatment in treatmentsTask.Result)
-        {
-            TopPurchasedCustomerResponseDto responseDto = responseDtos
-                .SingleOrDefault(dto => dto.Id == treatment.Customer.Id);
-
-            if (responseDto == null)
-            {
-                responseDto = new TopPurchasedCustomerResponseDto(treatment.Customer);
-                responseDtos.Add(responseDto);
-            }
-
-            responseDto.PurchasedAmount += treatment.AmountAfterVat;
+            responseDto.PurchasedAmount += order.CachedAmountAfterVat;
             responseDto.PurchasedTransactionCount += 1;
         }
 
@@ -415,82 +349,97 @@ internal class SummaryService : ISummaryInternalService
 
     /// <inheritdoc />
     public async Task<List<LastestTransactionResponseDto>> GetLatestTransactionsAsync(
-            LatestTransactionsRequestDto requestDto)
+            LatestTransactionsRequestDto requestDto,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext supplyContext = await _contextFactory
-            .CreateDbContextAsync();
-        await using DatabaseContext expenseContext = await _contextFactory
-            .CreateDbContextAsync();
-        await using DatabaseContext consultantContext = await _contextFactory
-            .CreateDbContextAsync();
-        await using DatabaseContext orderContext = await _contextFactory
-            .CreateDbContextAsync();
-        await using DatabaseContext treatmentContext = await _contextFactory
-            .CreateDbContextAsync();
-        await using DatabaseContext debtIncurrenceContext = await _contextFactory
-            .CreateDbContextAsync();
-        await using DatabaseContext debtPaymentContext = await _contextFactory
-            .CreateDbContextAsync();
+        //await using DatabaseContext supplyContext = await _contextFactory
+        //    .CreateDbContextAsync(cancellationToken);
+        //await using DatabaseContext expenseContext = await _contextFactory
+        //    .CreateDbContextAsync(cancellationToken);
+        //await using DatabaseContext orderContext = await _contextFactory
+        //    .CreateDbContextAsync();
+        //await using DatabaseContext debtContext = await _contextFactory
+        //    .CreateDbContextAsync();
+        //await using DatabaseContext debtPaymentContext = await _contextFactory
+        //    .CreateDbContextAsync();
 
-        Task<List<Supply>> suppliesTask = supplyContext.Supplies
-            .Include(supply => supply.Items)
-            .OrderByDescending(supply => supply.StatsDateTime)
+        //Task<List<Supply>> suppliesTask = supplyContext.Supplies
+        //    .Include(supply => supply.Items)
+        //    .OrderByDescending(supply => supply.StatsDateTime)
+        //    .Take(requestDto.Count)
+        //    .ToListAsync();
+
+        //Task<List<Expense>> expensesTask = expenseContext.Expenses
+        //    .OrderByDescending(expense => expense.StatsDateTime)
+        //    .Take(requestDto.Count)
+        //    .ToListAsync();
+
+        //Task<List<Order>> ordersTask = orderContext.Orders
+        //    .Include(order => order.Items)
+        //    .OrderByDescending(order => order.StatsDateTime)
+        //    .Take(requestDto.Count)
+        //    .ToListAsync();
+
+        //Task<List<Treatment>> treatmentsTask = treatmentContext.Treatments
+        //    .Include(treatment => treatment.Items)
+        //    .OrderByDescending(treatment => treatment.StatsDateTime)
+        //    .Take(requestDto.Count)
+        //    .ToListAsync();
+
+        //Task<List<Debt>> debtIncurrencesTask = debtContext.DebtIncurrences
+        //    .OrderByDescending(debtIncurrence => debtIncurrence.StatsDateTime)
+        //    .Take(requestDto.Count)
+        //    .ToListAsync();
+
+        //Task<List<DebtPayment>> debtPaymentsTask = debtPaymentContext.DebtPayments
+        //    .OrderByDescending(debtPayment => debtPayment.StatsDateTime)
+        //    .Take(requestDto.Count)
+        //    .ToListAsync();
+
+        //await Task.WhenAll(
+        //    suppliesTask,
+        //    expensesTask,
+        //    consultantsTask,
+        //    ordersTask,
+        //    treatmentsTask,
+        //    debtIncurrencesTask,
+        //    debtPaymentsTask);
+
+        //return suppliesTask.Result
+        //    .Select(s => new LastestTransactionResponseDto(s))
+        //    .Union(expensesTask.Result.Select(e => new LastestTransactionResponseDto(e)))
+        //    .Union(consultantsTask.Result.Select(c => new LastestTransactionResponseDto(c)))
+        //    .Union(ordersTask.Result.Select(o => new LastestTransactionResponseDto(o)))
+        //    .Union(treatmentsTask.Result.Select(t => new LastestTransactionResponseDto(t)))
+        //    .Union(debtIncurrencesTask.Result
+        //        .Select(di => new LastestTransactionResponseDto(di)))
+        //    .Union(debtPaymentsTask.Result.Select(dp => new LastestTransactionResponseDto(dp)))
+        //    .OrderByDescending(dto => dto.StatsDateTime)
+        //    .Take(requestDto.Count)
+        //    .ToList();
+
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+
+        return await context.Supplies
+                .OrderByDescending(s => s.StatsDateTime)
+                .Select(s => new LastestTransactionResponseDto(s))
+                .Take(requestDto.Count)
+            .Concat(context.Expenses
+                .OrderByDescending(e => e.StatsDateTime)
+                .Select(e => new LastestTransactionResponseDto(e))
+                .Take(requestDto.Count))
+            .Concat(context.Orders
+                .OrderByDescending(o => o.StatsDateTime)
+                .Select(o => new LastestTransactionResponseDto(o))
+                .Take(requestDto.Count))
+            .Concat(context.Debts
+                .OrderByDescending(d => d.StatsDateTime)
+                .Select(d => new LastestTransactionResponseDto(d))
+                .Take(requestDto.Count))
+            .OrderByDescending(s => s.StatsDateTime)
             .Take(requestDto.Count)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
-        Task<List<Expense>> expensesTask = expenseContext.Expenses
-            .OrderByDescending(expense => expense.StatsDateTime)
-            .Take(requestDto.Count)
-            .ToListAsync();
-
-        Task<List<Consultant>> consultantsTask = consultantContext.Consultants
-            .OrderByDescending(consultant => consultant.StatsDateTime)
-            .Take(requestDto.Count)
-            .ToListAsync();
-
-        Task<List<Order>> ordersTask = orderContext.Orders
-            .Include(order => order.Items)
-            .OrderByDescending(order => order.StatsDateTime)
-            .Take(requestDto.Count)
-            .ToListAsync();
-
-        Task<List<Treatment>> treatmentsTask = treatmentContext.Treatments
-            .Include(treatment => treatment.Items)
-            .OrderByDescending(treatment => treatment.StatsDateTime)
-            .Take(requestDto.Count)
-            .ToListAsync();
-
-        Task<List<Debt>> debtIncurrencesTask = debtIncurrenceContext.DebtIncurrences
-            .OrderByDescending(debtIncurrence => debtIncurrence.StatsDateTime)
-            .Take(requestDto.Count)
-            .ToListAsync();
-
-        Task<List<DebtPayment>> debtPaymentsTask = debtPaymentContext.DebtPayments
-            .OrderByDescending(debtPayment => debtPayment.StatsDateTime)
-            .Take(requestDto.Count)
-            .ToListAsync();
-
-        await Task.WhenAll(
-            suppliesTask,
-            expensesTask,
-            consultantsTask,
-            ordersTask,
-            treatmentsTask,
-            debtIncurrencesTask,
-            debtPaymentsTask);
-
-        return suppliesTask.Result
-            .Select(s => new LastestTransactionResponseDto(s))
-            .Union(expensesTask.Result.Select(e => new LastestTransactionResponseDto(e)))
-            .Union(consultantsTask.Result.Select(c => new LastestTransactionResponseDto(c)))
-            .Union(ordersTask.Result.Select(o => new LastestTransactionResponseDto(o)))
-            .Union(treatmentsTask.Result.Select(t => new LastestTransactionResponseDto(t)))
-            .Union(debtIncurrencesTask.Result
-                .Select(di => new LastestTransactionResponseDto(di)))
-            .Union(debtPaymentsTask.Result.Select(dp => new LastestTransactionResponseDto(dp)))
-            .OrderByDescending(dto => dto.StatsDateTime)
-            .Take(requestDto.Count)
-            .ToList();
     }
 
     /// <inheritdoc />
@@ -522,15 +471,15 @@ internal class SummaryService : ISummaryInternalService
     }
 
     /// <inheritdoc />
-    public async Task<List<DateOnly>> GetStatsDateOptionsAsync()
+    public async Task<List<DateOnly>> GetSummaryDateOptionsAsync(CancellationToken cancellationToken = default)
     {
-        DatabaseContext context = await _contextFactory.CreateDbContextAsync();
+        DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         DateOnly? startingDate = await context.DailyStats
             .OrderBy(ds => ds.RecordedDate)
             .Select(ds => (DateOnly?)ds.RecordedDate)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
 
-        List<DateOnly> dateOptions = new List<DateOnly>();
+        List<DateOnly> dateOptions = new();
         if (startingDate.HasValue)
         {
             DateOnly endingDate = DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
@@ -546,119 +495,145 @@ internal class SummaryService : ISummaryInternalService
     }
 
     /// <inheritdoc />
-    public void ValidateStatsDateTime<T, TUpdateHistory>(T entity, DateTime statsDateTime)
-        where T : class, IHasStatsEntity<T, TUpdateHistory>, new()
-        where TUpdateHistory : class, IUpdateHistoryEntity<TUpdateHistory>, new()
+    public bool IsStatsDateTimeValid<TEntity, TData>(TEntity entity, DateTime statsDateTime, out string errorMessage)
+        where TEntity : class, IHasStatsEntity<TEntity, TData>
+        where TData : class
     {
-        string errorMessage;
+        errorMessage = string.Empty;
         if (statsDateTime > entity.CreatedDateTime)
         {
-            errorMessage = ErrorMessages.EarlierThanOrEqual
-                .ReplaceComparisonValue(entity.CreatedDateTime.ToVietnameseString());
-            throw new ArgumentException(errorMessage);
+            string errorMessageDateTime = entity.CreatedDateTime.ToVietnameseString();
+            errorMessage = ErrorMessages.EarlierThanOrEqual.ReplaceComparisonValue(errorMessageDateTime);
+
+            return false;
         }
 
-        DateTime minimumAssignableDateTime;
-        minimumAssignableDateTime = new DateTime(
-            entity.CreatedDateTime.AddMonths(-1).Year,
-            entity.CreatedDateTime.AddMonths(-1).Month,
-            1, 0, 0, 0);
+        DateOnly minimumAssignableDate = DateOnly.FromDateTime(entity.CreatedDateTime).AddMonths(-1);
+        DateTime minimumAssignableDateTime = new(minimumAssignableDate.Year, minimumAssignableDate.Month, 1, 0, 0, 0);
         if (statsDateTime < minimumAssignableDateTime)
         {
-            errorMessage = ErrorMessages.GreaterThanOrEqual
-                .ReplaceComparisonValue(minimumAssignableDateTime.ToVietnameseString());
-            throw new ValidationException(errorMessage);
+            string errorMessageDateTime = minimumAssignableDateTime.ToVietnameseString();
+            errorMessage = ErrorMessages.GreaterThanOrEqual.ReplaceComparisonValue(errorMessageDateTime);
+
+            return false;
         }
+
+        return true;
     }
 
     /// <inheritdoc />
-    public async Task IncrementRetailGrossRevenueAsync(long value, DateOnly? date = null)
+    public async Task IncrementRetailGrossRevenueAsync(
+            long value,
+            DateOnly? date = null,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        DailySummary dailyStats = await FetchDailySummaryAsync(date, cancellationToken);
         dailyStats.RetailGrossRevenue += value;
         dailyStats.MonthlySummary.RetailGrossRevenue += value;
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task IncrementTreatmentGrossRevenueAsync(long value, DateOnly? date = null)
+    public async Task IncrementTreatmentGrossRevenueAsync(
+            long value,
+            DateOnly? date = null,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        DailySummary dailyStats = await FetchDailySummaryAsync(date, cancellationToken);
         dailyStats.TreatmentGrossRevenue += value;
         dailyStats.MonthlySummary.TreatmentGrossRevenue += value;
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task IncrementConsultantGrossRevenueAsync(long value, DateOnly? date = null)
+    public async Task IncrementConsultantGrossRevenueAsync(
+            long value,
+            DateOnly? date = null,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        DailySummary dailyStats = await FetchDailySummaryAsync(date, cancellationToken);
         dailyStats.ConsultantGrossRevenue += value;
         dailyStats.MonthlySummary.ConsultantGrossRevenue += value;
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task IncrementDebtIncurredAmountAsync(long value, DateOnly? date = null)
+    public async Task IncrementDebtIncurredAmountAsync(
+            long value,
+            DateOnly? date = null,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        DailySummary dailyStats = await FetchDailySummaryAsync(date, cancellationToken);
         dailyStats.DebtIncurredAmount += value;
         dailyStats.MonthlySummary.DebtIncurredAmount += value;
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task IncrementDebtPaidAmountAsync(long value, DateOnly? date = null)
+    public async Task IncrementDebtPaidAmountAsync(
+            long value,
+            DateOnly? date = null,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        DailySummary dailyStats = await FetchDailySummaryAsync(date, cancellationToken);
         dailyStats.DebtPaidAmount += value;
         dailyStats.MonthlySummary.DebtPaidAmount += value;
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task IncrementVatCollectedAmountAsync(long amount, DateOnly? date = null)
+    public async Task IncrementVatCollectedAmountAsync(
+            long amount,
+            DateOnly? date = null,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        DailySummary dailyStats = await FetchDailySummaryAsync(date, cancellationToken);
         dailyStats.VatCollectedAmount += amount;
         dailyStats.MonthlySummary.VatCollectedAmount += amount;
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task IncrementShipmentCostAsync(long value, DateOnly? date = null)
+    public async Task IncrementShipmentCostAsync(
+            long value,
+            DateOnly? date = null,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        DailySummary dailyStats = await FetchDailySummaryAsync(date, cancellationToken);
         dailyStats.ShipmentCost += value;
         dailyStats.MonthlySummary.ShipmentCost += value;
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task IncrementSupplyCostAsync(long value, DateOnly? date = null)
+    public async Task IncrementSupplyCostAsync(
+            long value,
+            DateOnly? date = null,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        DailySummary dailyStats = await FetchDailySummaryAsync(date, cancellationToken);
         dailyStats.SupplyCost += value;
         dailyStats.MonthlySummary.SupplyCost += value;
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
     public async Task IncrementExpenseAsync(
             long value,
             ExpenseCategory category,
-            DateOnly? date = null)
+            DateOnly? date = null,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        DailySummary dailyStats = await FetchDailySummaryAsync(date, cancellationToken);
         switch (category)
         {
             case ExpenseCategory.Equipment:
@@ -678,124 +653,95 @@ internal class SummaryService : ISummaryInternalService
                 dailyStats.MonthlySummary.StaffExpense += value;
                 break;
             default:
-                string message = $"\"{nameof(category)}\" argument has invalid" +
-                                $"value ({category})";
-                throw new ArgumentException(message);
+                throw new NotImplementedException();
         }
-        await context.SaveChangesAsync();
+
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task IncrementNewCustomerAsync(int value = 1, DateOnly? date = null)
+    public async Task IncrementNewCustomerCountAsync(
+            int value = 1,
+            DateOnly? date = null,
+            CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        DailySummary dailyStats = await FetchDailySummaryAsync(date, cancellationToken);
         dailyStats.NewCustomerCount += value;
         dailyStats.MonthlySummary.NewCustomerCount += value;
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task TemporarilyCloseAsync(DateOnly date)
+    public async Task TemporarilyCloseAsync(DateOnly date, CancellationToken cancellationToken = default)
     {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-        DailySummary dailyStats = await FetchStatisticsEntitiesAsync(date);
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        DailySummary dailyStats = await FetchDailySummaryAsync(date, cancellationToken);
         dailyStats.TemporarilyClosedDateTime = DateTime.UtcNow.ToApplicationTime();
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
     public DateTime GetResourceMinimumOpenedDateTime()
     {
         DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
-        DateTime lastMonthEditableMaxDateTime = new DateTime(
-            currentDateTime.Year, currentDateTime.Month, 4,
-            2, 0, 0);
+        DateTime lastMonthEditableMaxDateTime = new DateTime(currentDateTime.Year, currentDateTime.Month, 4, 2, 0, 0);
         if (currentDateTime < lastMonthEditableMaxDateTime)
         {
-            return new DateTime(
-                currentDateTime.AddMonths(-2).Year,
-                currentDateTime.AddMonths(-2).Month,
-                1,
-                0, 0, 0);
+            return new DateTime(currentDateTime.AddMonths(-2).Year, currentDateTime.AddMonths(-2).Month, 1, 0, 0, 0);
         }
 
-        return new DateTime(
-            currentDateTime.AddMonths(-1).Year,
-            currentDateTime.AddMonths(-1).Month,
-            1,
-            0, 0, 0);
+        return new DateTime(currentDateTime.AddMonths(-1).Year, currentDateTime.AddMonths(-1).Month, 1, 0, 0, 0);
     }
     #endregion
 
-    #region StaticMethods
-
+    #region ProtectedMethods
     /// <summary>
-    /// Get the daily stats entity by the given recorded date. If the recorded date
-    /// is not specified, the date will be today's date value.
+    /// Get the daily summary entity by the given recorded date. If the recorded date is not specified, the date will be
+    /// today's date value.
     /// </summary>
     /// <param name="date">
-    /// Optional - The date when the stats entity is recorded. If not specified,
-    /// the entity will be fetched based on today's date.</param>
-    /// <returns>The DailyStats entity.</returns>
-    protected async Task<DailySummary> FetchStatisticsEntitiesAsync(DateOnly? date = null)
-    {
-        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync();
-
-        DateOnly dateValue = date
-            ?? DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
-        DailySummary dailyStats = await context.DailyStats
-            .Include(ds => ds.MonthlySummary)
-            .Where(ds => ds.RecordedDate == dateValue)
-            .SingleOrDefaultAsync();
-
-        if (dailyStats == null)
-        {
-            dailyStats = new DailySummary
-            {
-                RecordedDate = dateValue,
-                CreatedDateTime = DateTime.UtcNow.ToApplicationTime(),
-            };
-            context.DailyStats.Add(dailyStats);
-
-            MonthlySummary monthlyStats = await context.MonthlyStats
-                .Where(ms => ms.RecordedYear == dateValue.Year)
-                .Where(ms => ms.RecordedMonth == dateValue.Month)
-                .SingleOrDefaultAsync();
-            if (monthlyStats == null)
-            {
-                monthlyStats = new MonthlySummary
-                {
-                    RecordedMonth = dateValue.Month,
-                    RecordedYear = dateValue.Year
-                };
-                context.MonthlyStats.Add(monthlyStats);
-            }
-
-            dailyStats.MonthlySummary = monthlyStats;
-            await context.SaveChangesAsync();
-        }
-
-        return dailyStats;
-    }
-
-    /// <summary>
-    /// Calculates the amount of an product export item, which is the total between the item's product amount before VAT
-    /// per unit and the item's VAT amount per unit.
-    /// </summary>
-    /// <typeparam name="TItemEntity">
-    /// The type of the item entity.
-    /// </typeparam>
-    /// <param name="item">
-    /// An instance of the item entity.
+    /// (Optional) The date when the stats entity is recorded. If not specified, the entity will be fetched based on
+    /// today's date.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// (Optional) A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
-    /// The total amount of the item.
+    /// The DailyStats entity.
     /// </returns>
-    private static long CalculateExportProductItemAmount<TItemEntity>(TItemEntity item)
-        where TItemEntity : class, IExportProductItemEntity<TItemEntity>, new()
+    protected async Task<DailySummary> FetchDailySummaryAsync(
+            DateOnly? date = null,
+            CancellationToken cancellationToken = default)
     {
-        return (item.AmountPerUnit + item.VatAmountPerUnit) * item.Quantity;
+        await using DatabaseContext context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+
+        DateOnly dateValue = date ?? DateOnly.FromDateTime(DateTime.UtcNow.ToApplicationTime());
+        DailySummary? dailySummary = await context.DailyStats
+            .Include(ds => ds.MonthlySummary)
+            .Where(ds => ds.RecordedDate == dateValue)
+            .SingleOrDefaultAsync(cancellationToken);
+
+        if (dailySummary == null)
+        {
+            dailySummary = new DailySummary(dateValue);
+            context.DailyStats.Add(dailySummary);
+
+            MonthlySummary? monthlySummary = await context.MonthlyStats
+                .Where(ms => ms.RecordedYear == dateValue.Year && ms.RecordedMonth == dateValue.Month)
+                .SingleOrDefaultAsync(cancellationToken);
+
+            if (monthlySummary == null)
+            {
+                monthlySummary = new(dateValue);
+                context.MonthlyStats.Add(monthlySummary);
+            }
+
+            monthlySummary.DailySummaries.Add(dailySummary);
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        return dailySummary;
     }
     #endregion
 }

@@ -38,6 +38,6 @@ global using NATSInternal.Core.Validation.Rules;
 global using NATSInternal.Core.Validation;
 
 global using FluentValidation;
-global using ValidationException = System.ComponentModel.DataAnnotations.ValidationException;
+global using ValidationException = FluentValidation.ValidationException;
 global using ImageMagick;
 global using Bogus;

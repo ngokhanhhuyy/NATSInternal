@@ -2,18 +2,21 @@ namespace NATSInternal.Core.Dtos;
 
 public class LastestTransactionResponseDto
 {
-    public int Id { get; set; }
+    #region Properties
+    public Guid Id { get; set; }
     public TransactionDirection Direction { get; set; }
     public TransactionType Type { get; set; }
     public long Amount { get; set; }
     public DateTime StatsDateTime { get; set; }
+    #endregion
 
+    #region Constructors
     internal LastestTransactionResponseDto(Supply supply)
     {
         Id = supply.Id;
         Direction = TransactionDirection.Out;
         Type = TransactionType.Supply;
-        Amount = supply.Amount;
+        Amount = supply.CachedAmount;
         StatsDateTime = supply.StatsDateTime;
     }
 
@@ -26,48 +29,36 @@ public class LastestTransactionResponseDto
         StatsDateTime = expense.StatsDateTime;
     }
 
-    internal LastestTransactionResponseDto(Consultant consultant)
-    {
-        Id = consultant.Id;
-        Direction = TransactionDirection.In;
-        Type = TransactionType.Consultant;
-        Amount = consultant.AmountBeforeVat + consultant.VatAmount;
-        StatsDateTime = consultant.StatsDateTime;
-    }
-
     internal LastestTransactionResponseDto(Order order)
     {
         Id = order.Id;
         Direction = TransactionDirection.In;
-        Type = TransactionType.Retail;
-        Amount = order.AmountAfterVat;
+        Amount = order.CachedAmountAfterVat;
         StatsDateTime = order.StatsDateTime;
+
+        switch (order.Type)
+        {
+            case OrderType.Consultant:
+                Type = TransactionType.Consultant;
+                break;
+            case OrderType.Retail:
+                Type = TransactionType.Retail;
+                break;
+            case OrderType.Treatment:
+                Type = TransactionType.Treatment;
+                break;
+            default:
+                throw new NotImplementedException();
+        }
     }
 
-    internal LastestTransactionResponseDto(Treatment treatment)
+    internal LastestTransactionResponseDto(Debt debt)
     {
-        Id = treatment.Id;
+        Id = debt.Id;
         Direction = TransactionDirection.In;
-        Type = TransactionType.Treatment;
-        Amount = treatment.AmountAfterVat;
-        StatsDateTime = treatment.StatsDateTime;
+        Type = debt.Type == DebtType.Incurrence ? TransactionType.DebtIncurrence : TransactionType.DebtPayment;
+        Amount = debt.Amount;
+        StatsDateTime = debt.StatsDateTime;
     }
-
-    internal LastestTransactionResponseDto(Debt debtIncurrence)
-    {
-        Id = debtIncurrence.Id;
-        Direction = TransactionDirection.In;
-        Type = TransactionType.DebtIncurrence;
-        Amount = debtIncurrence.Amount;
-        StatsDateTime = debtIncurrence.StatsDateTime;
-    }
-
-    internal LastestTransactionResponseDto(DebtPayment debtPayment)
-    {
-        Id = debtPayment.Id;
-        Direction = TransactionDirection.Out;
-        Type = TransactionType.DebtPayment;
-        Amount = debtPayment.Amount;
-        StatsDateTime = debtPayment.StatsDateTime;
-    }
+    #endregion
 }

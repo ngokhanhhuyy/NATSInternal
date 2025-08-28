@@ -10,26 +10,26 @@ public interface ISummaryService
             CancellationToken cancellationToken = default);
     
     /// <summary>
-    /// Retrieves daily stats with details by a given recorded date. If the date is not specified, the returned stats
-    /// will be today stats.
+    /// Retrieves daily summary with details by a given recorded date. If the date is not specified, the returned
+    /// summary will be today summary.
     /// </summary>
     /// <param name="recordedDate">
-    /// The date when the daily stats was recorded.
+    /// The date when the daily summary was recorded.
     /// </param>
     /// <param name="cancellationToken">
     /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchonous operation, which result is a DTO containing the detail
-    /// information of the daily stats.
+    /// information of the daily summary.
     /// </returns>
     Task<DailySummaryDetailResponseDto> GetDailyDetailAsync(
             DateOnly? recordedDate,
             CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Retrieves the stats of lastest dates with basic information, specified by the count of dates, from today (if the
-    /// <paramref name="requestDto"/> specifies) or yesterday to the past.
+    /// Retrieves the summary of latest dates with basic information, specified by the count of dates, from today (if
+    /// the <paramref name="requestDto"/> specifies) or yesterday to the past.
     /// </summary>
     /// <param name="requestDto">
     /// A DTO indicating the count number of dates and whether today's data should be included.
@@ -39,14 +39,14 @@ public interface ISummaryService
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchonous operation, which result is a DTO containing the basic
-    /// information of the dates' stats.
+    /// information of the dates' summary.
     /// </returns>
     Task<List<DailySummaryBasicResponseDto>> GetLastestDailyBasicAsync(
             LatestDailyStatsRequestDto requestDto,
             CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Retrieves the stats of lastest dates with details, specified by the count of dates, from today (if the
+    /// Retrieves the summary of latest dates with details, specified by the count of dates, from today (if the
     /// <paramref name="requestDto"/> specifies) or yesterday to the past.
     /// </summary>
     /// <param name="requestDto">
@@ -57,36 +57,36 @@ public interface ISummaryService
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchonous operation, which result is a DTO containing the basic
-    /// information of the dates' stats.
+    /// information of the dates' summary.
     /// </returns>
     Task<List<DailySummaryDetailResponseDto>> GetLastestDailyDetailAsync(
             LatestDailyStatsRequestDto requestDto,
             CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Retrieves monthly stats with details by a given recorded month and year. If the date is not specified, the
-    /// returned stats will be this month stats.
+    /// Retrieves monthly summary with details by a given recorded month and year. If the date is not specified, the
+    /// returned summary will be this month summary.
     /// </summary>
     /// <param name="requestDto">
-    /// A DTO instance containing expected recorded year and month when the monthly stats was recorded.
+    /// A DTO instance containing expected recorded year and month when the monthly summary was recorded.
     /// </param>
     /// <param name="cancellationToken">
     /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
     /// </param>
     /// <returns>
     /// A <see cref="Task" /> representing the asynchronous operation, which result is a DTO containing the detail
-    /// information of the monthly stats.
+    /// information of the monthly summary.
     /// </returns>
     /// <exception cref="NotFoundException">
-    /// Thrown when the stats recorded at the specified month and year doesn't exist.
+    /// Thrown when the summary recorded at the specified month and year doesn't exist.
     /// </exception>
     Task<MonthlyStatsDetailResponseDto> GetMonthlyDetailAsync(
             MonthlyStatsRequestDto requestDto,
             CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Retrieves the stats of lastest months with basic information, specified by the count of months, from this month
-    /// (if the <paramref name="requestDto"/> specifies), to the past.
+    /// Retrieves the summary of latest months with basic information, specified by the count of months, from this
+    /// month (if the <paramref name="requestDto"/> specifies), to the past.
     /// </summary>
     /// <param name="requestDto">
     /// A DTO instance indicating the count number of months and whethere the this month data should be included.
@@ -96,14 +96,14 @@ public interface ISummaryService
     /// </param>
     /// <returns>
     /// A <see cref="Task"/> representing the asynchonous operation, which result is a DTO containing the basic
-    /// information of the months' stats.
+    /// information of the months' summary.
     /// </returns>
     Task<List<MonthlySummaryBasicResponseDto>> GetLastestMonthlyAsync(
             LatestMonthlyStatsRequestDto requestDto,
             CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Retrieves the top of the sold products with basic information, based on the creteria and count in a lastest
+    /// Retrieves the top of the sold products with basic information, based on the creteria and count in a latest
     /// time-range specified in the request DTO.
     /// </summary>
     /// <param name="requestDto">
@@ -139,8 +139,8 @@ public interface ISummaryService
     StatsCriteriaOptionListResponseDto GetTopSoldProductCriteriaOptions();
 
     /// <summary>
-    /// Retrieves the top of the purchased customers with basic information, based on the creteria and count in a
-    /// lastest time-range specified in the request DTO.
+    /// Retrieves the top of the purchased customers with basic information, based on the creteria and count in a latest
+    /// time-range specified in the request DTO.
     /// </summary>
     /// <param name="requestDto">
     /// A DTO instance containing the conditions for the results.
@@ -193,7 +193,7 @@ public interface ISummaryService
             CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Retrieves the statistics date as options.
+    /// Retrieves the summary date as options.
     /// </summary>
     /// <param name="cancellationToken">
     /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
@@ -202,5 +202,5 @@ public interface ISummaryService
     /// A <see cref="Task"/> representing the asynchronous operation, which result is a <see cref="List{T}"/> of
     /// <see cref="DateOnly"/>, representing the dates.
     /// </returns>
-    Task<List<DateOnly>> GetStatsDateOptionsAsync(CancellationToken cancellationToken = default);
+    Task<List<DateOnly>> GetSummaryDateOptionsAsync(CancellationToken cancellationToken = default);
 }

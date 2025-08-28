@@ -1,0 +1,1 @@
+﻿namespace NATSInternal.Domain.Extensions;

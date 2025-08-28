@@ -295,11 +295,15 @@ internal interface ISummaryInternalService : ISummaryService
     /// A <see cref="DateTime"/> value specified in the request representing the date and time for the field in the
     /// entity which is used to calculate the statistics.
     /// </param>
+    /// <param name="errorMessage">
+    /// A <see langword="string"/> represents the error message when the specified <paramref name="statsDateTime"/> is
+    /// invalid and the returned value is <see langword="false"/>. Otherwise, an empty string.
+    /// </param>
     /// <return>
     /// A <see langword="bool"/> value indicating whether the value specified by the <paramref name="statsDateTime"/> is
     /// invalid.
-    /// </exception>
-    bool IsStatsDateTimeValid<T, TData>(T entity, DateTime statsDateTime)
+    /// </return>
+    bool IsStatsDateTimeValid<T, TData>(T entity, DateTime statsDateTime, out string errorMessage)
         where T : class, IHasStatsEntity<T, TData>
         where TData : class;
 }

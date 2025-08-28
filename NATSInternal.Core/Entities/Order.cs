@@ -45,6 +45,24 @@ internal class Order : AbstractEntity<Order>, IHasStatsEntity<Order, OrderUpdate
     public Guid CreatedUserId { get; set; }
     #endregion
 
+    #region CachedProperties
+    [Column("cached_product items_amount_before_vat")]
+    [Required]
+    public long CachedProductItemsAmountBeforeVat { get; protected set; }
+
+    [Column("cached_product_items_vat_amount")]
+    [Required]
+    public long CachedProductItemsVatAmount { get; protected set; }
+
+    [Column("cached_service_items_amount_before_vat")]
+    [Required]
+    public long CachedServiceItemsAmountBeforeVat { get; protected set; }
+
+    [Column("cached_service_items_vat_amount")]
+    [Required]
+    public long CachedServiceItemsVatAmount { get; protected set; }
+    #endregion
+
     #region ConcurrencyOperationTrackingProperties
     [Column("row_version")]
     [Timestamp]
@@ -114,7 +132,43 @@ internal class Order : AbstractEntity<Order>, IHasStatsEntity<Order, OrderUpdate
         .LastOrDefault();
 
     [NotMapped]
+    public long CachedAmountAfterVat
+    {
+        get
+        {
+            long productAmount = CachedProductItemsAmountBeforeVat + CachedProductItemsVatAmount;
+            long serviceAmount = CachedServiceItemsAmountBeforeVat + CachedServiceItemsVatAmount;
+
+            return productAmount + serviceAmount;
+        }
+    }
+
+    [NotMapped]
     public static Expression<Func<Order, long>> AmountAfterVatExpression => (order) =>
         order.Items.Sum(oi => (oi.AmountBeforeVatPerUnit + oi.VatAmountPerUnit) * oi.Quantity);
+    #endregion
+
+    #region Methods
+    public void UpdateCachedProperties()
+    {
+        CachedProductItemsAmountBeforeVat = 0;
+        CachedProductItemsVatAmount = 0;
+        CachedServiceItemsAmountBeforeVat = 0;
+        CachedServiceItemsVatAmount = 0;
+
+        foreach (OrderItem item in Items)
+        {
+            if (item.Type == OrderItemType.Product)
+            {
+                CachedProductItemsAmountBeforeVat += item.AmountBeforeVatPerUnit * item.Quantity;
+                CachedProductItemsVatAmount += item.VatAmountPerUnit * item.Quantity;
+            }
+            else
+            {
+                CachedServiceItemsAmountBeforeVat += item.AmountBeforeVatPerUnit * item.Quantity;
+                CachedServiceItemsVatAmount += item.VatAmountPerUnit * item.Quantity;
+            }
+        }
+    }
     #endregion
 }

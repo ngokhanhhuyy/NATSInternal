@@ -1,5 +1,3 @@
-using System.Data.Common;
-
 namespace NATSInternal.Core.Handlers;
 
 internal interface IDbExceptionHandler

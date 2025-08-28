@@ -152,7 +152,7 @@ internal class SupplyService
 
             // The supply can be saved successfully without any error.
             // Add new stats for the created supply.
-            await _statsService.IncrementSupplyCostAsync(supply.ItemAmount);
+            await _statsService.IncrementSupplyCostAsync(supply.ItemsAmount);
             await _statsService.IncrementShipmentCostAsync(supply.ShipmentFee);
 
             // Commit the transaction and finish the operation.
@@ -202,7 +202,7 @@ internal class SupplyService
 
         // Storing the old data for update history logging and stats adjustments.
         SupplyUpdateHistoryDataDto oldData = new SupplyUpdateHistoryDataDto(supply);
-        long oldItemAmount = supply.ItemAmount;
+        long oldItemAmount = supply.ItemsAmount;
         long oldShipmentFee = supply.ShipmentFee;
         DateOnly oldPaidDate = DateOnly.FromDateTime(supply.StatsDateTime);
 
@@ -273,7 +273,7 @@ internal class SupplyService
 
             // Add new stats.
             DateOnly newPaidDate = DateOnly.FromDateTime(supply.StatsDateTime);
-            await _statsService.IncrementShipmentCostAsync(supply.ItemAmount, newPaidDate);
+            await _statsService.IncrementShipmentCostAsync(supply.ItemsAmount, newPaidDate);
             await _statsService.IncrementShipmentCostAsync(supply.ShipmentFee, newPaidDate);
 
             // Commit the transaction and finish the operation.
@@ -342,7 +342,7 @@ internal class SupplyService
             // The supply can be deleted successfully without any error.
             // Revert the stats associated to the supply.
             DateOnly paidDate = DateOnly.FromDateTime(supply.StatsDateTime);
-            await _statsService.IncrementSupplyCostAsync(-supply.ItemAmount, paidDate);
+            await _statsService.IncrementSupplyCostAsync(-supply.ItemsAmount, paidDate);
             await _statsService.IncrementSupplyCostAsync(-supply.ShipmentFee, paidDate);
 
             // Commit transaction and finish the operation.

@@ -1157,9 +1157,9 @@ internal sealed class DataSeedingService
 
             // Generate stats data.
             DailySummary dailyStats = await SelectOrSeedDailyStatsAsync(statsDateTime);
-            dailyStats.SupplyCost += supply.ItemAmount;
+            dailyStats.SupplyCost += supply.ItemsAmount;
             dailyStats.ShipmentCost += supply.ShipmentFee;
-            dailyStats.MonthlySummary.SupplyCost += supply.ItemAmount;
+            dailyStats.MonthlySummary.SupplyCost += supply.ItemsAmount;
             dailyStats.MonthlySummary.ShipmentCost += supply.ShipmentFee;
 
             await _context.SaveChangesAsync();

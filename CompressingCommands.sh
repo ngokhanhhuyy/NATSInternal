@@ -1,5 +1,5 @@
 # Windows CMD
-"C:\Program Files\7-Zip\7z.exe" a C:\repos\.NET\NATSInternal-Compressed.zip C:\repos\.NET\NATSInternal -xr!*\.vscode -xr!*\.idea -xr!*\.git -xr!*\bin -xr!*\obj -xr!*\*.zip
+"C:\Program Files\7-Zip\7z.exe" a C:\repos\.NET\NATSInternal-Compressed.zip C:\repos\.NET\NATSInternal -xr!*\.vscode -xr!*\.idea -xr!*\.git -xr!*\bin -xr!*\obj -xr!*\*.zip -xr!*\node_modules -xr!*\.vs -xr!*\.github
 move C:\repos\.NET\NATSInternal-Compressed.zip C:\repos\.NET\NATSInternal\NATSInternal-Compressed.zip
 
 # Ubuntu/Linux

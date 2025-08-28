@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Entities;
 
-internal class ExpenseUpdateHistoryData
+internal record ExpenseUpdateHistoryData
 {
     #region Properties
     public required long Amount { get; set; }

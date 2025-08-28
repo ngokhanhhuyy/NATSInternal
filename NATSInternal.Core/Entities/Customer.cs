@@ -135,14 +135,9 @@ internal class Customer : AbstractEntity<Customer>, IUpsertableEntity<Customer>
     #endregion
 
     #region CachedProperties
-    [Column("cached_incurred_debt_amount")]
+    [Column("cached_remaining_debt_amount")]
     [Required]
-    public long CachedIncurredDebtAmount { get; set; } = 0;
-
-    [Column("cached_paid_debt_amount")]
-    [Required]
-    public long CachedPaidDebtAmount { get; set; } = 0;
-    #endregion
+    public long CachedRemainingDebtAmount { get; set; }
 
     #region ForeignKeyProperties
     [Column("introducer_id")]
@@ -198,9 +193,6 @@ internal class Customer : AbstractEntity<Customer>, IUpsertableEntity<Customer>
 
     [NotMapped]
     public long RemainingDebtAmount => DebtIncurredAmount - DebtPaidAmount;
-
-    [NotMapped]
-    public long CachedDebtAmount => CachedIncurredDebtAmount - CachedPaidDebtAmount;
     #endregion
 
     #region PrivateMethods

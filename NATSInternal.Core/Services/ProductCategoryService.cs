@@ -12,6 +12,7 @@ internal class ProductCategoryService : IProductCategoryService
     private readonly IValidator<ProductCategoryUpsertRequestDto> _upsertValidator;
     #endregion
 
+    #region Constructors
     public ProductCategoryService(
             DatabaseContext context,
             IListQueryService listQueryService,
@@ -27,7 +28,9 @@ internal class ProductCategoryService : IProductCategoryService
         _listValidator = listValidator;
         _upsertValidator = upsertValidator;
     }
+    #endregion
 
+    #region Methods
     /// <inheritdoc />
     public async Task<ProductCategoryListResponseDto> GetListAsync(
             ProductCategoryListRequestDto requestDto,
@@ -43,6 +46,13 @@ internal class ProductCategoryService : IProductCategoryService
         return await _listQueryService.GetPagedListAsync(
             query,
             requestDto,
+            (productCategory) =>
+            {
+                ProductCategoryExistingAuthorizationResponseDto authorizationResponseDto = _authorizationService
+                    .GetExistingAuthorization<ProductCategory, ProductCategoryExistingAuthorizationResponseDto>();
+
+                return new ProductCategoryResponseDto(productCategory);
+            },
             (entities, pageCount) => new ProductCategoryListResponseDto(entities, pageCount),
             cancellationToken);
     }
@@ -188,7 +198,9 @@ internal class ProductCategoryService : IProductCategoryService
     {
         return _authorizationService.CanCreate<ProductCategory>();
     }
+    #endregion
 
+    #region PrivateMethods
     /// <summary>
     /// Convert the exception which is thrown by the database during the creating or updating operation into an instance
     /// of <see cref="CoreException"/> .
@@ -223,4 +235,5 @@ internal class ProductCategoryService : IProductCategoryService
 
         return null;
     }
+    #endregion
 }

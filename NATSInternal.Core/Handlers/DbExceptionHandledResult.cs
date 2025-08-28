@@ -13,6 +13,5 @@ internal class DbExceptionHandledResult : Exception
     public bool IsConcurrencyConflict { get; set; }
     public string? ViolatedPropertyName { get; set; }
     public string? ViolatedEntityName { get; set; }
-    
     #endregion
 }

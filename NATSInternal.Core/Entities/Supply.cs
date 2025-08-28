@@ -43,6 +43,12 @@ internal class Supply
     public Guid CreatedUserId { get; set; }
     #endregion
 
+    #region CachedProperties
+    [Column("cached_items_amount")]
+    [Required]
+    public long CachedItemsAmount { get; protected set; }
+    #endregion
+
     #region ConcurrencyOperationTrackingProperty
     [Column("row_version")]
     [Timestamp]
@@ -74,10 +80,13 @@ internal class Supply
         .FirstOrDefault();
 
     [NotMapped]
-    public long ItemAmount => Items.Sum(i => i.AmountPerUnit * i.Quantity);
+    public long ItemsAmount => Items.Sum(i => i.AmountPerUnit * i.Quantity);
 
     [NotMapped]
-    public long Amount => ItemAmount + ShipmentFee;
+    public long Amount => ItemsAmount + ShipmentFee;
+
+    [NotMapped]
+    public long CachedAmount => CachedItemsAmount + ShipmentFee;
 
     [NotMapped]
     public DateTime? UpdatedDateTime => UpdateHistories
@@ -97,5 +106,12 @@ internal class Supply
         .OrderBy(uh => uh.UpdatedDateTime)
         .Select(uh => uh.UpdatedUser)
         .LastOrDefault();
+    #endregion
+
+    #region Methods
+    public void UpdateCachedProperties()
+    {
+        CachedItemsAmount = Items.Sum(si => si.AmountPerUnit * si.Quantity);
+    }
     #endregion
 }
