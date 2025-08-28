@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using NATSInternal.Domain.Features.Users;
-using NATSInternal.Domain.Repositories;
 using NATSInternal.Domain.Shared;
 using NATSInternal.Infrastructure.DbContext;
 using NATSInternal.Infrastructure.Extensions;
@@ -11,14 +10,14 @@ internal class UserRepository : IUserRepository
 {
     #region Fields
     private readonly AppDbContext _context;
-    private readonly ListRepository _listRepository;
+    private readonly ListFetcher _listFetcher;
     #endregion
 
     #region Constructors
-    public UserRepository(AppDbContext context, ListRepository listRepository)
+    public UserRepository(AppDbContext context, ListFetcher listFetcher)
     {
         _context = context;
-        _listRepository = listRepository;
+        _listFetcher = listFetcher;
     }
     #endregion
 
@@ -26,10 +25,10 @@ internal class UserRepository : IUserRepository
     public async Task<Page<User>> GetListWithRolesAsync(
         bool? sortByAscending,
         string? sortByFieldName,
-        Guid? roleId,
-        string? searchContent,
         int? page,
         int? resultsPerPage,
+        Guid? roleId,
+        string? searchContent,
         CancellationToken cancellationToken = default)
     {
         IQueryable<User> query = _context.Users.Include(u => u.Roles);
@@ -60,7 +59,12 @@ internal class UserRepository : IUserRepository
                 throw new NotImplementedException();
         }
 
-        return await _listRepository.GetPagedListAsync(query, page, resultsPerPage, cancellationToken);
+        return await _listFetcher.GetPagedListAsync(query, page, resultsPerPage, cancellationToken);
+    }
+
+    public async Task<User?> GetSingleByUserNameAsync(string userName, CancellationToken cancellationToken = default)
+    {
+        return await _context.Users.SingleOrDefaultAsync(u => u.UserName == userName, cancellationToken);
     }
 
     public async Task<User?> GetSingleIncludedRolesWithPermissionsAsync(

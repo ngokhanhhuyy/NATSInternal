@@ -113,7 +113,7 @@ internal class DebtService : IDebtService
         DebtExistingAuthorizationResponseDto authorization = _authorizationService
             .GetExistingAuthorization<Debt, DebtUpdateHistoryData, DebtExistingAuthorizationResponseDto>(debt);
 
-        return new DebtDetailResponseDto(debt, authorization);
+        return new(debt, authorization);
     }
 
     /// <inheritdoc />

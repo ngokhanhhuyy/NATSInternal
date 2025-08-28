@@ -40,24 +40,36 @@ internal class AnnouncementService : IAnnouncementService
                 .ThenByDescending(a => a.EndingDateTime)
                 .ThenByDescending(a => a.CreatedDateTime);
 
-        return _listQueryService.GetPagedListAsync(
+        return await _listQueryService.GetPagedListAsync(
             query,
             requestDto,
-            (announcement) => new AnnouncementResponseDto(
-                announcement,
-                _authorizationService.GetExistingAuthorization<>())
-            (announcements, pageCount) => new AnnouncementListResponseDto(announcements, pageCount))
+            (announcement) =>
+            {
+                AnnouncementExistingAuthorizationResponseDto authorizationResponseDto = _authorizationService
+                    .GetExistingAuthorization<Announcement, AnnouncementExistingAuthorizationResponseDto>();
+
+                return new AnnouncementResponseDto(announcement, authorizationResponseDto);
+            },
+            (announcements, pageCount) => new AnnouncementListResponseDto(announcements, pageCount),
+            cancellationToken
+        );
     }
 
     /// <inheritdoc />
-    public async Task<AnnouncementResponseDto> GetDetailAsync(int id)
+    public async Task<AnnouncementResponseDto> GetDetailAsync(
+            Guid id,
+            CancellationToken cancellationToken = default)
     {
-        return await _context.Announcements
+        Announcement announcement = await _context.Announcements
             .Include(a => a.CreatedUser)
             .Where(a => a.Id == id)
-            .Select(a => new AnnouncementResponseDto(a, GetExistingAuthorization(a)))
             .SingleOrDefaultAsync()
             ?? throw new NotFoundException();
+
+        AnnouncementExistingAuthorizationResponseDto authorizationResponseDto = _authorizationService
+            .GetExistingAuthorization<Announcement, AnnouncementExistingAuthorizationResponseDto>();
+
+        return new(announcement, authorizationResponseDto);
     }
 
     /// <inheritdoc />
@@ -76,6 +88,7 @@ internal class AnnouncementService : IAnnouncementService
                 .AddMinutes(requestDto.IntervalInMinutes),
             CreatedUserId = _authorizationService.GetUserId()
         };
+        
         _context.Announcements.Add(announcement);
 
         // Perform the creating opeartion.

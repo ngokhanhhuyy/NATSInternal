@@ -1,7 +1,6 @@
-using NATSInternal.Domain.Features.Users;
 using NATSInternal.Domain.Shared;
 
-namespace NATSInternal.Domain.Repositories;
+namespace NATSInternal.Domain.Features.Users;
 
 public interface IUserRepository
 {
@@ -9,11 +8,13 @@ public interface IUserRepository
     Task<Page<User>> GetListWithRolesAsync(
         bool? sortByAscending,
         string? sortByFieldName,
-        Guid? roleId,
-        string? searchContent,
         int? page,
         int? resultsPerPage,
+        Guid? roleId,
+        string? searchContent,
         CancellationToken cancellationToken = default);
+
+    Task<User?> GetSingleByUserNameAsync(string userName, CancellationToken cancellationToken);
 
     Task<User?> GetSingleIncludedRolesWithPermissionsAsync(Guid id, CancellationToken cancellationToken = default);
 

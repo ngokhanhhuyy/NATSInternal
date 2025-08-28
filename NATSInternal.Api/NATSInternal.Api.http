@@ -1,0 +1,6 @@
+@NATSInternal.Api_HostAddress = http://localhost:5048
+
+GET {{NATSInternal.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
