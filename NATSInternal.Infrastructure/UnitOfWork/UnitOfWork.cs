@@ -2,7 +2,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using NATSInternal.Application.UnitOfWork;
 using NATSInternal.Domain.Seedwork;
-using NATSInternal.Infrastructure.Converters;
 using NATSInternal.Infrastructure.DbContext;
 
 namespace NATSInternal.Infrastructure.UnitOfWork;
@@ -55,8 +54,9 @@ internal class UnitOfWork : IUnitOfWork
 
         foreach (IDomainEvent domainEvent in domainEvents)
         {
-            await _mediator.Publish(domainEvent, cancellationToken);
+            _ = Task.Run(async () => await _mediator.Publish(domainEvent, cancellationToken), cancellationToken);
         }
+        
 
         foreach (AbstractEntity entity in domainEntities)
         {

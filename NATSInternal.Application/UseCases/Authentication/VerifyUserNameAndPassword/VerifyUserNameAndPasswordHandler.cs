@@ -39,7 +39,7 @@ internal class VerifyUserNameAndPasswordHandler : IRequestHandler<VerifyUserName
 
         // Ensure the user having the given username exists.
         User user = await _repository
-            .GetSingleByUserNameAsync(requestDto.UserName, cancellationToken)
+            .GetUserByUserNameAsync(requestDto.UserName, cancellationToken)
             ?? throw new OperationException(
                 new object[] { nameof(requestDto.UserName) },
                 DisplayNames.UserName

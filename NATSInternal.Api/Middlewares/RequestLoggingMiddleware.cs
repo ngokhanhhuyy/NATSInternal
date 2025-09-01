@@ -25,17 +25,17 @@ public class RequestLoggingMiddleware
         int statusCode = context.Response.StatusCode;
         string statusColor = statusCode switch
         {
-            >= 200 and < 300 => "\u001b[42m\u001b[37m", // Green
-            >= 300 and < 400 => "\u001b[43m\u001b[30m", // Yellow
-            >= 400 and < 500 => "\u001b[41m\u001b[37m", // Red
-            >= 500 => "\u001b[46m\u001b[30m",           // Cyan
+            >= 200 and < 300 => "\e[42m\e[37m", // Green
+            >= 300 and < 400 => "\e[43m\e[30m", // Yellow
+            >= 400 and < 500 => "\e[41m\e[37m", // Red
+            >= 500 => "\e[46m\e[30m",           // Cyan
             _ => ""
         };
         string currentDateTimeAsString = DateTime.Now.ToString(CultureInfo.InvariantCulture);
 
         string logEntry =
-            $"{statusColor}{statusCode}\u001b[0m     " +
-            $"\u001b[47m\u001b[30m{currentDateTimeAsString}\u001b[0m " +
+            $"{statusColor}{statusCode}\e[0m     " +
+            $"\e[47m\e[30m{currentDateTimeAsString}\e[0m " +
             $"{method} {path}{queryString}";
 
         Console.WriteLine(logEntry);

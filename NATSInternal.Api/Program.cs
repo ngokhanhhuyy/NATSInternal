@@ -1,18 +1,21 @@
 using System.Text.Json;
 using NATSInternal.Api.Middlewares;
+using NATSInternal.Api.Providers;
 using NATSInternal.Application.Configuration;
+using NATSInternal.Application.Notification;
+using NATSInternal.Application.Security;
 using NATSInternal.Infrastructure.Configuration;
 
 namespace NATSInternal.Api;
 
-public class Program
+public static class Program
 {
     public static void Main(string[] args)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         // Connection string - EF Core.
-        string connectionString = builder.Configuration.GetConnectionString("Mysql")!;
+        string connectionString = builder.Configuration.GetConnectionString("PostgreSql")!;
 
         // Add services from infrastructure layer.
         string webRootPath = builder.Environment.WebRootPath;
@@ -20,6 +23,12 @@ public class Program
 
         // Add services from application layer.
         builder.Services.AddApplicationServices();
+        
+        // Add services from api layer.
+        builder.Services.AddScoped<CallerDetailProvider>();
+        builder.Services.AddScoped<ICallerDetailProvider>(provider =>
+            provider.GetRequiredService<CallerDetailProvider>());
+        builder.Services.AddScoped<INotificationService, NotificationService>();
 
         // Cookie.
         builder.Services.ConfigureApplicationCookie(options =>
@@ -84,6 +93,7 @@ public class Program
         }
 
         app.UseAuthorization();
+        app.UseMiddleware<CallerDetailExtractingMiddleware>();
         app.UseMiddleware<RequestLoggingMiddleware>();
         app.UseDeveloperExceptionPage();
         app.UseRouting();

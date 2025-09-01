@@ -2,7 +2,7 @@ using NATSInternal.Domain.Seedwork;
 
 namespace NATSInternal.Domain.Features.Users;
 
-public class Permission : AbstractEntity
+internal class Permission : AbstractEntity
 {
     #region Constructors
 #nullable disable

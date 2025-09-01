@@ -1,5 +1,4 @@
-using System.Security.Claims;
-using NATSInternal.Application.Exceptions;
+using NATSInternal.Api.Providers;
 
 namespace NATSInternal.Api.Middlewares;
 
@@ -7,41 +6,22 @@ public class CallerDetailExtractingMiddleware
 {
     #region Fields
     private readonly RequestDelegate _next;
+    private readonly CallerDetailProvider _callerDetailProvider;
     #endregion
 
     #region Constructors
-    public CallerDetailExtractingMiddleware(RequestDelegate next)
+    public CallerDetailExtractingMiddleware(RequestDelegate next, CallerDetailProvider callerDetailProvider)
     {
         _next = next;
+        _callerDetailProvider = callerDetailProvider;
     }
     #endregion
 
     #region Methods
     public async Task InvokeAsync(HttpContext context)
     {
-        ClaimsPrincipal userPrinciple = context.User;
-
-    }
-    
-    private static async Task LoadCallerAsync(HttpContext httpContext, IAuthorizationService service)
-    {
-        string? idAsString = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (idAsString is null)
-        {
-            return;
-        }
-
-        bool isParsable = Guid.TryParse(idAsString, out Guid id);
-        if (!isParsable)
-        {
-            throw new AuthenticationException();
-        }
-
-        bool isLoadedSuccessfully = await service.LoadCallerAsync(id, httpContext.RequestAborted);
-        if (!isLoadedSuccessfully)
-        {
-            throw new AuthenticationException();
-        }
+        _callerDetailProvider.SetCallerDetail(context.User);
+        await _next(context);
     }
     #endregion
 }

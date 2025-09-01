@@ -3,7 +3,7 @@ using NATSInternal.Domain.Seedwork;
 
 namespace NATSInternal.Domain.Features.Users;
 
-public class User : AbstractAggregateRootEntity
+internal class User : AbstractAggregateRootEntity
 {
     #region Fields
     private readonly List<Role> _roles = new();
@@ -14,12 +14,14 @@ public class User : AbstractAggregateRootEntity
     private User() { }
 #nullable enable
 
-    public User(string userName, string passwordHash)
+    public User(string userName, string passwordHash, DateTime createdDateTime)
     {
         UserName = userName;
         NormalizedUserName = userName.ToUpper();
         PasswordHash = passwordHash;
-        CreatedDateTime = DateTime.UtcNow;
+        CreatedDateTime = createdDateTime;
+        
+        AddDomainEvent(new UserCreateEvent(Id, CreatedDateTime));
     }
     #endregion
 
@@ -36,7 +38,7 @@ public class User : AbstractAggregateRootEntity
     #endregion
 
     #region ComputedProperties
-    public int PowerLevel => Roles.Max(r => r.PowerLevel);
+    public int PowerLevel => Roles.Count == 0 ? 0 : Roles.Max(r => r.PowerLevel);
     #endregion
 
     #region Methods

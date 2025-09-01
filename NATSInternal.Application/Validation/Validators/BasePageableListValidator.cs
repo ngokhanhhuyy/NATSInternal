@@ -1,4 +1,8 @@
-namespace NATSInternal.Core.Validation.Validators;
+using FluentValidation;
+using NATSInternal.Application.Localization;
+using NATSInternal.Application.UseCases;
+
+namespace NATSInternal.Application.Validation.Validators;
 
 internal class BasePageableListValidator<TListRequestDto> : Validator<TListRequestDto>
         where TListRequestDto : IPageableListRequestDto

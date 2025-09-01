@@ -1,4 +1,9 @@
-namespace NATSInternal.Core.Validation.Validators;
+using FluentValidation;
+using NATSInternal.Application.Localization;
+using NATSInternal.Application.UseCases;
+using NATSInternal.Application.Validation.Rules;
+
+namespace NATSInternal.Application.Validation.Validators;
 
 internal class BaseSortableListValidator<TListRequestDto, TFieldToSort> : Validator<TListRequestDto>
         where TListRequestDto : ISortableListRequestDto

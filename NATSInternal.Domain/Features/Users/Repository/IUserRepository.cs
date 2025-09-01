@@ -2,10 +2,10 @@ using NATSInternal.Domain.Shared;
 
 namespace NATSInternal.Domain.Features.Users;
 
-public interface IUserRepository
+internal interface IUserRepository
 {
     #region Methods
-    Task<Page<User>> GetListWithRolesAsync(
+    Task<Page<User>> GetUserListAsync(
         bool? sortByAscending,
         string? sortByFieldName,
         int? page,
@@ -14,14 +14,16 @@ public interface IUserRepository
         string? searchContent,
         CancellationToken cancellationToken = default);
 
-    Task<User?> GetSingleByUserNameAsync(string userName, CancellationToken cancellationToken);
+    Task<User?> GetUserByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<User?> GetSingleIncludedRolesWithPermissionsAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<User?> GetUserByUserNameAsync(string userName, CancellationToken cancellationToken);
 
-    void Create(User user);
+    void AddUser(User user);
 
-    void Update(User user);
+    void UpdateUser(User user);
 
-    void Delete(User user);
+    void DeleteUser(User user);
+
+    Task<List<Role>> GetRolesByNameAsync(IEnumerable<string> roleNames, CancellationToken cancellationToken = default);
     #endregion
 }

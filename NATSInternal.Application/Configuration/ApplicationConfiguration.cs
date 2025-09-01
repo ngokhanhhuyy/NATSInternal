@@ -12,7 +12,7 @@ public static class ApplicationConfiguration
     public static void AddApplicationServices(this IServiceCollection services)
     {
         // Fluent validation.
-        services.AddValidatorsFromAssemblyContaining<VerifyUserNameAndPasswordValidator>();
+        services.AddValidatorsFromAssemblyContaining<VerifyUserNameAndPasswordValidator>(includeInternalTypes: true);
         ValidatorOptions.Global.LanguageManager.Enabled = true;
         ValidatorOptions.Global.LanguageManager = new ValidatorLanguageManager
         {

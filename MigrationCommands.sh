@@ -1,0 +1,2 @@
+dotnet ef migrations add Init --verbose --project NATSInternal.Infrastructure --startup-project NATSInternal.Api --output-dir Migrations
+dotnet ef database update --verbose --project NATSInternal.Infrastructure --startup-project NATSInternal.Api

@@ -2,7 +2,7 @@ using NATSInternal.Domain.Seedwork;
 
 namespace NATSInternal.Domain.Features.Users;
 
-public class Role : AbstractEntity
+internal class Role : AbstractEntity
 {
     #region Fields
     private readonly List<Permission> _permissions = new();

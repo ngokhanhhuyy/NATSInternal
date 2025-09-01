@@ -1,4 +1,6 @@
-namespace NATSInternal.Core.Validation.Validators;
+using NATSInternal.Application.UseCases;
+
+namespace NATSInternal.Application.Validation.Validators;
 
 internal class BaseSortableAndPageableListValidator<TListRequestDto, TFieldToSort> : Validator<TListRequestDto>
     where TListRequestDto : ISortableAndPageableListRequestDto

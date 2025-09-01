@@ -22,7 +22,7 @@ internal class UserRepository : IUserRepository
     #endregion
 
     #region Methods
-    public async Task<Page<User>> GetListWithRolesAsync(
+    public async Task<Page<User>> GetUserListAsync(
         bool? sortByAscending,
         string? sortByFieldName,
         int? page,
@@ -62,33 +62,40 @@ internal class UserRepository : IUserRepository
         return await _listFetcher.GetPagedListAsync(query, page, resultsPerPage, cancellationToken);
     }
 
-    public async Task<User?> GetSingleByUserNameAsync(string userName, CancellationToken cancellationToken = default)
+    public async Task<User?> GetUserByUserNameAsync(string userName, CancellationToken cancellationToken = default)
     {
-        return await _context.Users.SingleOrDefaultAsync(u => u.UserName == userName, cancellationToken);
+        return await _context.Users
+            .Include(u => u.Roles)
+            .SingleOrDefaultAsync(u => u.UserName == userName, cancellationToken);
     }
 
-    public async Task<User?> GetSingleIncludedRolesWithPermissionsAsync(
-        Guid id,
-        CancellationToken cancellationToken = default)
+    public async Task<User?> GetUserByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Users
             .Include(u => u.Roles)
             .SingleOrDefaultAsync(u => u.Id == id, cancellationToken);
     }
 
-    public void Create(User user)
+    public void AddUser(User user)
     {
         _context.Users.Add(user);
     }
 
-    public void Update(User user)
+    public void UpdateUser(User user)
     {
         _context.Users.Update(user);
     }
 
-    public void Delete(User user)
+    public void DeleteUser(User user)
     {
         _context.Users.Remove(user);
+    }
+
+    public async Task<List<Role>> GetRolesByNameAsync(
+        IEnumerable<string> roleNames,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Roles.Where(r => roleNames.Contains(r.Name)).ToListAsync(cancellationToken);
     }
     #endregion
 }
