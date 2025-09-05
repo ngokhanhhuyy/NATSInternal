@@ -1,0 +1,3 @@
+namespace NATSInternal.Application.UseCases.Users;
+
+public class UserAddToRolesRequestDto : UserAddToOrRemoveFromRolesRequestDto;

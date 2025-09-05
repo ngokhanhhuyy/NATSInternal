@@ -39,6 +39,7 @@ public static class ErrorMessages
     public const string NotAvailable = "{ResourceName} hiện đang không khả dụng.";
     public const string NotAvailableByProperty = "{ResourceName} có {PropertyName} '{AttemptedValue}' hiện đang không khả dụng.";
     public const string UpdateRestricted = "{ResourceName} không thể được chỉnh sửa do liên kết với các tài nguyên khác.";
+    public const string AlreadyDeleted = "{ResourceName} đã bị xoá từ trước.";
     public const string DeleteRestricted = "{ResourceName} không thể được xoá do liên kết với các tài nguyên khác.";
     public const string UserAlreadyInRole = $"{DisplayNames.User} hiện đã được thêm vào vị trí {{RoleName}} từ trước.";
     public const string UserNotInRole = $"{DisplayNames.User} không thuộc về vị trí {{RoleName}} từ trước.";

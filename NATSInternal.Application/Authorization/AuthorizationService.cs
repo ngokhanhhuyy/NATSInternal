@@ -1,9 +1,11 @@
+using JetBrains.Annotations;
 using NATSInternal.Application.Security;
 using NATSInternal.Core.Constants;
 using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.Authorization;
 
+[UsedImplicitly]
 internal class AuthorizationService : IAuthorizationService
 {
     #region Fields

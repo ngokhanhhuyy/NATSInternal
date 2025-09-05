@@ -22,8 +22,6 @@ internal interface IUserRepository
 
     void UpdateUser(User user);
 
-    void DeleteUser(User user);
-
     Task<List<Role>> GetRolesByNameAsync(IEnumerable<string> roleNames, CancellationToken cancellationToken = default);
     #endregion
 }

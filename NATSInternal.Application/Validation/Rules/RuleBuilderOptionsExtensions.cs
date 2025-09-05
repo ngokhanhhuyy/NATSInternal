@@ -2,6 +2,7 @@ using FluentValidation;
 using ImageMagick;
 using NATSInternal.Application.Extensions;
 using NATSInternal.Application.Localization;
+using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.Validation.Rules;
 
@@ -12,8 +13,7 @@ internal static class RuleBuilderOptionsExtensions
             this IRuleBuilder<T, DateTime?> ruleBuilder,
             DateTime comparisonDateTime)
     {
-        string errorMessage = ErrorMessages.LaterThan
-            .ReplaceComparisonValue(comparisonDateTime.ToVietnameseString());
+        string errorMessage = ErrorMessages.LaterThan.ReplaceComparisonValue(comparisonDateTime.ToVietnameseString());
         return ruleBuilder.GreaterThan(comparisonDateTime).WithMessage(errorMessage);
     }
 
@@ -71,8 +71,14 @@ internal static class RuleBuilderOptionsExtensions
             }).WithMessage(ErrorMessages.Invalid);
     }
 
-    public static IRuleBuilderOptions<T, byte[]> IsValidImage<T>(
-            this IRuleBuilder<T, byte[]> ruleBuilder)
+    public static IRuleBuilderOptions<T, string> IsValidPassword<T>(this IRuleBuilder<T, string> ruleBuilder)
+    {
+        return ruleBuilder
+            .Length(UserContracts.PasswordMinLength, UserContracts.PasswordMaxLength)
+            .Matches(@"^[\\x21-\\x7E]+$");
+    }
+
+    public static IRuleBuilderOptions<T, byte[]> IsValidImage<T>(this IRuleBuilder<T, byte[]> ruleBuilder)
     {
         return ruleBuilder.Must(file =>
         {

@@ -86,11 +86,6 @@ internal class UserRepository : IUserRepository
         _context.Users.Update(user);
     }
 
-    public void DeleteUser(User user)
-    {
-        _context.Users.Remove(user);
-    }
-
     public async Task<List<Role>> GetRolesByNameAsync(
         IEnumerable<string> roleNames,
         CancellationToken cancellationToken = default)

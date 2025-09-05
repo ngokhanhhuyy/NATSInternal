@@ -31,6 +31,7 @@ internal class User : AbstractAggregateRootEntity
     public string NormalizedUserName { get; private set; }
     public string PasswordHash { get; private set; }
     public DateTime CreatedDateTime { get; private set; }
+    public DateTime? DeletedDateTime { get; private set; }
     #endregion
 
     #region NavigationProperties
@@ -61,8 +62,7 @@ internal class User : AbstractAggregateRootEntity
 
     public void RemoveFromRole(Role role)
     {
-        bool isRemoved = _roles.Remove(role);
-        if (!isRemoved)
+        if (!_roles.Remove(role))
         {
             throw new DomainException($"User with id {Id} is not in role {role.Name}.");
         }
@@ -71,6 +71,16 @@ internal class User : AbstractAggregateRootEntity
     public void ChangePasswordHash(string newPasswordHash)
     {
         PasswordHash = newPasswordHash;
+    }
+
+    public void MarkAsDeleted(DateTime deletedDateTime)
+    {
+        if (DeletedDateTime is not null)
+        {
+            throw new DomainException($"User with id {Id} has already been deleted.");
+        }
+        
+        DeletedDateTime = deletedDateTime;
     }
     #endregion
 }

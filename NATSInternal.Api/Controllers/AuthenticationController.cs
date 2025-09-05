@@ -75,5 +75,20 @@ public class AuthenticationController : ControllerBase
         await HttpContext.SignOutAsync();
         return Ok();
     }
+
+    [Authorize]
+    [HttpPut("[action]")]
+    [ProducesResponseType<UserGetDetailResponseDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> ChangePassword(
+        [FromBody] ChangePasswordRequestDto requestDto,
+        CancellationToken cancellationToken)
+    {
+        await _mediator.Send(requestDto, cancellationToken);
+        return Ok();
+    }
     #endregion
 }

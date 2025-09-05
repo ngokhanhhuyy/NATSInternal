@@ -1,15 +1,54 @@
-﻿namespace TestingProject;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Text.Encodings.Web;
+using FluentValidation;
+using FluentValidation.Results;
 
-public record Record(int Id, string Name, DateTime CreatedDateTime);
-
+#nullable enable
 public class Program
 {
-    public static void Main()
-    {
-        DateTime currentDateTime = DateTime.UtcNow;
-        Record record1 = new(1, "A", DateTime.UtcNow);
-        Record record2 = new(1, "A", DateTime.UtcNow);
+	public static void Main()
+	{
+		ChangePasswordRequestDto requestDto = new() { NewPassword = string.Empty };
+		ChangePasswordValidator validator = new();
+		ValidationResult result = validator.Validate(requestDto);
+		if (!result.IsValid)
+		{
+			JsonSerializerOptions options = new()
+			{
+				WriteIndented = true,
+				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+			};
+			
+			Console.WriteLine(JsonSerializer.Serialize(result.Errors, options));
+		}
+	}
 
-        Console.WriteLine(record1 == record2);
-    }
+	internal interface IHasNewPasswordRequestDto
+	{
+		string NewPassword { get; set; }
+	}
+	
+	public class ChangePasswordRequestDto : IHasNewPasswordRequestDto
+	{
+		public required string NewPassword { get; set; }
+	}
+	
+	public class ChangePasswordValidator : AbstractValidator<ChangePasswordRequestDto>
+	{
+		public ChangePasswordValidator()
+		{
+			Include(new NewPasswordValidator());
+		}
+	}
+	
+	internal class NewPasswordValidator : AbstractValidator<IHasNewPasswordRequestDto>
+	{
+		public NewPasswordValidator()
+		{
+			RuleFor(dto => dto.NewPassword).Length(8, 20);
+		}
+	}
 }
