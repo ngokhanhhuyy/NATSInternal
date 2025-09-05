@@ -40,6 +40,9 @@ internal class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
         // Index.
         builder.HasIndex(u => u.UserName).IsUnique();
         builder.HasIndex(u => u.NormalizedUserName).IsUnique();
+        
+        // Filter.
+        builder.HasQueryFilter(u => u.DeletedDateTime == null);
 
         // Properties.
         builder

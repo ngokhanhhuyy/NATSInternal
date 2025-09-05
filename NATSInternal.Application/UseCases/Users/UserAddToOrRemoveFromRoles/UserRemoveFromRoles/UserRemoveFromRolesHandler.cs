@@ -54,7 +54,7 @@ internal class UserRemoveFromRolesHandler : IRequestHandler<UserRemoveFromRolesR
             {
                 Role role = addedRolesDictionary[roleName];
         
-                // Ensure the requested user has permission to add to roles.
+                // Ensure the requested user has permission to remove from roles.
                 if (!_authorizationService.CanRemoveUserFromRole(user, role))
                 {
                     throw new AuthorizationException();

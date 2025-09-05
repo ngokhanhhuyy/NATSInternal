@@ -4,24 +4,24 @@ using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.EventHandlers.Users;
 
-internal class UserCreateEventHandler : INotificationHandler<UserCreateEvent>
+public class UserAddToRolesEventHandler : INotificationHandler<UserAddToRolesEvent>
 {
     #region Fields
     public readonly INotificationService _notificationService;
     #endregion
 
     #region Constructors
-    public UserCreateEventHandler(INotificationService notificationService)
+    public UserAddToRolesEventHandler(INotificationService notificationService)
     {
         _notificationService = notificationService;
     }
     #endregion
     
     #region Methods
-    public async Task Handle(UserCreateEvent domainEvent, CancellationToken cancellationToken = default)
+    public async Task Handle(UserAddToRolesEventHandler domainEvent, CancellationToken cancellationToken = default)
     {
         await _notificationService.SendAsync(
-            NotificationType.UserCreate,
+            NotificationType.UserAddToRoles,
             domainEvent.CreatedUserId,
             domainEvent.CreatedDateTime,
             cancellationToken

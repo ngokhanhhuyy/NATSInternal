@@ -4,11 +4,10 @@ public enum NotificationType
 {
     #region Elements
     // Enum values for user interactions.
-    UserCreation,
-    UserModification,
-    UserDeletion,
-    UserBirthday,
-    UserJoiningDateAnniversary,
+    UserCreate,
+    UserDelete,
+    UserAddToRoles,
+    UserRemoveFromRoles,
 
     // Enum values for customer interaction.
     CustomerCreation,

@@ -43,12 +43,6 @@ internal class UserAddToRolesHandler : IRequestHandler<UserAddToRolesRequestDto>
         User user = await _repository
             .GetUserByIdAsync(requestDto.Id, cancellationToken)
             ?? throw new NotFoundException();
-        
-        // Ensure the requested user has permission to add to roles.
-        if (!_authorizationService.CanDeleteUser(user))
-        {
-            throw new AuthorizationException();
-        }
 
         // Fetch the role entities based on the request.
         List<Role> existingRoles = await _repository.GetRolesByNameAsync(requestDto.RoleNames, cancellationToken);
@@ -59,24 +53,31 @@ internal class UserAddToRolesHandler : IRequestHandler<UserAddToRolesRequestDto>
         // Add the user to each requested role.
         for (int i = 0; i < requestDto.RoleNames.Count; i++)
         {
-            existingRolesDictionary.TryGetValue(requestDto.RoleNames[i], out Role? role);
-            if (role is null)
+            string roleName = requestDto.RoleNames[i];
+            try
+            {
+                Role role = existingRolesDictionary[roleName];
+
+                // Ensure the requested user has permission to add to roles.
+                if (!_authorizationService.CanAddUserToRole(user, role))
+                {
+                    throw new AuthorizationException();
+                }
+
+                user.RemoveFromRole(role);
+            }
+            catch (KeyNotFoundException)
             {
                 throw OperationException.NotFound(
                     new object[] { nameof(requestDto.RoleNames), i },
                     DisplayNames.Role
                 );
             }
-
-            try
-            {
-                user.AddToRole(role);
-            }
             catch (DomainException)
             {
                 throw new OperationException(
                     new object[] { nameof(requestDto.RoleNames), i },
-                    ErrorMessages.UserAlreadyInRole.Replace("{RoleName}", role.DisplayName)
+                    ErrorMessages.UserNotInRole.Replace("{RoleName}", roleName)
                 );
             }
         }

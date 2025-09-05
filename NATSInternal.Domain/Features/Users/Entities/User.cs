@@ -20,7 +20,7 @@ internal class User : AbstractAggregateRootEntity
         NormalizedUserName = userName.ToUpper();
         PasswordHash = passwordHash;
         CreatedDateTime = createdDateTime;
-        
+
         AddDomainEvent(new UserCreateEvent(Id, CreatedDateTime));
     }
     #endregion
@@ -45,9 +45,7 @@ internal class User : AbstractAggregateRootEntity
     #region Methods
     public bool HasPermission(string permissionName)
     {
-        return Roles
-            .SelectMany(r => r.Permissions)
-            .Any(p => p.Name == permissionName);
+        return Roles.SelectMany(r => r.Permissions).Any(p => p.Name == permissionName);
     }
 
     public void AddToRole(Role role)
@@ -58,6 +56,12 @@ internal class User : AbstractAggregateRootEntity
         }
 
         _roles.Add(role);
+        
+        UserAddToRolesEvent addToRolesEvent = DomainEvents
+            .OfType<UserAddToRolesEvent>()
+            .SingleOrDefault()
+            ?? new UserAddToRolesEvent(Id, new());
+        addToRolesEvent.AddedRoleIds.Add(role.Id);
     }
 
     public void RemoveFromRole(Role role)
@@ -79,7 +83,7 @@ internal class User : AbstractAggregateRootEntity
         {
             throw new DomainException($"User with id {Id} has already been deleted.");
         }
-        
+
         DeletedDateTime = deletedDateTime;
     }
     #endregion
