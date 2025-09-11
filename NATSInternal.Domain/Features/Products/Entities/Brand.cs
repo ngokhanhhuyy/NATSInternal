@@ -1,8 +1,10 @@
+using JetBrains.Annotations;
 using NATSInternal.Domain.Features.Photos;
 using NATSInternal.Domain.Seedwork;
 
 namespace NATSInternal.Domain.Features.Products;
 
+[UsedImplicitly]
 internal class Brand : AbstractEntity
 {
     #region Fields
@@ -23,7 +25,8 @@ internal class Brand : AbstractEntity
         string? email,
         string? address,
         DateTime createdDateTime,
-        Guid? countryId)
+        Guid? countryId,
+        ICollection<Photo> photos)
     {
         Name = name;
         Website = website;
@@ -33,6 +36,9 @@ internal class Brand : AbstractEntity
         Address = address;
         CreatedDateTime = createdDateTime;
         CountryId = countryId;
+        _photos.AddRange(photos);
+
+        AddDomainEvent(new BrandCreatedEvent(Id, Name));
     }
     #endregion
 
@@ -63,7 +69,7 @@ internal class Brand : AbstractEntity
     #endregion
 
     #region ComputedProperties
-    public string? ThumbnailUrl => Photos?
+    public string? ThumbnailUrl => Photos
         .Where(p => p.IsThumbnail && p.BrandId == Id)
         .Select(p => p.Url)
         .SingleOrDefault();
