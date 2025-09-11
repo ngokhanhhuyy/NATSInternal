@@ -6,8 +6,8 @@ public enum NotificationType
     // Enum values for user interactions.
     UserCreate,
     UserDelete,
-    UserAddToRoles,
-    UserRemoveFromRoles,
+    UserAddToRole,
+    UserRemoveFromRole,
 
     // Enum values for customer interaction.
     CustomerCreation,

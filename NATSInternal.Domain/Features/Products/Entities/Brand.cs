@@ -1,0 +1,93 @@
+using NATSInternal.Domain.Features.Photos;
+using NATSInternal.Domain.Seedwork;
+
+namespace NATSInternal.Domain.Features.Products;
+
+internal class Brand : AbstractEntity
+{
+    #region Fields
+    private Country? _country;
+    private readonly List<Photo> _photos = new();
+    #endregion
+
+    #region Constructors
+#nullable disable
+    private Brand() { }
+#nullable enable
+
+    public Brand(
+        string name,
+        string? website,
+        string? socialMediaUrl,
+        string? phoneNumber,
+        string? email,
+        string? address,
+        DateTime createdDateTime,
+        Guid? countryId)
+    {
+        Name = name;
+        Website = website;
+        SocialMediaUrl = socialMediaUrl;
+        PhoneNumber = phoneNumber;
+        Email = email;
+        Address = address;
+        CreatedDateTime = createdDateTime;
+        CountryId = countryId;
+    }
+    #endregion
+
+    #region Properties
+    public Guid Id { get; private set; } = Guid.NewGuid();
+    public string Name { get; private set; }
+    public string? Website { get; private set; }
+    public string? SocialMediaUrl { get; private set; }
+    public string? PhoneNumber { get; private set; }
+    public string? Email { get; private set; }
+    public string? Address { get; private set; }
+    public DateTime CreatedDateTime { get; private set; }
+    public Guid? CountryId { get; private set; }
+    #endregion
+
+    #region NavigationProperties
+    public IReadOnlyList<Photo> Photos => _photos.AsReadOnly();
+
+    public Country? Country
+    {
+        get => _country;
+        set
+        {
+            CountryId = value?.Id;
+            _country = value;
+        }
+    }
+    #endregion
+
+    #region ComputedProperties
+    public string? ThumbnailUrl => Photos?
+        .Where(p => p.IsThumbnail && p.BrandId == Id)
+        .Select(p => p.Url)
+        .SingleOrDefault();
+    #endregion
+
+    #region Methods
+    public void Update(
+        string name,
+        string? website,
+        string? socialMediaUrl,
+        string? phoneNumber,
+        string? email,
+        string? address,
+        DateTime createdDateTime,
+        Guid? countryId)
+    {
+        Name = name;
+        Website = website;
+        SocialMediaUrl = socialMediaUrl;
+        PhoneNumber = phoneNumber;
+        Email = email;
+        Address = address;
+        CreatedDateTime = createdDateTime;
+        CountryId = countryId;
+    }
+    #endregion
+}

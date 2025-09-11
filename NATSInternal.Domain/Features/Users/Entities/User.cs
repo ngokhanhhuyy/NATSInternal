@@ -21,7 +21,7 @@ internal class User : AbstractAggregateRootEntity
         PasswordHash = passwordHash;
         CreatedDateTime = createdDateTime;
 
-        AddDomainEvent(new UserCreateEvent(Id, CreatedDateTime));
+        AddDomainEvent(new UserCreatedEvent(Id, CreatedDateTime));
     }
     #endregion
 
@@ -56,12 +56,7 @@ internal class User : AbstractAggregateRootEntity
         }
 
         _roles.Add(role);
-        
-        UserAddToRolesEvent addToRolesEvent = DomainEvents
-            .OfType<UserAddToRolesEvent>()
-            .SingleOrDefault()
-            ?? new UserAddToRolesEvent(Id, new());
-        addToRolesEvent.AddedRoleIds.Add(role.Id);
+        AddDomainEvent(new UserAddedToRoleEvent(Id, role.Id, role.Name));
     }
 
     public void RemoveFromRole(Role role)

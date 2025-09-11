@@ -2,10 +2,10 @@ using NATSInternal.Domain.Seedwork;
 
 namespace NATSInternal.Domain.Features.Users;
 
-public class UserCreateEvent : IDomainEvent
+public class UserCreatedEvent : IDomainEvent
 {
     #region Constructors
-    internal UserCreateEvent(Guid createdUserId, DateTime createdDateTime)
+    internal UserCreatedEvent(Guid createdUserId, DateTime createdDateTime)
     {
         CreatedUserId = createdUserId;
         CreatedDateTime = createdDateTime;

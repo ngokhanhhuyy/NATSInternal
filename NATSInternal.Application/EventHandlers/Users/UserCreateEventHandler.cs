@@ -4,7 +4,7 @@ using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.EventHandlers.Users;
 
-internal class UserCreateEventHandler : INotificationHandler<UserCreateEvent>
+internal class UserCreateEventHandler : INotificationHandler<UserCreatedEvent>
 {
     #region Fields
     public readonly INotificationService _notificationService;
@@ -18,7 +18,7 @@ internal class UserCreateEventHandler : INotificationHandler<UserCreateEvent>
     #endregion
     
     #region Methods
-    public async Task Handle(UserCreateEvent domainEvent, CancellationToken cancellationToken = default)
+    public async Task Handle(UserCreatedEvent domainEvent, CancellationToken cancellationToken = default)
     {
         await _notificationService.SendAsync(
             NotificationType.UserCreate,
