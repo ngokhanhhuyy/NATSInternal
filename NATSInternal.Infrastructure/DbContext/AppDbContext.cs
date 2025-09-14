@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Infrastructure.DbContext;
@@ -19,10 +20,14 @@ internal class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
+
+        // User entity cluster.
         modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new RoleEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new PermissionEntityTypeConfiguration());
+
+        // Product entity cluster.
+        modelBuilder.ApplyConfiguration(new BrandEntityTypeConfiguration());
     }
     #endregion
 }
