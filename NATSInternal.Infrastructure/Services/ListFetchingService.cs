@@ -1,17 +1,18 @@
 using Microsoft.EntityFrameworkCore;
+using NATSInternal.Application.UseCases.Shared;
 using NATSInternal.Domain.Seedwork;
-using NATSInternal.Domain.Shared;
+using NATSInternal.Infrastructure.Services;
 
 namespace NATSInternal.Infrastructure.Repositories;
 
-internal class ListFetcher
+internal class ListFetchingService : IListFetchingService
 {
     #region Methods
     public async Task<Page<TEntity>> GetPagedListAsync<TEntity>(
         IQueryable<TEntity> query,
         int? page,
         int? resultsPerPage,
-        CancellationToken cancellationToken = default) where TEntity : AbstractEntity
+        CancellationToken cancellationToken = default)
     {
         int pageOrDefault = page ?? 1;
         int resultsPerPageOrDefault = resultsPerPage ?? 15;

@@ -14,7 +14,7 @@ internal class CountryEntityTypeConfiguration : IEntityTypeConfiguration<Country
         builder.HasIndex(r => r.Name);
 
         // Properties.
-        builder.Property(r => r.Name).HasMaxLength(PermissionContracts.NameMaxLength).IsRequired();
+        builder.Property(r => r.Name).HasMaxLength(CountryContracts.NameMaxLength).IsRequired();
     }
     #endregion
 }

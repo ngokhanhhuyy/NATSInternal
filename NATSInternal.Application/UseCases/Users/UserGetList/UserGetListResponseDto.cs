@@ -1,16 +1,18 @@
 using NATSInternal.Application.Authorization;
 using NATSInternal.Domain.Features.Users;
-using NATSInternal.Domain.Shared;
 
 namespace NATSInternal.Application.UseCases.Users;
 
 public class UserGetListResponseDto : IPageableListResponseDto<UserGetListUserResponseDto>
 {
     #region Constructors
-    internal UserGetListResponseDto(Page<User> page, Func<User, UserExistingAuthorizationResponseDto> authorizationGetter)
+    internal UserGetListResponseDto(
+        ICollection<User> users,
+        int pageCount,
+        Func<User,UserExistingAuthorizationResponseDto> authorizationGetter)
     {
-        Items = page.Items.Select(u => new UserGetListUserResponseDto(u, authorizationGetter(u))).ToList();
-        PageCount = page.PageCount;
+        Items = users.Select(u => new UserGetListUserResponseDto(u, authorizationGetter(u))).ToList();
+        PageCount = pageCount;
     }
     #endregion
     

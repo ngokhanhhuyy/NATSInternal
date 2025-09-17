@@ -1,3 +1,4 @@
+using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.Authorization;
@@ -6,6 +7,8 @@ internal interface IAuthorizationService
 {
     #region Methods
     UserExistingAuthorizationResponseDto GetUserExistingAuthorization(User targetUser);
+    ProductExistingAuthorizationResponseDto GetProductExistingAuthorization(Product product);
+    
     bool CanCreateUser();
     bool CanChangeUserPassword(User targetUser);
     bool CanResetUserPassword(User targetUser);

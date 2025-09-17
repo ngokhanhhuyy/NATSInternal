@@ -14,7 +14,7 @@ internal class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
 
         // Relationship.
         builder
-            .HasMany<Role>("_roles")
+            .HasMany(u => u.Roles)
             .WithMany()
             .UsingEntity<Dictionary<string, object>>(
                 "UserRole",

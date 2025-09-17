@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using NATSInternal.Domain.Features.Users;
-using NATSInternal.Domain.Shared;
 using NATSInternal.Infrastructure.DbContext;
 using NATSInternal.Infrastructure.Extensions;
 
@@ -10,14 +9,14 @@ internal class UserRepository : IUserRepository
 {
     #region Fields
     private readonly AppDbContext _context;
-    private readonly ListFetcher _listFetcher;
+    private readonly ListFetchingService _listFetchingService;
     #endregion
 
     #region Constructors
-    public UserRepository(AppDbContext context, ListFetcher listFetcher)
+    public UserRepository(AppDbContext context, ListFetchingService listFetchingService)
     {
         _context = context;
-        _listFetcher = listFetcher;
+        _listFetchingService = listFetchingService;
     }
     #endregion
 
@@ -59,7 +58,7 @@ internal class UserRepository : IUserRepository
                 throw new NotImplementedException();
         }
 
-        return await _listFetcher.GetPagedListAsync(query, page, resultsPerPage, cancellationToken);
+        return await _listFetchingService.GetPagedListAsync(query, page, resultsPerPage, cancellationToken);
     }
 
     public async Task<User?> GetUserByUserNameAsync(string userName, CancellationToken cancellationToken = default)

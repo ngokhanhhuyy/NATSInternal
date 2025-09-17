@@ -35,7 +35,11 @@ internal class User : AbstractAggregateRootEntity
     #endregion
 
     #region NavigationProperties
-    public IReadOnlyCollection<Role> Roles => _roles.AsReadOnly();
+    public IReadOnlyCollection<Role> Roles
+    {
+        get => _roles.AsReadOnly();
+        private set => _roles.AddRange(value);
+    }
     #endregion
 
     #region ComputedProperties

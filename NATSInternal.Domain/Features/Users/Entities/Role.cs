@@ -29,6 +29,10 @@ internal class Role : AbstractEntity
     #endregion
 
     #region NavigationProperties.
-    public IReadOnlyList<Permission> Permissions => _permissions.AsReadOnly();
+    public IReadOnlyList<Permission> Permissions
+    {
+        get => _permissions.AsReadOnly();
+        private set => _permissions.AddRange(value);
+    }
     #endregion
 }

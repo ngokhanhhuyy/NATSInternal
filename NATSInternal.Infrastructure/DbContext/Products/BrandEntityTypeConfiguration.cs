@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NATSInternal.Domain.Features.Products;
-using Humanizer;
 
 namespace NATSInternal.Infrastructure.DbContext;
 
@@ -14,11 +13,7 @@ internal class BrandEntityTypeConfiguration : IEntityTypeConfiguration<Brand>
         builder.HasKey(b => b.Id);
 
         // Relationship.
-        builder
-            .HasOne(b => b.Country)
-            .WithMany()
-            .HasConstraintName(
-                $"FK_{nameof(Brand).Pluralize()}_{nameof(Country).Pluralize()}_{nameof(Brand.CountryId)}");
+        builder.HasOne(b => b.Country).WithMany().OnDelete(DeleteBehavior.SetNull);
 
         // Properties.
         builder.Property(b => b.Name).HasMaxLength(BrandContracts.NameMaxLength).IsRequired();

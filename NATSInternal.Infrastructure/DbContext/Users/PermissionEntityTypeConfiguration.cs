@@ -13,7 +13,7 @@ internal class PermissionEntityTypeConfiguration : IEntityTypeConfiguration<Perm
         // Relationships.
         builder
             .HasOne<Role>()
-            .WithMany("_permissions")
+            .WithMany(r => r.Permissions)
             .HasForeignKey(p => p.RoleId)
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();

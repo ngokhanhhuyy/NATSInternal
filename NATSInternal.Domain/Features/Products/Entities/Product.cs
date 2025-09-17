@@ -55,7 +55,6 @@ internal class Product : AbstractEntity
     public bool IsDiscontinued { get; private set; }
     public DateTime CreatedDateTime { get; private set; }
     public DateTime? LastUpdatedDateTime { get; private set; }
-    public int StockingQuantity { get; private set; }
     public bool IsDeleted { get; private set; }
     #endregion
 
