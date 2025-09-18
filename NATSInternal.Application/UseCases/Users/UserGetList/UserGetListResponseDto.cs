@@ -9,7 +9,7 @@ public class UserGetListResponseDto : IPageableListResponseDto<UserGetListUserRe
     internal UserGetListResponseDto(
         ICollection<User> users,
         int pageCount,
-        Func<User,UserExistingAuthorizationResponseDto> authorizationGetter)
+        Func<User, UserExistingAuthorizationResponseDto> authorizationGetter)
     {
         Items = users.Select(u => new UserGetListUserResponseDto(u, authorizationGetter(u))).ToList();
         PageCount = pageCount;

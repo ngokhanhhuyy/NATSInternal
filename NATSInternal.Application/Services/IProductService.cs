@@ -1,12 +1,11 @@
 using NATSInternal.Application.UseCases.Products;
-using NATSInternal.Domain.Features.Products;
 
 namespace NATSInternal.Application.Services;
 
 internal interface IProductService
 {
     #region Methods
-    Task<Page<Product>> GetProductPagedListIncludingBrandAndCategoryAsync(
+    Task<ProductGetListResponseDto> GetPaginatedProductListAsync(
         bool? sortByAscending,
         string? sortByFieldName,
         int? page,

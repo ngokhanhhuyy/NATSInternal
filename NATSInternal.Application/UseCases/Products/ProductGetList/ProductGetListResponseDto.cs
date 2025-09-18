@@ -3,9 +3,22 @@ using NATSInternal.Domain.Features.Products;
 
 namespace NATSInternal.Application.UseCases.Products;
 
-public class ProductGetListResponseDto
+public class ProductGetListResponseDto : IPageableListResponseDto<ProductGetListProductResponseDto>
 {
-    
+    #region Constructors
+    public ProductGetListResponseDto(
+        ICollection<ProductGetListProductResponseDto> productResponseDtos,
+        int pageCount)
+    {
+        Items = productResponseDtos;
+        PageCount = pageCount;
+    }
+    #endregion
+
+    #region Properties
+    public ICollection<ProductGetListProductResponseDto> Items { get; set; }
+    public int PageCount { get; set; }
+    #endregion
 }
 
 public class ProductGetListProductResponseDto
@@ -29,16 +42,17 @@ public class ProductGetListProductResponseDto
         Unit = product.Unit;
         DefaultAmountBeforeVatPerUnit = product.DefaultAmountBeforeVatPerUnit;
         DefaultVatPercentage = product.DefaultVatPercentage;
-        StockingQuantity = product.StockingQuantity;
-        ThumbnailUrl = product.Photos
-            .Where(p => p.IsThumbnail)
-            .Select(p => p.Url)
-            .SingleOrDefault();
+        StockingQuantity = stockingQuantity;
+        ThumbnailUrl = thumbnailUrl;
     }
 
-    internal ProductGetListProductResponseDto(Product product, ProductExistingAuthorizationResponseDto authorization)
-        : this(product)
+    internal ProductGetListProductResponseDto(
+        Product product,
+        int stockingQuantity,
+        string? thumbnailUrl,
+        ProductExistingAuthorizationResponseDto authorization) : this(product, stockingQuantity, thumbnailUrl)
     {
         Authorization = authorization;
     }
+    #endregion
 }
