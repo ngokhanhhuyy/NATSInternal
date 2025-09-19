@@ -99,7 +99,11 @@ internal class ProductService : IProductService
         );
 
         List<ProductGetListProductResponseDto> productResponseDtos = productPage.Items
-            .Select(i => new ProductGetListProductResponseDto(i.Product, i.StockingQuantity, i.ThumbnailUrl))
+            .Select(i => new ProductGetListProductResponseDto(
+                i.Product,
+                i.StockingQuantity,
+                i.ThumbnailUrl,
+                _authorizationService.GetProductExistingAuthorization(i.Product)))
             .ToList();
 
         return new(productResponseDtos, productPage.PageCount);

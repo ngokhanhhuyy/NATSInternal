@@ -44,5 +44,20 @@ internal class ProductRepository : IProductRepository
             .Include(b => b.Country)
             .SingleOrDefaultAsync(b => b.Id == id, cancellationToken);
     }
+
+    public void AddBrand(Brand brand)
+    {
+        _context.Brands.Add(brand);
+    }
+
+    public void UpdateBrand(Brand brand)
+    {
+        _context.Brands.Update(brand);
+    }
+
+    public void RemoveBrand(Brand brand)
+    {
+        _context.Brands.Remove(brand);
+    }
     #endregion
 }

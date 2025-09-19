@@ -12,5 +12,11 @@ internal interface IProductRepository
     void UpdateProduct(Product product);
 
     Task<Brand?> GetBrandIncludingCountryByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
+    void AddBrand(Brand brand);
+
+    void UpdateBrand(Brand brand);
+
+    void RemoveBrand(Brand brand);
     #endregion
 }
