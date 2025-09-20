@@ -2,10 +2,12 @@ using System.Text.RegularExpressions;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using NATSInternal.Domain.Features.AuditLogs;
 using NATSInternal.Domain.Features.Photos;
 using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Stocks;
 using NATSInternal.Domain.Features.Users;
+using NATSInternal.Infrastructure.DbContext.AuditLogs;
 
 namespace NATSInternal.Infrastructure.DbContext;
 
@@ -25,6 +27,7 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<Product> Products { get; private set; }
     public DbSet<Stock> Stocks { get; private set; }
     public DbSet<Photo> Photos { get; private set; }
+    public DbSet<AuditLog> AuditLogs { get; private set; }
     #endregion
 
     #region ProtectedMethods
@@ -43,6 +46,9 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
         // Stock entity cluster.
         modelBuilder.ApplyConfiguration(new StockEntityTypeConfiguration());
 
+        // AuditLog entity cluster.
+        modelBuilder.ApplyConfiguration(new AuditLogEntityTypeConfiguration());
+
         // Apply naming conventions.
         ConfigureIdentifierNames(modelBuilder);
     }
@@ -51,6 +57,7 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
     #region PrivateMethods
     private static void ConfigureIdentifierNames(ModelBuilder modelBuilder)
     {
+        
         // Set default naming convention for all models.
         foreach (IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())
         {

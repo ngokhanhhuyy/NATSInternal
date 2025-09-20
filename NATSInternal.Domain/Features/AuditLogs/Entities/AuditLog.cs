@@ -14,15 +14,17 @@ internal class AuditLog
     private AuditLog() { }
     #nullable enable
 
-    private AuditLog(
+    public AuditLog(
         Guid targetResourceId,
-        string actionType,
+        Guid performedUserId,
+        string actionName,
         string? dataJsonBeforeModification,
         string? dataJsonAfterModification,
         DateTime loggedDateTime)
     {
         TargetResourceId = targetResourceId;
-        ActionType = actionType;
+        PerformedUserId = performedUserId;
+        ActionName = actionName;
         LoggedDateTime = loggedDateTime;
         _dataJsonBeforeModification = dataJsonBeforeModification;
         _dataJsonAfterModification = dataJsonAfterModification;
@@ -32,7 +34,8 @@ internal class AuditLog
     #region Properties
     public Guid Id { get; private set; } = Guid.NewGuid();
     public Guid TargetResourceId { get; private set; }
-    public string ActionType { get; private set; }
+    public Guid PerformedUserId { get; private set; }
+    public string ActionName { get; private set; }
     public DateTime LoggedDateTime { get; private set; }
     #endregion
     
@@ -46,16 +49,15 @@ internal class AuditLog
 
         return JsonSerializer.Deserialize<TData>(_dataJsonBeforeModification);
     }
-    #endregion
 
-    #region StaticMethods
-    public static AuditLog NewUserCreatingAuditLog<TData>(
-        Guid targetUserId,
-        TData userData,
-        DateTime loggedDateTime) where TData : class
+    public TData? GetDataAfterModification<TData>() where TData : class
     {
-        string userDataJson = JsonSerializer.Serialize(userData);
-        return new(targetUserId, AuditLogActionType.UserCreate, null, userDataJson, loggedDateTime);
+        if (_dataJsonAfterModification is null)
+        {
+            return null;
+        }
+
+        return JsonSerializer.Deserialize<TData>(_dataJsonAfterModification);
     }
     #endregion
 }
