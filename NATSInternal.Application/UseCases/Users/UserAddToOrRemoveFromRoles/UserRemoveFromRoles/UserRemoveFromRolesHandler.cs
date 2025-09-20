@@ -46,10 +46,16 @@ internal class UserRemoveFromRolesHandler : IRequestHandler<UserRemoveFromRolesR
 
         // Using dictionary here instead of existingRoles.SingleOrDefault() to avoid O(n) problem.
         Dictionary<string, Role> addedRolesDictionary = user.Roles.ToDictionary(r => r.Name);
+        List<Guid> addedRoleIds = user.Roles.Select(r => r.Id).ToList();
 
         for (int i = 0; i < requestDto.RoleNames.Count; i++)
         {
             string roleName = requestDto.RoleNames[i];
+            OperationException userNotInRoleException = new(
+                new object[] { nameof(requestDto.RoleNames), i },
+                ErrorMessages.UserNotInRole.Replace("{RoleName}", roleName)
+            );
+            
             try
             {
                 Role role = addedRolesDictionary[roleName];
@@ -59,18 +65,21 @@ internal class UserRemoveFromRolesHandler : IRequestHandler<UserRemoveFromRolesR
                 {
                     throw new AuthorizationException();
                 }
-                
-                user.RemoveFromRole(role);
+
+                if (!addedRoleIds.Contains(role.Id))
+                {
+                    throw userNotInRoleException;
+                }
             }
             catch (Exception exception)
             when (exception is KeyNotFoundException or DomainException)
             {
-                throw new OperationException(
-                    new object[] { nameof(requestDto.RoleNames), i },
-                    ErrorMessages.UserNotInRole.Replace("{RoleName}", roleName)
-                );
+                throw userNotInRoleException;
             }
         }
+
+        List<Role> rolesToBeRemoveFrom = user.Roles.Where(r => requestDto.RoleNames.Contains(r.Name)).ToList();
+        user.RemoveFromRoles(rolesToBeRemoveFrom);
 
         try
         {

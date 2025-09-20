@@ -5,7 +5,7 @@ using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.EventHandlers.Users;
 
-internal class UserCreateEventHandler : INotificationHandler<UserCreatedEvent>
+internal class UserRemmovedFromRolesEventHandler : INotificationHandler<UserRemovedFromRoleEvent>
 {
     #region Fields
     private readonly IAuditLogService _auditLogService;
@@ -13,7 +13,7 @@ internal class UserCreateEventHandler : INotificationHandler<UserCreatedEvent>
     #endregion
 
     #region Constructors
-    public UserCreateEventHandler(IAuditLogService auditLogService, IClock clock)
+    public UserRemmovedFromRolesEventHandler(IAuditLogService auditLogService, IClock clock)
     {
         _auditLogService = auditLogService;
         _clock = clock;
@@ -21,10 +21,11 @@ internal class UserCreateEventHandler : INotificationHandler<UserCreatedEvent>
     #endregion
     
     #region Methods
-    public async Task Handle(UserCreatedEvent domainEvent, CancellationToken cancellationToken = default)
+    public async Task Handle(UserRemovedFromRoleEvent domainEvent, CancellationToken cancellationToken = default)
     {
-        await _auditLogService.LogUserCreateActionAsync(
-            domainEvent.Snapshot,
+        await _auditLogService.LogUserRemoveFromRolesActionAsync(
+            domainEvent.BeforeRemovalSnapshot,
+            domainEvent.AfterRemovalSnapshot,
             _clock.Now,
             cancellationToken
         );

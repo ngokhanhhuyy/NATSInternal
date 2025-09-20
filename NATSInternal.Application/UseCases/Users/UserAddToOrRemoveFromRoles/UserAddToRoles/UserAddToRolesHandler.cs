@@ -4,7 +4,6 @@ using NATSInternal.Application.Authorization;
 using NATSInternal.Application.Exceptions;
 using NATSInternal.Application.Localization;
 using NATSInternal.Application.UnitOfWork;
-using NATSInternal.Domain.Exceptions;
 using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.UseCases.Users;
@@ -49,6 +48,7 @@ internal class UserAddToRolesHandler : IRequestHandler<UserAddToRolesRequestDto>
         
         // Using dictionary here instead of existingRoles.SingleOrDefault() to avoid O(n) problem.
         Dictionary<string, Role> existingRolesDictionary = existingRoles.ToDictionary(r => r.Name);
+        List<Guid> alreadyInRoleIds = user.Roles.Select(r => r.Id).ToList();
 
         // Add the user to each requested role.
         for (int i = 0; i < requestDto.RoleNames.Count; i++)
@@ -64,7 +64,13 @@ internal class UserAddToRolesHandler : IRequestHandler<UserAddToRolesRequestDto>
                     throw new AuthorizationException();
                 }
 
-                user.RemoveFromRole(role);
+                if (alreadyInRoleIds.Contains(role.Id))
+                {
+                    throw new OperationException(
+                        new object[] { nameof(requestDto.RoleNames), i },
+                        ErrorMessages.UserAlreadyInRole.Replace("{RoleName}", roleName)
+                    );
+                }
             }
             catch (KeyNotFoundException)
             {
@@ -73,14 +79,9 @@ internal class UserAddToRolesHandler : IRequestHandler<UserAddToRolesRequestDto>
                     DisplayNames.Role
                 );
             }
-            catch (DomainException)
-            {
-                throw new OperationException(
-                    new object[] { nameof(requestDto.RoleNames), i },
-                    ErrorMessages.UserNotInRole.Replace("{RoleName}", roleName)
-                );
-            }
         }
+
+        user.AddToRoles(existingRoles);
 
         try
         {

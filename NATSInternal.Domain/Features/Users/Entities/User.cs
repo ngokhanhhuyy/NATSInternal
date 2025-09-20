@@ -21,7 +21,8 @@ internal class User : AbstractAggregateRootEntity
         PasswordHash = passwordHash;
         CreatedDateTime = createdDateTime;
 
-        AddDomainEvent(new UserCreatedEvent(Id, CreatedDateTime));
+        UserSnapshot snapshot = new(this);
+        AddDomainEvent(new UserCreatedEvent(snapshot));
     }
     #endregion
 
@@ -52,28 +53,48 @@ internal class User : AbstractAggregateRootEntity
         return Roles.SelectMany(r => r.Permissions).Any(p => p.Name == permissionName);
     }
 
-    public void AddToRole(Role role)
+    public void AddToRoles(ICollection<Role> roles)
     {
-        if (_roles.Any(r => r.Name == role.Name))
+        UserSnapshot beforeAddingSnapshot = new(this);
+        foreach (Role role in roles)
         {
-            throw new DomainException($"User with id {Id} is already in role {role.Name}.");
+            if (_roles.Any(r => r.Name == role.Name))
+            {
+                throw new DomainException($"User with id {Id} is already in role {role.Name}.");
+            }
+            
+            _roles.Add(role);
         }
-
-        _roles.Add(role);
-        AddDomainEvent(new UserAddedToRoleEvent(Id, role.Id, role.Name));
+        UserSnapshot afterAddingSnapshot = new(this);
+        
+        AddDomainEvent(new UserAddedToRolesEvent(beforeAddingSnapshot, afterAddingSnapshot));
     }
 
-    public void RemoveFromRole(Role role)
+    public void RemoveFromRoles(ICollection<Role> roles)
     {
-        if (!_roles.Remove(role))
+        UserSnapshot beforeRemovalSnapshot = new(this);
+        foreach (Role role in roles)
         {
-            throw new DomainException($"User with id {Id} is not in role {role.Name}.");
+            if (!_roles.Remove(role))
+            {
+                throw new DomainException($"User with id {Id} is not in role {role.Name}.");
+            } 
         }
+        UserSnapshot afterRemovalSnapshot = new(this);
+
+        AddDomainEvent(new UserRemovedFromRoleEvent(beforeRemovalSnapshot, afterRemovalSnapshot));
     }
 
     public void ChangePasswordHash(string newPasswordHash)
     {
         PasswordHash = newPasswordHash;
+    }
+
+    public void ResetPasswordHash(string newPasswordHash)
+    {
+        PasswordHash = newPasswordHash;
+        
+        AddDomainEvent(new UserResetPasswordEvent());
     }
 
     public void MarkAsDeleted(DateTime deletedDateTime)

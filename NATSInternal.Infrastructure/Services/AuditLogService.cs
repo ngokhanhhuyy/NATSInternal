@@ -24,31 +24,29 @@ internal class AuditLogService : IAuditLogService
 
     #region Methods
     public async Task LogUserCreateActionAsync(
-        User targetUser,
+        UserSnapshot targetUserSnapshot,
         DateTime loggedDateTime,
         CancellationToken cancellationToken = default)
     {
-        UserChangeDataDto afterModificationDataDto = new(targetUser);
-
         AuditLog auditLog = new(
-            targetUser.Id,
+            targetUserSnapshot.Id,
             _performedUserId,
             AuditLogActionNames.UserCreate,
             null,
-            JsonSerializer.Serialize(afterModificationDataDto),
+            JsonSerializer.Serialize(targetUserSnapshot),
             loggedDateTime
         );
 
         await AddAndSaveAsync(auditLog, cancellationToken);
     }
 
-    public async Task LogUserResetPasswordAction(
-        User targetUser,
+    public async Task LogUserResetPasswordActionAsync(
+        Guid targetUserId,
         DateTime loggedDateTime,
         CancellationToken cancellationToken = default)
     {
         AuditLog auditLog = new(
-            targetUser.Id,
+            targetUserId,
             _performedUserId,
             AuditLogActionNames.UserResetPassword,
             null,
@@ -61,16 +59,35 @@ internal class AuditLogService : IAuditLogService
     }
 
     public async Task LogUserAddToRolesActionAsync(
-        Guid targetUserId,
+        UserSnapshot targetUserBeforeAddingSnapshot,
+        UserSnapshot targetUserAfterAddingSnapshot,
         DateTime loggedDateTime,
         CancellationToken cancellationToken = default)
     {
         AuditLog auditLog = new(
-            targetUser.Id,
+            targetUserBeforeAddingSnapshot.Id,
             _performedUserId,
-            AuditLogActionNames.UserCreate,
-            null,
-            JsonSerializer.Serialize(afterModificationDataDto),
+            AuditLogActionNames.UserAddToRoles,
+            JsonSerializer.Serialize(targetUserBeforeAddingSnapshot),
+            JsonSerializer.Serialize(targetUserAfterAddingSnapshot),
+            loggedDateTime
+        );
+
+        await AddAndSaveAsync(auditLog, cancellationToken);
+    }
+
+    public async Task LogUserRemoveFromRolesActionAsync(
+        UserSnapshot targetUserBeforeRemovalSnapshot,
+        UserSnapshot targetUserAfterRemovalSnapshot,
+        DateTime loggedDateTime,
+        CancellationToken cancellationToken = default)
+    {
+        AuditLog auditLog = new(
+            targetUserBeforeRemovalSnapshot.Id,
+            _performedUserId,
+            AuditLogActionNames.UserRemoveFromRoles,
+            JsonSerializer.Serialize(targetUserBeforeRemovalSnapshot),
+            JsonSerializer.Serialize(targetUserAfterRemovalSnapshot),
             loggedDateTime
         );
 

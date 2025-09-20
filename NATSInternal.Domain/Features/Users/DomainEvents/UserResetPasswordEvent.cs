@@ -2,10 +2,10 @@ using NATSInternal.Domain.Seedwork;
 
 namespace NATSInternal.Domain.Features.Users;
 
-public class UserCreatedEvent : IDomainEvent
+public class UserResetPasswordEvent : IDomainEvent
 {
     #region Constructors
-    internal UserCreatedEvent(UserSnapshot userSnapshot)
+    internal UserResetPasswordEvent(UserSnapshot userSnapshot)
     {
         Snapshot = userSnapshot;
     }

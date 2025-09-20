@@ -6,7 +6,7 @@ internal interface IAuditLogService
 {
     #region Methods
     Task LogUserCreateActionAsync(
-        User targetUser,
+        UserSnapshot targetUserSnapshot,
         DateTime loggedDateTime,
         CancellationToken cancellationToken = default);
 
@@ -16,7 +16,14 @@ internal interface IAuditLogService
         CancellationToken cancellationToken = default);
 
     Task LogUserAddToRolesActionAsync(
-        Guid targetUserId,
+        UserSnapshot targetUserBeforeAddingSnapshot,
+        UserSnapshot targetUserAfterAddingSnapshot,
+        DateTime loggedDateTime,
+        CancellationToken cancellationToken = default);
+
+    Task LogUserRemoveFromRolesActionAsync(
+        UserSnapshot targetUserBeforeRemovalSnapshot,
+        UserSnapshot targetUserAfterRemovalSnapshot,
         DateTime loggedDateTime,
         CancellationToken cancellationToken = default);
     #endregion
