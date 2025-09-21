@@ -1,39 +1,33 @@
+using FluentValidation;
 using MediatR;
-using NATSInternal.Application.Authorization;
-using NATSInternal.Domain.Features.Users;
-using NATSInternal.Domain.Shared;
+using NATSInternal.Application.Services;
 
 namespace NATSInternal.Application.UseCases.Users;
 
 internal class UserGetListHandler : IRequestHandler<UserGetListRequestDto, UserGetListResponseDto>
 {
     #region Fields
-    private readonly IUserRepository _repository;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly IUserService _service;
+    private readonly IValidator<UserGetListRequestDto> _validator;
     #endregion
 
     #region Constructors
-    public UserGetListHandler(IUserRepository repository, IAuthorizationService authorizationService)
+    public UserGetListHandler(IUserService service, IValidator<UserGetListRequestDto> validator)
     {
-        _repository = repository;
-        _authorizationService = authorizationService;
+        _service = service;
+        _validator = validator;
     }
     #endregion
 
     #region Methods
-    public async Task<UserGetListResponseDto> Handle(UserGetListRequestDto requestDto, CancellationToken cancellationToken)
+    public async Task<UserGetListResponseDto> Handle(
+        UserGetListRequestDto requestDto,
+        CancellationToken cancellationToken = default)
     {
-        Page<User> page = await _repository.GetUserListAsync(
-            requestDto.SortByAscending,
-            requestDto.SortByFieldName,
-            requestDto.Page,
-            requestDto.ResultsPerPage,
-            requestDto.RoleId,
-            requestDto.SearchContent,
-            cancellationToken
-        );
+        requestDto.TransformValues();
+        _validator.ValidateAndThrow(requestDto);
 
-        return new(page, _authorizationService.GetUserExistingAuthorization);
+        return await _service.GetPaginatedUserListAsync(requestDto, cancellationToken);
     }
     #endregion
 }

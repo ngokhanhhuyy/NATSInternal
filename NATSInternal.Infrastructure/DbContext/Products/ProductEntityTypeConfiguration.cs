@@ -35,7 +35,6 @@ internal class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product
         builder.Property(p => p.IsForRetail).IsRequired();
         builder.Property(p => p.IsDiscontinued).IsRequired();
         builder.Property(p => p.CreatedDateTime).IsRequired();
-        builder.Property(p => p.StockingQuantity).IsRequired();
         
         // Indexes.
         builder.HasIndex(p => p.Name).IsUnique();

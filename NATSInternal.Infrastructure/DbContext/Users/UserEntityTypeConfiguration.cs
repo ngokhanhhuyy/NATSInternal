@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NATSInternal.Domain.Features.Users;
+using NATSInternal.Domain.Seedwork;
 
 namespace NATSInternal.Infrastructure.DbContext;
 
@@ -17,30 +18,19 @@ internal class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
             .HasMany(u => u.Roles)
             .WithMany()
             .UsingEntity<Dictionary<string, object>>(
-                "UserRole",
-                left => left
-                    .HasOne<Role>()
+                "UserRoles",
+                r => r.HasOne<Role>()
                     .WithMany()
                     .HasForeignKey("RoleId")
                     .OnDelete(DeleteBehavior.Cascade)
                     .IsRequired(),
-                right => right
-                    .HasOne<User>()
+                u => u.HasOne<User>()
                     .WithMany()
                     .HasForeignKey("UserId")
                     .OnDelete(DeleteBehavior.Cascade)
                     .IsRequired(),
-                join =>
-                {
-                    join.HasKey("UserId, RoleId");
-                    join.ToTable("UserRoles");
-                });
-        
+                j => j.HasKey("UserId", "RoleId"));
 
-        // Index.
-        builder.HasIndex(u => u.UserName).IsUnique();
-        builder.HasIndex(u => u.NormalizedUserName).IsUnique();
-        
         // Filter.
         builder.HasQueryFilter(u => u.DeletedDateTime == null);
 
@@ -49,7 +39,7 @@ internal class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
             .Property(u => u.UserName)
             .HasMaxLength(UserContracts.UserNameMaxLength)
             .IsRequired();
-        builder.Property(u => u.NormalizedUserName)
+        builder.Property<string>("NormalizedUserName")
             .HasMaxLength(UserContracts.UserNameMaxLength)
             .IsRequired();
         builder.Property(u => u.PasswordHash)
@@ -60,8 +50,28 @@ internal class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
             .IsRequired();
 
         // Ignore.
-        builder.Ignore(u => u.Roles);
         builder.Ignore(u => u.PowerLevel);
+
+        // Index.
+        builder.HasIndex(u => u.UserName).IsUnique();
+        builder.HasIndex("NormalizedUserName").IsUnique();
+    }
+    #endregion
+
+    #region Classes
+    private class UserRole
+    {
+        #region Properties
+        public Guid UserId { get; set; }
+        public Guid RoleId { get; set; }
+        #endregion
+
+        #region NavigationProperties
+        #nullable disable
+        public User User { get; set; }
+        public Role Role { get; set; }
+        #nullable enable
+        #endregion
     }
     #endregion
 }

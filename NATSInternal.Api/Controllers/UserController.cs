@@ -116,6 +116,11 @@ public class UserController : ControllerBase
         return Ok();
     }
 
+    [ProducesResponseType<UserGetDetailResponseDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> ResetPassword(
         [FromRoute] Guid id,
         [FromBody] UserResetPasswordRequestDto requestDto,

@@ -35,11 +35,13 @@ internal class UserRepository : IUserRepository
     public void AddUser(User user)
     {
         _context.Users.Add(user);
+        _context.Entry(user).Property("NormalizedUserName").CurrentValue = ComputeNormalizedUserName(user.UserName);
     }
 
     public void UpdateUser(User user)
     {
         _context.Users.Update(user);
+        _context.Entry(user).Property("NormalizedUserName").CurrentValue = ComputeNormalizedUserName(user.UserName);
     }
 
     public async Task<List<Role>> GetRolesByNameAsync(
@@ -47,6 +49,13 @@ internal class UserRepository : IUserRepository
         CancellationToken cancellationToken = default)
     {
         return await _context.Roles.Where(r => roleNames.Contains(r.Name)).ToListAsync(cancellationToken);
+    }
+    #endregion
+
+    #region StaticMethods
+    private string ComputeNormalizedUserName(string userName)
+    {
+        return userName.ToLower();
     }
     #endregion
 }

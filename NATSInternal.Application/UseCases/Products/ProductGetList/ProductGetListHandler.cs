@@ -24,21 +24,12 @@ internal class ProductGetListHandler : IRequestHandler<ProductGetListRequestDto,
     #region Methods
     public async Task<ProductGetListResponseDto> Handle(
         ProductGetListRequestDto requestDto,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         requestDto.TransformValues();
         _validator.ValidateAndThrow(requestDto);
 
-        return await _service.GetPaginatedProductListAsync(
-            requestDto.SortByAscending,
-            requestDto.SortByFieldName,
-            requestDto.Page,
-            requestDto.ResultsPerPage,
-            requestDto.BrandId,
-            requestDto.CategoryId,
-            requestDto.SearchContent,
-            cancellationToken
-        );
+        return await _service.GetPaginatedProductListAsync(requestDto, cancellationToken);
     }
     #endregion
 }

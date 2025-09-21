@@ -6,21 +6,20 @@ public class CallerDetailExtractingMiddleware
 {
     #region Fields
     private readonly RequestDelegate _next;
-    private readonly CallerDetailProvider _callerDetailProvider;
     #endregion
 
     #region Constructors
-    public CallerDetailExtractingMiddleware(RequestDelegate next, CallerDetailProvider callerDetailProvider)
+    public CallerDetailExtractingMiddleware(RequestDelegate next)
     {
         _next = next;
-        _callerDetailProvider = callerDetailProvider;
     }
     #endregion
 
     #region Methods
     public async Task InvokeAsync(HttpContext context)
     {
-        _callerDetailProvider.SetCallerDetail(context.User);
+        CallerDetailProvider callerDetailProvider = context.RequestServices.GetRequiredService<CallerDetailProvider>();
+        callerDetailProvider.SetCallerDetail(context.User);
         await _next(context);
     }
     #endregion

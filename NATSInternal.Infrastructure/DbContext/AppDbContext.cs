@@ -30,6 +30,9 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<AuditLog> AuditLogs { get; private set; }
     #endregion
 
+    #region Methods
+    #endregion
+
     #region ProtectedMethods
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -55,25 +58,25 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
     #endregion
     
     #region PrivateMethods
-    private static void ConfigureIdentifierNames(ModelBuilder modelBuilder)
+    private static void ConfigureIdentifierNames(ModelBuilder modelBuilder, bool useSnakeCase = false)
     {
         
         // Set default naming convention for all models.
         foreach (IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())
         {
-            // Set table name.
-            string? tableName = entity.GetTableName();
-            if (tableName is not null)
-            {
-                entity.SetTableName(OmitAspNetPrefix(tableName).Underscore()); 
-            }
+            // // Set table name.
+            // string? tableName = entity.GetTableName();
+            // if (tableName is not null)
+            // {
+            //     entity.SetTableName(OmitAspNetPrefix(tableName).Underscore()); 
+            // }
 
-            // Set columns' names.
-            foreach (IMutableProperty property in entity.GetProperties())
-            {
-                string name = property.Name.Underscore();
-                property.SetColumnName(name);
-            }
+            // // Set columns' names.
+            // foreach (IMutableProperty property in entity.GetProperties())
+            // {
+            //     string name = property.Name.Underscore();
+            //     property.SetColumnName(name);
+            // }
 
             // Set primary keys' names.
             foreach (IMutableKey key in entity.GetKeys())
@@ -82,16 +85,10 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
                 {
                     continue;
                 }
-                
-                IEnumerable<string> columnNames = key.Properties.Select(p =>
-                {
-                    if (p.Name.Any(char.IsUpper))
-                    {
-                        return ReplaceSpecialWords(p.Name.Underscore());
-                    }
 
-                    return ReplaceSpecialWords(p.Name);
-                });
+                IEnumerable<string> columnNames = key.Properties.Select(p => useSnakeCase
+                    ? ReplaceSnakeCaseSpecialWords(p.Name.Underscore())
+                    : p.Name);
 
                 string name = "PK__" + string.Join("__", columnNames);
                 key.SetName(name);
@@ -108,10 +105,10 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
                     {
                         if (p.Name.Any(char.IsUpper))
                         {
-                            return ReplaceSpecialWords(p.Name.Underscore());
+                            return ReplaceSnakeCaseSpecialWords(p.Name.Underscore());
                         }
 
-                        return ReplaceSpecialWords(p.Name);
+                        return ReplaceSnakeCaseSpecialWords(p.Name);
                     }));
                 foreignKey.SetConstraintName(
                     $"FK__{referencingTable}__{referencedTable}__{referencingColumns}");
@@ -120,27 +117,31 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
             // Change index _names
             foreach (IMutableIndex index in entity.GetIndexes())
             {
-                string indexName = index.IsUnique ? "UNIQUE__" : "INDEX__";
-                indexName += OmitAspNetPrefix(index.DeclaringEntityType.GetTableName()!).Underscore() + "__";
-                indexName += string.Join(
-                    "__",
-                    index.Properties
-                        .Select(p =>
-                        {
-                            if (p.Name.Any(char.IsUpper))
-                            {
-                                return ReplaceSpecialWords(p.Name.Underscore());
-                            }
+                List<string> indexElementNames = new() { index.IsUnique ? "UNIQUE" : "INDEX" };
+                string aspNetPrefixOmittedTableName = OmitAspNetPrefix(index.DeclaringEntityType.GetTableName()!);
+                if (useSnakeCase)
+                {
+                    indexElementNames.Add(index.IsUnique ? "UNIQUE" : "INDEX");
+                    indexElementNames.Add(aspNetPrefixOmittedTableName.Underscore() + "__");
+                }
+                else
+                {
+                    indexElementNames.Add(index.IsUnique ? "UNIQUE_" : "INDEX_");
+                    indexElementNames.Add(aspNetPrefixOmittedTableName + "_");
+                }
 
-                            return ReplaceSpecialWords(p.Name);
-                        }));
+                string indexName = string.Join(
+                    useSnakeCase ? "__" : "_",
+                    index.Properties.Select(p => useSnakeCase
+                        ? ReplaceSnakeCaseSpecialWords(p.Name.Underscore())
+                        : p.Name));
 
                 index.SetDatabaseName(indexName);
             }
         }
     }
 
-    private static string ReplaceSpecialWords(string name)
+    private static string ReplaceSnakeCaseSpecialWords(string name)
     {
         Dictionary<string, string> wordPairs = new()
         {

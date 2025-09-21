@@ -69,9 +69,9 @@ internal class UserCreateHandler : IRequestHandler<UserCreateRequestDto, Guid>
                         new object[] { nameof(requestDto.RoleNames), i },
                         DisplayNames.Role
                     );
-            
-                user.AddToRole(role);
-            } 
+            }
+
+            user.AddToRoles(roles);
         }
 
         try

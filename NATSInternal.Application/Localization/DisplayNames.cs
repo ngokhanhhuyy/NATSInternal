@@ -95,7 +95,7 @@ public static class DisplayNames
     public const string SortingByField = "Trường sắp xếp";
     public const string SortingByAscending = "Thứ tự sắp xếp";
     public const string SearchByField = "Trường tìm kiếm";
-    public const string SearchByContent = "Nội dung tìm kiếm";
+    public const string SearchContent = "Nội dung tìm kiếm";
     public const string Page = "Trang";
     public const string ResultsPerPage = "Kết quả mỗi trang";
     public const string PageCount = "Số trang";

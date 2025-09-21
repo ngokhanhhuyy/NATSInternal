@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NATSInternal.Application.AuditLogs;
 using NATSInternal.Application.Security;
 using NATSInternal.Application.Services;
 using NATSInternal.Application.Time;
@@ -24,7 +26,11 @@ public static class InfrastructureConfiguration
     {
         services.AddDbContextFactory<AppDbContext>(options =>
         {
-            options.UseNpgsql(connectionString, x => x.MigrationsAssembly("NATSInternal.Infrastructure"));
+            // options.UseNpgsql(connectionString, x => x.MigrationsAssembly("NATSInternal.Infrastructure"));
+            options.UseMySql(
+                connectionString,
+                ServerVersion.AutoDetect(connectionString),
+                x => x.MigrationsAssembly("NATSInternal.Infrastructure"));
         });
 
         // DbContext.
@@ -36,19 +42,46 @@ public static class InfrastructureConfiguration
         // Repositories.
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
-        
+
         // Services.
+        services.AddScoped<DataSeedingService>();
         services.AddScoped<IListFetchingService, ListFetchingService>();
-        services.AddScoped<
+        services.AddScoped<IAuditLogService, AuditLogService>();
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IUserService, UserService>();
 
         // Unit of work.
         services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
 
         // Security.
         services.AddScoped<IPasswordHasher, PasswordHasher>();
-        
+
         // Time.
         services.AddScoped<IClock, Clock>();
+    }
+
+    public static async Task EnsureDatabaseCreatedAsync(this IServiceProvider serviceProvider)
+    {
+        
+        IServiceScopeFactory serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using IServiceScope serviceScope = serviceScopeFactory.CreateScope();
+        AppDbContext context = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+        ILogger<AppDbContext> logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<AppDbContext>>();
+
+        logger.LogInformation("Ensuring database created");
+
+        await context.Database.OpenConnectionAsync();
+        await context.Database.EnsureCreatedAsync();
+        await context.Database.CloseConnectionAsync();
+    }
+
+    public static async Task SeedDataAsync(this IServiceProvider serviceProvider, bool IsDevelopment)
+    {
+        IServiceScopeFactory serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using IServiceScope serviceScope = serviceScopeFactory.CreateScope();
+        DataSeedingService service = serviceScope.ServiceProvider.GetRequiredService<DataSeedingService>();
+        
+        await service.SeedAsync(IsDevelopment);
     }
     #endregion
 }

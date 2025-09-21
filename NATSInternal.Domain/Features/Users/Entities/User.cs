@@ -17,7 +17,6 @@ internal class User : AbstractAggregateRootEntity
     public User(string userName, string passwordHash, DateTime createdDateTime)
     {
         UserName = userName;
-        NormalizedUserName = userName.ToUpper();
         PasswordHash = passwordHash;
         CreatedDateTime = createdDateTime;
 
@@ -29,7 +28,6 @@ internal class User : AbstractAggregateRootEntity
     #region Properties
     public Guid Id { get; private set; } = Guid.NewGuid();
     public string UserName { get; private set; }
-    public string NormalizedUserName { get; private set; }
     public string PasswordHash { get; private set; }
     public DateTime CreatedDateTime { get; private set; }
     public DateTime? DeletedDateTime { get; private set; }
@@ -94,7 +92,8 @@ internal class User : AbstractAggregateRootEntity
     {
         PasswordHash = newPasswordHash;
         
-        AddDomainEvent(new UserResetPasswordEvent());
+        UserSnapshot snapshot = new(this);
+        AddDomainEvent(new UserResetPasswordEvent(snapshot));
     }
 
     public void MarkAsDeleted(DateTime deletedDateTime)

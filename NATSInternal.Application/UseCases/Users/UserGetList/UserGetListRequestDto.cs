@@ -22,9 +22,9 @@ public class UserGetListRequestDto : ISortableAndPageableListRequestDto, IReques
     #region Enums
     public enum FieldToSort
     {
+        CreatedDateTime,
         UserName,
-        RoleMaxPowerLevel,
-        CreatedDateTime
+        RoleMaxPowerLevel
     }
     #endregion
 }

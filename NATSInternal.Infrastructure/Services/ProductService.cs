@@ -31,31 +31,26 @@ internal class ProductService : IProductService
 
     #region Methods
     public async Task<ProductGetListResponseDto> GetPaginatedProductListAsync(
-        bool? sortByAscending,
-        string? sortByFieldName,
-        int? page,
-        int? resultsPerPage,
-        Guid? brandId,
-        Guid? categoryId,
-        string? searchContent,
+        ProductGetListRequestDto requestDto,
         CancellationToken cancellationToken = default)
     {
         IQueryable<Product> query = _context.Products
             .Include(p => p.Brand)
             .Include(p => p.Category);
 
-        if (brandId.HasValue)
+        if (requestDto.BrandId.HasValue)
         {
-            query = query.Where(p => p.BrandId == brandId.Value);
+            query = query.Where(p => p.BrandId == requestDto.BrandId.Value);
         }
 
-        if (categoryId.HasValue)
+        if (requestDto.CategoryId.HasValue)
         {
-            query = query.Where(p => p.CategoryId == categoryId.Value);
+            query = query.Where(p => p.CategoryId == requestDto.CategoryId.Value);
         }
 
-        if (searchContent is not null && searchContent.Length > 0)
+        if (requestDto.SearchContent is not null && requestDto.SearchContent.Length > 0)
         {
+            string searchContent = requestDto.SearchContent;
             query = query.Where(p =>
                 EF.Functions.Like(p.Name.ToLower(), $"%{searchContent.ToLower()}%") ||
                 p.Brand != null && EF.Functions.Like(p.Brand.Name.ToLower(), $"%{searchContent.ToLower()}%") ||
@@ -63,8 +58,8 @@ internal class ProductService : IProductService
             );
         }
 
-        bool sortByAscendingOrDefault = sortByAscending ?? true;
-        switch (sortByFieldName)
+        bool sortByAscendingOrDefault = requestDto.SortByAscending ?? true;
+        switch (requestDto.SortByFieldName)
         {
             case nameof(Product.CreatedDateTime) or null:
                 query = query.ApplySorting(p => p.CreatedDateTime, sortByAscendingOrDefault);
@@ -93,8 +88,8 @@ internal class ProductService : IProductService
 
         var productPage = await _listFetchingService.GetPagedListAsync(
             projectedQuery,
-            page,
-            resultsPerPage,
+            requestDto.Page,
+            requestDto.ResultsPerPage,
             cancellationToken
         );
 

@@ -7,11 +7,10 @@ public class UserGetListResponseDto : IPageableListResponseDto<UserGetListUserRe
 {
     #region Constructors
     internal UserGetListResponseDto(
-        ICollection<User> users,
-        int pageCount,
-        Func<User, UserExistingAuthorizationResponseDto> authorizationGetter)
+        ICollection<UserGetListUserResponseDto> items,
+        int pageCount)
     {
-        Items = users.Select(u => new UserGetListUserResponseDto(u, authorizationGetter(u))).ToList();
+        Items = items;
         PageCount = pageCount;
     }
     #endregion

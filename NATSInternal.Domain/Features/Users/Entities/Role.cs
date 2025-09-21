@@ -12,7 +12,7 @@ internal class Role : AbstractEntity
 #nullable disable
     private Role() { }
 #nullable enable
-    
+
     public Role(string name, string displayName, int powerLevel)
     {
         Name = name;

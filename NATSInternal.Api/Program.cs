@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json;
 using NATSInternal.Api.Middlewares;
 using NATSInternal.Api.Providers;
@@ -10,12 +11,12 @@ namespace NATSInternal.Api;
 
 public static class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         // Connection string - EF Core.
-        string connectionString = builder.Configuration.GetConnectionString("PostgreSql")!;
+        string connectionString = builder.Configuration.GetConnectionString("MySql")!;
 
         // Add services from infrastructure layer.
         string webRootPath = builder.Environment.WebRootPath;
@@ -26,9 +27,14 @@ public static class Program
         
         // Add services from api layer.
         builder.Services.AddScoped<CallerDetailProvider>();
-        builder.Services.AddScoped<ICallerDetailProvider>(provider =>
-            provider.GetRequiredService<CallerDetailProvider>());
+        builder.Services.AddScoped<ICallerDetailProvider>(p => p.GetRequiredService<CallerDetailProvider>());
         builder.Services.AddScoped<INotificationService, NotificationService>();
+
+        // Add MediatR.
+        builder.Services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+        });
 
         // Cookie.
         builder.Services.ConfigureApplicationCookie(options =>
@@ -66,8 +72,13 @@ public static class Program
                 options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
             });
 
+        // Build application.
         WebApplication app = builder.Build();
 
+        // Configure database and seed data.
+        await app.Services.EnsureDatabaseCreatedAsync();
+        await app.Services.SeedDataAsync(app.Environment.IsDevelopment());
+        
         app.UseCors("LocalhostDevelopment");
         app.Use(async (context, next) =>
         {
@@ -86,8 +97,7 @@ public static class Program
         {
             app.MapOpenApi();
         }
-
-        if (!app.Environment.IsDevelopment())
+        else
         {
             app.UseHttpsRedirection();
         }
@@ -103,6 +113,6 @@ public static class Program
         app.MapControllers();
         // app.MapHub<ApplicationHub>("/Api/Hub");
         app.UseStaticFiles();
-        app.Run();
+        await app.RunAsync();
     }
 }
