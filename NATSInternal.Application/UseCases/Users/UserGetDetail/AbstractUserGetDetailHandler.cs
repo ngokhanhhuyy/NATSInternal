@@ -32,12 +32,17 @@ internal abstract class AbstractUserGetDetailHandler<TRequestDto> : IRequestHand
     #region ProtectedMethods
     protected async Task<UserGetDetailResponseDto> Handle(
         Func<IUserRepository, CancellationToken, Task<User?>> userGetter,
+        bool includingAuthorization = true,
         CancellationToken cancellationToken = default)
     {
         User user = await userGetter(_repository, cancellationToken) ?? throw new NotFoundException();
+        if (!includingAuthorization)
+        {
+            return new(user);
+        }
+
         UserExistingAuthorizationResponseDto authorizationResponseDto = _authorizationService
             .GetUserExistingAuthorization(user);
-
         return new(user, authorizationResponseDto);
     }
     #endregion

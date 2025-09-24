@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using NATSInternal.Application.Authorization;
 using NATSInternal.Application.Security;
 using NATSInternal.Application.Time;
+using NATSInternal.Core.Constants;
 using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Users;
 using NATSInternal.Infrastructure.DbContext;
@@ -51,8 +52,11 @@ internal class DataSeedingService
 
         roles = new()
         {
-            new(RoleNames.Developer, "Nhà phát triển", 50),
-            new(RoleNames.Manager, "Quản lý", 40),
+            new(RoleNames.Developer, "Nhà phát triển", 50, new List<Permission>()),
+            new(RoleNames.Manager, "Quản lý", 40, new List<Permission>()
+            {
+                new(PermissionNames.CreateUser)
+            }),
             new(RoleNames.Accountant, "Kế toán", 30),
             new(RoleNames.Staff, "Nhân viên", 30),
         };

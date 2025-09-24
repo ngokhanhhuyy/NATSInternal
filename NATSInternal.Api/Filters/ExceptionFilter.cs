@@ -1,6 +1,9 @@
+using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -9,18 +12,26 @@ using NATSInternal.Application.Exceptions;
 
 namespace NATSInternal.API.Filters;
 
-public class ExceptionFilter
+public class ExceptionFilter : IExceptionFilter
 {
     #region Fields
     private readonly ProblemDetailsFactory _problemDetailsFactory;
     private readonly JsonNamingPolicy _jsonNamingPolicy;
+    private readonly string _authenticationCookieName;
     #endregion
-    
+
     #region Constructors
-    public ExceptionFilter(ProblemDetailsFactory problemDetailsFactory, IOptions<JsonOptions> jsonOptions)
+    public ExceptionFilter(
+        ProblemDetailsFactory problemDetailsFactory,
+        IOptions<JsonOptions> jsonOptions,
+        IOptionsMonitor<CookieAuthenticationOptions> cookieOptionsMonitor)
     {
         _problemDetailsFactory = problemDetailsFactory;
         _jsonNamingPolicy = jsonOptions.Value.JsonSerializerOptions.PropertyNamingPolicy ?? JsonNamingPolicy.CamelCase;
+
+        const string schemeName = CookieAuthenticationDefaults.AuthenticationScheme;
+        CookieAuthenticationOptions options = cookieOptionsMonitor.Get(schemeName);
+        _authenticationCookieName = options.Cookie.Name!;
     }
     #endregion
 
@@ -60,21 +71,21 @@ public class ExceptionFilter
         }
 
         if (context.Exception is NotFoundException)
-        {
-            details = _problemDetailsFactory.CreateProblemDetails(
-                context.HttpContext,
-                statusCode: 404,
-                title: "Not Found"
-            );
-
-            context.Result = new ObjectResult(details)
             {
-                StatusCode = 404
-            };
+                details = _problemDetailsFactory.CreateProblemDetails(
+                    context.HttpContext,
+                    statusCode: 404,
+                    title: "Not Found"
+                );
 
-            context.ExceptionHandled = true;
-            return;
-        }
+                context.Result = new ObjectResult(details)
+                {
+                    StatusCode = 404
+                };
+
+                context.ExceptionHandled = true;
+                return;
+            }
 
         if (context.Exception is OperationException operationException)
         {

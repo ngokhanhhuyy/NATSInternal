@@ -13,11 +13,12 @@ internal class Role : AbstractEntity
     private Role() { }
 #nullable enable
 
-    public Role(string name, string displayName, int powerLevel)
+    public Role(string name, string displayName, int powerLevel, ICollection<Permission> permissions)
     {
         Name = name;
         DisplayName = displayName;
         PowerLevel = powerLevel;
+        _permissions.AddRange(permissions);
     }
     #endregion
     
@@ -29,10 +30,6 @@ internal class Role : AbstractEntity
     #endregion
 
     #region NavigationProperties.
-    public IReadOnlyList<Permission> Permissions
-    {
-        get => _permissions.AsReadOnly();
-        private set => _permissions.AddRange(value);
-    }
+    public IReadOnlyList<Permission> Permissions => _permissions.AsReadOnly();
     #endregion
 }

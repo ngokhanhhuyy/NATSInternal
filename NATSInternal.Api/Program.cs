@@ -1,7 +1,11 @@
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Authentication;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using NATSInternal.Api.Middlewares;
 using NATSInternal.Api.Providers;
+using NATSInternal.API.Filters;
 using NATSInternal.Application.Configuration;
 using NATSInternal.Application.Notification;
 using NATSInternal.Application.Security;
@@ -37,35 +41,57 @@ public static class Program
         });
 
         // Cookie.
-        builder.Services.ConfigureApplicationCookie(options =>
-        {
-            options.ExpireTimeSpan = TimeSpan.FromDays(30);
-            options.SlidingExpiration = false;
-            options.Cookie.Name = "NATSInternalAuthenticationCookie";
-            options.Cookie.SameSite = SameSiteMode.None;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            options.LoginPath = "/SignIn";
-            options.LogoutPath = "/Logout";
-            
-            options.Events.OnRedirectToLogin = options.Events.OnRedirectToAccessDenied = (context) =>
+        builder.Services
+            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                return Task.CompletedTask;
-            };
+                options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                options.SlidingExpiration = false;
+                options.Cookie.Name = "NATSInternalAuthenticationCookie";
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.LoginPath = "/SignIn";
+                options.LogoutPath = "/Logout";
 
-            options.Events.OnRedirectToLogout = (context) =>
-            {
-                context.Response.StatusCode = StatusCodes.Status200OK;
-                return Task.CompletedTask;
-            };
-        });
+                // options.Events.OnSignedIn = context =>
+                // {
+                //     CallerDetailProvider callerDetailProvider = context.HttpContext.RequestServices
+                //         .GetRequiredService<CallerDetailProvider>();
+                //     try
+                //     {
+                //         callerDetailProvider.SetCallerDetail(context.Principal!);
+                //     }
+                //     catch (AuthenticationException exception)
+                //     {
+                //         context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                //         return context.Fail(exception);
+                //     }
+                //
+                //     return Task.CompletedTask;
+                // };
+                
+                options.Events.OnRedirectToLogin = options.Events.OnRedirectToAccessDenied = (context) =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return Task.CompletedTask;
+                };
+
+                options.Events.OnRedirectToLogout = (context) =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status200OK;
+                    return Task.CompletedTask;
+                };
+            });
 
         builder.Services.AddAuthorization();
         builder.Services.AddOpenApi();
         
         // Add controllers with json serialization policy.
         builder.Services
-            .AddControllers()
+            .AddControllers(options =>
+            {
+                options.Filters.Add<ExceptionFilter>();
+            })
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
@@ -102,14 +128,13 @@ public static class Program
             app.UseHttpsRedirection();
         }
 
-        app.UseAuthorization();
-        app.UseMiddleware<CallerDetailExtractingMiddleware>();
         app.UseMiddleware<RequestLoggingMiddleware>();
         app.UseDeveloperExceptionPage();
         app.UseRouting();
         app.UseResponseCaching();
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseMiddleware<CallerDetailExtractingMiddleware>();
         app.MapControllers();
         // app.MapHub<ApplicationHub>("/Api/Hub");
         app.UseStaticFiles();

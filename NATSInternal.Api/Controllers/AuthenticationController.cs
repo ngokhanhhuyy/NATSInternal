@@ -9,7 +9,7 @@ using NATSInternal.Application.UseCases.Users;
 
 namespace NATSInternal.Api.Controllers;
 
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 [ApiController]
 public class AuthenticationController : ControllerBase
 {
@@ -26,7 +26,7 @@ public class AuthenticationController : ControllerBase
 
     #region Methods
     [AllowAnonymous]
-    [HttpPost]
+    [HttpPost("[action]")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -37,13 +37,19 @@ public class AuthenticationController : ControllerBase
     {
         await _mediator.Send(requestDto, cancellationToken);
 
-        UserGetDetailByUserNameRequestDto userRequestDto = new() { UserName = requestDto.UserName };
+        UserGetDetailByUserNameRequestDto userRequestDto = new()
+        {
+            UserName = requestDto.UserName,
+            IncludingAuthorization = false
+        };
+        
         UserGetDetailResponseDto userResponseDto = await _mediator.Send(userRequestDto, cancellationToken);
 
         List<Claim> claims = new()
         {
             new(ClaimTypes.NameIdentifier, userResponseDto.Id.ToString()),
             new(ClaimTypes.Name, userResponseDto.UserName),
+            new("PowerLevel", userResponseDto.Roles.Max(r => r.PowerLevel).ToString())
         };
 
         foreach (UserGetDetailRoleResponseDto roleResponseDto in userResponseDto.Roles)
@@ -68,7 +74,7 @@ public class AuthenticationController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost]
+    [HttpPost("[action]")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> ClearAccessCookieAsync()
     {

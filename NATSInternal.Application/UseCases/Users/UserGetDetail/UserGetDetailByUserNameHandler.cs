@@ -18,6 +18,7 @@ internal class UserGetDetailByUserNameHandler : AbstractUserGetDetailHandler<Use
     {
         return await Handle(
             async (repository, token) => await repository.GetUserByUserNameAsync(requestDto.UserName, token),
+            requestDto.IncludingAuthorization,
             cancellationToken
         );
     }

@@ -6,6 +6,7 @@ public class UserGetDetailByUserNameRequestDto : IRequestDto, IRequest<UserGetDe
 {
     #region Properties
     public required string UserName { get; set; }
+    public bool IncludingAuthorization { get; set; } = true;
     #endregion
 
     #region Methods

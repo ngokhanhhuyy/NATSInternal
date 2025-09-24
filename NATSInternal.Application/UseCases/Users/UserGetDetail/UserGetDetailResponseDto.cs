@@ -6,11 +6,17 @@ namespace NATSInternal.Application.UseCases.Users;
 public class UserGetDetailResponseDto
 {
     #region Constructors
-    internal UserGetDetailResponseDto(User user, UserExistingAuthorizationResponseDto authorizationResponseDto)
+    internal UserGetDetailResponseDto(User user)
     {
         Id = user.Id;
         UserName = user.UserName;
         Roles = user.Roles.Select(r => new UserGetDetailRoleResponseDto(r)).ToList();
+    }
+
+    internal UserGetDetailResponseDto(
+        User user,
+        UserExistingAuthorizationResponseDto authorizationResponseDto) : this(user)
+    {
         Authorization = authorizationResponseDto;
     }
     #endregion
@@ -19,7 +25,7 @@ public class UserGetDetailResponseDto
     public Guid Id { get; set; }
     public string UserName { get; set; }
     public List<UserGetDetailRoleResponseDto> Roles { get; set; }
-    public UserExistingAuthorizationResponseDto Authorization { get; set; }
+    public UserExistingAuthorizationResponseDto? Authorization { get; set; }
     #endregion
 }
 

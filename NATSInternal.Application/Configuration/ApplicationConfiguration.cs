@@ -25,7 +25,11 @@ public static class ApplicationConfiguration
             Culture = new System.Globalization.CultureInfo("vi")
         };
 
-        ValidatorOptions.Global.PropertyNameResolver = (_, b, _) => b.Name.First().ToString().ToLower() + b.Name[1..];
+        // ValidatorOptions.Global.PropertyNameResolver = (_, b, _) =>
+        // {
+        //     string? name = 
+        //     return b.Name.FirstOrDefault()?.ToString().ToLower() + b.Name[1..] ?? 
+        // }
 
         // UseCases.
         services.AddTransient<IRequestHandler<ChangePasswordRequestDto>, ChangePasswordHandler>();
