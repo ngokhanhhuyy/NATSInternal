@@ -4,27 +4,26 @@ using NATSInternal.Application.Authorization;
 using NATSInternal.Application.Security;
 using NATSInternal.Application.Time;
 using NATSInternal.Core.Constants;
-using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Users;
 using NATSInternal.Infrastructure.DbContext;
 
-namespace NATSInternal.Infrastructure.Services;
+namespace NATSInternal.Infrastructure.Seeders;
 
-internal class DataSeedingService
+internal class UserSeeder
 {
     #region Fields
     private readonly AppDbContext _context;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IClock _clock;
-    private readonly ILogger<DataSeedingService> _logger;
+    private readonly ILogger<UserSeeder> _logger;
     #endregion
 
     #region Constructors
-    public DataSeedingService(
+    public UserSeeder(
         AppDbContext context,
         IPasswordHasher passwordHasher,
         IClock clock,
-        ILogger<DataSeedingService> logger)
+        ILogger<UserSeeder> logger)
     {
         _context = context;
         _passwordHasher = passwordHasher;
@@ -34,12 +33,21 @@ internal class DataSeedingService
     #endregion
 
     #region Methods
-    public async Task SeedAsync(bool _)
+    public async Task<UserSeededResult> SeedAsync()
     {
+        
         ICollection<Role> roles = await SeedRolesAsync();
-        await SeedUsersAsync(roles);
-    }
+        ICollection<User> users = await SeedUsersAsync(roles);
 
+        return new()
+        {
+            Users = users,
+            Roles = roles
+        };
+    }
+    #endregion
+    
+    #region PrivateMethods
     private async Task<ICollection<Role>> SeedRolesAsync()
     {
         List<Role> roles = await _context.Roles.ToListAsync();
@@ -52,13 +60,16 @@ internal class DataSeedingService
 
         roles = new()
         {
-            new(RoleNames.Developer, "Nhà phát triển", 50, new List<Permission>()),
-            new(RoleNames.Manager, "Quản lý", 40, new List<Permission>()
+            new(RoleNames.Developer, "Nhà phát triển", 50, new List<string>()),
+            new(RoleNames.Manager, "Quản lý", 40, new List<string>()
             {
-                new(PermissionNames.CreateUser)
+                PermissionNames.CreateUser,
+                PermissionNames.AddUserToOrRemoveUserFromRoles,
+                PermissionNames.ResetOtherUserPassword,
+                PermissionNames.DeleteUser
             }),
-            new(RoleNames.Accountant, "Kế toán", 30),
-            new(RoleNames.Staff, "Nhân viên", 30),
+            new(RoleNames.Accountant, "Kế toán", 30, new List<string>()),
+            new(RoleNames.Staff, "Nhân viên", 30, new List<string>()),
         };
 
         _context.Roles.AddRange(roles);
@@ -77,7 +88,7 @@ internal class DataSeedingService
 
         _logger.LogInformation("Seeding users.");
 
-        users = new() {  };
+        users = new();
         Dictionary<string, Role> roleDictionary = roles.ToDictionary(r => r.Name);
 
         foreach (Role role in roles)
@@ -95,7 +106,6 @@ internal class DataSeedingService
                         roleDictionary[RoleNames.Accountant],
                         roleDictionary[RoleNames.Staff],
                     });
-
                     break;
                 case RoleNames.Manager:
                     user = new("nguyenthuytrang", _passwordHasher.HashPassword("trang123"), _clock.Now);
@@ -105,16 +115,14 @@ internal class DataSeedingService
                         roleDictionary[RoleNames.Accountant],
                         roleDictionary[RoleNames.Staff],
                     });
-
                     break;
                 default:
-                    user.AddToRoles(new List<Role>() { role });
-
+                    user.AddToRoles(new List<Role> { role });
                     break;
             }
 
             _context.Users.Add(user);
-            _context.Entry(user).Property<string>("NormalizedUserName").CurrentValue = user.UserName.ToLower();
+            users.Add(user);
         }
 
         await _context.SaveChangesAsync();
@@ -122,3 +130,14 @@ internal class DataSeedingService
     }
     #endregion
 }
+
+    
+#region Classes
+internal class UserSeededResult
+{
+    #region Properties
+    public required ICollection<User> Users { get; init; }
+    public required ICollection<Role> Roles { get; init; }
+    #endregion
+}
+#endregion

@@ -9,6 +9,8 @@ CREATE DATABASE "natsinternal"
     LC_COLLATE = 'vi_VN.UTF-8'
     LC_CTYPE = 'vi_VN.UTF-8'
     TEMPLATE template0;
+       
+# 
 
 # Drop all tables (PostgreSQL)
 DO $$

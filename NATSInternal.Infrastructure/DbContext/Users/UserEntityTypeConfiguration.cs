@@ -39,9 +39,6 @@ internal class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
             .Property(u => u.UserName)
             .HasMaxLength(UserContracts.UserNameMaxLength)
             .IsRequired();
-        builder.Property<string>("NormalizedUserName")
-            .HasMaxLength(UserContracts.UserNameMaxLength)
-            .IsRequired();
         builder.Property(u => u.PasswordHash)
             .HasMaxLength(UserContracts.PasswordHashMaxLength)
             .IsRequired();
@@ -54,7 +51,6 @@ internal class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
 
         // Index.
         builder.HasIndex(u => u.UserName).IsUnique();
-        builder.HasIndex("NormalizedUserName").IsUnique();
     }
     #endregion
 

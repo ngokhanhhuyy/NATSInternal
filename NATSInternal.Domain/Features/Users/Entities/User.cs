@@ -16,7 +16,7 @@ internal class User : AbstractAggregateRootEntity
 
     public User(string userName, string passwordHash, DateTime createdDateTime)
     {
-        UserName = userName;
+        UserName = userName.ToLower();
         PasswordHash = passwordHash;
         CreatedDateTime = createdDateTime;
 

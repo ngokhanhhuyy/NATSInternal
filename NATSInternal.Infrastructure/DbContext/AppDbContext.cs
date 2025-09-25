@@ -30,9 +30,6 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<AuditLog> AuditLogs { get; private set; }
     #endregion
 
-    #region Methods
-    #endregion
-
     #region ProtectedMethods
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -114,28 +111,26 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
                     $"FK__{referencingTable}__{referencedTable}__{referencingColumns}");
             }
 
-            // Change index _names
+            // Change index names
             foreach (IMutableIndex index in entity.GetIndexes())
             {
                 List<string> indexElementNames = new() { index.IsUnique ? "UNIQUE" : "INDEX" };
                 string aspNetPrefixOmittedTableName = OmitAspNetPrefix(index.DeclaringEntityType.GetTableName()!);
                 if (useSnakeCase)
                 {
-                    indexElementNames.Add(index.IsUnique ? "UNIQUE" : "INDEX");
-                    indexElementNames.Add(aspNetPrefixOmittedTableName.Underscore() + "__");
+                    indexElementNames.Add(aspNetPrefixOmittedTableName.Underscore());
                 }
                 else
                 {
-                    indexElementNames.Add(index.IsUnique ? "UNIQUE_" : "INDEX_");
-                    indexElementNames.Add(aspNetPrefixOmittedTableName + "_");
+                    indexElementNames.Add(aspNetPrefixOmittedTableName);
                 }
-
-                string indexName = string.Join(
-                    useSnakeCase ? "__" : "_",
+                
+                indexElementNames.AddRange(
                     index.Properties.Select(p => useSnakeCase
                         ? ReplaceSnakeCaseSpecialWords(p.Name.Underscore())
                         : p.Name));
 
+                string indexName = string.Join(useSnakeCase ? "__" : "_", indexElementNames);
                 index.SetDatabaseName(indexName);
             }
         }

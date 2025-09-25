@@ -11,6 +11,7 @@ using NATSInternal.Domain.Features.Users;
 using NATSInternal.Infrastructure.DbContext;
 using NATSInternal.Infrastructure.Repositories;
 using NATSInternal.Infrastructure.Security;
+using NATSInternal.Infrastructure.Seeders;
 using NATSInternal.Infrastructure.Services;
 using NATSInternal.Infrastructure.Time;
 
@@ -44,11 +45,15 @@ public static class InfrastructureConfiguration
         services.AddScoped<IProductRepository, ProductRepository>();
 
         // Services.
-        services.AddScoped<DataSeedingService>();
         services.AddScoped<IListFetchingService, ListFetchingService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<IUserService, UserService>();
+        
+        // Seeders.
+        services.AddTransient<Seeder>();
+        services.AddTransient<UserSeeder>();
+        services.AddTransient<ProductSeeder>();
 
         // Unit of work.
         services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
@@ -75,13 +80,13 @@ public static class InfrastructureConfiguration
         await context.Database.CloseConnectionAsync();
     }
 
-    public static async Task SeedDataAsync(this IServiceProvider serviceProvider, bool IsDevelopment)
+    public static async Task SeedDataAsync(this IServiceProvider serviceProvider, bool isDevelopment)
     {
         IServiceScopeFactory serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
         using IServiceScope serviceScope = serviceScopeFactory.CreateScope();
-        DataSeedingService service = serviceScope.ServiceProvider.GetRequiredService<DataSeedingService>();
+        Seeder seeder = serviceScope.ServiceProvider.GetRequiredService<Seeder>();
         
-        await service.SeedAsync(IsDevelopment);
+        await seeder.SeedAsync(isDevelopment);
     }
     #endregion
 }

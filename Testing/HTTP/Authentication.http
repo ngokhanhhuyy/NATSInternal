@@ -28,9 +28,16 @@ Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
-# @name CustomerNewStatstics
+# @name CustomerNewStatistics
 // @no-log
 GET {{host}}/customer/newStatistics
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name ProductList
+// @no-log
+GET {{host}}/product
 Content-Type: application/json
 Cookie: {{accessCookie}}
 

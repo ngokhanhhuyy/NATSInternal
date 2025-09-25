@@ -13,12 +13,12 @@ internal class Role : AbstractEntity
     private Role() { }
 #nullable enable
 
-    public Role(string name, string displayName, int powerLevel, ICollection<Permission> permissions)
+    public Role(string name, string displayName, int powerLevel, ICollection<string> permissionNames)
     {
         Name = name;
         DisplayName = displayName;
         PowerLevel = powerLevel;
-        _permissions.AddRange(permissions);
+        _permissions.AddRange(permissionNames.Select(n => new Permission(n, Id)));
     }
     #endregion
     
