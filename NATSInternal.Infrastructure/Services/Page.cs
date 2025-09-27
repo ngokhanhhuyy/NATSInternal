@@ -1,4 +1,4 @@
-namespace NATSInternal.Application.UseCases.Shared;
+namespace NATSInternal.Infrastructure.Services;
 
 public class Page<TResult>
 {

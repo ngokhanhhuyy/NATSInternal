@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NATSInternal.Application.Time;
 using NATSInternal.Domain.Features.Products;
+using NATSInternal.Domain.Features.Users;
 using NATSInternal.Infrastructure.DbContext;
 
 namespace NATSInternal.Infrastructure.Seeders;
@@ -33,7 +34,7 @@ internal partial class ProductSeeder
     #endregion
     
     #region Methods
-    public async Task<ProductSeededResult> SeedAsync(bool isDevelopment)
+    public async Task<ProductSeededResult> SeedAsync(List<User> users, bool isDevelopment)
     {
         List<Country> countries = await SeedCountriesAsync();
 

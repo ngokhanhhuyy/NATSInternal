@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NATSInternal.Domain.Features.Products;
+using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Infrastructure.DbContext;
 
@@ -24,6 +25,18 @@ internal class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product
             .WithMany()
             .HasForeignKey(p => p.CategoryId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        builder
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(p => p.CreatedUserId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired();
+
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(p => p.LastUpdatedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
         
         // Properties.
         builder.Property(p => p.Name).HasMaxLength(ProductContracts.NameMaxLength).IsRequired();

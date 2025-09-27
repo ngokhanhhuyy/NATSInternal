@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using NATSInternal.Application.UseCases.Shared;
 using NATSInternal.Infrastructure.Services;
 
 namespace NATSInternal.Infrastructure.Repositories;

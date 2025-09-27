@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using NATSInternal.Application.Authorization;
 using NATSInternal.Application.Services;
 using NATSInternal.Application.UseCases.Products;
+using NATSInternal.Application.UseCases.Shared;
 using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Stocks;
 using NATSInternal.Infrastructure.DbContext;
@@ -76,14 +77,8 @@ internal class ProductService : IProductService
         var projectedQuery = query.Select(product => new
         {
             Product = product,
-            StockingQuantity = _context.Stocks
-                .Where(stock => stock.ProductId == product.Id)
-                .Select(stock => stock.StockingQuantity)
-                .First(),
-            ThumbnailUrl = _context.Photos
-                .Where(photo => photo.ProductId == product.Id && photo.IsThumbnail)
-                .Select(photo => (string?)photo.Url)
-                .FirstOrDefault()
+            Stock = _context.Stocks.First(stock => stock.ProductId == product.Id),
+            ThumbnailPhoto = _context.Photos.FirstOrDefault(photo => photo.ProductId == product.Id && photo.IsThumbnail)
         });
 
         var productPage = await _listFetchingService.GetPagedListAsync(
@@ -93,11 +88,11 @@ internal class ProductService : IProductService
             cancellationToken
         );
 
-        List<ProductGetListProductResponseDto> productResponseDtos = productPage.Items
-            .Select(i => new ProductGetListProductResponseDto(
-                i.Product,
-                i.StockingQuantity,
-                i.ThumbnailUrl,
+        List<ProductBasicResponseDto> productResponseDtos = productPage.Items
+            .Select(i => new ProductBasicResponseDto(
+                product: i.Product,
+                stock: i.Stock,
+                thumbnailPhoto: i.ThumbnailPhoto,
                 _authorizationService.GetProductExistingAuthorization(i.Product)))
             .ToList();
 

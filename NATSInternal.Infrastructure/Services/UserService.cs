@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using NATSInternal.Domain.Features.Users;
 using NATSInternal.Application.Services;
-using NATSInternal.Application.UseCases.Users;
 using NATSInternal.Application.UseCases.Shared;
+using NATSInternal.Application.UseCases.Users;
 using NATSInternal.Infrastructure.DbContext;
 using NATSInternal.Infrastructure.Extensions;
 using NATSInternal.Application.Authorization;
@@ -71,8 +71,8 @@ internal class UserService : IUserService
             cancellationToken
         );
 
-        List<UserGetListUserResponseDto> userResponseDtos = userPage.Items
-            .Select(u => new UserGetListUserResponseDto(u, _authorizationService.GetUserExistingAuthorization(u)))
+        List<UserBasicResponseDto> userResponseDtos = userPage.Items
+            .Select(u => new UserBasicResponseDto(u, _authorizationService.GetUserExistingAuthorization(u)))
             .ToList();
 
         return new(userResponseDtos, userPage.PageCount);

@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using NATSInternal.Domain.Extensions;
 using NATSInternal.Domain.Seedwork;
 
@@ -12,9 +11,9 @@ internal class Product : AbstractEntity
     #endregion
 
     #region Constructors
-#nullable disable
+    #nullable disable
     private Product() { }
-#nullable enable
+    #nullable enable
 
     public Product(
         string name,
@@ -24,21 +23,22 @@ internal class Product : AbstractEntity
         int defaultVatPercentage,
         bool isForRetail,
         bool isDiscontinued,
+        Guid createdUserId,
         DateTime createdDateTime,
         Brand? brand,
         ProductCategory? category)
     {
-        PopulateProperties(
-            name,
-            description,
-            unit,
-            defaultAmountBeforeVatPerUnit,
-            defaultVatPercentage,
-            isForRetail,
-            isDiscontinued,
-            brand,
-            category
-        );
+        Name = name;
+        NormalizedName = name.ToUpper().ToNonDiacritics();
+        Description = description;
+        Unit = unit;
+        DefaultAmountBeforeVatPerUnit = defaultAmountBeforeVatPerUnit;
+        DefaultVatPercentage = defaultVatPercentage;
+        IsForRetail = isForRetail;
+        IsDiscontinued = isDiscontinued;
+        Brand = brand;
+        Category = category;
+        CreatedUserId = createdUserId;
         CreatedDateTime = createdDateTime;
     }
     #endregion
@@ -61,6 +61,8 @@ internal class Product : AbstractEntity
     #region ForeignKeyProperties
     public Guid? BrandId { get; private set; }
     public Guid? CategoryId { get; private set; }
+    public Guid CreatedUserId { get; private set; }
+    public Guid? LastUpdatedUserId { get; private set; }
     #endregion
 
     #region NavigationProperties
@@ -94,37 +96,8 @@ internal class Product : AbstractEntity
         int defaultVatPercentage,
         bool isForRetail,
         bool isDiscontinued,
-        DateTime updatedDateTime,
-        Brand? brand,
-        ProductCategory? category)
-    {
-        PopulateProperties(
-            name,
-            description,
-            unit,
-            defaultAmountBeforeVatPerUnit,
-            defaultVatPercentage,
-            isForRetail,
-            isDiscontinued,
-            brand,
-            category
-        );
-        LastUpdatedDateTime = updatedDateTime;
-    }
-    #endregion
-
-    #region PrivateMethods
-    [MemberNotNull(nameof(Name))]
-    [MemberNotNull(nameof(NormalizedName))]
-    [MemberNotNull(nameof(Unit))]
-    private void PopulateProperties(
-        string name,
-        string? description,
-        string unit,
-        long defaultAmountBeforeVatPerUnit,
-        int defaultVatPercentage,
-        bool isForRetail,
-        bool isDiscontinued,
+        Guid lastUpdatedUserId,
+        DateTime lastUpdatedDateTime,
         Brand? brand,
         ProductCategory? category)
     {
@@ -138,6 +111,8 @@ internal class Product : AbstractEntity
         IsDiscontinued = isDiscontinued;
         Brand = brand;
         Category = category;
+        LastUpdatedUserId = lastUpdatedUserId;
+        LastUpdatedDateTime = lastUpdatedDateTime;
     }
     #endregion
 }

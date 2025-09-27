@@ -54,6 +54,7 @@ public static class InfrastructureConfiguration
         services.AddTransient<Seeder>();
         services.AddTransient<UserSeeder>();
         services.AddTransient<ProductSeeder>();
+        services.AddTransient<StockSeeder>();
 
         // Unit of work.
         services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
