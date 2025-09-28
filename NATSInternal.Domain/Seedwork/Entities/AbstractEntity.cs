@@ -11,14 +11,16 @@ public abstract class AbstractEntity
     #endregion
 
     #region Methods
-    public void AddDomainEvent(IDomainEvent @event)
-    {
-        _domainEvents.Add(@event);
-    }
-
     public void ClearDomainEvents()
     {
         _domainEvents.Clear();
+    }
+    #endregion
+    
+    #region ProtectedMethods
+    protected void AddDomainEvent(IDomainEvent @event)
+    {
+        _domainEvents.Add(@event);
     }
     #endregion
 }

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NATSInternal.Application.Authorization;
+using NATSInternal.Application.Exceptions;
 using NATSInternal.Application.Services;
 using NATSInternal.Application.UseCases.Products;
 using NATSInternal.Application.UseCases.Shared;
@@ -97,6 +98,35 @@ internal class ProductService : IProductService
             .ToList();
 
         return new(productResponseDtos, productPage.PageCount);
+    }
+
+    public async Task<ProductGetDetailResponseDto> GetProductDetailAsync(
+        ProductGetDetailRequestDto requestDto,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _context.Products
+            .Include(p => p.Brand)
+            .Include(p => p.Category)
+            .Where(p => p.Id == requestDto.Id && !p.IsDeleted)
+            .Select(product => new
+            {
+                Product = product,
+                Stock = _context.Stocks.First(stock => stock.ProductId == product.Id),
+                Photos = _context.Photos.Where(photo => photo.ProductId == product.Id).ToList(),
+                CreatedUser = _context.Users.First(user => user.Id == product.CreatedUserId),
+                LastUpdatedUser = _context.Users.FirstOrDefault(user => user.Id == product.LastUpdatedUserId)
+            })
+            .SingleOrDefaultAsync(cancellationToken)
+            ?? throw new NotFoundException();
+
+        return new(
+            product: result.Product,
+            stock: result.Stock,
+            createdUser: result.CreatedUser,
+            lastUpdatedUser: result.LastUpdatedUser,
+            photos: result.Photos,
+            authorizationResponseDto: _authorizationService.GetProductExistingAuthorization(result.Product)
+        );
     }
     #endregion
 }

@@ -37,7 +37,7 @@ internal class Seeder
 
         await using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
         UserSeededResult userSeededResult = await _userSeeder.SeedAsync();
-        ProductSeededResult productSeededResult = await _productSeeder.SeedAsync(isDevelopment);
+        ProductSeededResult productSeededResult = await _productSeeder.SeedAsync(userSeededResult.Users, isDevelopment);
         await _stockSeeder.SeedAsync(productSeededResult.Products);
         await transaction.CommitAsync();
         

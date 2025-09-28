@@ -32,5 +32,15 @@ public class ProductController : ControllerBase
     {
         return Ok(await _mediator.Send(requestDto, cancellationToken));
     }
+
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType<ProductGetListResponseDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetDetail(Guid id, CancellationToken cancellationToken)
+    {
+        ProductGetDetailRequestDto requestDto = new() { Id = id };
+        return Ok(await _mediator.Send(requestDto, cancellationToken));
+    }
     #endregion
 }

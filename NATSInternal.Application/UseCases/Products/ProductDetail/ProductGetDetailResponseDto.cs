@@ -7,10 +7,10 @@ using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.UseCases.Products;
 
-public class ProductDetailResponseDto
+public class ProductGetDetailResponseDto
 {
     #region Constructors
-    internal ProductDetailResponseDto(
+    internal ProductGetDetailResponseDto(
         Product product,
         Stock stock,
         User createdUser,

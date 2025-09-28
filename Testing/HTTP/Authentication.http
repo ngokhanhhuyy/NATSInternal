@@ -44,7 +44,7 @@ Cookie: {{accessCookie}}
 ###
 # @name ProductDetail
 // @no-log
-GET {{host}}/product/1
+GET {{host}}/product/de91b603-a202-4adc-a684-2c646e3f2f8b
 Content-Type: application/json
 Cookie: {{accessCookie}}
 

@@ -36,8 +36,8 @@ internal class UserSeeder
     public async Task<UserSeededResult> SeedAsync()
     {
         
-        ICollection<Role> roles = await SeedRolesAsync();
-        ICollection<User> users = await SeedUsersAsync(roles);
+        List<Role> roles = await SeedRolesAsync();
+        List<User> users = await SeedUsersAsync(roles);
 
         return new()
         {
@@ -48,7 +48,7 @@ internal class UserSeeder
     #endregion
     
     #region PrivateMethods
-    private async Task<ICollection<Role>> SeedRolesAsync()
+    private async Task<List<Role>> SeedRolesAsync()
     {
         List<Role> roles = await _context.Roles.ToListAsync();
         if (roles.Count > 0)
@@ -78,7 +78,7 @@ internal class UserSeeder
         return roles;
     }
 
-    private async Task<ICollection<User>> SeedUsersAsync(ICollection<Role> roles)
+    private async Task<List<User>> SeedUsersAsync(ICollection<Role> roles)
     {
         List<User> users = await _context.Users.ToListAsync();
         if (users.Count > 0)
@@ -136,8 +136,8 @@ internal class UserSeeder
 internal class UserSeededResult
 {
     #region Properties
-    public required ICollection<User> Users { get; init; }
-    public required ICollection<Role> Roles { get; init; }
+    public required List<User> Users { get; init; }
+    public required List<Role> Roles { get; init; }
     #endregion
 }
 #endregion

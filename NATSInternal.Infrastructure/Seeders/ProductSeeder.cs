@@ -3,6 +3,7 @@ using Bogus;
 using Bogus.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NATSInternal.Application.Authorization;
 using NATSInternal.Application.Time;
 using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Users;
@@ -44,7 +45,7 @@ internal partial class ProductSeeder
             List<Brand> brands = await SeedBrandsAsync(countries);
             return new()
             {
-                Products = await SeedProductsAsync(brands, categories)
+                Products = await SeedProductsAsync(users, brands, categories)
             };
         }
 
@@ -381,7 +382,10 @@ internal partial class ProductSeeder
         return brands;
     }
 
-    private async Task<List<Product>> SeedProductsAsync(List<Brand> brands, List<ProductCategory> categories)
+    private async Task<List<Product>> SeedProductsAsync(
+        List<User> users,
+        List<Brand> brands,
+        List<ProductCategory> categories)
     {
         List<Product> products = await _context.Products.ToListAsync();
         if (products.Count > 0)
@@ -403,6 +407,10 @@ internal partial class ProductSeeder
                 defaultVatPercentage: 10,
                 isForRetail: _random.Next(10) > 2,
                 isDiscontinued: _random.Next(10) == 0,
+                createdUserId: users
+                    .Where(u => u.Roles.Any(r => r.Name == RoleNames.Developer))
+                    .Select(u => u.Id)
+                    .First(),
                 createdDateTime: _clock.Now,
                 brand: _random.Next(2) == 0 ? brands[_random.Next(brands.Count)] : null,
                 category: _random.Next(2) == 0 ? categories[_random.Next(categories.Count)] : null

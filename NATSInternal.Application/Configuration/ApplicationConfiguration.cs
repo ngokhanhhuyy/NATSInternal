@@ -49,6 +49,9 @@ public static class ApplicationConfiguration
         services.AddTransient<
             IRequestHandler<ProductGetListRequestDto, ProductGetListResponseDto>,
             ProductGetListHandler>();
+        services.AddTransient<
+            IRequestHandler<ProductGetDetailRequestDto, ProductGetDetailResponseDto>,
+            ProductGetDetailHandler>();
 
         // Services.
         services.AddScoped<IAuthorizationService, AuthorizationService>();
