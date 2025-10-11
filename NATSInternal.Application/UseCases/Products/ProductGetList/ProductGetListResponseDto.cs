@@ -5,9 +5,7 @@ namespace NATSInternal.Application.UseCases.Products;
 public class ProductGetListResponseDto : IPageableListResponseDto<ProductBasicResponseDto>
 {
     #region Constructors
-    public ProductGetListResponseDto(
-        ICollection<ProductBasicResponseDto> productResponseDtos,
-        int pageCount)
+    public ProductGetListResponseDto(ICollection<ProductBasicResponseDto> productResponseDtos, int pageCount)
     {
         Items = productResponseDtos;
         PageCount = pageCount;

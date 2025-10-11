@@ -51,7 +51,7 @@ internal class Product : AbstractEntity
     public string Unit { get; private set; }
     public long DefaultAmountBeforeVatPerUnit { get; private set; }
     public int DefaultVatPercentage { get; private set; }
-    public bool IsForRetail { get; private set; } = true;
+    public bool IsForRetail { get; private set; } = true; 
     public bool IsDiscontinued { get; private set; }
     public DateTime CreatedDateTime { get; private set; }
     public DateTime? LastUpdatedDateTime { get; private set; }

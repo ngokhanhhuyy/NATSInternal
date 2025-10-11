@@ -116,6 +116,7 @@ public class UserController : ControllerBase
         return Ok();
     }
 
+    [HttpPost("{id:guid}/[action]")]
     [ProducesResponseType<UserGetDetailResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

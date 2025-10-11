@@ -1,11 +1,9 @@
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Security.Authentication;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using NATSInternal.Api.Middlewares;
 using NATSInternal.Api.Providers;
-using NATSInternal.API.Filters;
+using NATSInternal.Api.Filters;
 using NATSInternal.Application.Configuration;
 using NATSInternal.Application.Notification;
 using NATSInternal.Application.Security;
@@ -85,6 +83,11 @@ public static class Program
 
         builder.Services.AddAuthorization();
         builder.Services.AddOpenApi();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.SchemaFilter<ProblemDetailsSchemaFilter>();
+            options.OperationFilter<RemoveSchemaForNotFoundOperationFilter>();
+        });
         
         // Add controllers with json serialization policy.
         builder.Services
@@ -97,6 +100,10 @@ public static class Program
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
             });
+        
+        // Swagger + OpenAPI.
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
 
         // Build application.
         WebApplication app = builder.Build();
@@ -116,12 +123,13 @@ public static class Program
             }
 
             await next();
-        }); 
+        });
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
-            app.MapOpenApi();
+            app.UseSwagger();
+            app.UseSwaggerUI();
         }
         else
         {
