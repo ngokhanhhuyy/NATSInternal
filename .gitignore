@@ -1,8 +1,12 @@
+# =========================================
+# Backend (.NET) ignores
+# =========================================
+
 # Ignore build output directories
 bin/
 obj/
 
-# Ignore VS Code settings
+# Ignore VS/IDE settings
 .vscode/
 .vs/
 .idea/
@@ -11,8 +15,74 @@ global.json
 NATSInternal.sln.DotSettings
 NATSInternal.sln.DotSettings.user
 .github/
-NATSInternal.API/wwwroot/images/user/
+
+# Ignore user and build artifacts
+/NATSInternal.API/wwwroot/images/user/
 /NATSInternal.API/NATSInternal.API.csproj.user
 /NATSInternal.Blazor
 /NATSInternal.MVC
 /NATSInternal.Svelte
+
+# =========================================
+# Frontend (TypeScript / Node.js) ignores
+# =========================================
+
+# Node dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+out/
+.cache/
+.temp/
+.next/
+.nuxt/
+.svelte-kit/
+storybook-static/
+
+# Vite / RSBuild / Webpack / Astro cache
+.vite/
+.rsbuild_cache/
+.rspack/
+.astro/
+webpack-stats.json
+webpack-cache/
+vite.config.timestamp*
+vite.config.js.timestamp*
+
+# TypeScript build outputs
+*.tsbuildinfo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files (never commit secrets)
+.env
+.env.*
+!.env.example
+
+# Test / coverage
+coverage/
+*.lcov
+.jest/
+.vitest/
+playwright-report/
+test-results/
+
+# Local package manager caches
+.npm/
+.yarn/
+.pnpm-store/
+
+# Lock files (optional, if you only use one type)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Editor / OS specific
+.DS_Store
+Thumbs.db
