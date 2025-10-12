@@ -29,7 +29,6 @@ internal class Product : AbstractEntity
         ProductCategory? category)
     {
         Name = name;
-        NormalizedName = name.ToUpper().ToNonDiacritics();
         Description = description;
         Unit = unit;
         DefaultAmountBeforeVatPerUnit = defaultAmountBeforeVatPerUnit;
@@ -46,7 +45,6 @@ internal class Product : AbstractEntity
     #region Properties
     public Guid Id { get; private set; } = Guid.NewGuid();
     public string Name { get; private set; }
-    public string NormalizedName { get; private set; }
     public string? Description { get; private set; }
     public string Unit { get; private set; }
     public long DefaultAmountBeforeVatPerUnit { get; private set; }
