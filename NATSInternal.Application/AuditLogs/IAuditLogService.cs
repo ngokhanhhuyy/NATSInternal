@@ -26,5 +26,7 @@ internal interface IAuditLogService
         UserSnapshot targetUserAfterRemovalSnapshot,
         DateTime loggedDateTime,
         CancellationToken cancellationToken = default);
+
+    Task LogProductCreateActionAsync();
     #endregion
 }

@@ -44,13 +44,16 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType<Guid>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Guid>(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> Create(
         [FromBody] ProductCreateRequestDto requestDto,
         CancellationToken cancellationToken = default)
     {
         Guid id = await _mediator.Send(requestDto, cancellationToken);
-        return CreatedAtAction(nameof(GetDetail))
+        return CreatedAtAction(nameof(GetDetail), new { id }, id);
     }
     #endregion
 }
