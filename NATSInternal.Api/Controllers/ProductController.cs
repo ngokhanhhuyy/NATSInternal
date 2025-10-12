@@ -28,19 +28,29 @@ public class ProductController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetList(
         [FromQuery] ProductGetListRequestDto requestDto,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         return Ok(await _mediator.Send(requestDto, cancellationToken));
     }
 
     [HttpGet("{id:guid}")]
-    [ProducesResponseType<ProductGetListResponseDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProductGetDetailResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetDetail(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetDetail(Guid id, CancellationToken cancellationToken = default)
     {
         ProductGetDetailRequestDto requestDto = new() { Id = id };
         return Ok(await _mediator.Send(requestDto, cancellationToken));
+    }
+
+    [HttpPost]
+    [ProducesResponseType<Guid>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Create(
+        [FromBody] ProductCreateRequestDto requestDto,
+        CancellationToken cancellationToken = default)
+    {
+        Guid id = await _mediator.Send(requestDto, cancellationToken);
+        return CreatedAtAction(nameof(GetDetail))
     }
     #endregion
 }

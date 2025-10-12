@@ -3,7 +3,7 @@ namespace NATSInternal.Domain.Features.Products;
 internal interface IProductRepository
 {
     #region Methods
-    Task<Product?> GetProductIncludingBrandWithCountryAndCategoryByIdAsync(
+    Task<Product?> GetProductByIdIncludingBrandWithCountryAndCategoryAsync(
         Guid id,
         CancellationToken cancellationToken = default);
 
@@ -11,12 +11,20 @@ internal interface IProductRepository
 
     void UpdateProduct(Product product);
 
-    Task<Brand?> GetBrandIncludingCountryByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Brand?> GetBrandByIdIncludingCountryAsync(Guid id, CancellationToken cancellationToken = default);
 
     void AddBrand(Brand brand);
 
     void UpdateBrand(Brand brand);
 
     void RemoveBrand(Brand brand);
+
+    Task<ProductCategory?> GetCategoryByNameAsync(string name, CancellationToken cancellationToken = default);
+
+    void AddCategory(ProductCategory category);
+
+    void UpdateCategory(ProductCategory category);
+
+    void RemoveCategory(ProductCategory category);
     #endregion
 }

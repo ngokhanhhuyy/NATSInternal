@@ -18,7 +18,7 @@ internal class ProductRepository : IProductRepository
     #endregion
 
     #region Methods
-    public async Task<Product?> GetProductIncludingBrandWithCountryAndCategoryByIdAsync(
+    public async Task<Product?> GetProductByIdIncludingBrandWithCountryAndCategoryAsync(
         Guid id,
         CancellationToken cancellationToken = default)
     {
@@ -38,7 +38,7 @@ internal class ProductRepository : IProductRepository
         _context.Products.Update(product);
     }
 
-    public async Task<Brand?> GetBrandIncludingCountryByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Brand?> GetBrandByIdIncludingCountryAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Brands
             .Include(b => b.Country)
@@ -58,6 +58,28 @@ internal class ProductRepository : IProductRepository
     public void RemoveBrand(Brand brand)
     {
         _context.Brands.Remove(brand);
+    }
+
+    public async Task<ProductCategory?> GetCategoryByNameAsync(
+        string name,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.ProductCategories.FirstOrDefaultAsync(c => c.Name == name, cancellationToken);
+    }
+
+    public void AddCategory(ProductCategory category)
+    {
+        _context.ProductCategories.Add(category);
+    }
+
+    public void UpdateCategory(ProductCategory category)
+    {
+        _context.ProductCategories.Update(category);
+    }
+
+    public void RemoveCategory(ProductCategory category)
+    {
+        _context.ProductCategories.Remove(category);
     }
     #endregion
 }

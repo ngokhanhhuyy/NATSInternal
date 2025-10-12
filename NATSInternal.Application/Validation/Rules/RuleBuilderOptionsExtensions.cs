@@ -2,6 +2,7 @@ using FluentValidation;
 using ImageMagick;
 using NATSInternal.Application.Extensions;
 using NATSInternal.Application.Localization;
+using NATSInternal.Application.UseCases.Shared;
 using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.Validation.Rules;
@@ -148,16 +149,16 @@ internal static class RuleBuilderOptionsExtensions
     //         .When(dto => dto.MonthYear.Year < DateTime.UtcNow.ToApplicationTime().Year);
     // }
     //
-    // public static IRuleBuilderOptions<T, List<PhotoRequestDto>> ContainsNoOrOneThumbnail<T>(
-    //         this IRuleBuilder<T, List<PhotoRequestDto>> ruleBuilder) where T : IHasPhotosUpsertRequestDto
-    // {
-    //     return ruleBuilder
-    //         .Must((_, photos) => photos.Count(p => p.IsThumbnail) <= 1)
-    //         .WithMessage(ErrorMessages.PhotosCannotContainsMoreThanOneThumbnail
-    //             .Replace("{Photos}", DisplayNames.Photo.ToLower())
-    //             .Replace("{Thumbnail}", DisplayNames.Thumbnail.ToLower()))
-    //         .WithName(DisplayNames.Photo);
-    // }
+    public static IRuleBuilderOptions<T, List<PhotoAddOrUpdateRequestDto>> ContainsNoOrOneThumbnail<T>(
+            this IRuleBuilder<T, List<PhotoAddOrUpdateRequestDto>> ruleBuilder)
+    {
+        return ruleBuilder
+            .Must((_, photos) => photos.Count(p => p.IsThumbnail) <= 1)
+            .WithMessage(ErrorMessages.PhotosCannotContainsMoreThanOneThumbnail
+                .Replace("{Photos}", DisplayNames.Photo.ToLower())
+                .Replace("{Thumbnail}", DisplayNames.Thumbnail.ToLower()))
+            .WithName(DisplayNames.Photo);
+    }
     #endregion
 
     #region PrivateMethods
