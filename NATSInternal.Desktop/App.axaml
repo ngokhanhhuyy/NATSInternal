@@ -1,0 +1,69 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:NATSInternal.Desktop"
+             xmlns:converters="clr-namespace:NATSInternal.Desktop.Converters"
+             x:Class="NATSInternal.Desktop.App"
+             RequestedThemeVariant="Light">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+             
+    <Application.Resources>
+        <Color x:Key="Gray-50">#f9fafb</Color>
+        <Color x:Key="Gray-100">#f3f4f6</Color>
+        <Color x:Key="Gray-200">#e5e7eb</Color>
+        <Color x:Key="Blue-500">#3b82f6</Color>
+        <Color x:Key="Blue-600">#2563eb</Color>
+        <Color x:Key="Blue-700">#1d4ed8</Color>
+        <Color x:Key="Red-50">#fef2f2</Color>
+        <Color x:Key="Red-100">#fee2e2</Color>
+        <Color x:Key="Red-200">#fecaca</Color>
+        <Color x:Key="Red-500">#ef4444</Color>
+        <Color x:Key="Red-600">#dc2626</Color>
+        <Color x:Key="Red-700">#b91c1c</Color>
+        
+        <!-- Shared -->
+        <CornerRadius x:Key="ControlCornerRadius">8</CornerRadius>
+        
+        <!-- Button -->
+        <SolidColorBrush x:Key="ButtonBackground" Color="white" />
+        <SolidColorBrush x:Key="ButtonBorderBrush" Color="{DynamicResource Gray-200}" />
+        <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{DynamicResource Gray-100}" />
+        <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="{DynamicResource Blue-700}" />
+        <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="{DynamicResource Gray-200}" />
+        <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{DynamicResource Gray-100}" />
+        <SolidColorBrush x:Key="ButtonBorderBrushPressed" Color="{DynamicResource Gray-200}" />
+        <SolidColorBrush x:Key="ButtonForegroundPressed" Color="{DynamicResource Blue-700}" />
+        <Thickness x:Key="TextControlThemePadding">10</Thickness>
+        
+        <!-- TextBox -->
+        <SolidColorBrush x:Key="TextControlBackground" Color="{DynamicResource Gray-50}" />
+        <SolidColorBrush x:Key="TextControlBorderBrush" Color="{DynamicResource Gray-200}" />
+        <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="{DynamicResource Gray-50}" />
+        <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="{DynamicResource Gray-200}" />
+        
+        <!-- Converters -->
+        <converters:BoolToStringConverter x:Key="BoolToStringConverter" />
+        <converters:ErrorCollectionToErrorMessageConverter x:Key="ErrorCollectionToErrorMessageConverter" />
+    </Application.Resources>
+  
+    <Application.Styles>
+        <FluentTheme />
+        
+        <!-- Button -->
+        <Style Selector="Button:pressed, RepeatButton:pressed, ToggleButton:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.95)" />    
+        </Style>
+        
+        <!-- TextBox -->
+        <Style Selector="
+                TextBox:pointerover /template/ TextBlock#PART_Watermark,
+                TextBox:pointerover /template/ TextBlock#PART_FloatingWatermark,
+                TextBox:focus /template/ TextBlock#PART_Watermark,
+                TextBox:focus /template/ TextBlock#PART_FloatingWatermark">
+            <Setter Property="Foreground" Value="{DynamicResource TextControlForeground}" />
+        </Style>
+    </Application.Styles>
+</Application>

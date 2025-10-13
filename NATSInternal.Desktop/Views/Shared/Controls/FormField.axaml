@@ -1,0 +1,46 @@
+<ContentControl xmlns="https://github.com/avaloniaui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                xmlns:v="using:NATSInternal.Desktop.Views"
+                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                x:Class="NATSInternal.Desktop.Views.FormField"
+                x:Name="Root">
+    <ContentControl.Styles>
+        <Style Selector="v|FormField">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <StackPanel Spacing="0">
+                        <!-- Label -->
+                        <TextBlock>
+                            <!-- <TextBlock.Text> -->
+                            <!--     <Binding Path="LabelText" RelativeSource="{RelativeSource AncestorType=v:FormField}" /> -->
+                            <!-- </TextBlock.Text> -->
+                            <!-- -->
+                            <!-- <TextBlock.IsVisible> -->
+                            <!--     <Binding Path="LabelText" -->
+                            <!--              RelativeSource="{RelativeSource AncestorType=v:FormField}"/> -->
+                            <!-- </TextBlock.IsVisible> -->
+                        </TextBlock>
+                        
+                        <!-- Content -->
+                        <ContentPresenter Content="{TemplateBinding Content}" />
+                        
+                        <!-- Error Message Text -->
+                        <TextBlock>
+                            <TextBlock.Text>
+                                <Binding Path="ErrorMessageText"
+                                         RelativeSource="{RelativeSource AncestorType=v:FormField}" />
+                            </TextBlock.Text>
+                            
+                            <TextBlock.IsVisible>
+                                <Binding Path="ErrorMessageText"
+                                         RelativeSource="{RelativeSource AncestorType=v:FormField}" />
+                            </TextBlock.IsVisible>
+                        </TextBlock>
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+    </ContentControl.Styles>
+</ContentControl>

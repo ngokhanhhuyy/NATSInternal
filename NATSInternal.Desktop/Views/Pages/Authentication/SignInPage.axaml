@@ -1,0 +1,81 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:NATSInternal.Desktop.ViewModels"
+             xmlns:v="using:NATSInternal.Desktop.Views"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
+             x:Class="NATSInternal.Desktop.Views.SignInPage"
+             x:DataType="vm:SignInViewModel"
+             x:Name="Page"
+             Background="rgb(29, 78, 216)"
+             HorizontalContentAlignment="Center"
+             VerticalContentAlignment="Center">
+  <Border Background="white" Padding="10" CornerRadius="8">
+    <StackPanel>
+      <ItemsControl ItemsSource="{Binding Errors, Mode=OneWay}" Margin="0, 0, 0, 0">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border BorderBrush="{StaticResource Red-500}" BorderThickness="1"
+                    Background="{StaticResource Red-100}"
+                    CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="{StaticResource TextControlThemePadding}"
+                    Margin="0, 0, 0, 5">
+              <TextBlock Foreground="{StaticResource Red-500}"
+                         Text="{Binding Message, Mode=OneWay}" />
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      
+      <TextBlock>
+        <TextBlock.Text>
+          <Binding Path="Errors"
+                   Mode="OneWay"
+                   Converter="{StaticResource ErrorCollectionToErrorMessageConverter}"
+                   ConverterParameter="UserName">
+          </Binding>
+        </TextBlock.Text>
+      </TextBlock>
+      
+      <!-- Inputs -->
+      <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="250,100"
+            HorizontalAlignment="Center" VerticalAlignment="Center"
+            ColumnSpacing="5" RowSpacing="5">
+        <!-- UserName -->
+        <v:FormField Grid.Row="0" Grid.Column="0"
+                     ErrorCollection="{Binding Errors, Mode=OneWay}"
+                     ErrorPropertyPath="UserName">
+          <TextBox Text="{Binding UserName}" Watermark="Tên tài khoản" />
+        </v:FormField>
+        
+        <!-- Password -->
+        <v:FormField Grid.Row="1" Grid.Column="0"
+                     ErrorCollection="{Binding Errors, Mode=OneWay}"
+                     ErrorPropertyPath="Password">
+          <TextBox PasswordChar="*" Text="{Binding Password}" Watermark="Mật khẩu" />
+        </v:FormField>
+        
+        <!-- SignInButton -->
+        <Button Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
+                Command="{Binding SignInCommand}"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                Cursor="Hand">
+          <TextBlock TextWrapping="WrapWithOverflow" TextAlignment="Center">
+            <TextBlock.Text>
+              <Binding Path="IsSigninIn"
+                       Converter="{StaticResource BoolToStringConverter}"
+                       ConverterParameter="Đang đăng nhập, Đăng nhập" />
+            </TextBlock.Text>
+          </TextBlock>
+        </Button>
+      </Grid> 
+    </StackPanel>
+  </Border>
+</UserControl>
