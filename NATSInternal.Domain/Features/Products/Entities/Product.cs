@@ -1,4 +1,3 @@
-using NATSInternal.Domain.Extensions;
 using NATSInternal.Domain.Seedwork;
 
 namespace NATSInternal.Domain.Features.Products;
@@ -100,7 +99,6 @@ internal class Product : AbstractEntity
         ProductCategory? category)
     {
         Name = name;
-        NormalizedName = name.ToUpper().ToNonDiacritics();
         Description = description;
         Unit = unit;
         DefaultAmountBeforeVatPerUnit = defaultAmountBeforeVatPerUnit;

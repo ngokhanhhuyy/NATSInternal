@@ -40,7 +40,6 @@ internal class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product
         
         // Properties.
         builder.Property(p => p.Name).HasMaxLength(ProductContracts.NameMaxLength).IsRequired();
-        builder.Property(p => p.NormalizedName).IsRequired();
         builder.Property(p => p.Description).HasMaxLength(ProductContracts.DescriptionMaxLength);
         builder.Property(p => p.Unit).HasMaxLength(ProductContracts.UnitMaxLength).IsRequired();
         builder.Property(p => p.DefaultAmountBeforeVatPerUnit).IsRequired();
@@ -51,7 +50,6 @@ internal class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product
         
         // Indexes.
         builder.HasIndex(p => p.Name).IsUnique();
-        builder.HasIndex(p => p.NormalizedName);
         
         // Query filters.
         builder.HasQueryFilter(p => !p.IsDeleted);

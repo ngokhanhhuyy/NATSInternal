@@ -4,6 +4,7 @@ using NATSInternal.Domain.Features.AuditLogs;
 using NATSInternal.Infrastructure.DbContext;
 using NATSInternal.Application.Security;
 using System.Text.Json;
+using NATSInternal.Domain.Features.Products;
 
 namespace NATSInternal.Infrastructure.Services;
 
@@ -88,6 +89,23 @@ internal class AuditLogService : IAuditLogService
             AuditLogActionNames.UserRemoveFromRoles,
             JsonSerializer.Serialize(targetUserBeforeRemovalSnapshot),
             JsonSerializer.Serialize(targetUserAfterRemovalSnapshot),
+            loggedDateTime
+        );
+
+        await AddAndSaveAsync(auditLog, cancellationToken);
+    }
+
+    public async Task LogProductCreateActionAsync(
+        ProductSnapshot productSnapsnot,
+        DateTime loggedDateTime,
+        CancellationToken cancellationToken)
+    {
+        AuditLog auditLog = new(
+            productSnapsnot.Id,
+            _performedUserId,
+            AuditLogActionNames.ProductCreate,
+            null,
+            JsonSerializer.Serialize(productSnapsnot),
             loggedDateTime
         );
 

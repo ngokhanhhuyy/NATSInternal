@@ -1,6 +1,5 @@
 using JetBrains.Annotations;
 using NATSInternal.Application.Security;
-using NATSInternal.Core.Constants;
 using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Users;
 

@@ -1,3 +1,4 @@
+using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.AuditLogs;
@@ -27,6 +28,9 @@ internal interface IAuditLogService
         DateTime loggedDateTime,
         CancellationToken cancellationToken = default);
 
-    Task LogProductCreateActionAsync();
+    Task LogProductCreateActionAsync(
+        ProductSnapshot productSnapsnot,
+        DateTime loggedDateTime,
+        CancellationToken cancellationToken);
     #endregion
 }

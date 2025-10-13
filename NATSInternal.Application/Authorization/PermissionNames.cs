@@ -1,4 +1,4 @@
-﻿namespace NATSInternal.Core.Constants;
+﻿namespace NATSInternal.Application.Authorization;
 
 public static class PermissionNames
 {

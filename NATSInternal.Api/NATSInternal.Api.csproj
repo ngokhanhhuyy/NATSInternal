@@ -4,6 +4,12 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <PlatformTarget>ARM64</PlatformTarget>
+      <DebugSymbols>false</DebugSymbols>
     </PropertyGroup>
 
     <ItemGroup>
@@ -21,4 +27,14 @@
       <ProjectReference Include="..\NATSInternal.Infrastructure\NATSInternal.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Remove="http-client.env.json" />
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+      <None Include="http-client.env.json" />
+      <Content Update="appsettings.Development.json">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
 </Project>

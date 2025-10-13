@@ -15,7 +15,19 @@ public static class Program
 {
     public static async Task Main(string[] args)
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+        string contentRoot = AppContext.BaseDirectory;
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(new WebApplicationOptions
+        {
+            Args = args,
+            ContentRootPath = contentRoot,
+            WebRootPath = Path.Combine(contentRoot, "wwwroot")
+        });
+        
+        builder.Configuration
+            .SetBasePath(contentRoot)
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+            .AddEnvironmentVariables();
 
         // Connection string - EF Core.
         string connectionString = builder.Configuration.GetConnectionString("MySql")!;
