@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.HttpOverrides;
 using NATSInternal.Api.Middlewares;
 using NATSInternal.Api.Providers;
 using NATSInternal.Api.Filters;
@@ -15,19 +16,7 @@ public static class Program
 {
     public static async Task Main(string[] args)
     {
-        string contentRoot = AppContext.BaseDirectory;
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(new WebApplicationOptions
-        {
-            Args = args,
-            ContentRootPath = contentRoot,
-            WebRootPath = Path.Combine(contentRoot, "wwwroot")
-        });
-        
-        builder.Configuration
-            .SetBasePath(contentRoot)
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-            .AddEnvironmentVariables();
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         // Connection string - EF Core.
         string connectionString = builder.Configuration.GetConnectionString("MySql")!;
@@ -59,7 +48,7 @@ public static class Program
                 options.SlidingExpiration = false;
                 options.Cookie.Name = "NATSInternalAuthenticationCookie";
                 options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                // options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.LoginPath = "/SignIn";
                 options.LogoutPath = "/Logout";
 
@@ -119,23 +108,26 @@ public static class Program
 
         // Build application.
         WebApplication app = builder.Build();
+        app.UseForwardedHeaders(new()
+        {
+            ForwardedHeaders = ForwardedHeaders.All
+        });
 
         // Configure database and seed data.
         await app.Services.EnsureDatabaseCreatedAsync();
         await app.Services.SeedDataAsync(app.Environment.IsDevelopment());
         
-        app.UseCors("LocalhostDevelopment");
-        app.Use(async (context, next) =>
-        {
-            if (context.Request.Headers.ContainsKey("Origin"))
-            {
-                string origin = context.Request.Headers.Origin.ToString();
-                context.Response.Headers.AccessControlAllowOrigin = origin;
-                context.Response.Headers.AccessControlAllowCredentials = "true";
-            }
-
-            await next();
-        });
+        // app.Use(async (context, next) =>
+        // {
+        //     if (context.Request.Headers.ContainsKey("Origin"))
+        //     {
+        //         string origin = context.Request.Headers.Origin.ToString();
+        //         context.Response.Headers.AccessControlAllowOrigin = origin;
+        //         context.Response.Headers.AccessControlAllowCredentials = "true";
+        //     }
+        //
+        //     await next();
+        // });
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -145,7 +137,7 @@ public static class Program
         }
         else
         {
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
         }
 
         app.UseMiddleware<RequestLoggingMiddleware>();
