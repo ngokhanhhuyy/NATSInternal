@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Avalonia;
+using Avalonia.Collections;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
 using FluentValidation;
@@ -16,6 +16,7 @@ public class SignInViewModel : FormViewModel
     private string _userName = string.Empty;
     private string _password = string.Empty;
     private bool _isSigningIn;
+    private bool _hasSignedInSuccessfully;
     #endregion
     
     #region Constructors
@@ -23,10 +24,22 @@ public class SignInViewModel : FormViewModel
     {
         _mediator = mediator;
         SignInCommand = new AsyncRelayCommand(SignInAsync);
+        PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName == nameof(Errors))
+            {
+                OnPropertyChanged(nameof(TestingCollection));
+            }
+        };
     }
     #endregion
     
     #region Properties
+    public AvaloniaDictionary<string, string> TestingCollection { get; set; } = new()
+    {
+        { "UserName", "Testing" }
+    };
+    
     public string UserName
     {
         get => _userName;
@@ -44,9 +57,13 @@ public class SignInViewModel : FormViewModel
         get => _isSigningIn;
         private set => SetProperty(ref _isSigningIn, value);
     }
-    
-    public Thickness ErrorMessagesContainerMargin { get; private set; } = new(0, 0, 0, 0);
-    
+
+    public bool HasSignedInSuccessfully
+    {
+        get => _hasSignedInSuccessfully;
+        private set => SetProperty(ref _hasSignedInSuccessfully, value);
+    }
+
     public IAsyncRelayCommand SignInCommand { get; }
     #endregion
     
@@ -55,6 +72,7 @@ public class SignInViewModel : FormViewModel
     {
         IsSigninIn = true;
         Errors.Clear();
+        TestingCollection.Clear();
         try
         {
             VerifyUserNameAndPasswordRequestDto requestDto = new()
@@ -63,8 +81,8 @@ public class SignInViewModel : FormViewModel
                 Password = _password
             };
 
-            await Task.Delay(2000);
             await _mediator.Send(requestDto);
+            HasSignedInSuccessfully = true;
         }
         catch (Exception exception)
         {
@@ -72,16 +90,19 @@ public class SignInViewModel : FormViewModel
             switch (exception)
             {
                 case ValidationException validationException:
-                    // Errors.AddFromValidationException(validationException);
                     foreach (ValidationFailure failure in validationException.Errors)
                     {
                         Errors.Add(new(failure.PropertyName, failure.ErrorMessage));
+                        TestingCollection.Add(failure.PropertyName, failure.ErrorMessage);
+                        TestingCollection.TryGetValue("UserName", out string? message);
+                        Console.WriteLine(message ?? "null");
                     }
                     return;
                 case OperationException operationException:
                     foreach (KeyValuePair<object[], string> pair in operationException.Errors)
                     {
                         Errors.Add(new(pair.Key, pair.Value));
+                        TestingCollection.Add(string.Join(".", pair.Key), pair.Value);
                     }
                     return;
             }
@@ -94,20 +115,5 @@ public class SignInViewModel : FormViewModel
             OnPropertyChanged(nameof(Errors));
         }
     }
-
-    // private void OnErrorsHasErrorsChanged(object? _, PropertyChangedEventArgs args)
-    // {
-    //     Thickness oldMargin = ErrorMessagesContainerMargin;
-    //     if (args.PropertyName == nameof(Errors.HasErrors))
-    //     {
-    //         int bottomMargin = Errors.HasErrors ? 5 : 0;
-    //         ErrorMessagesContainerMargin = new(0, 0, 0, bottomMargin);
-    //
-    //         if (!Equals(oldMargin, ErrorMessagesContainerMargin))
-    //         {
-    //             OnPropertyChanged(nameof(ErrorMessagesContainerMargin));
-    //         }
-    //     }
-    // }
     #endregion
 }

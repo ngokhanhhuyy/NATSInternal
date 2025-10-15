@@ -3,7 +3,7 @@ using NATSInternal.Desktop.ViewModels;
 
 namespace NATSInternal.Desktop.Converters;
 
-public class ErrorCollectionToErrorMessageConverter : IValueConverter
+public class ErrorCollectionToInputClassesConverter : IValueConverter
 {
     #region Methods
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -12,7 +12,7 @@ public class ErrorCollectionToErrorMessageConverter : IValueConverter
         {
             return null;
         }
-        
+
         if (parameter is not string key)
         {
             return null;
@@ -23,7 +23,7 @@ public class ErrorCollectionToErrorMessageConverter : IValueConverter
             .Select(detail => detail.Message)
             .FirstOrDefault();
         
-        return string.IsNullOrEmpty(message) ? null : message;
+        return string.IsNullOrEmpty(message) ? null : "Invalid";
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

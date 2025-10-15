@@ -1,7 +1,7 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:NATSInternal.Desktop"
-             xmlns:converters="clr-namespace:NATSInternal.Desktop.Converters"
+             xmlns:c="clr-namespace:NATSInternal.Desktop.Converters"
              x:Class="NATSInternal.Desktop.App"
              RequestedThemeVariant="Light">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
@@ -43,10 +43,14 @@
         <SolidColorBrush x:Key="TextControlBorderBrush" Color="{DynamicResource Gray-200}" />
         <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="{DynamicResource Gray-50}" />
         <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="{DynamicResource Gray-200}" />
+        <SolidColorBrush x:Key="TextControlInvalidBackground" Color="{DynamicResource Red-100}" />
+        <SolidColorBrush x:Key="TextControlInvalidForeground" Color="{DynamicResource Red-500}" />
+        <SolidColorBrush x:Key="TextControlInvalidBorderBrush" Color="{DynamicResource Red-500}" />
         
         <!-- Converters -->
-        <converters:BoolToStringConverter x:Key="BoolToStringConverter" />
-        <converters:ErrorCollectionToErrorMessageConverter x:Key="ErrorCollectionToErrorMessageConverter" />
+        <c:BoolToStringConverter x:Key="BoolToStringConverter" />
+        <c:ErrorCollectionToErrorMessageConverter x:Key="ErrorCollectionToErrorMessageConverter" />
+        <c:ErrorCollectionToInputClassesConverter x:Key="ErrorCollectionToInputClassesConverter" />
     </Application.Resources>
   
     <Application.Styles>
@@ -64,6 +68,12 @@
                 TextBox:focus /template/ TextBlock#PART_Watermark,
                 TextBox:focus /template/ TextBlock#PART_FloatingWatermark">
             <Setter Property="Foreground" Value="{DynamicResource TextControlForeground}" />
+        </Style>
+        
+        <Style Selector="TextBox.Invalid">
+            <Setter Property="BorderBrush" Value="{DynamicResource TextControlInvalidBorderBrush}" />
+            <Setter Property="Background" Value="{DynamicResource TextControlInvalidBackground}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextControlInvalidForeground}" />
         </Style>
     </Application.Styles>
 </Application>

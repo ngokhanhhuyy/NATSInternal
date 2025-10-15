@@ -4,6 +4,7 @@ namespace NATSInternal.Desktop.Converters;
 
 public class BoolToStringConverter : IValueConverter
 {
+    #region Methods
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo cultureInfo)
     {
         if (value is not bool boolValue)
@@ -44,7 +45,9 @@ public class BoolToStringConverter : IValueConverter
 
         return extractedParameters.First(p => p.Value == stringValue);
     }
+    #endregion
 
+    #region PrivateMethods
     private static bool TryExtractParameter(object? parameter, out Dictionary<bool, string> extractedParameter)
     {
         extractedParameter = new()
@@ -80,4 +83,5 @@ public class BoolToStringConverter : IValueConverter
 
         return false;
     }
+    #endregion
 }

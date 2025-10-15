@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:NATSInternal.Desktop.ViewModels"
              xmlns:v="using:NATSInternal.Desktop.Views"
+             xmlns:c="using:NATSInternal.Desktop.Converters"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
              x:Class="NATSInternal.Desktop.Views.SignInPage"
              x:DataType="vm:SignInViewModel"
@@ -11,54 +12,46 @@
              Background="rgb(29, 78, 216)"
              HorizontalContentAlignment="Center"
              VerticalContentAlignment="Center">
-  <Border Background="white" Padding="10" CornerRadius="8">
+  <UserControl.Resources>
+    <SolidColorBrush x:Key="SuccessBorderColor" Color="#96508050" />
+  </UserControl.Resources>
+  
+  <!-- Container -->
+  <Border Background="white" Padding="10" CornerRadius="8" Width="400">
     <StackPanel>
-      <ItemsControl ItemsSource="{Binding Errors, Mode=OneWay}" Margin="0, 0, 0, 0">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <StackPanel />
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemTemplate>
-          <DataTemplate>
-            <Border BorderBrush="{StaticResource Red-500}" BorderThickness="1"
-                    Background="{StaticResource Red-100}"
-                    CornerRadius="{StaticResource ControlCornerRadius}"
-                    Padding="{StaticResource TextControlThemePadding}"
-                    Margin="0, 0, 0, 5">
-              <TextBlock Foreground="{StaticResource Red-500}"
-                         Text="{Binding Message, Mode=OneWay}" />
-            </Border>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
-      
-      <TextBlock>
-        <TextBlock.Text>
-          <Binding Path="Errors"
-                   Mode="OneWay"
-                   Converter="{StaticResource ErrorCollectionToErrorMessageConverter}"
-                   ConverterParameter="UserName">
-          </Binding>
-        </TextBlock.Text>
-      </TextBlock>
-      
       <!-- Inputs -->
-      <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="250,100"
-            HorizontalAlignment="Center" VerticalAlignment="Center"
+      <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="3*,*"
+            HorizontalAlignment="Stretch" VerticalAlignment="Center"
             ColumnSpacing="5" RowSpacing="5">
+        <Grid.IsVisible>
+          <Binding Path="HasSignedInSuccessfully"
+                   Converter="{x:Static c:OneWayConverters.BoolInvertConverter}" />
+        </Grid.IsVisible>
+        
         <!-- UserName -->
         <v:FormField Grid.Row="0" Grid.Column="0"
                      ErrorCollection="{Binding Errors, Mode=OneWay}"
                      ErrorPropertyPath="UserName">
-          <TextBox Text="{Binding UserName}" Watermark="Tên tài khoản" />
+          <TextBox Text="{Binding UserName}" Watermark="Tên tài khoản"
+                   Classes="{Binding Errors, Converter={StaticResource ErrorCollectionToErrorMessageConverter}, ConverterParameter=UserName}">
+            <TextBox.Classes>
+              
+              <Binding Path="Errors" 
+                       Converter="{StaticResource ErrorCollectionToInputClassesConverter}"
+                       ConverterParameter="UserName"/>
+            </TextBox.Classes>
+          </TextBox>
         </v:FormField>
         
         <!-- Password -->
         <v:FormField Grid.Row="1" Grid.Column="0"
                      ErrorCollection="{Binding Errors, Mode=OneWay}"
                      ErrorPropertyPath="Password">
-          <TextBox PasswordChar="*" Text="{Binding Password}" Watermark="Mật khẩu" />
+          <TextBox PasswordChar="*" Text="{Binding Password}" Watermark="Mật khẩu">
+            <TextBox.Classes>
+              <Binding Path="Errors" Converter="{StaticResource ErrorCollectionToInputClassesConverter}" />
+            </TextBox.Classes>
+          </TextBox>
         </v:FormField>
         
         <!-- SignInButton -->
@@ -76,6 +69,15 @@
           </TextBlock>
         </Button>
       </Grid> 
+      
+      <!-- SignedInSuccessfullyAnnouncement -->
+      <Border Background="rgba(100, 255, 100, 0.25)" Padding="10, 30"
+              BorderBrush="{StaticResource SuccessBorderColor}" BorderThickness="1" CornerRadius="8"
+              IsVisible="{Binding HasSignedInSuccessfully}">
+        <TextBlock TextAlignment="Center" Foreground="Green">
+          Đăng nhập thành công
+        </TextBlock>
+      </Border>
     </StackPanel>
   </Border>
 </UserControl>
