@@ -19,15 +19,9 @@
     "inlineSourceMap": false,
     "paths": {
       "@/*": ["src/*"],
-      "@models/*": ["./src/models/*"],
-      "@requestDtos/*": ["./src/services/dtos/requestDtos/*"],
-      "@responseDtos/*": ["./src/services/dtos/responseDtos/*"],
-      "@enums": ["./src/services/dtos/enums"],
-      "@form/*": ["./src/views/form/*"],
-      "@layouts/*": ["./src/views/layouts/*"],
-      "@assets/*": ["./src/assets"]
     },
     "plugins": [{ "name": "typescript-plugin-css-modules" }],
     "jsx": "preserve",
+    "jsxImportSource": "solid-js"
   }
 }

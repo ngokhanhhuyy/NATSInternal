@@ -12,21 +12,24 @@
     "generate:api": "npx openapi-typescript http://localhost:5000/swagger/v1/swagger.json --output src/api/schema.d.ts"
   },
   "dependencies": {
+    "@solidjs/router": "^0.15.3",
+    "babel-preset-solid": "^1.9.9",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
     "solid-js": "^1.9.9"
   },
   "devDependencies": {
-    "@eslint/js": "^9.35.0",
+    "@eslint/css": "^0.13.0",
+    "@eslint/js": "^9.38.0",
     "@rsbuild/core": "^1.5.14",
     "@rsbuild/plugin-babel": "^1.0.6",
     "@rsbuild/plugin-solid": "^1.0.6",
-    "eslint": "^9.37.0",
+    "eslint": "^9.38.0",
     "eslint-plugin-solid": "^0.14.5",
-    "globals": "^16.3.0",
+    "globals": "^16.4.0",
     "openapi-typescript": "^7.9.1",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.43.0"
+    "typescript-eslint": "^8.46.1"
   }
 }

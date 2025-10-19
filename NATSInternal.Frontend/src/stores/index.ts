@@ -1,0 +1,1 @@
+export { useAuthenticationStore, type AuthenticationStore } from "./authenticationStore";

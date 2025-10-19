@@ -48,7 +48,7 @@ public static class Program
                 options.SlidingExpiration = false;
                 options.Cookie.Name = "NATSInternalAuthenticationCookie";
                 options.Cookie.SameSite = SameSiteMode.None;
-                // options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.LoginPath = "/SignIn";
                 options.LogoutPath = "/Logout";
 
@@ -117,17 +117,17 @@ public static class Program
         await app.Services.EnsureDatabaseCreatedAsync();
         await app.Services.SeedDataAsync(app.Environment.IsDevelopment());
         
-        // app.Use(async (context, next) =>
-        // {
-        //     if (context.Request.Headers.ContainsKey("Origin"))
-        //     {
-        //         string origin = context.Request.Headers.Origin.ToString();
-        //         context.Response.Headers.AccessControlAllowOrigin = origin;
-        //         context.Response.Headers.AccessControlAllowCredentials = "true";
-        //     }
-        //
-        //     await next();
-        // });
+        app.Use(async (context, next) =>
+        {
+            if (context.Request.Headers.ContainsKey("Origin"))
+            {
+                string origin = context.Request.Headers.Origin.ToString();
+                context.Response.Headers.AccessControlAllowOrigin = origin;
+                context.Response.Headers.AccessControlAllowCredentials = "true";
+            }
+        
+            await next();
+        });
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())

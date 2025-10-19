@@ -42,7 +42,7 @@ internal class VerifyUserNameAndPasswordHandler : IRequestHandler<VerifyUserName
             .GetUserByUserNameAsync(requestDto.UserName, cancellationToken)
             ?? throw new OperationException(
                 new object[] { nameof(requestDto.UserName) },
-                DisplayNames.UserName
+                ErrorMessages.NotFound.ReplaceResourceName(DisplayNames.User)
             );
 
         // Verify the given password.

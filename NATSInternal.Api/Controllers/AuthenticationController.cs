@@ -9,7 +9,7 @@ using NATSInternal.Application.UseCases.Users;
 
 namespace NATSInternal.Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/[controller]/[action]")]
 [ApiController]
 public class AuthenticationController : ControllerBase
 {
@@ -26,7 +26,7 @@ public class AuthenticationController : ControllerBase
 
     #region Methods
     [AllowAnonymous]
-    [HttpPost("[action]")]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -74,8 +74,9 @@ public class AuthenticationController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("[action]")]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> ClearAccessCookieAsync()
     {
         await HttpContext.SignOutAsync();
@@ -83,17 +84,26 @@ public class AuthenticationController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("[action]")]
-    [ProducesResponseType<UserGetDetailResponseDto>(StatusCodes.Status200OK)]
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> ChangePassword(
         [FromBody] ChangePasswordRequestDto requestDto,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         await _mediator.Send(requestDto, cancellationToken);
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public IActionResult CheckAuthenticationStatus()
+    {
         return Ok();
     }
     #endregion

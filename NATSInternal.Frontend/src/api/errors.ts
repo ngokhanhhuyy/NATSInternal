@@ -1,16 +1,16 @@
-export interface IApiErrorDetails extends Record<string, string[]> { }
+export type ApiErrorDetails = { [key: string]: string; };
 
 class ApiError extends Error { }
 
 class ApiMessageError extends ApiError {
-  protected readonly _modelStateErrors: IApiErrorDetails;
+  protected readonly _modelStateErrors: ApiErrorDetails;
 
-  constructor(modelStateErrors: IApiErrorDetails) {
+  constructor(modelStateErrors: ApiErrorDetails) {
     super();
     this._modelStateErrors = modelStateErrors;
   }
 
-  get errors(): IApiErrorDetails {
+  get errors(): ApiErrorDetails {
     return this._modelStateErrors;
   }
 }
