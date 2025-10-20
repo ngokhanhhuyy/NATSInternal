@@ -1,6 +1,6 @@
 type HTMLHelper = {
   joinClassName(...classNames: (string | undefined | null)[]): string | undefined;
-}
+};
 
 const helper: HTMLHelper = {
   joinClassName: (...classNames) => {

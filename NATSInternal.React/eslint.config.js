@@ -2,19 +2,24 @@ import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 import pluginReact from "eslint-plugin-react";
-import { fixupConfigRules } from "@eslint/compat";
-import {defineConfig} from "eslint/config";
+import stylistic from "@stylistic/eslint-plugin";
+import { defineConfig } from "eslint/config";
 
-/** @type {import('eslint').Linter.Config[]} */
+/** @type {import("eslint").Linter.Config[]} */
 export default defineConfig([
-  {files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"]},
-  {languageOptions: {globals: globals.browser}},
+  { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
+  { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   {
+    plugins: {
+      "@stylistic": stylistic
+    },
     rules: {
-      "semi": ["error", "always"],
+      "@stylistic/semi-style": ["error", "last"],
+      "@stylistic/semi": ["error", "always"],
+      "semi": "off",
       "no-restricted-imports": [
         "error",
         {
@@ -38,6 +43,6 @@ export default defineConfig([
       "@typescript-eslint/no-empty-object-type": "off",
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off"
-    },
+    }
   }
 ]);
