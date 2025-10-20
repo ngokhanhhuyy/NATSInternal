@@ -103,7 +103,7 @@ export default function SignInPage() {
       <Show when={!getState().isSignedIn}>
         <button type="submit" class="btn btn-primary w-100" disabled={!computeAreRequiredFieldsFilled()}>
           <Show when={getState().isSubmitting} fallback={<span>Đăng nhập</span>}>
-            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span class="spinner-border spinner-border-sm" aria-hidden="true" />
           </Show>
         </button>
       </Show>
