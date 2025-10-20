@@ -1,6 +1,6 @@
 import { useApi } from "@/api";
 import { createState, createComputedState } from "@/hooks";
-import { useHTMLHelper, useJsonHelper, useRouteHelper } from "@/helpers";
+import { useTsxHelper, useJsonHelper, useRouteHelper } from "@/helpers";
 import { useAuthenticationStore } from "@/stores/authenticationStore";
 
 export type ComponentDependencies = {
@@ -13,7 +13,7 @@ export type ComponentDependencies = {
     authentication: ReturnType<typeof useAuthenticationStore>
   },
   helpers: {
-    htmlHelper: ReturnType<typeof useHTMLHelper>;
+    htmlHelper: ReturnType<typeof useTsxHelper>;
     jsonHelper: ReturnType<typeof useJsonHelper>;
     routeHelper: ReturnType<typeof useRouteHelper>;
   }
@@ -29,7 +29,7 @@ export const componentDependencies: ComponentDependencies = {
     authentication: useAuthenticationStore(),
   },
   helpers: {
-    htmlHelper: useHTMLHelper(),
+    htmlHelper: useTsxHelper(),
     jsonHelper: useJsonHelper(),
     routeHelper: useRouteHelper()
   }

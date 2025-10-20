@@ -1,19 +1,19 @@
-import { createSignal, createContext, batch, Show } from "solid-js";
+import React, { useState, useMemo, createContext } from "react";
 import { ValidationError, OperationError } from "@/api";
 import { createErrorCollectionModel } from "@/models";
-import { useHTMLHelper } from "@/helpers";
+import { useTsxHelper } from "@/helpers";
 
 // Type.
 type SubmissionState = "notSubmitting" | "submitting" | "submissionSucceeded";
 
 // Payload.
 type FormContextPayload = {
-  getErrorCollection: () => ErrorCollectionModel;
-  getSubmissionState: () => SubmissionState;
+  errorCollection: ErrorCollectionModel;
+  submissionState: SubmissionState;
 };
 
 // Context.
-export const FormContext = createContext<FormContextPayload>();
+export const FormContext = createContext<FormContextPayload>(null!);
 
 // Props.
 type FormProps<T> = {
@@ -21,31 +21,26 @@ type FormProps<T> = {
   onSubmissionSucceeded?: (result: T) => any;
   onSubmissionFailed?: (error: Error, errorHandled: boolean) => any;
   submissionSucceededText?: string;
-} & JSX.FormElementProps;
+} & React.ComponentPropsWithoutRef<"form">;
 
 // Component.
 export default function Form<T>(props: FormProps<T>) {
   // Dependencies.
-  const htmlHelper = useHTMLHelper();
+  const { compute, joinClassName } = useTsxHelper();
 
   // States.
-  const [getErrorCollection, setErrorCollection] = createSignal(createErrorCollectionModel());
-  const [getSubmissionState, setSubmissionState] = createSignal<SubmissionState>("notSubmitting");
+  const [errorCollection, setErrorCollection] = useState(createErrorCollectionModel);
+  const [submissionState, setSubmissionState] = useState<SubmissionState>("notSubmitting");
 
   // Computed.
-  const computeOpacityClassName = (): string | undefined => {
-    if (getSubmissionState() === "submitting") {
-      return "opacity-50";
-    }
-  };
+  const opacityClassName = compute(() => submissionState === "submitting" ? "opacity-50" : undefined);
+  const contextValue = useMemo(() => ({ errorCollection, submissionState }), [errorCollection, submissionState]);
 
   // Callbacks.
-  async function handleSubmitAsync(event: SubmitEvent): Promise<void> {
+  async function handleSubmitAsync(event: React.FormEvent): Promise<void> {
     event.preventDefault();
-    batch(() => {
-      setErrorCollection(errorCollection => errorCollection.clear());
-      setSubmissionState("submitting");
-    });
+    setErrorCollection(errorCollection => errorCollection.clear());
+    setSubmissionState("submitting");
 
     try {
       const result = await props.submitAction();
@@ -58,7 +53,7 @@ export default function Form<T>(props: FormProps<T>) {
         return;
       }
 
-      props.onSubmissionFailed?.(error, false);
+      props.onSubmissionFailed?.(error as Error, false);
       throw error;
     } finally {
       setSubmissionState("notSubmitting");
@@ -66,33 +61,26 @@ export default function Form<T>(props: FormProps<T>) {
   }
 
   // Template.
-  function renderFallback() {
-    return (
-      <div class={htmlHelper.joinClassName(
-        "bg-success-subtle border border-success rounded-3",
-        "d-flex justify-content-center align-items-center p-5"
-      )}>
-        <i class="bi bi-check-circle-fill me-1" />
-        {props.submissionSucceededText ?? "Lưu thành công"}
-      </div>
-    );
-  }
-
   return (
-    <FormContext.Provider value={{ getErrorCollection, getSubmissionState }}>
-      <Show
-        when={getSubmissionState() !== "submissionSucceeded"}
-        fallback={renderFallback()}
-      >
+    <FormContext.Provider value={contextValue}>
+      {submissionState === "submissionSucceeded" ? (
+        <div className={joinClassName(
+          "bg-success-subtle border border-success rounded-3",
+          "d-flex justify-content-center align-items-center p-5"
+        )}>
+          <i className="bi bi-check-circle-fill me-1"/>
+          {props.submissionSucceededText ?? "Lưu thành công"}
+        </div>
+      ) : (
         <form
           {...props}
-          class={htmlHelper.joinClassName(props.class, computeOpacityClassName())}
+          className={joinClassName(props.className, opacityClassName)}
           noValidate
           onSubmit={handleSubmitAsync}
         >
           {props.children}
         </form>
-      </Show>
+      )}
     </FormContext.Provider>
   );
 }

@@ -1,5 +1,5 @@
 import { createContext, createMemo, useContext, Show } from "solid-js";
-import { useHTMLHelper } from "@/helpers";
+import { useTsxHelper } from "@/helpers";
 
 // Shared components.
 import { FormContext } from "@/components/form/Form";
@@ -19,7 +19,7 @@ export type FormFieldProps = {
 export default function FormField(props: FormFieldProps) {
   // Dependencies.
   const formContext = useContext(FormContext);
-  const htmlHelper = useHTMLHelper();
+  const htmlHelper = useTsxHelper();
 
   // Computed states.
   function computeErrorMessage(): string | undefined {
