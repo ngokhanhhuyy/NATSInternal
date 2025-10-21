@@ -1,22 +1,24 @@
-import { useContext } from "solid-js";
+import { useContext } from "react";
+import { useTsxHelper } from "@/helpers";
 import { FormFieldContext } from "./FormField";
 
 // Props.
-type InputProps = { render: (getClassName: () => string | undefined) => JSX.Element };
+type InputProps = { render: (className: string | undefined) => React.ReactNode };
 
 // Component.
 export default function Input(props: InputProps) {
-  // Context.
+  // Dependencies.
   const formFieldPayload = useContext(FormFieldContext);
+  const { compute } = useTsxHelper();
 
   // Computed.
-  const computeClassName = () => {
+  const className = compute(() => {
     if (!formFieldPayload || !formFieldPayload?.isValidated) {
       return;
     }
 
     return formFieldPayload.hasError ? "invalid" : "valid";
-  };
+  });
 
-  return props.render(computeClassName);
+  return props.render(className);
 }

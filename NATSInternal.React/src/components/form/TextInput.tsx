@@ -6,21 +6,21 @@ export type TextInputProps = {
   password?: boolean;
   value: string;
   onValueChanged(newValue: string): any;
-} & JSX.IntrinsicElements["input"]
+} & React.ComponentPropsWithoutRef<"div">;
 
 // Component.
 export default function TextInput(props: TextInputProps) {
   // Dependencies.
-  const htmlHelper = useTsxHelper();
+  const { joinClassName } = useTsxHelper();
 
   // Template.
-  function renderInput(getClassName: () => string | undefined) {
+  function renderInput(className: string | undefined) {
     return (
       <input
-        class={htmlHelper.joinClassName(getClassName(), "form-control")}
+        className={joinClassName(className, "form-control")}
         type={props.password ? "password" : "text"}
         value={props.value}
-        onInput={(event) => props.onValueChanged(event.target.value)}
+        onInput={(event) => props.onValueChanged((event.target as HTMLInputElement).value)}
       />
     );
   }

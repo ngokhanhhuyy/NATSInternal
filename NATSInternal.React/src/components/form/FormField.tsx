@@ -1,4 +1,4 @@
-import { createContext, createMemo, useContext, Show } from "solid-js";
+import React, { useMemo, createContext, useContext } from "react";
 import { useTsxHelper } from "@/helpers";
 
 // Shared components.
@@ -6,57 +6,51 @@ import { FormContext } from "@/components/form/Form";
 
 // Context.
 export type FormFieldContextPayload = { isValidated: boolean; hasError: boolean; };
-export const FormFieldContext = createContext<FormFieldContextPayload>();
+export const FormFieldContext = createContext<FormFieldContextPayload>(undefined!);
 
 // Props.
 export type FormFieldProps = {
   label?: string;
   propertyPath?: string;
-  children: JSX.Element;
-} & JSX.IntrinsicElements["div"];
+  children: React.ReactNode;
+} & React.ComponentPropsWithoutRef<"div">;
 
 // Components.
 export default function FormField(props: FormFieldProps) {
   // Dependencies.
   const formContext = useContext(FormContext);
-  const htmlHelper = useTsxHelper();
+  const { joinClassName } = useTsxHelper();
 
-  // Computed states.
-  function computeErrorMessage(): string | undefined {
+  // Computed.
+  const errorMessage = useMemo(() => {
     console.log("Triggered");
     if (formContext && props.propertyPath) {
-      const messages = formContext.getErrorCollection().details
+      const messages = formContext.errorCollection.details
         .filter(d => d.propertyPath === props.propertyPath)
         .map(d => d.message);
 
       return messages.length >= 1 ? messages[0] : undefined;
     }
-  }
+  }, [formContext.errorCollection.details]);
 
-  function computeHasErrorMessage(): boolean {
-    return !!computeErrorMessage();
-  }
+  const contextPayload = useMemo<FormFieldContextPayload>(() => ({
+    isValidated: !!formContext.errorCollection.isValidated,
+    hasError: !!errorMessage
+  }), [formContext.errorCollection.details]);
 
   return (
-    <div class={htmlHelper.joinClassName("form-group", props.class)}>
-      <pre>{JSON.stringify(formContext?.getErrorCollection().details, null, 2)}</pre>
+    <div className={joinClassName("form-group", props.className)}>
+      <pre>{JSON.stringify(formContext?.errorCollection.details, null, 2)}</pre>
       {/* Label */}
-      <Show when={props.label}>
-        <label class="form-label">{props.label}</label>
-      </Show>
+      {props.label && <label className="form-label">{props.label}</label>}
 
       {/* Input */}
-      <FormFieldContext.Provider value={{
-        isValidated: !!formContext?.getErrorCollection?.().isValidated,
-        hasError: computeHasErrorMessage()
-      }}>
+      <FormFieldContext.Provider value={contextPayload}>
         {props.children}
       </FormFieldContext.Provider>
 
       {/* Message */}
-      <Show when={computeHasErrorMessage()}>
-        <span class="text-danger">{computeErrorMessage()}</span>
-      </Show>
+      {!!errorMessage && <span className="text-danger">{errorMessage}</span>}
     </div>
   );
 }
