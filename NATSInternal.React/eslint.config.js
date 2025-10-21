@@ -41,6 +41,7 @@ export default defineConfig([
       "@typescript-eslint/no-unsafe-function-type": "off",
       "@typescript-eslint/no-namespace": "off",
       "@typescript-eslint/no-empty-object-type": "off",
+      "no-case-declarations": "off",
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off"
     }

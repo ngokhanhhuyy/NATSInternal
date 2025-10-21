@@ -1,5 +1,5 @@
 import { useHttpClient } from "./httpClient";
-import { VerifyUserNameAndPasswordRequestDto, ChangePasswordRequestDto } from "./dtos";
+import type { VerifyUserNameAndPasswordRequestDto, ChangePasswordRequestDto } from "./dtos";
 import { AuthorizationError } from "./errors";
 
 const httpClient = useHttpClient();

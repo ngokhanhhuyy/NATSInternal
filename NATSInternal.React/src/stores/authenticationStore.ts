@@ -1,7 +1,5 @@
-import { createState } from "@/hooks";
+import { create } from "zustand";
 import { useApi } from "@/api";
-
-const api = useApi();
 
 export type AuthenticationStore = {
   hasInitiallyCheckedAuthentication: boolean;
@@ -10,50 +8,35 @@ export type AuthenticationStore = {
   readonly clearAuthenticationStatus: () => void;
 };
 
-const state = createState({
+const api = useApi();
+
+export const useAuthenticationStore = create<AuthenticationStore>((set, get) => ({
   hasInitiallyCheckedAuthentication: false,
-  isAuthenticated: false
-});
+  isAuthenticated: false,
+  isAuthenticatedAsync: async (): Promise<boolean> => {
+    const { hasInitiallyCheckedAuthentication } = get();
 
-function useAuthenticationStore(): AuthenticationStore {
-  return {
-    get hasInitiallyCheckedAuthentication() {
-      return state.hasInitiallyCheckedAuthentication;
-    },
-    set hasInitiallyCheckedAuthentication(hasChecked: boolean) {
-      state.$update({ hasInitiallyCheckedAuthentication: hasChecked });
-    },
-    get isAuthenticated(): boolean {
-      return state.isAuthenticated;
-    },
-    set isAuthenticated(authenticated: boolean) {
-      state.$update({ isAuthenticated: authenticated });
-    },
-    isAuthenticatedAsync: async (): Promise<boolean> => {
-      if (!state.hasInitiallyCheckedAuthentication) {
-        try {
-          const isAuthenticated = await api.authentication.checkAuthenticationStatusAsync();
-          state.$update({
-            isAuthenticated,
-            hasInitiallyCheckedAuthentication: true,
-          });
-        } catch {
-          state.$update({
-            isAuthenticated: false,
-            hasInitiallyCheckedAuthentication: true,
-          });
-        }
+    if (!hasInitiallyCheckedAuthentication) {
+      try {
+        const isAuthenticated = await api.authentication.checkAuthenticationStatusAsync();
+        set({
+          isAuthenticated,
+          hasInitiallyCheckedAuthentication: true,
+        });
+      } catch {
+        set({
+          isAuthenticated: false,
+          hasInitiallyCheckedAuthentication: true,
+        });
       }
+    }
 
-      return state.isAuthenticated;
-    },
-    clearAuthenticationStatus: (): void => {
-      state.$update({
-        hasInitiallyCheckedAuthentication: false,
-        isAuthenticated: false,
-      });
-    },
-  };
-}
-
-export { useAuthenticationStore };
+    return get().isAuthenticated;
+  },
+  clearAuthenticationStatus: (): void => {
+    set({
+      hasInitiallyCheckedAuthentication: false,
+      isAuthenticated: false,
+    });
+  },
+}));

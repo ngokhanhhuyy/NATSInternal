@@ -1,27 +1,4 @@
-import { createSignal, createMemo, createContext, useContext, For, Show, type Context } from "solid-js";
-import { createMutable } from "solid-js/store";
-
-function createReactiveObject<T extends object>(target: T): T {
-  const result = { };
-
-  for (const [key, value] of Object.entries(target)) {
-    if (typeof value === "function") {
-      result[key] = target[key];
-    }
-
-    Object.defineProperty(result, key, {
-      get() {
-        return target[key];
-      },
-
-      set(newValue) {
-        target[key] = newValue;
-      }
-    });
-  }
-
-  return result as T;
-} 
+import { useState, createContext } from "react";
 
 type Model = { userName: string; roles: string[]; };
 
@@ -31,22 +8,39 @@ type HomePageContext = Readonly<Model> & {
   onRoleRemoved(index: number, removedRole: string): void;
 };
 
-const HomePageContext = createContext<HomePageContext>();
+const HomePageContext = createContext<HomePageContext>(null!);
 
 export default function HomePage() {
-  const model = createMutable<Model>({ userName: "", roles: [] });
+  const [model, setModel] = useState<Model>(() => ({ userName: "", roles: [] }));
 
   return (
-    <div class="w-100vh h-100vh d-block justify-content-center align-items-center p-3 bg-white">
+    <div className="w-100vh h-100vh d-block justify-content-center align-items-center p-3 bg-white">
       <pre>{JSON.stringify(model, null, 2)}</pre>
       <RoleManager
         model={model.roles}
-        onRoleAdded={(newRole) => model.roles.push(newRole)}
-        onRoleReplaced={(index, replacedRole) => model.roles[index] = replacedRole}
-        onRoleRemoved={(index) => model.roles.splice(index, 1)}
+        onRoleAdded={(newRole) => setModel(m => ({ ...m, roles: [...m.roles, newRole] }))}
+        onRoleReplaced={(index, replacedRole) => {
+          setModel(m => {
+            const roles = m.roles.map((role, evaluatingIndex) => {
+              if (evaluatingIndex !== index) {
+                return role;
+              }
+
+              return replacedRole;
+            });
+
+            return { ...m, roles };
+          });
+        }}
+        onRoleRemoved={(index) => {
+          setModel(m => ({
+            ...m,
+            roles: m.roles.filter((_, evaluatingIndex) => evaluatingIndex !== index)
+          }));
+        }}
       />
     </div>
-  )
+  );
 }
 
 type RoleManagerProps = {
@@ -54,49 +48,47 @@ type RoleManagerProps = {
   onRoleAdded(newRole: string): void;
   onRoleReplaced(index: number, replacedRole: string): void;
   onRoleRemoved(index: number, removedRole: string): void;
-}
+};
 
 function RoleManager(props: RoleManagerProps) {
-  const state = createMutable({ roleName: "" });
+  const [roleName, setRoleName] = useState("");
 
   const addRole = (): void => {
-    props.model.push(state.roleName);
-    state.roleName = "";
-  }
+    props.onRoleAdded(roleName);
+    setRoleName("");
+  };
 
   return (
     <div>
       <input
-        class="form-control mb-3"
+        className="form-control mb-3"
         type="text"
-        value={state.roleName}
-        onInput={event => state.roleName = event.target.value}
+        value={roleName}
+        onInput={event => setRoleName((event.target as HTMLInputElement).value)}
       />
 
       <button
         type="button"
-        class="btn btn-primary mb-3"
-        disabled={!state.roleName || props.model.includes(state.roleName)}
+        className="btn btn-primary mb-3"
+        disabled={!roleName || props.model.includes(roleName)}
         onClick={addRole}
       >
         Add
       </button>
 
-      <ul class="list-group">
-        <For each={props.model}>
-          {(role, getIndex) => (
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              {role}
-              <button
-                type="button"
-                class="btn btn-danger"
-                onClick={() => props.model.splice(getIndex(), 1)}
-              >
-                Remove
-              </button>
-            </li>
-          )}
-        </For>
+      <ul className="list-group">
+        {props.model.map((role, index) => (
+          <li className="list-group-item d-flex justify-content-between align-items-center" key={index}>
+            {role}
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={() => props.onRoleRemoved(index, role)}
+            >
+              Remove
+            </button>
+          </li>
+        ))}
       </ul>
     </div>
   );

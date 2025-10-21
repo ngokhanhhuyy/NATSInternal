@@ -1,5 +1,5 @@
 import * as errors from "./errors";
-import { ApiErrorDetails } from "./errors";
+import type { ApiErrorDetails } from "./errors";
 
 type Params = Record<string, any>;
 

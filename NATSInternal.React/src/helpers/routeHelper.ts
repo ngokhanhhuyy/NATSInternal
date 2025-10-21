@@ -1,67 +1,75 @@
 const routeHelper = {
+  getSignInRoutePath: (returningPath?: string) => {
+    let path = "/dang-nhap";
+    if (returningPath) {
+      path += `?${returningPath}`;
+    }
+
+    return path;
+  },
+
   getHomeRoutePath: () => "/",
-  getSignInRoutePath: () => "/signIn",
-  getUserListRoutePath: () => "/users",
-  getUserProfileRoutePath: (id: number) => `/users/${id}`,
-  getUserCreateRoutePath: () => `/users/create`,
-  getUserUpdateRoutePath: (id: number) => `/users/${id}/update`,
-  getUserPasswordChangeRoutePath: () => "/users/changePassword",
-  getUserPasswordResetRoutePath: (id: number) => `/users/${id}/resetPassword`,
+  getUserListRoutePath: () => "/tai-khoan",
+  getUserProfileRoutePath: (id: number) => `/tai-khoan/${id}`,
+  getUserCreateRoutePath: () => `/tai-khoan/tao-moi`,
+  getUserUpdateRoutePath: (id: number) => `/tai-khoan/${id}/chinh-sua`,
+  getUserPasswordChangeRoutePath: () => "/tai-khoan/doi-mat-khau",
+  getUserPasswordResetRoutePath: (id: number) => `/tai-khoan/${id}/reset-mat-khau`,
 
-  getCustomerListRoutePath: () => "/customers",
-  getCustomerDetailRoutePath: (id: number) => `/customers/${id}`,
-  getCustomerCreateRoutePath: () => "/customers/create",
-  getCustomerUpdateRoutePath: (id: number) => `/customers/${id}/update`,
+  getCustomerListRoutePath: () => "/khach-hang",
+  getCustomerDetailRoutePath: (id: number) => `/khach-hang/${id}`,
+  getCustomerCreateRoutePath: () => "/khach-hang/tao-moi",
+  getCustomerUpdateRoutePath: (id: number) => `/khach-hang/${id}/chinh-sua`,
 
-  getProductListRoutePath: () => "/products",
-  getProductDetailRoutePath: (id: number) => `/products/${id}`,
-  getProductCreateRoutePath: () => `/products/create`,
-  getProductUpdateRoutePath: (id: number) => `/products/${id}/update`,
+  getProductListRoutePath: () => "/san-pham",
+  getProductDetailRoutePath: (id: number) => `/san-pham/${id}`,
+  getProductCreateRoutePath: () => `/san-pham/tao-moi`,
+  getProductUpdateRoutePath: (id: number) => `/san-pham/${id}/chinh-sua`,
 
-  getProductCategoryCreateRoutePath: () => "/products/categories/create",
-  getProductCategoryUpdateRoutePath: (id: number) => `/products/categories/${id}/update`,
+  getProductCategoryCreateRoutePath: () => "/san-pham/phan-loai/tao-moi",
+  getProductCategoryUpdateRoutePath: (id: number) => `/san-pham/phan-loai/${id}/chinh-sua`,
 
-  getBrandCreateRoutePath: () => "/products/brands/create",
-  getBrandUpdateRoutePath: (id: number) => `/products/brands/${id}/update`,
+  getBrandCreateRoutePath: () => "/san-pham/thuong-hieu/tao-moi",
+  getBrandUpdateRoutePath: (id: number) => `/san-pham/thuong-hieu/${id}/chinh-sua`,
 
-  getSupplyListRoutePath: () => "/supplies",
-  getSupplyDetailRoutePath: (id: number) => `/supplies/${id}`,
-  getSupplyCreateRoutePath: () => "/supplies/create",
-  getSupplyUpdateRoutePath: (id: number) => `/supplies/${id}/update`,
+  getSupplyListRoutePath: () => "/nhap-hang",
+  getSupplyDetailRoutePath: (id: number) => `/nhap-hang/${id}`,
+  getSupplyCreateRoutePath: () => "/nhap-hang/tao-moi",
+  getSupplyUpdateRoutePath: (id: number) => `/nhap-hang/${id}/chinh-sua`,
 
   getExpenseListRoutePath: () => "/expenses",
   getExpenseDetailRoutePath: (id: number) => `/expenses/${id}`,
-  getExpenseCreateRoutePath: () => "/expenses/create",
-  getExpenseUpdateRoutePath: (id: number) => `/expenses/${id}/update`,
+  getExpenseCreateRoutePath: () => "/expenses/tao-moi",
+  getExpenseUpdateRoutePath: (id: number) => `/expenses/${id}/chinh-sua`,
 
-  getConsultantListRoutePath: () => "/consultants",
-  getConsultantDetailRoutePath: (id: number) => `/consultants/${id}`,
-  getConsultantCreateRoutePath: () => "/consultants/create",
-  getConsultantUpdateRoutePath: (id: number) => `/consultants/${id}/update`,
+  getConsultantListRoutePath: () => "/tu-van",
+  getConsultantDetailRoutePath: (id: number) => `/tu-van/${id}`,
+  getConsultantCreateRoutePath: () => "/tu-van/tao-moi",
+  getConsultantUpdateRoutePath: (id: number) => `/tu-van/${id}/chinh-sua`,
 
   getOrderListRoutePath: () => "/orders",
   getOrderDetailRoutePath: (id: number) => `/orders/${id}`,
-  getOrderCreateRoutePath: () => "/orders/create",
-  getOrderUpdateRoutePath: (id: number) => `/orders/${id}/update`,
+  getOrderCreateRoutePath: () => "/orders/tao-moi",
+  getOrderUpdateRoutePath: (id: number) => `/orders/${id}/chinh-sua`,
 
-  getTreatmentListRoutePath: () => "/treatments",
-  getTreatmentDetailRoutePath: (id: number) => `/treatments/${id}`,
-  getTreatmentCreateRoutePath: () => "/treatments/create",
-  getTreatmentUpdateRoutePath: (id: number) => `/treatments/${id}/update`,
+  getTreatmentListRoutePath: () => "/lieu-trinh",
+  getTreatmentDetailRoutePath: (id: number) => `/lieu-trinh/${id}`,
+  getTreatmentCreateRoutePath: () => "/lieu-trinh/tao-moi",
+  getTreatmentUpdateRoutePath: (id: number) => `/lieu-trinh/${id}/chinh-sua`,
 
-  getDebtOverviewRoutePath: () => "/debts/",
+  getDebtOverviewRoutePath: () => "/no/",
 
-  getDebtIncurrenceListRoutePath: () => "/debts/incurrences",
-  getDebtIncurrenceDetailRoutePath: (id: number) => `/debts/incurrences/${id}`,
-  getDebtIncurrenceCreateRoutePath: () => "/debts/incurrences/create",
-  getDebtIncurrenceUpdateRoutePath: (id: number) => `/debts/incurrences/${id}/update`,
+  getDebtIncurrenceListRoutePath: () => "/no/phat-sinh",
+  getDebtIncurrenceDetailRoutePath: (id: number) => `/no/phat-sinh/${id}`,
+  getDebtIncurrenceCreateRoutePath: () => "/no/phat-sinh/tao-moi",
+  getDebtIncurrenceUpdateRoutePath: (id: number) => `/no/phat-sinh/${id}/chinh-sua`,
 
-  getDebtPaymentListRoutePath: () => "/debts/payments",
-  getDebtPaymentDetailRoutePath: (id: number) => `/debts/payments/${id}`,
-  getDebtPaymentCreateRoutePath: () => "/debts/payments/create",
-  getDebtPaymentUpdateRoutePath: (id: number) => `/debts/payments/${id}/update`,
+  getDebtPaymentListRoutePath: () => "/no/thanh-toan",
+  getDebtPaymentDetailRoutePath: (id: number) => `/no/thanh-toan/${id}`,
+  getDebtPaymentCreateRoutePath: () => "/no/thanh-toan/tao-moi",
+  getDebtPaymentUpdateRoutePath: (id: number) => `/no/thanh-toan/${id}/chinh-sua`,
 
-  getReportRoutePath: () => "/report"
+  getReportRoutePath: () => "/bao-cao"
 };
 
 export function useRouteHelper() {
