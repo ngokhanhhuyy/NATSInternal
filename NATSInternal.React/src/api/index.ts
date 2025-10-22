@@ -1,12 +1,12 @@
-import * as authenticationApi from "./authenticationApi";
+import { useAuthenticationApi, type AuthenticationApi } from "./authenticationApi";
 
 interface IApi {
-  authentication: typeof authenticationApi
+  authentication: AuthenticationApi;
 }
 
 export function useApi(): IApi {
   return {
-    authentication: authenticationApi
+    authentication: useAuthenticationApi()
   };
 }
 

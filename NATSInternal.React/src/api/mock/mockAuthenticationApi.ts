@@ -1,0 +1,47 @@
+import type { AuthenticationApi } from "../authenticationApi";
+import { AuthorizationError, ValidationError, OperationError, type ApiErrorDetails } from "../errors";
+import type { VerifyUserNameAndPasswordRequestDto, ChangePasswordRequestDto } from "../dtos";
+
+const mockingApi: AuthenticationApi = {
+  async signInAsync(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void> {
+    const validationErrors: ApiErrorDetails = { };
+    if (!requestDto.userName) {
+      validationErrors["userName"] = "Username is required";
+    }
+
+    if (!requestDto.password) {
+      validationErrors["password"] = "Password is required";
+    }
+
+    if (Object.entries(validationErrors).length) {
+      throw new ValidationError(validationErrors);
+    }
+
+    
+  },
+
+  async clearAccessToken(): Promise<void> {
+    return await httpClient.postAndIgnoreAsync("/authentication/clearAccessCookie", {  });
+  },
+
+  async changePasswordAsync(requestDto: ChangePasswordRequestDto): Promise<void> {
+    return await httpClient.postAndIgnoreAsync("/authentication/changePassword", requestDto);
+  },
+
+  async checkAuthenticationStatusAsync(): Promise<boolean> {
+    try {
+      await httpClient.getAsync("/authentication/checkAuthenticationStatus", { });
+      return true;
+    } catch (error) {
+      if (error instanceof AuthorizationError) {
+        return false;
+      }
+
+      throw error;
+    }
+  }
+};
+
+export function useMockingAuthenticationApi(): AuthenticationApi {
+  return api;
+}

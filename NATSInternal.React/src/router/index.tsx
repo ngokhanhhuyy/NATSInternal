@@ -1,22 +1,11 @@
-import { createBrowserRouter, redirect, type MiddlewareFunction } from "react-router";
-import { RouterProvider } from "react-router";
-import { useRouteHelper } from "@/helpers";
+import { createBrowserRouter, RouterProvider } from "react-router";
+import { authenticationMiddleware } from "./middlewares";
 
 // Pages.
 import SignInPage from "@/pages/authentication/signIn/SignInPage";
 import HomePage from "@/pages/home/HomePage";
-import { useAuthenticationStore } from "@/stores";
 
-const authenticationMiddleware: MiddlewareFunction = async ({ request }) => {
-  const { isAuthenticatedAsync } = useAuthenticationStore();
-  const { getSignInRoutePath } = useRouteHelper();
-  if (!await isAuthenticatedAsync()) {
-    const url = new URL(request.url);
-    const pathWithSearchParams = url.pathname + url.search;
-    throw redirect(getSignInRoutePath(pathWithSearchParams));
-  }
-};
-
+// Router.
 const router = createBrowserRouter([
   {
     path: "/dang-nhap",
@@ -34,6 +23,7 @@ const router = createBrowserRouter([
   }
 ]);
 
+// Component.
 export default function Router() {
   return <RouterProvider router={router} />;
 }
