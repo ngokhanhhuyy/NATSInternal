@@ -6,18 +6,26 @@ const mockingApi: AuthenticationApi = {
   async signInAsync(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void> {
     const validationErrors: ApiErrorDetails = { };
     if (!requestDto.userName) {
-      validationErrors["userName"] = "Username is required";
+      validationErrors["userName"] = "Username is required.";
     }
 
     if (!requestDto.password) {
-      validationErrors["password"] = "Password is required";
+      validationErrors["password"] = "Password is required.";
     }
 
     if (Object.entries(validationErrors).length) {
       throw new ValidationError(validationErrors);
     }
 
-    
+    if (requestDto.userName !== "admin") {
+      throw new OperationError({ userName: "Username doesn't exist." });
+    }
+
+    if (requestDto.password !== "password") {
+      throw new OperationError({ password: "Password is incorrect." });
+    }
+
+    localStorage.setItem({ "" })
   },
 
   async clearAccessToken(): Promise<void> {
