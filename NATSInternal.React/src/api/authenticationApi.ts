@@ -1,6 +1,5 @@
 import { useHttpClient } from "./httpClient";
-import { ValidationError, OperationError, type ApiErrorDetails } from "./errors";
-import type { VerifyUserNameAndPasswordRequestDto, ChangePasswordRequestDto } from "./dtos";
+import type { VerifyUserNameAndPasswordRequestDto, ChangePasswordRequestDto } from "./dtos/authenticationDtos";
 import { AuthorizationError } from "./errors";
 
 const httpClient = useHttpClient();
@@ -15,33 +14,6 @@ export type AuthenticationApi = {
 const api: AuthenticationApi = {
   async signInAsync(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void> {
     return await httpClient.postAndIgnoreAsync("/authentication/getAccessCookie", requestDto);
-  },
-
-  async clearAccessToken(): Promise<void> {
-    return await httpClient.postAndIgnoreAsync("/authentication/clearAccessCookie", {  });
-  },
-
-  async changePasswordAsync(requestDto: ChangePasswordRequestDto): Promise<void> {
-    return await httpClient.postAndIgnoreAsync("/authentication/changePassword", requestDto);
-  },
-
-  async checkAuthenticationStatusAsync(): Promise<boolean> {
-    try {
-      await httpClient.getAsync("/authentication/checkAuthenticationStatus", { });
-      return true;
-    } catch (error) {
-      if (error instanceof AuthorizationError) {
-        return false;
-      }
-
-      throw error;
-    }
-  }
-};
-
-const mockingApi: AuthenticationApi = {
-  async signInAsync(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void> {
-    const errors: { [propertyPath: string]:  }
   },
 
   async clearAccessToken(): Promise<void> {

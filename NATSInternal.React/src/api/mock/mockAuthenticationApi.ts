@@ -1,8 +1,11 @@
 import type { AuthenticationApi } from "../authenticationApi";
 import { AuthorizationError, ValidationError, OperationError, type ApiErrorDetails } from "../errors";
 import type { VerifyUserNameAndPasswordRequestDto, ChangePasswordRequestDto } from "../dtos";
+import { useMockDatabase, type User } from "./mockDatabase";
 
-const mockingApi: AuthenticationApi = {
+const mockDatabase = useMockDatabase();
+
+const mockAuthenticationApi: AuthenticationApi = {
   async signInAsync(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void> {
     const validationErrors: ApiErrorDetails = { };
     if (!requestDto.userName) {
@@ -17,15 +20,16 @@ const mockingApi: AuthenticationApi = {
       throw new ValidationError(validationErrors);
     }
 
-    if (requestDto.userName !== "admin") {
+    const user = mockDatabase.users.find(u => u.userName === requestDto.userName);
+    if (!user) {
       throw new OperationError({ userName: "Username doesn't exist." });
     }
 
-    if (requestDto.password !== "password") {
+    if (user.password !== requestDto.password) {
       throw new OperationError({ password: "Password is incorrect." });
     }
 
-    localStorage.setItem({ "" })
+    localStorage.setItem("currentUser", );
   },
 
   async clearAccessToken(): Promise<void> {

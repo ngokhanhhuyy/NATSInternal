@@ -6,7 +6,7 @@ using NATSInternal.Application.UseCases.Users;
 namespace NATSInternal.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/users")]
 [Authorize]
 public class UserController : ControllerBase
 {
@@ -43,7 +43,7 @@ public class UserController : ControllerBase
         return Ok(await _mediator.Send(new UserGetDetailByIdRequestDto { Id = id }, cancellationToken));
     }
 
-    [HttpGet("{userName}")]
+    [HttpGet("{userName:string}")]
     [ProducesResponseType<UserGetDetailResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -70,7 +70,7 @@ public class UserController : ControllerBase
         return CreatedAtAction(nameof(GetDetailById), new { id }, id);
     }
 
-    [HttpPut("{id:guid}/[action]")]
+    [HttpPut("{id:guid}/add-to-roles")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -87,7 +87,7 @@ public class UserController : ControllerBase
         return Ok();
     }
 
-    [HttpPut("{id:guid}/[action]")]
+    [HttpPut("{id:guid}/remove-remove-roles")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
