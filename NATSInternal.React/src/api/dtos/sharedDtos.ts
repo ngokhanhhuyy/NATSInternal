@@ -10,6 +10,6 @@ declare global {
     id: string;
     name: string;
     displayName: string;
-    powerLevel: string;
+    powerLevel: number;
   };
 }

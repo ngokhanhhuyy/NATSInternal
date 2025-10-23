@@ -17,6 +17,7 @@ declare global {
     id: string;
     userName: string;
     roles: UserGetDetailRoleResponseDto[];
+    authorization: UserExistingAuthorizationResponseDto
   };
 
   type UserGetDetailRoleResponseDto = {
@@ -24,6 +25,6 @@ declare global {
     name: string;
     displayName: string;
     powerLevel: number;
-    permissionNames: string[]
+    permissionNames: string[];
   };
 }

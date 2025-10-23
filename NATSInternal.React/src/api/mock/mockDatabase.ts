@@ -6,11 +6,7 @@ export type User = {
   password: string;
   createdDateTime: Date;
   deletedDateTime: Date | null;
-};
-
-export type UserRole = {
-  userId: string;
-  roleId: string;
+  roles: Role[];
 };
 
 export type Role = {
@@ -18,12 +14,22 @@ export type Role = {
   name: string;
   displayName: string;
   powerLevel: number;
+  users: User[];
+  permissions: Permission[];
+};
+
+export type UserRole = {
+  userId: string;
+  roleId: string;
+  user: User;
+  role: Role;
 };
 
 export type Permission = {
   id: string;
   name: string;
   roleId: string;
+  role: Role[];
 };
 
 export type Product = {
@@ -62,8 +68,8 @@ export type Brand = {
 
 type Database = {
   users: User[];
-  userRoles: UserRole[];
   roles: Role[];
+  userRoles: UserRole[];
   permissions: Permission[];
   products: Product[];
   productCategories: ProductCategory[];
@@ -83,7 +89,8 @@ function generateUsers(): User[] {
     id: crypto.randomUUID(),
     ...data,
     createdDateTime: new Date(),
-    deletedDateTime: null
+    deletedDateTime: null,
+    roles: [],
   }));
 }
 
@@ -97,26 +104,35 @@ function generateRoles(): Role[] {
   ];
 
   return dataList.map(data => ({
+    ...data,
     id: crypto.randomUUID(),
-    ...data
+    users: [],
+    permissions: []
   }));
 }
 
 function generateUserRoles(users: User[], roles: Role[]): UserRole[] {
   console.log("Generating userRoles.");
 
-  const userRoleMap = new Map<string, string>();
+  const userRoles: UserRole[] = [];
   for (const user of users) {
     const userPowerLevel = roles
       .filter(role => role.name.toLowerCase() === user.userName)
       .map(role => role.powerLevel)[0];
     
     for (const role of roles.filter(eveluatingRole => eveluatingRole.powerLevel <= userPowerLevel)) {
-      userRoleMap.set(user.id, role.id);
+      user.roles.push(role);
+      role.users.push(user);
+      userRoles.push({
+        userId: user.id,
+        roleId: role.id,
+        user,
+        role
+      });
     }
   }
 
-  return [...userRoleMap.entries()].map(([userId, roleId]) => ({ userId, roleId }));
+  return userRoles;
 }
 
 function generatePermissions(_: Role[]): Permission[] {

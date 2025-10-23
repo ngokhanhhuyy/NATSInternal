@@ -1,25 +1,14 @@
+import { useMockDatabase } from "./mockDatabase";
 import type { AuthenticationApi } from "../authenticationApi";
+import { createUserGetDetailResponseDto } from "./mockUserApi";
 import { AuthorizationError, ValidationError, OperationError, type ApiErrorDetails } from "../errors";
-import type { VerifyUserNameAndPasswordRequestDto, ChangePasswordRequestDto } from "../dtos";
-import { useMockDatabase, type User } from "./mockDatabase";
+import { toAsyncMicrotask } from "./mockApiHelpers";
 
 const mockDatabase = useMockDatabase();
 
 const mockAuthenticationApi: AuthenticationApi = {
-  async signInAsync(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void> {
-    const validationErrors: ApiErrorDetails = { };
-    if (!requestDto.userName) {
-      validationErrors["userName"] = "Username is required.";
-    }
-
-    if (!requestDto.password) {
-      validationErrors["password"] = "Password is required.";
-    }
-
-    if (Object.entries(validationErrors).length) {
-      throw new ValidationError(validationErrors);
-    }
-
+  signInAsync: toAsyncMicrotask((requestDto: VerifyUserNameAndPasswordRequestDto): void => {
+    validateVerifyUserNameAndPasswordRequestDto(requestDto);
     const user = mockDatabase.users.find(u => u.userName === requestDto.userName);
     if (!user) {
       throw new OperationError({ userName: "Username doesn't exist." });
@@ -29,16 +18,16 @@ const mockAuthenticationApi: AuthenticationApi = {
       throw new OperationError({ password: "Password is incorrect." });
     }
 
-    localStorage.setItem("currentUser", );
-  },
+    localStorage.setItem("currentUser", JSON.stringify(createUserGetDetailResponseDto(user)));
+  }),
 
-  async clearAccessToken(): Promise<void> {
-    return await httpClient.postAndIgnoreAsync("/authentication/clearAccessCookie", {  });
-  },
+  clearAccessToken: toAsyncMicrotask((): void => {
+    localStorage.removeItem("currentUser");
+  }),
 
-  async changePasswordAsync(requestDto: ChangePasswordRequestDto): Promise<void> {
-    return await httpClient.postAndIgnoreAsync("/authentication/changePassword", requestDto);
-  },
+  changePasswordAsync: toAsyncMicrotask((requestDto: ChangePasswordRequestDto): void => {
+    
+  }),
 
   async checkAuthenticationStatusAsync(): Promise<boolean> {
     try {
@@ -56,4 +45,36 @@ const mockAuthenticationApi: AuthenticationApi = {
 
 export function useMockingAuthenticationApi(): AuthenticationApi {
   return api;
+}
+
+function validateVerifyUserNameAndPasswordRequestDto(requestDto: VerifyUserNameAndPasswordRequestDto): void {
+  const validationErrors: ApiErrorDetails = { };
+  if (!requestDto.userName) {
+    validationErrors["userName"] = "Username is required.";
+  }
+
+  if (!requestDto.password) {
+    validationErrors["password"] = "Password is required.";
+  }
+
+  if (Object.entries(validationErrors).length) {
+    throw new ValidationError(validationErrors);
+  }
+}
+
+function validateChangePasswordRequestDto(requestDto: ChangePasswordRequestDto): void {
+  const validationErrors: MockApiErrorDetails<ChangePasswordRequestDto> = { };
+  if (!requestDto.currentPassword) {
+    validationErrors.currentPassword = "Current password is required.";
+  }
+  
+  if (!requestDto.currentPassword) {
+    validationErrors.currentPassword = "Current password is required.";
+  }
+
+  if (!requestDto.confirmationPassword) {
+    validationErrors.confirmationPassword = "Confirmation password is required.";
+  } else if (requestDto.confirmationPassword !== requestDto.newPassword) {
+    validationErrors.confirmationPassword = "Confirmation password doesn't match new password.";
+  }
 }
