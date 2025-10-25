@@ -14,7 +14,7 @@ internal class UserResetPasswordHandler : IRequestHandler<UserResetPasswordReque
     private readonly IUserRepository _repository;
     private readonly IValidator<UserResetPasswordRequestDto> _validator;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly IAuthorizationInternalService _authorizationInternalService;
     private readonly IPasswordHasher _passwordHasher;
     #endregion
     
@@ -22,14 +22,14 @@ internal class UserResetPasswordHandler : IRequestHandler<UserResetPasswordReque
     public UserResetPasswordHandler(
         IUserRepository repository,
         IValidator<UserResetPasswordRequestDto> validator,
-        IAuthorizationService authorizationService,
+        IAuthorizationInternalService authorizationInternalService,
         IUnitOfWork unitOfWork,
         IPasswordHasher passwordHasher)
     {
         _repository = repository;
         _validator = validator;
         _unitOfWork = unitOfWork;
-        _authorizationService = authorizationService;
+        _authorizationInternalService = authorizationInternalService;
         _passwordHasher = passwordHasher;
     }
     #endregion
@@ -47,7 +47,7 @@ internal class UserResetPasswordHandler : IRequestHandler<UserResetPasswordReque
             ?? throw new NotFoundException();
         
         // Ensure the requesting user has permission to reset the target user's password.
-        if (!_authorizationService.CanResetUserPassword(user))
+        if (!_authorizationInternalService.CanResetUserPassword(user))
         {
             throw new AuthorizationException();
         }

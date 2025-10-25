@@ -54,7 +54,8 @@ public static class ApplicationConfiguration
             ProductGetDetailHandler>();
 
         // Services.
-        services.AddScoped<IAuthorizationService, AuthorizationService>();
+        services.AddScoped<IAuthorizationService, AuthorizationInternalService>();
+        services.AddScoped<IAuthorizationInternalService, AuthorizationInternalService>();
     }
     #endregion
 }

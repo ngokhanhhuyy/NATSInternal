@@ -1,63 +1,60 @@
 import { useMockDatabase, type User } from "./mockDatabase";
 import type { AuthenticationApi } from "../authenticationApi";
-import { createUserGetDetailResponseDto } from "./mockUserApi";
 import { OperationError, AuthenticationError } from "../errors";
-import { toAsyncMicrotask } from "./mockApiHelpers";
+import { throttleAsync } from "./throttle";
 import { validateUsingSchema } from "./mockValidation";
 import * as v from "valibot";
 
-export type Caller = Readonly<UserGetDetailResponseDto & {
+export type Caller = Readonly<{
+  id: string;
+  userName: string;
+  roles: { id: string; name: string; displayName: string; powerLevel: number, permissionNames: string[] }[];
   hasPermission(permissionName: string): boolean;
   get powerLevel(): number;
 }>;
 
 const mockDatabase = useMockDatabase();
 
-async function getAccessCookie(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void> {
-  await new Promise(resolve => resolve(null));
-  console.log(123);
-  validateUsingSchema(VerifyUserNameAndPasswordRequestDto, requestDto);
-  const user = mockDatabase.users.find(u => u.userName === requestDto.userName);
-  if (!user) {
-    throw new OperationError({ userName: "Không tồn tại" });
-  }
-
-  if (user.password !== requestDto.password) {
-    throw new OperationError({ password: "Không chính xác." });
-  }
-
-  setCaller(user);
-}
-
-function clearAccessCookie(): void {
-  clearCaller();
-}
-
-function changePassword(requestDto: ChangePasswordRequestDto): void {
-  validateUsingSchema(ChangePasswordRequestDto, requestDto);
-  const caller = getAndEnsureCallerExists();
-  const user = mockDatabase.users.find((u) => u.id === caller.id);
-  if (!user) {
-    clearAccessCookie();
-    throw new AuthenticationError();
-  }
-
-  if (user?.password !== requestDto.currentPassword) {
-    throw new OperationError({ currentPassword: "Mật khẩu hiện tại không chính xác." });
-  }
-
-  user.password = requestDto.newPassword;
-}
-
-function checkAuthenticationStatus(): void {
-  getAndEnsureCallerExists();
-}
-
 const mockAuthenticationApi: AuthenticationApi = {
-  getAccessCookieAsync: getAccessCookie,
-  clearAccessCookieAsync: toAsyncMicrotask(clearAccessCookie),
-  changePasswordAsync: toAsyncMicrotask(changePassword),
-  checkAuthenticationStatusAsync: toAsyncMicrotask(checkAuthenticationStatus)
+  async getAccessCookieAsync(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void> {
+    await throttleAsync();
+    console.log(123);
+    validateUsingSchema(VerifyUserNameAndPasswordRequestDto, requestDto);
+    const user = mockDatabase.users.find(u => u.userName === requestDto.userName);
+    if (!user) {
+      throw new OperationError({ userName: "Không tồn tại" });
+    }
+
+    if (user.password !== requestDto.password) {
+      throw new OperationError({ password: "Không chính xác." });
+    }
+
+    setCaller(user);
+  },
+  async clearAccessCookieAsync(): Promise<void> {
+    await throttleAsync();
+    clearCaller();
+  },
+  async changePasswordAsync(requestDto: ChangePasswordRequestDto): Promise<void> {
+    await throttleAsync();
+    validateUsingSchema(ChangePasswordRequestDto, requestDto);
+    const caller = getAndEnsureCallerExists();
+    const user = mockDatabase.users.find((u) => u.id === caller.id);
+    if (!user) {
+      await this.clearAccessCookieAsync();
+      throw new AuthenticationError();
+    }
+
+    if (user?.password !== requestDto.currentPassword) {
+      throw new OperationError({ currentPassword: "Mật khẩu hiện tại không chính xác." });
+    }
+
+    user.password = requestDto.newPassword;
+  },
+  async checkAuthenticationStatusAsync(): Promise<void> {
+    await throttleAsync();
+    getAndEnsureCallerExists();
+  }
 };
 
 export function useMockAuthenticationApi(): AuthenticationApi {
@@ -97,7 +94,19 @@ export function getAndEnsureCallerExists(): Caller {
 }
 
 export function setCaller(user: User): void {
-  localStorage.setItem(callerKey, JSON.stringify(createUserGetDetailResponseDto(user)));
+  const caller: Pick<Caller, "id" | "userName" | "roles"> = {
+    id: user.id,
+    userName: user.userName,
+    roles: user.roles.map(role => ({
+      id: role.id,
+      name: role.name,
+      displayName: role.displayName,
+      powerLevel: role.powerLevel,
+      permissionNames: role.permissions.map(permission => permission.name)
+    }))
+  };
+
+  localStorage.setItem(callerKey, JSON.stringify(caller));
 }
 
 export function clearCaller(): void {

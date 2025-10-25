@@ -10,19 +10,23 @@ export type TextInputProps = {
 
 // Component.
 export default function TextInput(props: TextInputProps) {
+  // Props.
+  const { password, value, onValueChanged, ...domProps } = props;
+
   // Dependencies.
   const { joinClassName } = useTsxHelper();
 
   // Template.
-  function renderInput(className: string | undefined) {
+  function renderInput(className?: string, displayName?: string) {
     return (
       <>
         <input
-          {...props}
+          {...domProps}
           className={joinClassName(props.className, className)}
-          type={props.password ? "password" : "text"}
-          value={props.value}
-          onInput={(event) => props.onValueChanged((event.target as HTMLInputElement).value)}
+          type={password ? "password" : "text"}
+          placeholder={props.placeholder ?? displayName}
+          value={value}
+          onInput={(event) => onValueChanged((event.target as HTMLInputElement).value)}
         />
       </>
     );

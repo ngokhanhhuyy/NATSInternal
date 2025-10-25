@@ -3,22 +3,22 @@ import { useTsxHelper } from "@/helpers";
 import { FormFieldContext } from "./FormField";
 
 // Props.
-type InputProps = { render: (className: string | undefined) => React.ReactNode };
+type InputProps = { render: (className?: string, displayName?: string) => React.ReactNode };
 
 // Component.
 export default function Input(props: InputProps) {
   // Dependencies.
-  const formFieldPayload = useContext(FormFieldContext);
+  const formFieldContext = useContext(FormFieldContext);
   const { compute } = useTsxHelper();
 
   // Computed.
   const className = compute(() => {
-    if (!formFieldPayload || !formFieldPayload?.isValidated) {
+    if (!formFieldContext || !formFieldContext?.isValidated) {
       return;
     }
 
-    return formFieldPayload.hasError ? "invalid" : "valid";
+    return formFieldContext.hasError ? "invalid" : "valid";
   });
 
-  return props.render(className);
+  return props.render(className, formFieldContext?.displayName);
 }

@@ -194,8 +194,6 @@ Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
-# @name Utility-InitialData
-// @no-log
-GET {{host}}/utility/initialData
-Content-Type: application/json
+# @name Metadata
+GET {{host}}/metadata
 Cookie: {{accessCookie}}

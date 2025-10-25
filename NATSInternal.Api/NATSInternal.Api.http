@@ -1,11 +1,11 @@
-@host = http://localhost:5000
+@host = http://localhost:5000/api
 ###
 GET {{host}}/swagger/v1/swagger.json
 Accept: application/json
 
 ###
 # @name GetAccessCookie
-POST {{host}}/api/authentication/getAccessCookie
+POST {{host}}/authentication/getAccessCookie
 Content-Type: application/json
 Accept: application/json
 
@@ -16,4 +16,4 @@ Accept: application/json
 
 ###
 # @name ClearAccessCookie
-POST {{host}}/api/authentication/clearAccessCookie
+POST {{host}}/authentication/clearAccessCookie

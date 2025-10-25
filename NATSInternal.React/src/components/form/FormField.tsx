@@ -1,11 +1,12 @@
 import React, { useMemo, createContext, useContext } from "react";
+import { getDisplayName } from "@/metadata";
 import { useTsxHelper } from "@/helpers";
 
 // Shared components.
 import { FormContext } from "@/components/form/Form";
 
 // Context.
-export type FormFieldContextPayload = { isValidated: boolean; hasError: boolean; };
+export type FormFieldContextPayload = { isValidated: boolean; hasError: boolean; displayName?: string };
 export const FormFieldContext = createContext<FormFieldContextPayload>(undefined!);
 
 // Props.
@@ -35,19 +36,32 @@ export default function FormField(props: FormFieldProps) {
       return;
     }
 
-    const message = messages[0];
+    return messages[0];
+  }, [formContext.errorCollection.details]);
 
-    if (!props.displayName) {
-      return message;
+  const displayName = useMemo(() => {
+    if (props.displayName) {
+      return props.displayName;
     }
 
-    return `${props.displayName} ${message[0].toLowerCase()}${message.substring(1)}`;
-  }, [formContext.errorCollection.details]);
+    if (!props.path) {
+      return;
+    }
+    
+    const pathElements = props.path.split(".");
+    if (pathElements.length === 0) {
+      return;
+    }
+
+    const lastIndexerOmittedPathElement = pathElements[pathElements.length - 1].replace(/\[[0-9]\]/g, "");
+    return getDisplayName(lastIndexerOmittedPathElement);
+  }, []);
 
   const contextPayload = useMemo<FormFieldContextPayload>(() => ({
     isValidated: !!formContext.errorCollection.isValidated,
-    hasError: !!errorMessage
-  }), [formContext.errorCollection.details]);
+    hasError: !!errorMessage,
+    displayName: displayName ?? undefined
+  }), [formContext.errorCollection.details, displayName]);
   
   const labelClassName = compute(() => contextPayload.hasError ? "text-red-300" : "text-black/50");
 
@@ -55,9 +69,9 @@ export default function FormField(props: FormFieldProps) {
   return (
     <div className={joinClassName(props.className, "form-field flex flex-col justify-stretched")}>
       {/* Label */}
-      {props.displayName && (
+      {displayName && (
         <label htmlFor={props.path} className={joinClassName(labelClassName, "block text-sm")}>
-          {props.displayName}
+          {displayName}
         </label>
       )}
 

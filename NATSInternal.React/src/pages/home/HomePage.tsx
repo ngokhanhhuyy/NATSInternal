@@ -17,8 +17,8 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="bg-blue-500" style={{ width: "100vw", height: "100vh" }}>
-      <button onClick={signOut} />
+    <div className="bg-white" style={{ width: "100vw", height: "100vh" }}>
+      <button onClick={signOut}>Đăng xuất</button>
     </div>
   );
 }

@@ -14,7 +14,7 @@ internal class UserAddToRolesHandler : IRequestHandler<UserAddToRolesRequestDto>
     private readonly IUserRepository _repository;
     private readonly IValidator<UserAddToRolesRequestDto> _validator;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly IAuthorizationInternalService _authorizationInternalService;
     #endregion
     
     #region Constructors
@@ -22,12 +22,12 @@ internal class UserAddToRolesHandler : IRequestHandler<UserAddToRolesRequestDto>
         IUserRepository repository,
         IValidator<UserAddToRolesRequestDto> validator,
         IUnitOfWork unitOfWork,
-        IAuthorizationService authorizationService)
+        IAuthorizationInternalService authorizationInternalService)
     {
         _repository = repository;
         _validator = validator;
         _unitOfWork = unitOfWork;
-        _authorizationService = authorizationService;
+        _authorizationInternalService = authorizationInternalService;
     }
     #endregion
     
@@ -59,7 +59,7 @@ internal class UserAddToRolesHandler : IRequestHandler<UserAddToRolesRequestDto>
                 Role role = existingRolesDictionary[roleName];
 
                 // Ensure the requested user has permission to add to roles.
-                if (!_authorizationService.CanAddUserToRole(user, role))
+                if (!_authorizationInternalService.CanAddUserToRole(user, role))
                 {
                     throw new AuthorizationException();
                 }

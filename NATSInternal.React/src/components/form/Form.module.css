@@ -1,7 +1,15 @@
+.isSubmitting {
+    opacity: .5;
+    pointer-events: none;
+}
+
 .submissionSucceededAnnouncement {
     background: var(--color-emerald-100);
+    font-size: var(--text-lg);
+    color: var(--color-emerald-800);
     border: 1px solid var(--color-emerald-300);
-    padding: 10px;
+    border-radius: var(--radius-lg);
+    padding: 35px 10px;
     display: flex;
     justify-content: center;
     align-items: center;

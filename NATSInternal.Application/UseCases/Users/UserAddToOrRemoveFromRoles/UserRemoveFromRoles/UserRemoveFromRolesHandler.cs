@@ -15,7 +15,7 @@ internal class UserRemoveFromRolesHandler : IRequestHandler<UserRemoveFromRolesR
     private readonly IUserRepository _repository;
     private readonly IValidator<UserRemoveFromRolesRequestDto> _validator;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly IAuthorizationInternalService _authorizationInternalService;
     #endregion
     
     #region Constructors
@@ -23,12 +23,12 @@ internal class UserRemoveFromRolesHandler : IRequestHandler<UserRemoveFromRolesR
         IUserRepository repository,
         IValidator<UserRemoveFromRolesRequestDto> validator,
         IUnitOfWork unitOfWork,
-        IAuthorizationService authorizationService)
+        IAuthorizationInternalService authorizationInternalService)
     {
         _repository = repository;
         _validator = validator;
         _unitOfWork = unitOfWork;
-        _authorizationService = authorizationService;
+        _authorizationInternalService = authorizationInternalService;
     }
     #endregion
     
@@ -61,7 +61,7 @@ internal class UserRemoveFromRolesHandler : IRequestHandler<UserRemoveFromRolesR
                 Role role = addedRolesDictionary[roleName];
         
                 // Ensure the requested user has permission to remove from roles.
-                if (!_authorizationService.CanRemoveUserFromRole(user, role))
+                if (!_authorizationInternalService.CanRemoveUserFromRole(user, role))
                 {
                     throw new AuthorizationException();
                 }

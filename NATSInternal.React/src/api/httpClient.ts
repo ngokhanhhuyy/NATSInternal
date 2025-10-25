@@ -2,6 +2,12 @@ import * as errors from "./errors";
 import type { ApiErrorDetails } from "./errors";
 
 type Params = Record<string, any>;
+type ProblemDetails = {
+  type: string;
+  title: string;
+  status: number;
+  errors: ApiErrorDetails
+};
 
 /**
  * Convert a `Response` which indicates an error into a mapped `Error` for each type of the error.
@@ -14,10 +20,10 @@ async function convertResponseErrorToException(response: Response): Promise<Erro
     // Validation error.
     case 400:
     case 422:
-      const apiErrorDetails = await response.json() as ApiErrorDetails;
+      const problemDetails = await response.json() as ProblemDetails;
       return response.status === 400
-        ? new errors.ValidationError(apiErrorDetails)
-        : new errors.OperationError(apiErrorDetails);
+        ? new errors.ValidationError(problemDetails.errors)
+        : new errors.OperationError(problemDetails.errors);
 
     // Authentication error.
     case 401:

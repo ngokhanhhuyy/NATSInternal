@@ -11,7 +11,7 @@ declare global {
         ? (...args: A) => AwaitedReturn<R>
         : T[K];
   };
-
+  type ColorVariant = "indigo" | "red" | "success" | "blue" | "black";
 }
 
 export { };

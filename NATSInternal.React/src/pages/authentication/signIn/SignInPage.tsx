@@ -1,20 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router";
-import { useApi, ConnectionError, InternalServerError, AuthenticationError } from "@/api";
+import React, { useState } from "react";
+import { useNavigate } from "react-router";
+import { useApi, ConnectionError, InternalServerError } from "@/api";
 import { createSignInModel } from "@/models";
-import { useAuthenticationStore } from "@/stores";
 import { useTsxHelper, useRouteHelper } from "@/helpers";
 import styles from "./SignInPage.module.css";
 
-// Form components.
+// Child components.
 import { Form, FormField, TextInput } from "@/components/form";
+import { Button } from "@/components/Button";
 
 // Components.
 export default function SignInPage() {
   // Dependencies.
   const navigate = useNavigate();
-  const params = useParams<{ returningPath?: string }>();
-  const authenticationStore = useAuthenticationStore();
   const api = useApi();
   const { compute, joinClassName } = useTsxHelper();
   const { getHomeRoutePath } = useRouteHelper();
@@ -29,23 +27,6 @@ export default function SignInPage() {
     hasModelError: false,
   }));
 
-  // Effect.
-  useEffect(() => {
-    const checkAuthenticationStatusAsync = async () => {
-      try {
-        await api.authentication.checkAuthenticationStatusAsync();
-      } catch (error) {
-        if (error instanceof AuthenticationError) {
-          navigate(params.returningPath ?? getHomeRoutePath(), { replace: true });
-        }
-      }
-
-      setState((state) => ({ ...state, isInitiallyChecking: true }));
-    };
-
-    checkAuthenticationStatusAsync();
-  }, []);
-
   // Computed.
   const areRequiredFieldsFilled = compute<boolean>(() => {
     return model.userName.length > 0 && model.password.length > 0;
@@ -53,7 +34,6 @@ export default function SignInPage() {
 
   // Callbacks.
   async function loginAsync(): Promise<void> {
-    console.log(123);
     setState((state) => ({
       ...state,
       isSubmitting: true,
@@ -61,8 +41,8 @@ export default function SignInPage() {
     }));
 
     try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
       await api.authentication.getAccessCookieAsync(model.toRequestDto());
-      authenticationStore.isAuthenticated = true;
       setState(state => ({ ...state, isSubmitting: false, isSignedIn: true }));
     } finally {
         setModel(model => ({ ...model, password: "" }));
@@ -75,8 +55,7 @@ export default function SignInPage() {
   }
 
   function handleLoginSucceeded(): void {
-    const returningPath = params.returningPath ?? getHomeRoutePath();
-    setTimeout(() => navigate(returningPath), 1000);
+    setTimeout(() => navigate(getHomeRoutePath()), 1000);
   }
 
   function handleLoginFailed(error: Error, errorHandled: boolean): void {
@@ -94,8 +73,6 @@ export default function SignInPage() {
       commonError = "Đã xảy ra lỗi không xác định.";
     }
 
-    console.log(error);
-
     setState(state => ({ ...state, commonError }));
   }
 
@@ -107,22 +84,26 @@ export default function SignInPage() {
 
   // Template.
   function renderSignInButton(): React.ReactNode {
-    let buttonContent = <span>{state.hasModelError ? "Đăng nhập lại" : "Đăng nhập"}</span>;
+    let buttonContent: string;
     if (state.isSubmitting) {
-      buttonContent = <span className="spinner-border spinner-border-sm" aria-hidden="true" />;
+      buttonContent = "Đang kiểm tra";
+    } else if (state.hasModelError) {
+      buttonContent = "Đăng nhập lại";
+    } else {
+      buttonContent = "Đăng nhập";
     }
 
     return (
-      <button type="submit" className={state.hasModelError ? "red" : "indigo"}>
+      <Button type="submit" variant={state.hasModelError ? "red" : "indigo"} showSpinner={state.isSubmitting}>
         {buttonContent}
-      </button>
+      </Button>
     );
   }
 
   return (
     <div className={styles.container} onKeyUp={(event) => event.key === "Enter" && handleEnterKeyPressedAsync()}>
       <Form
-        className={joinClassName(styles.form, "flex flex-col rounded-lg p-8 items-stretch")}
+        className={joinClassName(styles.form, "flex flex-col rounded-xl p-8 items-stretch")}
         submitAction={loginAsync}
         onSubmissionSucceeded={handleLoginSucceeded}
         onSubmissionFailed={handleLoginFailed}
@@ -137,19 +118,18 @@ export default function SignInPage() {
         </div>
 
         {/* Username */}
-        <FormField className="mb-5" path="userName" displayName="Tên tài khoản">
+        <FormField className="mb-5" path="userName">
           <TextInput
-            placeholder="Tên tài khoản"
+            autoCapitalize="off"
             value={model.userName}
-            onValueChanged={(userName) => setModel(model => ({ ...model, userName }))}
+            onValueChanged={(userName) => setModel(model => ({ ...model, userName: userName.toLowerCase() }))}
           />
         </FormField>
 
         {/* Password */}
-        <FormField className="mb-8" path="password" displayName="Mật khẩu">
+        <FormField className="mb-8" path="password">
           <TextInput
             password
-            placeholder="Mật khẩu"
             value={model.password}
             onValueChanged={(password) => setModel(model => ({ ...model, password }))}
           />
@@ -166,6 +146,10 @@ export default function SignInPage() {
           </span>
         )}
       </Form>
+
+      <div className="text-indigo-900/50 flex justify-end mt-7">
+        © {new Date().getFullYear()} - Bản quyền thuộc về Ngô Khánh Huy
+      </div>
     </div>
   );
 }

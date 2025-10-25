@@ -1,26 +1,47 @@
-import { createBrowserRouter, RouterProvider } from "react-router";
-import { authenticationMiddleware } from "./middlewares";
+import { createBrowserRouter, RouterProvider, useRouteError, Navigate } from "react-router";
+import { authenticationMiddleware, notAuthenticationMiddleware } from "./middlewares";
+import { useRouteHelper } from "@/helpers";
 
 // Pages.
 import SignInPage from "@/pages/authentication/signIn/SignInPage";
 import HomePage from "@/pages/home/HomePage";
+import { AuthenticationError } from "@/api";
+
+// Components.
+function AuthenticationErrorBoundary(): React.ReactNode | null {
+  // Dependencies.
+  const error = useRouteError();
+  const { getSignInRoutePath } = useRouteHelper();
+
+  // Template.
+  if (error instanceof AuthenticationError) {
+    return <Navigate to={getSignInRoutePath()} />;
+  }
+}
 
 // Router.
 const router = createBrowserRouter([
   {
-    path: "/dang-nhap",
-    Component: SignInPage
-  },
-  {
     path: "/",
-    middleware: [authenticationMiddleware],
+    errorElement: <AuthenticationErrorBoundary />,
     children: [
       {
-        index: true,
-        Component: HomePage
+        path: "/dang-nhap",
+        Component: SignInPage,
+        middleware: [notAuthenticationMiddleware]
+      },
+      {
+        path: "/",
+        middleware: [authenticationMiddleware],
+        children: [
+          {
+            index: true,
+            Component: HomePage
+          }
+        ]
       }
     ]
-  }
+  },
 ]);
 
 // Component.

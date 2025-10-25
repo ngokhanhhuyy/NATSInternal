@@ -10,16 +10,16 @@ internal abstract class AbstractUserGetDetailHandler<TRequestDto> : IRequestHand
 {
     #region Fields
     private readonly IUserRepository _repository;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly IAuthorizationInternalService _authorizationInternalService;
     #endregion
 
     #region Constructors
     protected AbstractUserGetDetailHandler(
         IUserRepository repository,
-        IAuthorizationService authorizationService)
+        IAuthorizationInternalService authorizationInternalService)
     {
         _repository = repository;
-        _authorizationService = authorizationService;
+        _authorizationInternalService = authorizationInternalService;
     }
     #endregion
 
@@ -41,7 +41,7 @@ internal abstract class AbstractUserGetDetailHandler<TRequestDto> : IRequestHand
             return new(user);
         }
 
-        UserExistingAuthorizationResponseDto authorizationResponseDto = _authorizationService
+        UserExistingAuthorizationResponseDto authorizationResponseDto = _authorizationInternalService
             .GetUserExistingAuthorization(user);
         return new(user, authorizationResponseDto);
     }

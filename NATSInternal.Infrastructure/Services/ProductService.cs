@@ -16,18 +16,18 @@ internal class ProductService : IProductService
     #region Fields
     private readonly AppDbContext _context;
     private readonly IListFetchingService _listFetchingService;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly IAuthorizationInternalService _authorizationInternalService;
     #endregion
 
     #region Constructors
     public ProductService(
         AppDbContext context,
         IListFetchingService listFetchingService,
-        IAuthorizationService authorizationService)
+        IAuthorizationInternalService authorizationInternalService)
     {
         _context = context;
         _listFetchingService = listFetchingService;
-        _authorizationService = authorizationService;
+        _authorizationInternalService = authorizationInternalService;
     }
     #endregion
 
@@ -94,7 +94,7 @@ internal class ProductService : IProductService
                 product: i.Product,
                 stock: i.Stock,
                 thumbnailPhoto: i.ThumbnailPhoto,
-                _authorizationService.GetProductExistingAuthorization(i.Product)))
+                _authorizationInternalService.GetProductExistingAuthorization(i.Product)))
             .ToList();
 
         return new(productResponseDtos, productPage.PageCount);
@@ -125,7 +125,7 @@ internal class ProductService : IProductService
             createdUser: result.CreatedUser,
             lastUpdatedUser: result.LastUpdatedUser,
             photos: result.Photos,
-            authorizationResponseDto: _authorizationService.GetProductExistingAuthorization(result.Product)
+            authorizationResponseDto: _authorizationInternalService.GetProductExistingAuthorization(result.Product)
         );
     }
     #endregion

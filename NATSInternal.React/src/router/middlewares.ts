@@ -1,25 +1,51 @@
 import { redirect, type MiddlewareFunction } from "react-router";
-import { useApi } from "@/api";
+import { useApi, AuthenticationError } from "@/api";
 import { useRouteHelper } from "@/helpers";
+
+const api = useApi();
+const { getSignInRoutePath, getHomeRoutePath } = useRouteHelper();
 
 let isAuthenticated: boolean | null = null;
 
-export const authenticationMiddleware: MiddlewareFunction = async ({ request }) => {
-  const api = useApi();
-  const { getSignInRoutePath } = useRouteHelper();
-
+export const authenticationMiddleware: MiddlewareFunction = async (_, next) => {
   if (isAuthenticated == null) {
     try {
-      api.authentication.checkAuthenticationStatusAsync();
+      await api.authentication.checkAuthenticationStatusAsync();
       isAuthenticated = true;
-    } catch {
-      isAuthenticated = false;
+    } catch (error) {
+      if (error instanceof AuthenticationError) {
+        isAuthenticated = false;
+      } else {
+        throw error;
+      }
     }
   }
 
   if (!isAuthenticated) {
-    const url = new URL(request.url);
-    const pathWithSearchParams = url.pathname + url.search;
-    throw redirect(getSignInRoutePath(pathWithSearchParams));
+    throw redirect(getSignInRoutePath());
   }
+  
+
+  await next();
+};
+
+export const notAuthenticationMiddleware: MiddlewareFunction = async (_, next) => {
+  if (isAuthenticated == null) {
+    try {
+      await api.authentication.checkAuthenticationStatusAsync();
+      isAuthenticated = true;
+    } catch (error) {
+      if (error instanceof AuthenticationError) {
+        isAuthenticated = false;
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  if (isAuthenticated) {
+    throw redirect(getHomeRoutePath());
+  }
+
+  await next();
 };

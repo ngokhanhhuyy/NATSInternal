@@ -15,7 +15,7 @@ internal class UserDeleteHandler : IRequestHandler<UserDeleteRequestDto>
     #region Fields
     private readonly IUserRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly IAuthorizationInternalService _authorizationInternalService;
     private readonly IClock _clock;
     #endregion
     
@@ -23,12 +23,12 @@ internal class UserDeleteHandler : IRequestHandler<UserDeleteRequestDto>
     public UserDeleteHandler(
         IUserRepository repository,
         IUnitOfWork unitOfWork,
-        IAuthorizationService authorizationService,
+        IAuthorizationInternalService authorizationInternalService,
         IClock clock)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
-        _authorizationService = authorizationService;
+        _authorizationInternalService = authorizationInternalService;
         _clock = clock;
     }
     #endregion
@@ -42,7 +42,7 @@ internal class UserDeleteHandler : IRequestHandler<UserDeleteRequestDto>
             ?? throw new NotFoundException();
         
         // Ensure the requested user has permission to delete.
-        if (!_authorizationService.CanDeleteUser(user))
+        if (!_authorizationInternalService.CanDeleteUser(user))
         {
             throw new AuthorizationException();
         }

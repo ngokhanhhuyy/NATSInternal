@@ -6,14 +6,14 @@ using NATSInternal.Domain.Features.Users;
 namespace NATSInternal.Application.Authorization;
 
 [UsedImplicitly]
-internal class AuthorizationService : IAuthorizationService
+internal class AuthorizationInternalService : IAuthorizationInternalService
 {
     #region Fields
     private readonly ICallerDetailProvider _callerDetailProvider;
     #endregion
 
     #region Constructors
-    public AuthorizationService(ICallerDetailProvider callerDetailProvider)
+    public AuthorizationInternalService(ICallerDetailProvider callerDetailProvider)
     {
         _callerDetailProvider = callerDetailProvider;
     }
@@ -78,6 +78,21 @@ internal class AuthorizationService : IAuthorizationService
         return CanAddUserToOrRemoveUserFromRoles(user)
             && CallerPowerLevel() > user.PowerLevel
             && CallerPowerLevel() > role.PowerLevel;
+    }
+
+    public bool CanCreateProduct()
+    {
+        return CallerHasPermission(PermissionNames.CreateProduct);
+    }
+
+    public bool CanCreateBrand()
+    {
+        return CallerHasPermission(PermissionNames.CreateBrand);
+    }
+
+    public bool CanCreateProductCategory()
+    {
+        return CallerHasPermission(PermissionNames.CreateProductCategory);
     }
     #endregion
 

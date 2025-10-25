@@ -8,7 +8,7 @@ internal class UserGetDetailByIdHandler : AbstractUserGetDetailHandler<UserGetDe
     #region Constructors
     public UserGetDetailByIdHandler(
         IUserRepository repository,
-        IAuthorizationService authorizationService) : base(repository, authorizationService) { }
+        IAuthorizationInternalService authorizationInternalService) : base(repository, authorizationInternalService) { }
     #endregion
 
     #region Methods

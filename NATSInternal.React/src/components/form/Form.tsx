@@ -26,6 +26,9 @@ type FormProps<T> = {
 
 // Component.
 export default function Form<T>(props: FormProps<T>) {
+  // Props.
+  const { submitAction, onSubmissionSucceeded, onSubmissionFailed, submissionSucceededText, ...domProps } = props;
+  
   // Dependencies.
   const { compute, joinClassName } = useTsxHelper();
 
@@ -34,7 +37,11 @@ export default function Form<T>(props: FormProps<T>) {
   const [submissionState, setSubmissionState] = useState<SubmissionState>("notSubmitting");
 
   // Computed.
-  const opacityClassName = compute(() => submissionState === "submitting" ? "opacity-50" : undefined);
+  const submittingClassName = compute(() => {
+    if (submissionState === "submitting") {
+      return "opacity-50 pointer-events-none";
+    }
+  });
   const contextValue = useMemo(() => ({ errorCollection, submissionState }), [errorCollection, submissionState]);
 
   // Callbacks.
@@ -44,17 +51,17 @@ export default function Form<T>(props: FormProps<T>) {
     setSubmissionState("submitting");
 
     try {
-      const result = await props.submitAction();
-      props.onSubmissionSucceeded?.(result);
+      const result = await submitAction();
+      onSubmissionSucceeded?.(result);
       setSubmissionState("submissionSucceeded");
     } catch (error) {
       if (error instanceof ValidationError || error instanceof OperationError) {
         setErrorCollection(errorCollection => errorCollection.mapFromApiErrorDetails(error.errors));
-        props.onSubmissionFailed?.(error, true);
+        onSubmissionFailed?.(error, true);
         return;
       }
 
-      props.onSubmissionFailed?.(error as Error, false);
+      onSubmissionFailed?.(error as Error, false);
       throw error;
     } finally {
       setSubmissionState("notSubmitting");
@@ -64,21 +71,20 @@ export default function Form<T>(props: FormProps<T>) {
   // Template.
   return (
     <FormContext.Provider value={contextValue}>
-      {submissionState === "submissionSucceeded" ? (
-        <div className={styles.submissionSucceededAnnouncement}>
-          <i className="bi bi-check-circle-fill me-1"/>
-          {props.submissionSucceededText ?? "Lưu thành công"}
-        </div>
-      ) : (
-        <form
-          {...props}
-          className={joinClassName(props.className, opacityClassName)}
-          noValidate
-          onSubmit={handleSubmitAsync}
-        >
-          {props.children}
-        </form>
-      )}
+      <form
+        {...domProps}
+        className={joinClassName(domProps.className, submittingClassName, "transition transition-500")}
+        noValidate
+        onSubmit={handleSubmitAsync}
+      >
+        {submissionState !== "submissionSucceeded" && domProps.children}
+        {submissionState === "submissionSucceeded" && (
+          <div className={styles.submissionSucceededAnnouncement}>
+            {submissionSucceededText ?? "Lưu thành công"}
+          </div>
+        )}
+      </form>
+      
     </FormContext.Provider>
   );
 }

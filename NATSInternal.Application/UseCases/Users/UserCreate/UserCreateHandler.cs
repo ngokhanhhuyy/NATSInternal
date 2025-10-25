@@ -16,7 +16,7 @@ internal class UserCreateHandler : IRequestHandler<UserCreateRequestDto, Guid>
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserRepository _repository;
     private readonly IValidator<UserCreateRequestDto> _validator;
-    private readonly IAuthorizationService _authorizationService;
+    private readonly IAuthorizationInternalService _authorizationInternalService;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IClock _clock;
     #endregion
@@ -26,7 +26,7 @@ internal class UserCreateHandler : IRequestHandler<UserCreateRequestDto, Guid>
         IUnitOfWork unitOfWork,
         IUserRepository repository,
         IValidator<UserCreateRequestDto> validator,
-        IAuthorizationService authorizationService,
+        IAuthorizationInternalService authorizationInternalService,
         IPasswordHasher passwordHasher,
         IClock clock)
     {
@@ -34,7 +34,7 @@ internal class UserCreateHandler : IRequestHandler<UserCreateRequestDto, Guid>
         _repository = repository;
         _validator = validator;
         _passwordHasher = passwordHasher;
-        _authorizationService = authorizationService;
+        _authorizationInternalService = authorizationInternalService;
         _clock = clock;
     }
     #endregion
@@ -47,7 +47,7 @@ internal class UserCreateHandler : IRequestHandler<UserCreateRequestDto, Guid>
         _validator.ValidateAndThrow(requestDto);
         
         // Ensure the requested user has permission to create.
-        if (!_authorizationService.CanCreateUser())
+        if (!_authorizationInternalService.CanCreateUser())
         {
             throw new AuthorizationException();
         }
