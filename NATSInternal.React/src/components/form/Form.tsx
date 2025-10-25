@@ -2,6 +2,7 @@ import React, { useState, useMemo, createContext } from "react";
 import { ValidationError, OperationError } from "@/api";
 import { createErrorCollectionModel } from "@/models";
 import { useTsxHelper } from "@/helpers";
+import styles from "./Form.module.css";
 
 // Type.
 type SubmissionState = "notSubmitting" | "submitting" | "submissionSucceeded";
@@ -64,10 +65,7 @@ export default function Form<T>(props: FormProps<T>) {
   return (
     <FormContext.Provider value={contextValue}>
       {submissionState === "submissionSucceeded" ? (
-        <div className={joinClassName(
-          "bg-success-subtle border border-success rounded-3",
-          "d-flex justify-content-center align-items-center p-5"
-        )}>
+        <div className={styles.submissionSucceededAnnouncement}>
           <i className="bi bi-check-circle-fill me-1"/>
           {props.submissionSucceededText ?? "Lưu thành công"}
         </div>

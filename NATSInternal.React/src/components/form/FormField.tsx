@@ -10,8 +10,8 @@ export const FormFieldContext = createContext<FormFieldContextPayload>(undefined
 
 // Props.
 export type FormFieldProps = {
-  label?: string;
-  propertyPath?: string;
+  path?: string;
+  displayName?: string;
   children: React.ReactNode;
 } & React.ComponentPropsWithoutRef<"div">;
 
@@ -19,30 +19,47 @@ export type FormFieldProps = {
 export default function FormField(props: FormFieldProps) {
   // Dependencies.
   const formContext = useContext(FormContext);
-  const { joinClassName } = useTsxHelper();
+  const { compute, joinClassName } = useTsxHelper();
 
   // Computed.
   const errorMessage = useMemo(() => {
-    console.log("Triggered");
-    if (formContext && props.propertyPath) {
-      const messages = formContext.errorCollection.details
-        .filter(d => d.propertyPath === props.propertyPath)
-        .map(d => d.message);
-
-      return messages.length >= 1 ? messages[0] : undefined;
+    if (!formContext || !props.path) {
+      return;
     }
+
+    const messages = formContext.errorCollection.details
+      .filter(d => d.propertyPath === props.path)
+      .map(d => d.message);
+
+    if (messages.length === 0) {
+      return;
+    }
+
+    const message = messages[0];
+
+    if (!props.displayName) {
+      return message;
+    }
+
+    return `${props.displayName} ${message[0].toLowerCase()}${message.substring(1)}`;
   }, [formContext.errorCollection.details]);
 
   const contextPayload = useMemo<FormFieldContextPayload>(() => ({
     isValidated: !!formContext.errorCollection.isValidated,
     hasError: !!errorMessage
   }), [formContext.errorCollection.details]);
+  
+  const labelClassName = compute(() => contextPayload.hasError ? "text-red-300" : "text-black/50");
 
+  // Template.
   return (
-    <div className={joinClassName("form-group", props.className)}>
-      <pre>{JSON.stringify(formContext?.errorCollection.details, null, 2)}</pre>
+    <div className={joinClassName(props.className, "form-field flex flex-col justify-stretched")}>
       {/* Label */}
-      {props.label && <label className="form-label">{props.label}</label>}
+      {props.displayName && (
+        <label htmlFor={props.path} className={joinClassName(labelClassName, "block text-sm")}>
+          {props.displayName}
+        </label>
+      )}
 
       {/* Input */}
       <FormFieldContext.Provider value={contextPayload}>
@@ -50,7 +67,7 @@ export default function FormField(props: FormFieldProps) {
       </FormFieldContext.Provider>
 
       {/* Message */}
-      {!!errorMessage && <span className="text-danger">{errorMessage}</span>}
+      {!!errorMessage && <div className="text-red-500">{errorMessage}</div>}
     </div>
   );
 }

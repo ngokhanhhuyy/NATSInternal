@@ -1,0 +1,8 @@
+.submissionSucceededAnnouncement {
+    background: var(--color-emerald-100);
+    border: 1px solid var(--color-emerald-300);
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

@@ -40,7 +40,7 @@ export function createValidator<R>(requestDto: R, ruleFor: (builder: RuleBuilder
   };
 }
 
-function createRuleBuilderOptions<R, P>(requestDto: R, property: P, errors: ApiErrorDetails): IRuleBuilderOptions<R, P> {
+function createRuleBuilderOptions<R, P>(requestDto: R, property: P, ruleInformationList: RuleInformation[], errors: ApiErrorDetails): IRuleBuilderOptions<R, P> {
   return {
     notNullOrUndefined(): this {
       

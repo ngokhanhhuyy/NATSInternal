@@ -10,7 +10,8 @@ export const authenticationMiddleware: MiddlewareFunction = async ({ request }) 
 
   if (isAuthenticated == null) {
     try {
-      isAuthenticated = await api.authentication.checkAuthenticationStatusAsync();
+      api.authentication.checkAuthenticationStatusAsync();
+      isAuthenticated = true;
     } catch {
       isAuthenticated = false;
     }

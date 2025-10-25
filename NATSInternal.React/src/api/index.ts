@@ -1,14 +1,18 @@
-import { useAuthenticationApi, type AuthenticationApi } from "./authenticationApi";
+import { type AuthenticationApi } from "./authenticationApi";
+import { useMockAuthenticationApi } from "./mock/mockAuthenticationApi";
+import { type UserApi } from "./userApi";
+import { useMockUserApi } from "./mock/mockUserApi";
 
 interface IApi {
   authentication: AuthenticationApi;
+  user: UserApi;
 }
 
 export function useApi(): IApi {
   return {
-    authentication: useAuthenticationApi()
+    authentication: useMockAuthenticationApi(),
+    user: useMockUserApi()
   };
 }
 
-export * from "./dtos";
 export * from "./errors";

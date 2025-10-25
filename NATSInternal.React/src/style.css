@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import "tailwindcss";
+
+html {
+    --border-color: oklch(from var(--color-indigo-800) l c h / 25%);
+    font-family: "Roboto", Helvetica, Arial, sans-serif;
+    color: oklch(from var(--color-gray-800) l c h / 75%);
+}
+
+input:not([type="checkbox"]) {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: .5rem;
+    transition: .25s ease;
+    box-shadow: 1px 5px 3px -2px rgba(0, 0, 0, 0.03);
+    outline: none;
+    transition: .25s ease;
+
+    &:hover {
+        border-color: var(--color-indigo-300);
+    }
+
+    &:focus {
+        border-color: var(--color-indigo-500);
+        box-shadow: 1px 5px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    &.invalid {
+        background: var(--color-red-50);
+        color: var(--color-red-800);
+        border-color: var(--color-red-300);
+    }
+
+    &.invalid:hover {
+        border-color: var(--color-red-300);
+    }
+
+
+    &.invalid:focus {
+        border-color: var(--color-red-500);
+    }
+}
+
+/* input[type="checkbox"] {
+    border: 3px solid red !important;
+    accent-color: var(--color-indigo-500);
+
+    &::after {
+        content: "123";
+        background: red;;
+        width: 10px;
+        height: 10px;
+    }
+} */
+
+button {
+    --solid-hover-filter: brightness(1.35);
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: .5rem;
+    transition: .25s ease;
+    cursor: pointer;
+
+    &:hover {
+        filter: brightness(.97);
+    }
+
+    &:active {
+        filter: brightness(.9);
+    }
+
+    &:disabled {
+        filter: opacity(.5);
+        cursor: default;
+    }
+
+    &.indigo {
+        background: var(--color-indigo-500);
+        color: white;
+        border-color: var(--color-indigo-500);
+
+        &:hover {
+            filter: var(--solid-hover-filter);
+        }
+    }
+
+    &.indigo-outline {
+        background: white;
+        color: var(--color-indigo-500);
+        border-color: var(--color-indigo-500);
+
+        &:hover {
+            background: var(--color-indigo-500);
+            color: white;
+            border-color: var(--color-indigo-500);
+        }
+    }
+
+    &.red {
+        background: var(--color-red-500);
+        color: white;
+        border-color: var(--color-red-500);
+
+        &:hover {
+            filter: var(--solid-hover-filter);
+        }
+    }
+
+    &.red-outline {
+        background: white;
+        color: var(--color-red-500);
+        border-color: var(--color-red-500);
+
+        &:hover {
+            background: var(--color-red-500);
+            color: white;
+            border-color: var(--color-red-500);
+        }
+    }
+}

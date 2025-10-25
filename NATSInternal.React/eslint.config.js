@@ -43,7 +43,7 @@ export default defineConfig([
       "@typescript-eslint/no-empty-object-type": "off",
       "no-case-declarations": "off",
       "react/react-in-jsx-scope": "off",
-      "react/prop-types": "off"
+      "react/prop-types": "off",
     }
   }
 ]);

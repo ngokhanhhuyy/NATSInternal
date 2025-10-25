@@ -1,7 +1,7 @@
 const routeHelper = {
   getSignInRoutePath: (returningPath?: string) => {
     let path = "/dang-nhap";
-    if (returningPath) {
+    if (returningPath && returningPath.length) {
       path += `?${returningPath}`;
     }
 

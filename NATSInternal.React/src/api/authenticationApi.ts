@@ -1,22 +1,20 @@
 import { useHttpClient } from "./httpClient";
-import type { VerifyUserNameAndPasswordRequestDto, ChangePasswordRequestDto } from "./dtos/authenticationDtos";
-import { AuthorizationError } from "./errors";
 
 const httpClient = useHttpClient();
 
 export type AuthenticationApi = {
-  signInAsync(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void>;
-  clearAccessToken(): Promise<void>;
+  getAccessCookieAsync(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void>;
+  clearAccessCookieAsync(): Promise<void>;
   changePasswordAsync(requestDto: ChangePasswordRequestDto): Promise<void>;
-  checkAuthenticationStatusAsync(): Promise<boolean>;
+  checkAuthenticationStatusAsync(): Promise<void>;
 };
 
 const api: AuthenticationApi = {
-  async signInAsync(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void> {
+  async getAccessCookieAsync(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void> {
     return await httpClient.postAndIgnoreAsync("/authentication/getAccessCookie", requestDto);
   },
 
-  async clearAccessToken(): Promise<void> {
+  async clearAccessCookieAsync(): Promise<void> {
     return await httpClient.postAndIgnoreAsync("/authentication/clearAccessCookie", {  });
   },
 
@@ -24,17 +22,8 @@ const api: AuthenticationApi = {
     return await httpClient.postAndIgnoreAsync("/authentication/changePassword", requestDto);
   },
 
-  async checkAuthenticationStatusAsync(): Promise<boolean> {
-    try {
-      await httpClient.getAsync("/authentication/checkAuthenticationStatus", { });
-      return true;
-    } catch (error) {
-      if (error instanceof AuthorizationError) {
-        return false;
-      }
-
-      throw error;
-    }
+  async checkAuthenticationStatusAsync(): Promise<void> {
+    await httpClient.getAsync("/authentication/checkAuthenticationStatus", { });
   }
 };
 

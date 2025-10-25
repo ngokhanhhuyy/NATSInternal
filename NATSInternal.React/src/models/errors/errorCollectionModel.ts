@@ -17,6 +17,7 @@ export function createErrorCollectionModel(): ErrorCollectionModel {
     mapFromApiErrorDetails(apiErrors) {
       return {
         ...model,
+        isValidated: true,
         details: Object
           .entries(apiErrors)
           .map(([key, value]) => ({ propertyPath: key, message: value }))
