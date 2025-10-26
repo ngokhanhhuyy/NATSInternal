@@ -99,7 +99,7 @@ public class AuthenticationController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public IActionResult CheckAuthenticationStatus()

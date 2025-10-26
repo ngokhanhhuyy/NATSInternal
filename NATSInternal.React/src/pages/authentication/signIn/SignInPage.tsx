@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useApi, ConnectionError, InternalServerError } from "@/api";
 import { createSignInModel } from "@/models";
+import { useAuthenticationStore } from "@/stores";
 import { useTsxHelper, useRouteHelper } from "@/helpers";
 import styles from "./SignInPage.module.css";
 
@@ -14,6 +15,7 @@ export default function SignInPage() {
   // Dependencies.
   const navigate = useNavigate();
   const api = useApi();
+  const authenticationStore = useAuthenticationStore();
   const { compute, joinClassName } = useTsxHelper();
   const { getHomeRoutePath } = useRouteHelper();
 
@@ -26,6 +28,13 @@ export default function SignInPage() {
     isSubmitting: false,
     hasModelError: false,
   }));
+
+  // Effect.
+  useEffect(() => {
+    if (authenticationStore.isAuthenticated) {
+      navigate(getHomeRoutePath());
+    }
+  }, []);
 
   // Computed.
   const areRequiredFieldsFilled = compute<boolean>(() => {
@@ -54,14 +63,14 @@ export default function SignInPage() {
   }
 
   function handleLoginSucceeded(): void {
+    authenticationStore.setIsAuthenticated(true);
     setTimeout(() => {
       navigate(getHomeRoutePath());
-      console.log("navigated");
     }, 1000);
   }
 
   function handleLoginFailed(error: Error, errorHandled: boolean): void {
-    if (errorHandled) {ư
+    if (errorHandled) {
       setState(s => ({ ...s, hasModelError: true }));
       return;
     }

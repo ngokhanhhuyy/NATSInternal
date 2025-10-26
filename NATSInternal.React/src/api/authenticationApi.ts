@@ -23,7 +23,7 @@ const api: AuthenticationApi = {
   },
 
   async checkAuthenticationStatusAsync(): Promise<void> {
-    await httpClient.getAsync("/authentication/checkAuthenticationStatus", { });
+    await httpClient.postAndIgnoreAsync("/authentication/checkAuthenticationStatus", { });
   }
 };
 

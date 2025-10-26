@@ -1,42 +1,30 @@
 import { create } from "zustand";
-import { useApi } from "@/api";
+import { useApi, AuthenticationError } from "@/api";
 
 export type AuthenticationStore = {
-  hasInitiallyCheckedAuthentication: boolean;
   isAuthenticated: boolean;
-  readonly isAuthenticatedAsync: () => Promise<boolean>;
-  readonly clearAuthenticationStatus: () => void;
+  readonly setIsAuthenticated: (authenticated: boolean) => void;
 };
 
 const api = useApi();
+const initialIsAuthenticated = await isAuthenticatedAsync();
 
-export const useAuthenticationStore = create<AuthenticationStore>((set, get) => ({
-  hasInitiallyCheckedAuthentication: false,
-  isAuthenticated: false,
-  isAuthenticatedAsync: async (): Promise<boolean> => {
-    const { hasInitiallyCheckedAuthentication } = get();
-
-    if (!hasInitiallyCheckedAuthentication) {
-      try {
-        const isAuthenticated = await api.authentication.checkAuthenticationStatusAsync();
-        set({
-          isAuthenticated,
-          hasInitiallyCheckedAuthentication: true,
-        });
-      } catch {
-        set({
-          isAuthenticated: false,
-          hasInitiallyCheckedAuthentication: true,
-        });
-      }
-    }
-
-    return get().isAuthenticated;
-  },
-  clearAuthenticationStatus: (): void => {
-    set({
-      hasInitiallyCheckedAuthentication: false,
-      isAuthenticated: false,
-    });
+export const useAuthenticationStore = create<AuthenticationStore>((set) => ({
+  isAuthenticated: initialIsAuthenticated,
+  setIsAuthenticated: (authenticated: boolean): void => {
+    set({ isAuthenticated: authenticated });
   },
 }));
+
+async function isAuthenticatedAsync(): Promise<boolean> {
+  try {
+    await api.authentication.checkAuthenticationStatusAsync();
+    return true;
+  } catch (error) {
+    if (error instanceof AuthenticationError) {
+      return false;
+    }
+
+    throw error;
+  }
+}

@@ -138,7 +138,7 @@ async function postAsync<TResponseDto>(
     requestDto: object,
     params?: Params,
     delay?: number): Promise<TResponseDto> {
-    const response = await executeAsync("post", endpointPath, requestDto, params, delay);
+  const response = await executeAsync("post", endpointPath, requestDto, params, delay);
   return await response.json() as TResponseDto;
 }
 

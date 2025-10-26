@@ -1,6 +1,9 @@
+import React from "react";
 import { createBrowserRouter, RouterProvider, useRouteError, Navigate } from "react-router";
-import { authenticationMiddleware, notAuthenticationMiddleware } from "./middlewares";
 import { useRouteHelper } from "@/helpers";
+
+// Layouts.
+import MainPageLayout from "@/components/layouts/MainPageLayout";
 
 // Pages.
 import SignInPage from "@/pages/authentication/signIn/SignInPage";
@@ -28,11 +31,10 @@ const router = createBrowserRouter([
       {
         path: "/dang-nhap",
         Component: SignInPage,
-        middleware: [notAuthenticationMiddleware]
       },
       {
         path: "/",
-        middleware: [authenticationMiddleware],
+        Component: MainPageLayout,
         children: [
           {
             index: true,
