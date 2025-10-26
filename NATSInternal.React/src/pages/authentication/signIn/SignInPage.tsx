@@ -41,7 +41,6 @@ export default function SignInPage() {
     }));
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
       await api.authentication.getAccessCookieAsync(model.toRequestDto());
       setState(state => ({ ...state, isSubmitting: false, isSignedIn: true }));
     } finally {
@@ -55,11 +54,14 @@ export default function SignInPage() {
   }
 
   function handleLoginSucceeded(): void {
-    setTimeout(() => navigate(getHomeRoutePath()), 1000);
+    setTimeout(() => {
+      navigate(getHomeRoutePath());
+      console.log("navigated");
+    }, 1000);
   }
 
   function handleLoginFailed(error: Error, errorHandled: boolean): void {
-    if (errorHandled) {
+    if (errorHandled) {ư
       setState(s => ({ ...s, hasModelError: true }));
       return;
     }
