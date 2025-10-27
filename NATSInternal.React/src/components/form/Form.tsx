@@ -42,6 +42,7 @@ export default function Form<T>(props: FormProps<T>) {
       return "opacity-50 pointer-events-none";
     }
   });
+  
   const contextValue = useMemo(() => ({ errorCollection, submissionState }), [errorCollection, submissionState]);
 
   // Callbacks.
