@@ -7,6 +7,8 @@ internal interface IProductRepository
         Guid id,
         CancellationToken cancellationToken = default);
 
+    Task<int> GetProductCountByCategoryIdAsync(Guid categoryId, CancellationToken cancellationToken = default);
+
     void AddProduct(Product product);
 
     void UpdateProduct(Product product);

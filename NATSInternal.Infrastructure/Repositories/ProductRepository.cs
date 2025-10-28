@@ -28,6 +28,11 @@ internal class ProductRepository : IProductRepository
             .SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 
+    public async Task<int> GetProductCountByCategoryIdAsync(Guid categoryId, CancellationToken cancellationToken = default)
+    {
+        return await _context.Products.CountAsync(p => p.CategoryId == categoryId, cancellationToken);
+    }
+
     public void AddProduct(Product product)
     {
         _context.Products.Add(product);

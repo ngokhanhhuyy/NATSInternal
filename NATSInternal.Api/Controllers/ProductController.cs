@@ -56,4 +56,20 @@ public class ProductController : ControllerBase
         return CreatedAtAction(nameof(GetDetail), new { id }, id);
     }
     #endregion
+
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> Update(
+        Guid id,
+        [FromBody] ProductUpdateRequestDto requestDto,
+        CancellationToken cancellationToken)
+    {
+        requestDto.Id = id;
+        await _mediator.Send(requestDto, cancellationToken);
+        return Ok();
+    }
 }

@@ -11,21 +11,21 @@ using NATSInternal.Domain.Features.Products;
 namespace NATSInternal.Application.UseCases.Products;
 
 [UsedImplicitly]
-internal class ProductCreateHandler : IRequestHandler<ProductCreateRequestDto, Guid>
+internal class ProductUpdateHandler : IRequestHandler<ProductUpdateRequestDto>
 {
     #region Fields
     private readonly IProductRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IValidator<ProductCreateRequestDto> _validator;
+    private readonly IValidator<ProductUpdateRequestDto> _validator;
     private readonly ICallerDetailProvider _callerDetailProvider;
     private readonly IClock _clock;
     #endregion
     
     #region Constructors
-    public ProductCreateHandler(
+    public ProductUpdateHandler(
         IProductRepository repository,
         IUnitOfWork unitOfWork,
-        IValidator<ProductCreateRequestDto> validator,
+        IValidator<ProductUpdateRequestDto> validator,
         ICallerDetailProvider callerDetailProvider,
         IClock clock)
     {
@@ -38,31 +38,43 @@ internal class ProductCreateHandler : IRequestHandler<ProductCreateRequestDto, G
     #endregion
     
     #region Methods
-    public async Task<Guid> Handle(ProductCreateRequestDto requestDto, CancellationToken cancellationToken = default)
+    public async Task Handle(ProductUpdateRequestDto requestDto, CancellationToken cancellationToken = default)
     {
         requestDto.TransformValues();
         _validator.ValidateAndThrow(requestDto);
-        
-        Brand? brand = null;
-        if (requestDto.BrandId.HasValue)
+
+        Product product = await _repository
+            .GetProductByIdIncludingBrandWithCountryAndCategoryAsync(requestDto.Id, cancellationToken)
+            ?? throw new NotFoundException();
+
+        Brand? brand = product.Brand;
+        if (requestDto.BrandId.HasValue && requestDto.BrandId.Value != product.BrandId)
         {
             brand = await _repository
                 .GetBrandByIdIncludingCountryAsync(requestDto.BrandId.Value, cancellationToken)
                 ?? throw OperationException.NotFound(new object[] { nameof(requestDto.BrandId) }, DisplayNames.Brand);
         }
 
-        ProductCategory? category = null;
+        ProductCategory? category = product.Category;
         if (requestDto.CategoryName is not null)
         {
+            Guid? oldCategoryId = product.CategoryId;
+            
             category = await _repository.GetCategoryByNameAsync(requestDto.CategoryName, cancellationToken);
             if (category is null)
             {
                 category = new(requestDto.CategoryName, _clock.Now);
                 _repository.AddCategory(category);
             }
+
+            if (oldCategoryId.HasValue &&
+                await _repository.GetProductByIdIncludingBrandWithCountryAndCategoryAsync(oldCategoryId.Value) > 0)
+            {
+                
+            }
         }
         
-        Product product = new(
+        product.Update(
             requestDto.Name,
             requestDto.Description,
             requestDto.Unit,
@@ -76,12 +88,11 @@ internal class ProductCreateHandler : IRequestHandler<ProductCreateRequestDto, G
             category
         );
         
-        _repository.AddProduct(product);
+        _repository.UpdateProduct(product);
 
         try
         {
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            return product.Id;
         }
         catch (PersistenceException exception)
         {
