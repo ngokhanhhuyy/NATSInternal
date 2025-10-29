@@ -56,6 +56,7 @@ export default function Form<T>(props: FormProps<T>) {
       onSubmissionSucceeded?.(result);
       setSubmissionState("submissionSucceeded");
     } catch (error) {
+      setSubmissionState("notSubmitting");
       if (error instanceof ValidationError || error instanceof OperationError) {
         setErrorCollection(errorCollection => errorCollection.mapFromApiErrorDetails(error.errors));
         onSubmissionFailed?.(error, true);
@@ -64,8 +65,6 @@ export default function Form<T>(props: FormProps<T>) {
 
       onSubmissionFailed?.(error as Error, false);
       throw error;
-    } finally {
-      setSubmissionState("notSubmitting");
     }
   }
 

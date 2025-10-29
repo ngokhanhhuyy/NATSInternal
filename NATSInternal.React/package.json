@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:rsbuild": "rsbuild dev",
+    "build:rsbuild": "rsbuild build",
+    "preview:rsbuild": "rsbuild preview"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.16",
@@ -23,6 +26,8 @@
     "@eslint/js": "^9.38.0",
     "@eslint/json": "^0.13.2",
     "@faker-js/faker": "^10.1.0",
+    "@rsbuild/core": "^1.5.17",
+    "@rsbuild/plugin-react": "^1.4.1",
     "@stylistic/eslint-plugin": "^5.5.0",
     "@tailwindcss/postcss": "^4.1.16",
     "@types/node": "^24.6.0",
