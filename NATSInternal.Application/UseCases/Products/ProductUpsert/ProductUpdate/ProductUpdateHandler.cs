@@ -36,7 +36,7 @@ internal class ProductUpdateHandler : IRequestHandler<ProductUpdateRequestDto>
         _clock = clock;
     }
     #endregion
-    
+
     #region Methods
     public async Task Handle(ProductUpdateRequestDto requestDto, CancellationToken cancellationToken = default)
     {
@@ -56,38 +56,37 @@ internal class ProductUpdateHandler : IRequestHandler<ProductUpdateRequestDto>
         }
 
         ProductCategory? category = product.Category;
-        if (requestDto.CategoryName is not null)
+        Guid? oldCategoryId = product.CategoryId;
+        bool isCategoryChanged = false;
+        if (category?.Name != requestDto.CategoryName)
         {
-            Guid? oldCategoryId = product.CategoryId;
-            
-            category = await _repository.GetCategoryByNameAsync(requestDto.CategoryName, cancellationToken);
+            if ()
+                category = await _repository.GetCategoryByNameAsync(requestDto.CategoryName, cancellationToken);
             if (category is null)
             {
                 category = new(requestDto.CategoryName, _clock.Now);
                 _repository.AddCategory(category);
             }
 
-            if (oldCategoryId.HasValue &&
-                await _repository.GetProductByIdIncludingBrandWithCountryAndCategoryAsync(oldCategoryId.Value) > 0)
-            {
-                
-            }
+            isCategoryChanged = true;
         }
-        
-        product.Update(
-            requestDto.Name,
-            requestDto.Description,
-            requestDto.Unit,
-            requestDto.DefaultAmountBeforeVatPerUnit,
-            requestDto.DefaultVatPercentage,
-            requestDto.IsForRetail,
-            requestDto.IsDiscontinued,
-            _callerDetailProvider.GetId(),
-            _clock.Now,
-            brand,
-            category
-        );
-        
+
+        if (isCategoryChanged && )
+
+            product.Update(
+                requestDto.Name,
+                requestDto.Description,
+                requestDto.Unit,
+                requestDto.DefaultAmountBeforeVatPerUnit,
+                requestDto.DefaultVatPercentage,
+                requestDto.IsForRetail,
+                requestDto.IsDiscontinued,
+                _callerDetailProvider.GetId(),
+                _clock.Now,
+                brand,
+                category
+            );
+
         _repository.UpdateProduct(product);
 
         try
@@ -119,6 +118,28 @@ internal class ProductUpdateHandler : IRequestHandler<ProductUpdateRequestDto>
                     throw;
             }
         }
+    }
+    #endregion
+    
+    #region PrivateStaticMethods
+    private async Task<ProductCategory?> UpdateProductCategory(
+        ProductUpdateRequestDto requestDto,
+        Product product,
+        CancellationToken cancellationToken = default)
+    {
+        if (requestDto.CategoryName is null)
+        {
+            return null;
+        }
+
+        ProductCategory category = await _repository.GetCategoryByNameAsync(requestDto.CategoryName, cancellationToken);
+        if (category is null)
+        {
+            category = new(requestDto.CategoryName, _clock.Now);
+            _repository.AddCategory(category);
+        }
+
+        isCategoryChanged = true;
     }
     #endregion
 }
