@@ -60,8 +60,12 @@ internal class ProductUpdateHandler : IRequestHandler<ProductUpdateRequestDto>
         bool isCategoryChanged = false;
         if (category?.Name != requestDto.CategoryName)
         {
-            if ()
-                category = await _repository.GetCategoryByNameAsync(requestDto.CategoryName, cancellationToken);
+            if (requestDto.CategoryName is null)
+            {
+                category = null;
+            }
+            
+            category = await _repository.GetCategoryByNameAsync(requestDto.CategoryName, cancellationToken);
             if (category is null)
             {
                 category = new(requestDto.CategoryName, _clock.Now);
@@ -132,7 +136,10 @@ internal class ProductUpdateHandler : IRequestHandler<ProductUpdateRequestDto>
             return null;
         }
 
-        ProductCategory category = await _repository.GetCategoryByNameAsync(requestDto.CategoryName, cancellationToken);
+        ProductCategory category = await _repository
+            .GetCategoryByNameAsync(requestDto.CategoryName, cancellationToken)
+            ?? throw new NotFoundException();
+        
         if (category is null)
         {
             category = new(requestDto.CategoryName, _clock.Now);
