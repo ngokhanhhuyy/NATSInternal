@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Routing;
 
 namespace NATSInternal.Api.Configurations;
 
@@ -7,7 +6,7 @@ public partial class KebabParameterTransformer : IOutboundParameterTransformer
 {
     public string? TransformOutbound(object? value)
     {
-        if (value is null)
+        if (value?.ToString() is null)
         {
             return null;
         }

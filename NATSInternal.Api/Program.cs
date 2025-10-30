@@ -2,6 +2,8 @@ using System.Reflection;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using NATSInternal.Api.Configurations;
 using NATSInternal.Api.Middlewares;
 using NATSInternal.Api.Providers;
 using NATSInternal.Api.Filters;
@@ -94,6 +96,8 @@ public static class Program
         builder.Services
             .AddControllers(options =>
             {
+                options.Conventions.Add(new RouteTokenTransformerConvention(new PluralParameterTransformer()));
+                options.Conventions.Add(new RouteTokenTransformerConvention(new KebabParameterTransformer()));
                 options.Filters.Add<ExceptionFilter>();
             })
             .AddJsonOptions(options =>

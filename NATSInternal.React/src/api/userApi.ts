@@ -10,13 +10,13 @@ const httpClient = useHttpClient();
 
 const userApi: UserApi = {
   getListAsync(requestDto: UserGetListRequestDto): Promise<UserGetListResponseDto> {
-    return httpClient.getAsync("/user", requestDto);
+    return httpClient.getAsync("/users", requestDto);
   },
   getDetailByIdAsync(id: string): Promise<UserGetDetailResponseDto> {
-    return httpClient.getAsync(`/user/${id}`);
+    return httpClient.getAsync(`/users/${id}`);
   },
   getDetailByUserNameAsync(userName: string): Promise<UserGetDetailResponseDto> {
-    return httpClient.getAsync(`/user/${userName}`);
+    return httpClient.getAsync(`/users/${userName}`);
   }
 };
 

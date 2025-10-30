@@ -2,7 +2,7 @@
 
 # @name GetAccessCookie
 // @no-log
-POST {{host}}/authentication/getAccessCookie HTTP/2.0
+POST {{host}}/authentication/get-access-cookie HTTP/2.0
 Content-Type: application/json
 
 {
@@ -16,35 +16,35 @@ Content-Type: application/json
 ###
 # @name UserGetList
 // @no-log
-GET {{host}}/user HTTP/2.0
+GET {{host}}/users HTTP/2.0
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
 # @name CustomerList
 // @no-log
-GET {{host}}/customer?sortingByField=FirstName&sortingByAscending=False&hasRemainingDebtAmountOnly=True&page=2
+GET {{host}}/customers?sortingByField=FirstName&sortingByAscending=False&hasRemainingDebtAmountOnly=True&page=2
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
 # @name CustomerNewStatistics
 // @no-log
-GET {{host}}/customer/newStatistics
+GET {{host}}/customers/newStatistics
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
 # @name ProductList
 // @no-log
-GET {{host}}/product
+GET {{host}}/products
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
 # @name ProductDetail
 // @no-log
-GET {{host}}/product/de91b603-a202-4adc-a684-2c646e3f2f8b
+GET {{host}}/productsde91b603-a202-4adc-a684-2c646e3f2f8b
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
@@ -81,7 +81,7 @@ Cookie: {{accessCookie}}
     "amount": 2000000,
     "note": null,
     "incurredDateTime": null,
-    "customerId": 8
+    "customersId": 8
 }
 
 ###
@@ -107,7 +107,7 @@ Cookie: {{accessCookie}}
     "amount": 2000000,  
     "note": null,
     "statsDateTime": null,
-    "customerId": 10
+    "customersId": 10
 }
 
 ###
@@ -120,7 +120,7 @@ Cookie: {{accessCookie}}
     "amount": 1900000,  
     "note": null,
     "statsDateTime": null,
-    "customerId": 2,
+    "customersId": 2,
     "updatedReason": "Removed note"
 }
 
