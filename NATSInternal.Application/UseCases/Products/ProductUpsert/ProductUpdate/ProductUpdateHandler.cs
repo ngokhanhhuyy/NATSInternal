@@ -56,36 +56,24 @@ internal class ProductUpdateHandler : IRequestHandler<ProductUpdateRequestDto>
         }
 
         ProductCategory? category = product.Category;
-        Guid? oldCategoryId = product.CategoryId;
-        bool isCategoryChanged = false;
         if (category?.Name != requestDto.CategoryName)
         {
-            if ()
-                category = await _repository.GetCategoryByNameAsync(requestDto.CategoryName, cancellationToken);
-            if (category is null)
-            {
-                category = new(requestDto.CategoryName, _clock.Now);
-                _repository.AddCategory(category);
-            }
-
-            isCategoryChanged = true;
+            category = await UpdateProductCategory(requestDto, cancellationToken);
         }
 
-        if (isCategoryChanged && )
-
-            product.Update(
-                requestDto.Name,
-                requestDto.Description,
-                requestDto.Unit,
-                requestDto.DefaultAmountBeforeVatPerUnit,
-                requestDto.DefaultVatPercentage,
-                requestDto.IsForRetail,
-                requestDto.IsDiscontinued,
-                _callerDetailProvider.GetId(),
-                _clock.Now,
-                brand,
-                category
-            );
+        product.Update(
+            requestDto.Name,
+            requestDto.Description,
+            requestDto.Unit,
+            requestDto.DefaultAmountBeforeVatPerUnit,
+            requestDto.DefaultVatPercentage,
+            requestDto.IsForRetail,
+            requestDto.IsDiscontinued,
+            _callerDetailProvider.GetId(),
+            _clock.Now,
+            brand,
+            category
+        );
 
         _repository.UpdateProduct(product);
 
@@ -124,7 +112,6 @@ internal class ProductUpdateHandler : IRequestHandler<ProductUpdateRequestDto>
     #region PrivateStaticMethods
     private async Task<ProductCategory?> UpdateProductCategory(
         ProductUpdateRequestDto requestDto,
-        Product product,
         CancellationToken cancellationToken = default)
     {
         if (requestDto.CategoryName is null)
@@ -132,14 +119,18 @@ internal class ProductUpdateHandler : IRequestHandler<ProductUpdateRequestDto>
             return null;
         }
 
-        ProductCategory category = await _repository.GetCategoryByNameAsync(requestDto.CategoryName, cancellationToken);
+        ProductCategory? category = await _repository.GetCategoryByNameAsync(
+            requestDto.CategoryName,
+            cancellationToken
+        );
+        
         if (category is null)
         {
             category = new(requestDto.CategoryName, _clock.Now);
             _repository.AddCategory(category);
         }
 
-        isCategoryChanged = true;
+        return category;
     }
     #endregion
 }

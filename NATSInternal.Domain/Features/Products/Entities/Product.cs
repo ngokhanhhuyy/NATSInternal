@@ -110,5 +110,10 @@ internal class Product : AbstractEntity
         LastUpdatedUserId = lastUpdatedUserId;
         LastUpdatedDateTime = lastUpdatedDateTime;
     }
+
+    public void MarkAsDeleted()
+    {
+        IsDeleted = true;
+    }
     #endregion
 }
