@@ -17,6 +17,10 @@ const api: AuthenticationApi = {
   async clearAccessCookieAsync(): Promise<void> {
     return await httpClient.postAndIgnoreAsync("/authentication/clearAccessCookie", {  });
   },
+  
+  async getCallerDetailAsync(): Promise<UserGetDetailResponseDto> {
+    return await httpClient.getAsync("/authentication/callerDetail");
+  }
 
   async changePasswordAsync(requestDto: ChangePasswordRequestDto): Promise<void> {
     return await httpClient.postAndIgnoreAsync("/authentication/changePassword", requestDto);

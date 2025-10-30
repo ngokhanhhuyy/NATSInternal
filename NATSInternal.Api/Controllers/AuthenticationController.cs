@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NATSInternal.Application.Security;
 using NATSInternal.Application.UseCases.Authentication;
 using NATSInternal.Application.UseCases.Users;
 
@@ -14,12 +15,14 @@ namespace NATSInternal.Api.Controllers;
 public class AuthenticationController : ControllerBase
 {
     #region Fields
+    private readonly ICallerDetailProvider _callerDetailProvider;
     private readonly IMediator _mediator;
     #endregion
 
     #region Constructors
-    public AuthenticationController(IMediator mediator)
+    public AuthenticationController(ICallerDetailProvider callerDetailProvider, IMediator mediator)
     {
+        _callerDetailProvider = callerDetailProvider;
         _mediator = mediator;
     }
     #endregion
@@ -81,6 +84,16 @@ public class AuthenticationController : ControllerBase
     {
         await HttpContext.SignOutAsync();
         return Ok();
+    }
+
+    [Authorize]
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> CallerDetail(CancellationToken cancellationToken = default)
+    {
+        UserGetDetailByIdRequestDto requestDto = new() { Id = _callerDetailProvider.GetId() };
+        return Ok(await _mediator.Send(requestDto, cancellationToken));
     }
 
     [Authorize]
