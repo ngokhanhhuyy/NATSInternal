@@ -31,7 +31,7 @@ internal class Product : AbstractEntity
         Description = description;
         Unit = unit;
         DefaultAmountBeforeVatPerUnit = defaultAmountBeforeVatPerUnit;
-        DefaultVatPercentage = defaultVatPercentage;
+        DefaultVatPercentagePerUnit = defaultVatPercentage;
         IsForRetail = isForRetail;
         IsDiscontinued = isDiscontinued;
         Brand = brand;
@@ -47,7 +47,7 @@ internal class Product : AbstractEntity
     public string? Description { get; private set; }
     public string Unit { get; private set; }
     public long DefaultAmountBeforeVatPerUnit { get; private set; }
-    public int DefaultVatPercentage { get; private set; }
+    public int DefaultVatPercentagePerUnit { get; private set; }
     public bool IsForRetail { get; private set; } = true; 
     public bool IsDiscontinued { get; private set; }
     public DateTime CreatedDateTime { get; private set; }
@@ -102,7 +102,7 @@ internal class Product : AbstractEntity
         Description = description;
         Unit = unit;
         DefaultAmountBeforeVatPerUnit = defaultAmountBeforeVatPerUnit;
-        DefaultVatPercentage = defaultVatPercentage;
+        DefaultVatPercentagePerUnit = defaultVatPercentage;
         IsForRetail = isForRetail;
         IsDiscontinued = isDiscontinued;
         Brand = brand;

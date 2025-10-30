@@ -13,10 +13,9 @@ public abstract class AbstractProductUpsertRequestDto : IRequestDto
     public int DefaultVatPercentage { get; set; }
     public bool IsForRetail { get; set; }
     public bool IsDiscontinued { get; set; }
-    public bool ThumbnailChanged { get; set; }
     public Guid? BrandId { get; set; }
     public string? CategoryName { get; set; }
-    public List<PhotoAddOrUpdateRequestDto> Photos { get; set; } = new();
+    public List<PhotoCreateOrUpdateRequestDto> Photos { get; set; } = new();
     #endregion
 
     #region Methods
