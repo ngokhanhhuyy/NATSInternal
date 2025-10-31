@@ -3,6 +3,10 @@ import { Outlet } from "react-router";
 import { useNavigate } from "react-router";
 import { useAuthenticationStore } from "@/stores";
 import { useRouteHelper } from "@/helpers";
+import styles from "./MainPageLayout.module.css";
+
+// Layout components.
+import RootLayout from "./RootLayout";
 
 // Props.
 export default function MainPageLayout() {
@@ -24,8 +28,10 @@ export default function MainPageLayout() {
   }
 
   return (
-    <div className="bg-white" style={{ width: "100vw", height: "100vh" }}>
-      <Outlet />
-    </div>
+    <RootLayout>
+      <div className={styles.mainPageLayout}>
+        <Outlet />
+      </div>
+    </RootLayout>
   );
 }

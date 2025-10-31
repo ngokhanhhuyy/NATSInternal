@@ -20,9 +20,5 @@ export default function HomePage() {
   }, [setIsAuthenticated]);
 
   // Template.
-  return (
-    <div className="bg-white" style={{ width: "100vw", height: "100vh" }}>
-      <button onClick={signOut}>Đăng xuất</button>
-    </div>
-  );
+  return <button onClick={signOut}>Đăng xuất</button>;
 }
