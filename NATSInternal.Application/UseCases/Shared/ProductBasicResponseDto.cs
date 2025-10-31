@@ -29,7 +29,7 @@ public class ProductBasicResponseDto
         Name = product.Name;
         Unit = product.Unit;
         DefaultAmountBeforeVatPerUnit = product.DefaultAmountBeforeVatPerUnit;
-        DefaultVatPercentage = product.DefaultVatPercentage;
+        DefaultVatPercentage = product.DefaultVatPercentagePerUnit;
         StockingQuantity = stock.StockingQuantity;
         IsResupplyNeeded = stock.StockingQuantity <= stock.ResupplyThresholdQuantity;
         ThumbnailUrl = thumbnailPhoto?.Url;

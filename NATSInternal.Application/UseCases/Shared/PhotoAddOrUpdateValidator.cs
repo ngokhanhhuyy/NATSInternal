@@ -4,7 +4,7 @@ using NATSInternal.Application.Validation.Validators;
 
 namespace NATSInternal.Application.UseCases.Shared;
 
-internal class PhotoAddOrUpdateValidator : Validator<PhotoAddOrUpdateRequestDto>
+internal class PhotoAddOrUpdateValidator : Validator<PhotoCreateOrUpdateRequestDto>
 {
     #region Constructors
     public PhotoAddOrUpdateValidator()

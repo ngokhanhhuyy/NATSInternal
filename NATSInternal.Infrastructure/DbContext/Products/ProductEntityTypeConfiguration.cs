@@ -43,7 +43,7 @@ internal class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product
         builder.Property(p => p.Description).HasMaxLength(ProductContracts.DescriptionMaxLength);
         builder.Property(p => p.Unit).HasMaxLength(ProductContracts.UnitMaxLength).IsRequired();
         builder.Property(p => p.DefaultAmountBeforeVatPerUnit).IsRequired();
-        builder.Property(p => p.DefaultVatPercentage).IsRequired();
+        builder.Property(p => p.DefaultVatPercentagePerUnit).IsRequired();
         builder.Property(p => p.IsForRetail).IsRequired();
         builder.Property(p => p.IsDiscontinued).IsRequired();
         builder.Property(p => p.CreatedDateTime).IsRequired();

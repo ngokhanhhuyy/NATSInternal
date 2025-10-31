@@ -149,8 +149,8 @@ internal static class RuleBuilderOptionsExtensions
     //         .When(dto => dto.MonthYear.Year < DateTime.UtcNow.ToApplicationTime().Year);
     // }
     //
-    public static IRuleBuilderOptions<T, List<PhotoAddOrUpdateRequestDto>> ContainsNoOrOneThumbnail<T>(
-            this IRuleBuilder<T, List<PhotoAddOrUpdateRequestDto>> ruleBuilder)
+    public static IRuleBuilderOptions<T, List<PhotoCreateOrUpdateRequestDto>> ContainsNoOrOneThumbnail<T>(
+            this IRuleBuilder<T, List<PhotoCreateOrUpdateRequestDto>> ruleBuilder)
     {
         return ruleBuilder
             .Must((_, photos) => photos.Count(p => p.IsThumbnail) <= 1)

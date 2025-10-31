@@ -1,13 +1,13 @@
 namespace NATSInternal.Application.UseCases.Shared;
 
-public class PhotoAddOrUpdateRequestDto : IRequestDto
+public class PhotoCreateOrUpdateRequestDto : IRequestDto
 {
     #region Properties
     public required Guid? Id { get; set; }
     public required byte[] File { get; set; }
     public required bool IsThumbnail { get; set; }
-    public required bool HasBeenChanged { get; set; }
-    public required bool HasBeenDeleted { get; set; }
+    public required bool IsChanged { get; set; }
+    public required bool IsDeleted { get; set; }
     #endregion
 
     #region Methods

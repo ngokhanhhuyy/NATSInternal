@@ -5,4 +5,9 @@ declare global {
     canDelete: boolean;
     canAddToOrRemoveFromRoles: boolean;
   };
+  
+  type ProductExistingAuthorizationResponseDto = {
+    canEdit: boolean;
+    canDelete: boolean;
+  }
 }

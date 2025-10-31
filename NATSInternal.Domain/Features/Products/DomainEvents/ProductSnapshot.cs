@@ -10,7 +10,7 @@ public class ProductSnapshot
         Description = product.Description;
         Unit = product.Unit;
         DefaultAmountBeforeVatPerUnit = product.DefaultAmountBeforeVatPerUnit;
-        DefaultVatPercentage = product.DefaultVatPercentage;
+        DefaultVatPercentage = product.DefaultVatPercentagePerUnit;
         IsForRetail = product.IsForRetail;
         IsDiscontinued = product.IsDiscontinued;
     }

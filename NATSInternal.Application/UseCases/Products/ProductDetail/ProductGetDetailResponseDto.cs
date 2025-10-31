@@ -23,7 +23,7 @@ public class ProductGetDetailResponseDto
         Description = product.Description;
         Unit = product.Unit;
         DefaultAmountBeforeVatPerUnit = product.DefaultAmountBeforeVatPerUnit;
-        DefaultVatPercentage = product.DefaultVatPercentage;
+        DefaultVatPercentagePerUnit = product.DefaultVatPercentagePerUnit;
         StockingQuantity = stock.StockingQuantity;
         ResupplyThresholdQuantity = stock.ResupplyThresholdQuantity;
         IsForRetail = product.IsForRetail;
@@ -45,7 +45,7 @@ public class ProductGetDetailResponseDto
     public string? Description { get; }
     public string Unit { get; }
     public long DefaultAmountBeforeVatPerUnit { get; }
-    public int DefaultVatPercentage { get; }
+    public int DefaultVatPercentagePerUnit { get; }
     public int StockingQuantity { get; }
     public int? ResupplyThresholdQuantity { get; }
     public bool IsForRetail { get; }
