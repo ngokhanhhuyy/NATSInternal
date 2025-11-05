@@ -8,6 +8,7 @@ type RootLayoutProps = Omit<React.ComponentPropsWithoutRef<"div">, "id">;
 export default function RootLayout(props: RootLayoutProps): React.ReactNode {
   return (
     <div id="root-layout" className={styles.rootLayout}>
+      <nav className="navbar"></nav>
       {props.children}
     </div>
   );

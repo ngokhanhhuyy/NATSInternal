@@ -12,6 +12,14 @@ declare global {
         : T[K];
   };
   type ColorVariant = "indigo" | "red" | "success" | "blue" | "black";
+
+  declare module "react-router" {
+    interface RouteHandle {
+      title: string;
+      breadcrumb: { name: string; routePath: string; };
+    }
+  }
+
 }
 
 export { };

@@ -31,6 +31,9 @@ const router = createBrowserRouter([
       {
         path: "/dang-nhap",
         Component: SignInPage,
+        handle: {
+          title: "Đăng nhập"
+        }
       },
       {
         path: "/",
@@ -38,7 +41,11 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            Component: HomePage
+            Component: HomePage,
+            handle: {
+              title: "Trang chủ",
+              
+            }
           }
         ]
       }

@@ -1,6 +1,6 @@
 type TsxHelper = {
   compute<T>(computer: () => T): T;
-  joinClassName(...classNames: (string | undefined | null)[]): string | undefined;
+  joinClassName(...classNames: (string | undefined | null | false)[]): string | undefined;
 };
 
 const helper: TsxHelper = {

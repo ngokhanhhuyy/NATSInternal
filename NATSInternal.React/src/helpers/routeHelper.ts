@@ -47,10 +47,10 @@ const routeHelper = {
   getConsultantCreateRoutePath: () => "/tu-van/tao-moi",
   getConsultantUpdateRoutePath: (id: number) => `/tu-van/${id}/chinh-sua`,
 
-  getOrderListRoutePath: () => "/orders",
-  getOrderDetailRoutePath: (id: number) => `/orders/${id}`,
-  getOrderCreateRoutePath: () => "/orders/tao-moi",
-  getOrderUpdateRoutePath: (id: number) => `/orders/${id}/chinh-sua`,
+  getOrderListRoutePath: () => "/don-hang",
+  getOrderDetailRoutePath: (id: number) => `/don-hang/${id}`,
+  getOrderCreateRoutePath: () => "/don-hang/tao-moi",
+  getOrderUpdateRoutePath: (id: number) => `/don-hang/${id}/chinh-sua`,
 
   getTreatmentListRoutePath: () => "/lieu-trinh",
   getTreatmentDetailRoutePath: (id: number) => `/lieu-trinh/${id}`,

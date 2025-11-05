@@ -7,6 +7,7 @@ import styles from "./MainPageLayout.module.css";
 
 // Layout components.
 import RootLayout from "./RootLayout";
+import NavigationBar from "./NavigationBar";
 
 // Props.
 export default function MainPageLayout() {
@@ -30,6 +31,7 @@ export default function MainPageLayout() {
   return (
     <RootLayout>
       <div className={styles.mainPageLayout}>
+        <NavigationBar />
         <Outlet />
       </div>
     </RootLayout>

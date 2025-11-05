@@ -8,7 +8,7 @@ import { useRouteHelper } from "@/helpers";
 import MainContainer from "@/components/layouts/MainContainer";
 
 // Component.
-export default function HomePage() {
+export default function TestingPage() {
   // Dependencies.
   const navigate = useNavigate();
   const setIsAuthenticated = useAuthenticationStore(store => store.setIsAuthenticated);
