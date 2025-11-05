@@ -1,16 +1,54 @@
 .navigationBar {
-    background: white;
-    padding: 10px 5px;
-    border-right: 1px solid var(--color-indigo-500);
+    margin-top: 20px;
+    padding: 10px 15px;
     height: 100vh;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     justify-content: start;
     align-items: stretch;
+    width: 220px;
+    flex-shrink: 0;
 
-    & > .item.active {
-        color: var(--color-indigo-500);
-        box-shadow: var(--box-shadow-md);
+    &.navigationBarAsPlaceholder {
+        visibility: hidden;
+    }
+
+    > a.item {
+        --padding-x: 15px;
+        --padding-y: 5px;
+        display: block;
+        padding: var(--padding-y) var(--padding-x);
+        border: 1px solid transparent;
+        border-radius: var(--radius-md);
+        transition: .1s ease, padding .2s ease;
+
+        &:hover {
+            background: oklch(from var(--color-indigo-600) l c h / 5%);
+            color: var(--color-indigo-500);
+            border-color: oklch(from var(--color-indigo-600) l c h / 25%);
+            padding-left: calc(var(--padding-x) + 15px);
+        }
+        
+        &.active {
+            background: var(--color-indigo-500);
+            color: white;
+            border-color: var(--color-indigo-500);
+            box-shadow: var(--shadow-md);
+
+            i {
+                color: white;
+            }
+        }
+
+        i {
+            color: var(--color-indigo-500);
+        }
+    }
+}
+
+@media (max-width: 1536px) {
+    .navigationBar.navigationBarAsPlaceholder {
+        display: none;
     }
 }

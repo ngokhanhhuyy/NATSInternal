@@ -9,12 +9,12 @@ const routeHelper = {
   },
 
   getHomeRoutePath: () => "/",
-  getUserListRoutePath: () => "/tai-khoan",
-  getUserProfileRoutePath: (id: number) => `/tai-khoan/${id}`,
-  getUserCreateRoutePath: () => `/tai-khoan/tao-moi`,
-  getUserUpdateRoutePath: (id: number) => `/tai-khoan/${id}/chinh-sua`,
-  getUserPasswordChangeRoutePath: () => "/tai-khoan/doi-mat-khau",
-  getUserPasswordResetRoutePath: (id: number) => `/tai-khoan/${id}/reset-mat-khau`,
+  getUserListRoutePath: () => "/nguoi-dung",
+  getUserProfileRoutePath: (id: number) => `/nguoi-dung/${id}`,
+  getUserCreateRoutePath: () => `/nguoi-dung/tao-moi`,
+  getUserUpdateRoutePath: (id: number) => `/nguoi-dung/${id}/chinh-sua`,
+  getUserPasswordChangeRoutePath: () => "/nguoi-dung/doi-mat-khau",
+  getUserPasswordResetRoutePath: (id: number) => `/nguoi-dung/${id}/reset-mat-khau`,
 
   getCustomerListRoutePath: () => "/khach-hang",
   getCustomerDetailRoutePath: (id: number) => `/khach-hang/${id}`,
@@ -37,10 +37,10 @@ const routeHelper = {
   getSupplyCreateRoutePath: () => "/nhap-hang/tao-moi",
   getSupplyUpdateRoutePath: (id: number) => `/nhap-hang/${id}/chinh-sua`,
 
-  getExpenseListRoutePath: () => "/expenses",
-  getExpenseDetailRoutePath: (id: number) => `/expenses/${id}`,
-  getExpenseCreateRoutePath: () => "/expenses/tao-moi",
-  getExpenseUpdateRoutePath: (id: number) => `/expenses/${id}/chinh-sua`,
+  getExpenseListRoutePath: () => "/chi-phis",
+  getExpenseDetailRoutePath: (id: number) => `/chi-phis/${id}`,
+  getExpenseCreateRoutePath: () => "/chi-phis/tao-moi",
+  getExpenseUpdateRoutePath: (id: number) => `/chi-phis/${id}/chinh-sua`,
 
   getConsultantListRoutePath: () => "/tu-van",
   getConsultantDetailRoutePath: (id: number) => `/tu-van/${id}`,

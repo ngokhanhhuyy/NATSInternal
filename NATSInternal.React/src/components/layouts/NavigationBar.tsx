@@ -24,7 +24,7 @@ type NavigationBarItem = {
 };
 
 // Component.
-export default function NavigationBar(): React.ReactNode {
+export default function NavigationBar(props: { asPlaceholder?: boolean; }): React.ReactNode {
   // Dependencies.
   const location = useLocation();
   const { joinClassName } = useTsxHelper();
@@ -34,6 +34,10 @@ export default function NavigationBar(): React.ReactNode {
 
   // Effect.
   useEffect(() => {
+    if (props.asPlaceholder) {
+      return;
+    }
+    
     setActiveItemName(getNavigationBarItemNameFromRoutePath(location.pathname));
   }, [location]);
 
@@ -47,14 +51,16 @@ export default function NavigationBar(): React.ReactNode {
         key={item.name}
       >
         <i className={item.iconClassName} />
-        <span className="text-indigo-500 ms-3">{item.fallbackDisplayName ?? getDisplayName(item.name)}</span>
+        <span className="ms-3">
+          {getDisplayName(item.name) ?? item.fallbackDisplayName}
+        </span>
       </a>
     );
   }
 
   return (
-    <nav className={styles.navigationBar}>
-      {navigationBarItems.map((item) => renderItem(item))}
+    <nav className={joinClassName(styles.navigationBar, props.asPlaceholder && styles.navigationBarAsPlaceholder)}>
+      {!props.asPlaceholder && navigationBarItems.map((item) => renderItem(item))}
     </nav>
   );
 }
@@ -73,7 +79,7 @@ const navigationBarItems: NavigationBarItem[] = [
   { name: "supply", routePath: routeHelper.getSupplyListRoutePath(), iconClassName: "bi bi-truck" },
   { name: "order", routePath: routeHelper.getOrderListRoutePath(), iconClassName: "bi bi-cart4" },
   { name: "debt", routePath: routeHelper.getDebtOverviewRoutePath(), iconClassName: "bi bi-hourglass-bottom" },
-  { name: "expense", routePath: routeHelper.getReportRoutePath(), iconClassName: "bi bi-cash-coin" },
+  { name: "expense", routePath: routeHelper.getExpenseListRoutePath(), iconClassName: "bi bi-cash-coin" },
   {
     name: "report",
     routePath: routeHelper.getReportRoutePath(),

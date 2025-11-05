@@ -117,7 +117,7 @@ public static class DisplayNames
     public const string RangeLength = "Độ dài khoảng";
     public const string File = "File";
     public const string UpdatedReason = "Lý do chỉnh sửa";
-    public const string Debt = "Khoản giao dịch nợ";
+    public const string Debt = "Khoản nợ";
     public const string DebtIncurrence = "Ghi nợ";
     public const string DebtPayment = "Thanh toán nợ";
     public const string DebtRemainingAmount = "Số nợ còn lại";

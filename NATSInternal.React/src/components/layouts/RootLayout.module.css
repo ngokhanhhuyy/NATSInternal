@@ -1,5 +1,5 @@
 .rootLayout {
-    background: white;
+    background: rgba(0, 0, 0, 0.025);
     width: 100vw;
     height: auto;
     min-height: 100vh;

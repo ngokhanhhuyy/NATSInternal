@@ -33,6 +33,7 @@ export default function MainPageLayout() {
       <div className={styles.mainPageLayout}>
         <NavigationBar />
         <Outlet />
+        <NavigationBar asPlaceholder />
       </div>
     </RootLayout>
   );
