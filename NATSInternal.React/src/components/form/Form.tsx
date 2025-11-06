@@ -2,7 +2,6 @@ import React, { useState, useMemo, createContext } from "react";
 import { ValidationError, OperationError } from "@/api";
 import { createErrorCollectionModel } from "@/models";
 import { useTsxHelper } from "@/helpers";
-import styles from "./Form.module.css";
 
 // Type.
 type SubmissionState = "notSubmitting" | "submitting" | "submissionSucceeded";
@@ -79,8 +78,10 @@ export default function Form<T>(props: FormProps<T>) {
       >
         {submissionState !== "submissionSucceeded" && domProps.children}
         {submissionState === "submissionSucceeded" && (
-          <div className={styles.submissionSucceededAnnouncement}>
-            {submissionSucceededText ?? "Lưu thành công"}
+          <div className="bg-success/20 border border-success rounded-lg flex justify-center items-center">
+            <span className="text-success brightness-80 font-lg mx-2.5 my-7.5">
+              {submissionSucceededText ?? "Lưu thành công"}
+            </span>
           </div>
         )}
       </form>

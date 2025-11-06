@@ -4,8 +4,9 @@ import { useApi } from "@/api";
 import { useAuthenticationStore } from "@/stores";
 import { useRouteHelper } from "@/helpers";
 
-// Layout components.
+// Child components.
 import MainContainer from "@/components/layouts/MainContainer";
+import { Button } from "@/components/ui";
 
 // Component.
 export default function HomePage() {
@@ -25,7 +26,7 @@ export default function HomePage() {
   // Template.
   return (
     <MainContainer>
-      <button onClick={signOut}>Đăng xuất</button>
+      <Button onClick={signOut}>Đăng xuất</Button>
     </MainContainer>
   );
 }

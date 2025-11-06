@@ -81,7 +81,7 @@ export default function FormField(props: FormFieldProps) {
       </FormFieldContext.Provider>
 
       {/* Message */}
-      {!!errorMessage && <div className="text-red-500">{errorMessage}</div>}
+      {!!errorMessage && <div className="text-danger text-sm">{errorMessage}</div>}
     </div>
   );
 }

@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useApi, ConnectionError, InternalServerError } from "@/api";
 import { createSignInModel } from "@/models";
 import { useAuthenticationStore } from "@/stores";
 import { useTsxHelper, useRouteHelper } from "@/helpers";
-import styles from "./SignInPage.module.css";
 
 // Child components.
 import { Form, FormField, TextInput } from "@/components/form";
-import { Button } from "@/components/Button";
+import { Button } from "@/components/ui";
 
 // Components.
 export default function SignInPage() {
@@ -41,12 +40,25 @@ export default function SignInPage() {
     return model.userName.length > 0 && model.password.length > 0;
   });
 
+  const buttonText = compute<string>(() => {
+    if (state.isSubmitting) {
+      return "Đang kiểm tra";
+    } else if (state.hasModelError) {
+      return "Đăng nhập lại";
+    } else {
+      return "Đăng nhập";
+    }
+  });
+
+  const buttonVariant = compute<ColorVariant>(() => state.hasModelError ? "danger" : "primary");
+
   // Callbacks.
   async function loginAsync(): Promise<void> {
     setState((state) => ({
       ...state,
       isSubmitting: true,
       commonError: null,
+      hasModelError: false,
     }));
 
     try {
@@ -94,34 +106,22 @@ export default function SignInPage() {
   }
 
   // Template.
-  function renderSignInButton(): React.ReactNode {
-    let buttonContent: string;
-    if (state.isSubmitting) {
-      buttonContent = "Đang kiểm tra";
-    } else if (state.hasModelError) {
-      buttonContent = "Đăng nhập lại";
-    } else {
-      buttonContent = "Đăng nhập";
-    }
-
-    return (
-      <Button type="submit" variant={state.hasModelError ? "red" : "indigo"} showSpinner={state.isSubmitting}>
-        {buttonContent}
-      </Button>
-    );
-  }
-
   return (
-    <div className={styles.container} onKeyUp={(event) => event.key === "Enter" && handleEnterKeyPressedAsync()}>
+    <div
+      className="bg-white sm:bg-black/2 flex flex-col justify-center items-center w-screen h-screen"
+      onKeyUp={(event) => event.key === "Enter" && handleEnterKeyPressedAsync()}>
       <Form
-        className={joinClassName(styles.form, "flex flex-col rounded-xl p-8 items-stretch")}
+        className={joinClassName(
+          "bg-white border border-transparent sm:border-black/10 shadow-none sm:shadow-xs",
+          "flex flex-col rounded-xl p-8 items-stretch w-[350px] relative"
+        )}
         submitAction={loginAsync}
         onSubmissionSucceeded={handleLoginSucceeded}
         onSubmissionFailed={handleLoginFailed}
         submissionSucceededText="Đăng nhập thành công!"
       >
         {/* Introduction */}
-        <div className="flex flex-col mb-8 text-indigo-800/75">
+        <div className="flex flex-col mb-8 text-black">
           <span className="text-4xl font-bold">Đăng nhập</span>
           <span className="text-lg">
             Chào mừng bạn đã quay trở lại.
@@ -129,7 +129,7 @@ export default function SignInPage() {
         </div>
 
         {/* Username */}
-        <FormField className="mb-5" path="userName">
+        <FormField className="mb-3" path="userName">
           <TextInput
             autoCapitalize="off"
             value={model.userName}
@@ -138,7 +138,7 @@ export default function SignInPage() {
         </FormField>
 
         {/* Password */}
-        <FormField className="mb-8" path="password">
+        <FormField className="mb-5" path="password">
           <TextInput
             password
             value={model.password}
@@ -147,7 +147,9 @@ export default function SignInPage() {
         </FormField>
 
         {/* Button */}
-        {renderSignInButton()}
+        <Button type="submit" variant={buttonVariant} showSpinner={state.isSubmitting}>
+          {buttonText}
+        </Button>
 
         {/* CommonError */}
         {state.commonError && (
@@ -158,7 +160,10 @@ export default function SignInPage() {
         )}
       </Form>
 
-      <div className="text-indigo-900/50 flex justify-end mt-7">
+      <div className={joinClassName(
+        "text-primary/50 absolute bottom-1 sm:relative sm:bottom-unset",
+        "flex justify-end mb-3 sm:mt-7 sm:mb-0")}
+      >
         © {new Date().getFullYear()} - Bản quyền thuộc về Ngô Khánh Huy
       </div>
     </div>

@@ -11,7 +11,7 @@ declare global {
         ? (...args: A) => AwaitedReturn<R>
         : T[K];
   };
-  type ColorVariant = "indigo" | "red" | "success" | "blue" | "black";
+  type ColorVariant = "primary" | "secondary" | "danger" | "success";
 
   declare module "react-router" {
     interface RouteHandle {
