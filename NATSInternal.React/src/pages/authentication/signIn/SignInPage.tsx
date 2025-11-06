@@ -121,7 +121,7 @@ export default function SignInPage() {
         submissionSucceededText="Đăng nhập thành công!"
       >
         {/* Introduction */}
-        <div className="flex flex-col mb-8 text-black">
+        <div className="flex flex-col mb-5 text-black">
           <span className="text-4xl font-bold">Đăng nhập</span>
           <span className="text-lg">
             Chào mừng bạn đã quay trở lại.
