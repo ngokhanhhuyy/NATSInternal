@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useApi, ConnectionError, InternalServerError } from "@/api";
 import { createSignInModel } from "@/models";
@@ -10,7 +10,7 @@ import { Form, FormField, TextInput } from "@/components/form";
 import { Button } from "@/components/ui";
 
 // Components.
-export default function SignInPage() {
+export default function SignInPage(): React.ReactNode {
   // Dependencies.
   const navigate = useNavigate();
   const api = useApi();

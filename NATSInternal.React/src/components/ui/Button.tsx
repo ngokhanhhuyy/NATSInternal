@@ -22,10 +22,10 @@ export function Button(props: ButtonProps) {
   const className = compute(() => {
     const sharedClassName = joinClassName(
       "flex justify-center items-center px-2 py-1 border",
-      "rounded-lg shadow-sx cursor-pointer transition duration-150");
+      "rounded-lg shadow-xs cursor-pointer transition duration-150");
       
     if (variant === "secondary") {
-      return `border-neutral-200 text-neutral-800 hover:bg-neutral-100 hover:border-neutral-300 ${sharedClassName}`;
+      return `bg-secondary border-neutral-200 text-neutral-800 hover:bg-neutral-100 hover:border-neutral-300 ${sharedClassName}`;
     }
 
     let variantClassNameMap: Record<Exclude<ColorVariant, "secondary">, string>;
@@ -45,7 +45,7 @@ export function Button(props: ButtonProps) {
       success: "bg-success border-success",
     };
 
-    return `text-white hover:opacity-75 border ${variantClassNameMap[variant]} ${sharedClassName}`;
+    return `text-primary-foreground hover:opacity-75 border ${variantClassNameMap[variant]} ${sharedClassName}`;
   });
 
   // Template.

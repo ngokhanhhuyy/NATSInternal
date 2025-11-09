@@ -21,14 +21,14 @@ internal class UserRepository : IUserRepository
     public async Task<User?> GetUserByUserNameAsync(string userName, CancellationToken cancellationToken = default)
     {
         return await _context.Users
-            .Include(u => u.Roles)
+            .Include(u => u.Roles.OrderByDescending(r => r.PowerLevel))
             .SingleOrDefaultAsync(u => u.UserName == userName, cancellationToken);
     }
 
     public async Task<User?> GetUserByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Users
-            .Include(u => u.Roles)
+            .Include(u => u.Roles.OrderByDescending(r => r.PowerLevel))
             .SingleOrDefaultAsync(u => u.Id == id, cancellationToken);
     }
 

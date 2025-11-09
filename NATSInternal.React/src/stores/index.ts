@@ -1,2 +1,2 @@
 export { useAuthenticationStore, type AuthenticationStore } from "./authenticationStore";
-export { useNavigationStore, type NavigationStore } from "./navigationStore";
+export { useNavigationBarStore, type NavigationBarStore } from "./navigationBarStore";

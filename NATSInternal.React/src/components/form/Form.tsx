@@ -10,6 +10,7 @@ type SubmissionState = "notSubmitting" | "submitting" | "submissionSucceeded";
 type FormContextPayload = {
   errorCollection: ErrorCollectionModel;
   submissionState: SubmissionState;
+  showValidState: boolean;
 };
 
 // Context.
@@ -21,6 +22,7 @@ type FormProps<T> = {
   onSubmissionSucceeded?: (result: T) => any;
   onSubmissionFailed?: (error: Error, errorHandled: boolean) => any;
   submissionSucceededText?: string;
+  showValidState?: boolean;
 } & React.ComponentPropsWithoutRef<"form">;
 
 // Component.
@@ -42,7 +44,9 @@ export default function Form<T>(props: FormProps<T>) {
     }
   });
   
-  const contextValue = useMemo(() => ({ errorCollection, submissionState }), [errorCollection, submissionState]);
+  const contextValue = useMemo<FormContextPayload>(() => {
+    return { errorCollection, submissionState, showValidState: props.showValidState ?? true };
+  }, [errorCollection, submissionState]);
 
   // Callbacks.
   async function handleSubmitAsync(event: React.FormEvent): Promise<void> {

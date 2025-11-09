@@ -6,7 +6,13 @@ import { useTsxHelper } from "@/helpers";
 import { FormContext } from "@/components/form/Form";
 
 // Context.
-export type FormFieldContextPayload = { isValidated: boolean; hasError: boolean; displayName?: string };
+export type FormFieldContextPayload = {
+  isValidated: boolean;
+  hasError: boolean;
+  showValidState: boolean;
+  displayName?: string
+};
+
 export const FormFieldContext = createContext<FormFieldContextPayload>(undefined!);
 
 // Props.
@@ -53,15 +59,18 @@ export default function FormField(props: FormFieldProps) {
       return;
     }
 
-    const lastIndexerOmittedPathElement = pathElements[pathElements.length - 1].replace(/\[[0-9]\]/g, "");
+    const lastIndexerOmittedPathElement = pathElements[pathElements.length - 1].replace(/\[[0-9]]/g, "");
     return getDisplayName(lastIndexerOmittedPathElement);
   }, []);
 
-  const contextPayload = useMemo<FormFieldContextPayload>(() => ({
-    isValidated: !!formContext.errorCollection.isValidated,
-    hasError: !!errorMessage,
-    displayName: displayName ?? undefined
-  }), [formContext.errorCollection.details, displayName]);
+  const contextPayload = useMemo<FormFieldContextPayload>(() => {
+    return {
+      isValidated: formContext.errorCollection.isValidated,
+      hasError: !!errorMessage,
+      showValidState: formContext.showValidState,
+      displayName: displayName ?? undefined
+    };
+  }, [formContext.errorCollection.details, displayName]);
   
   const labelClassName = compute(() => contextPayload.hasError ? "text-red-300" : "text-black/50");
 
@@ -81,7 +90,21 @@ export default function FormField(props: FormFieldProps) {
       </FormFieldContext.Provider>
 
       {/* Message */}
-      {!!errorMessage && <div className="text-danger text-sm">{errorMessage}</div>}
+      <ErrorMessage message={errorMessage} showValidState={formContext.showValidState} />
     </div>
   );
+}
+
+function ErrorMessage(props: { message?: string; showValidState: boolean; }): React.ReactNode {
+  const staticClassName = "text-sm";
+
+  if (props.message) {
+    return <div className={`text-danger ${staticClassName}`}>{props.message}</div>
+  }
+
+  if (props.showValidState) {
+    return <div className={`text-success ${staticClassName}`}>Hợp lệ</div>
+  }
+
+  return null;
 }
