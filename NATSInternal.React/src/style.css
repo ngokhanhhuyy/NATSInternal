@@ -14,6 +14,7 @@ html {
     --border-color: rgba(0, 0, 0, 0.1);
     font-family: Roboto, Helvetica, Roboto, Arial, sans-serif;
     font-size: 14px;
+    overscroll-behavior: none;
 }
 
 a:not(.hover\:underline):not(.hover\:overline):not(.hover\:line-through):not(.hover\:no-underline):hover {

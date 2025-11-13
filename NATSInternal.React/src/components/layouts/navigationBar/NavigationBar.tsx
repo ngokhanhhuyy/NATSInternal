@@ -1,12 +1,13 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { useLocation } from "react-router";
 import { useNavigationBarStore } from "@/stores";
+import { useApi } from "@/api";
 import { useRouteHelper, useTsxHelper } from "@/helpers";
 
 // Child components.
 import NavigationBarItem from "./NavigationBarItem";
-import type { NavigationBarItemName, NavigationBarItemData } from "./NavigationBarItem";
-import CurrentUser from "./CurrentUser";
+import type { NavigationBarItemData } from "./NavigationBarItem";
+// import CurrentUser from "./CurrentUser";
 
 import {
   HomeIcon as HomeOutlineIcon,
@@ -17,7 +18,8 @@ import {
   CurrencyDollarIcon as DebtOutlineIcon,
   CreditCardIcon as ExpenseOutlineIcon,
   ChartPieIcon as ReportOutlineIcon,
-  IdentificationIcon as UserOutlineIcon } from "@heroicons/react/24/outline";
+  IdentificationIcon as UserOutlineIcon,
+  UserIcon as PersonalOutlineIcon } from "@heroicons/react/24/outline";
 import {
   HomeIcon as HomeSolidIcon,
   UserCircleIcon as CustomerSolidIcon,
@@ -28,11 +30,12 @@ import {
   CreditCardIcon as ExpenseSolidIcon,
   ChartPieIcon as ReportSolidIcon,
   IdentificationIcon as UserSolidIcon,
-  StarIcon as ApplicationIcon } from "@heroicons/react/24/solid";
+  UserIcon as PersonalSolidIcon,
+  StarIcon as ApplicationIcon, } from "@heroicons/react/24/solid";
 
 
 // Component.
-export default function NavigationBar(props: { asPlaceholder?: boolean; }): React.ReactNode {
+export default function NavigationBar(): React.ReactNode {
   // Dependencies.
   const location = useLocation();
   const navigationBarStore = useNavigationBarStore();
@@ -41,7 +44,7 @@ export default function NavigationBar(props: { asPlaceholder?: boolean; }): Reac
 
   // States.
   const minWidthMediaQuery = useRef<MediaQueryList>(window.matchMedia("(min-width: 64rem)"));
-  const [activeItemName, setActiveItemName] = useState<NavigationBarItemName | null>(null);
+  const [activeItemName, setActiveItemName] = useState<string | null>(null);
 
   // Callback.
   const handleWindowSizeChange = useCallback(() => {
@@ -54,9 +57,6 @@ export default function NavigationBar(props: { asPlaceholder?: boolean; }): Reac
 
   // Effect.
   useEffect(() => {
-    if (props.asPlaceholder) {
-      return;
-    }
     handleWindowSizeChange();
     minWidthMediaQuery.current.addEventListener("change", handleWindowSizeChange);
 
@@ -64,59 +64,61 @@ export default function NavigationBar(props: { asPlaceholder?: boolean; }): Reac
   }, []);
 
   useEffect(() => {
-    if (props.asPlaceholder) {
-      return;
-    }
-
     setActiveItemName(getNavigationBarItemNameFromRoutePath(location.pathname));
   }, [location]);
 
   // Template.
   return (
     <nav className={joinClassName(
-      "px-[15px] py-3 overflow-hidden overflow-y-auto shrink-0 relative gap-1 transition-[width] duration-300",
-      props.asPlaceholder ? "invisible hidden 2xl:flex shrink-0" : "flex flex-col items-stretch",
-      navigationBarStore.isExpanded ? "w-[220px]" : "w-[70.25px]"
+      "shrink-0",
+      navigationBarStore.isExpanded ? "w-[190px]" : "w-fit"
     )}>
-      {/* Application icon and name */ }
-      <a
-        className="flex gap-2.5 justify-center items-center mb-2 py-1.5 hover:opacity-100 hover:no-underline"
-        href={getHomeRoutePath()}
-      >
-        <ApplicationIcon className={joinClassName(
-          "bg-success/10 border border-success size-10 p-1.5",
-          "rounded-[50%] fill-success shrink-0",
-        )} />
-        <span className={joinClassName(
-          "text-success font-light text-2xl origin-left scale-x-110 transition-all duration-100",
-          !navigationBarStore.isExpanded && "hidden"
-        )}>
+      <div id="navbar-container" className="flex flex-col justify-center items-stretch gap-1 sticky top-3 pb-[-50px]">
+        {/* Application icon and name */ }
+        <a
+          className={joinClassName(
+            "flex gap-2.5 justify-around items-center mb-2 py-1.5 hover:opacity-100 hover:no-underline",
+            navigationBarStore.isExpanded && "px-2"
+          )}
+          href={getHomeRoutePath()}
+        >
+          <ApplicationIcon className={joinClassName(
+            "bg-success/10 border border-success size-10 p-1.5",
+            "rounded-[50%] fill-success shrink-0",
+          )} />
+          <span className={joinClassName(
+            "text-success font-light text-2xl origin-right scale-x-110",
+            !navigationBarStore.isExpanded && "hidden"
+          )}>
           natsinternal
         </span>
-      </a>
+        </a>
 
-      {/* Navigation links */ }
-      <div id="navigation-bar-item-list" className="flex flex-col overflow-auto relative">
-        {!props.asPlaceholder && navigationBarItems.map((item) => (
-          <NavigationBarItem
-            name={item.name}
-            fallbackDisplayName={item.fallbackDisplayName}
-            routePath={item.routePath}
-            Icon={item.Icon}
-            isActive={activeItemName === item.name}
-            showLabel={navigationBarStore.isExpanded}
-            key={item.name}
-          />
-        ))}
+        {/* Navigation links */}
+        <div id="navigation-bar-item-list" className="flex flex-col items-stretch">
+          {navigationBarItems.map((item) => (
+            <NavigationBarItem
+              name={item.name}
+              fallbackDisplayName={item.fallbackDisplayName}
+              routePath={item.routePath}
+              childItems={item.childItems}
+              Icon={item.Icon}
+              isActive={activeItemName === item.name}
+              showLabel={navigationBarStore.isExpanded}
+              key={item.name}
+            />
+          ))}
+        </div>
+
+        {/* Current user */}
+        {/* <CurrentUser /> */}
       </div>
-
-      {/* Current user */}
-      <CurrentUser />
     </nav>
   );
 }
 
 // Static variables.
+const api = useApi();
 const routeHelper = useRouteHelper();
 const navigationBarItems: NavigationBarItemData[] = [
   {
@@ -193,14 +195,32 @@ const navigationBarItems: NavigationBarItemData[] = [
       return <Component className={className} title={title} />;
     }
   },
+  {
+    name: "personal",
+    fallbackDisplayName: "Cá nhân",
+    childItems: [
+      {
+        name: "myProfile",
+        fallbackDisplayName: "Hồ sơ của tôi",
+        routePath: routeHelper.getUserProfileRoutePath((await api.authentication.getCallerDetailAsync()).id),
+        Icon: ({ className, title }) => <UserOutlineIcon className={className} title={title} />
+      }
+    ],
+    Icon: ({ isActive, className, title }) => {
+      const Component = isActive ? PersonalSolidIcon : PersonalOutlineIcon;
+      return <Component className={className} title={title} />;
+    }
+  },
 ];
 
-function getNavigationBarItemNameFromRoutePath(routePath: string): NavigationBarItemName | null {
+function getNavigationBarItemNameFromRoutePath(routePath: string): string | null {
   if (routePath === routeHelper.getHomeRoutePath()) {
     return "home";
   }
 
-  const itemNames = navigationBarItems.filter(pair => routePath.includes(pair.routePath)).map(pair => pair.name);
+  const itemNames = navigationBarItems
+    .filter(pair => pair.routePath && routePath.includes(pair.routePath))
+    .map(pair => pair.name);
   if (itemNames.length === 0) {
     return null;
   }

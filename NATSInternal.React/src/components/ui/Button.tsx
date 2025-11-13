@@ -13,7 +13,7 @@ type ButtonProps = {
 
 export function Button(props: ButtonProps) {
   // Props.
-  const { variant = "secondary", outline = false, showSpinner, ...domProps } = props;
+  const { type = "button", variant = "secondary", outline = false, showSpinner, ...domProps } = props;
 
   // Dependencies.
   const { joinClassName, compute } = useTsxHelper();
@@ -50,7 +50,7 @@ export function Button(props: ButtonProps) {
 
   // Template.
   return (
-    <button {...domProps} className={joinClassName(className, props.className)}>
+    <button {...domProps} type={type} className={joinClassName(className, props.className)}>
       {showSpinner && <Spinner size="sm" />}
       {props.children}
     </button>

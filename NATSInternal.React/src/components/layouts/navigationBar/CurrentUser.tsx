@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { useApi } from "@/api";
 import { useNavigationBarStore } from "@/stores";
 import { useRouteHelper, useRoleHelper, useTsxHelper } from "@/helpers";
@@ -13,10 +13,9 @@ type CurrentUser = UserGetDetailResponseDto & { avatarUrl: string };
 // Props.
 export default function CurrentUser(): React.ReactNode {
   // Dependencies.
-  const navigate = useNavigate();
   const isNavigationBarExpanded = useNavigationBarStore(store => store.isExpanded);
   const api = useApi();
-  const { getSignInRoutePath, getUserProfileRoutePath } = useRouteHelper();
+  const { getUserProfileRoutePath } = useRouteHelper();
   const { joinClassName } = useTsxHelper();
 
   // State.
@@ -37,12 +36,6 @@ export default function CurrentUser(): React.ReactNode {
   const handleAvatarLoadingFailed = useCallback(() => {
     setIsAvatarLoadingFailed(true);
   }, []);
-
-  async function handleSignOutLinkClick(event: React.MouseEvent<HTMLAnchorElement>): Promise<void> {
-    event.preventDefault();
-    await api.authentication.clearAccessCookieAsync();
-    navigate(getSignInRoutePath());
-  }
 
   // Effect.
   useEffect(() => {
@@ -65,7 +58,7 @@ export default function CurrentUser(): React.ReactNode {
     <Link
       id="current-user-link"
       className={joinClassName(
-        "flex justify-center items-center gap-2 ms-1 mt-auto relative w-fit overflow-hidden transition-opacity",
+        "flex justify-center items-end gap-2 ms-1 mt-auto relative w-fit overflow-hidden",
         "hover:no-underline hover:opacity-50 hover:cursor-pointer"
       )}
       to={getUserProfileRoutePath(currentUser.id)}
@@ -84,11 +77,11 @@ export default function CurrentUser(): React.ReactNode {
       </div>
 
       <div className={joinClassName(
-        "flex flex-col flex-1 justify-end items-start transition-opacity duration-300 shrink-0",
-        !isNavigationBarExpanded && "opacity-0 overflow-visible"
+        "flex flex-col flex-1 justify-end items-start shrink-0",
+        !isNavigationBarExpanded && "hidden"
       )}>
         <span>{currentUser.userName}</span>
-        <div className="flex flex-wrap gap-1">
+        <div className={"flex flex-wrap gap-1"}>
           {maxPowerLevelRole && (
             <>
               <Role role={maxPowerLevelRole} />

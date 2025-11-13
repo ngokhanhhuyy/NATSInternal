@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 export type NavigationBarStore = {
   isExpanded: boolean;
+  isSmallScreen: boolean;
   expand(): void;
   collapse(): void;
   toggle(): void;
@@ -9,6 +10,7 @@ export type NavigationBarStore = {
 
 export const useNavigationBarStore = create<NavigationBarStore>((set, get) => ({
   isExpanded: true,
+  isSmallScreen: false,
   expand(): void {
     set({ isExpanded: true });
   },
