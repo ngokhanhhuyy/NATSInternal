@@ -7,10 +7,10 @@ import { useRouteHelper, useTsxHelper } from "@/helpers";
 // Child components.
 import RootLayout from "./RootLayout";
 import { Button } from "../ui";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { Bars4Icon as NavigationBarToggleIcon } from "@heroicons/react/24/outline";
 
 // Props.
-export default function MainPageLayout() {
+export default function MainPageLayout(): React.ReactNode {
   // Dependencies.
   const navigate = useNavigate();
   const isAuthenticated = useAuthenticationStore(store => store.isAuthenticated);
@@ -30,26 +30,18 @@ export default function MainPageLayout() {
     return null;
   }
 
-  const renderNavigationBarToggleIcon = (): React.ReactNode => {
-    const className = "size-6";
-    if (navigationBarStore.isExpanded) {
-      return <ChevronLeftIcon className={className} />;
-    }
-
-    return <ChevronRightIcon className={className} />;
-  };
-
   return (
     <RootLayout>
       <div className={joinClassName(
         "bg-white justify-self flex-1 border border-primary/10",
-        "flex flex-col justify-start items-stretch rounded-t-2xl shadow-xl"
+        "flex flex-col justify-start items-stretch sm:rounded-t-2xl shadow-xl sm:mt-3",
+        navigationBarStore.isExpanded && "translate-x-[190px] sm:translate-x-0"
       )}>
         {/* The bar on top the current page, containing the navigation bar toggle button and breadcrumb */}
         <div className="border-b border-primary/10 p-3 gap-3 flex">
           {/* Navigation bar toggle button */}
           <Button onClick={() => navigationBarStore.toggle()}>
-            {renderNavigationBarToggleIcon()}
+            <NavigationBarToggleIcon className="size-6" />
           </Button>
 
           {/* Separator */}

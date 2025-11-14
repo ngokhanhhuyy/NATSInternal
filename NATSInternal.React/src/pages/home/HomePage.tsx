@@ -27,6 +27,7 @@ export default function HomePage() {
   return (
     <MainContainer>
       <Button onClick={signOut}>Đăng xuất</Button>
+      {Array.from({ length: 10000 }, (_, index) => index).map((index) => index + "_abcxyz").join(" ")}
     </MainContainer>
   );
 }

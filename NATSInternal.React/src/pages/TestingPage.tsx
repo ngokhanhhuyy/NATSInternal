@@ -26,6 +26,7 @@ export default function TestingPage() {
   return (
     <MainContainer>
       <button onClick={signOut}>Đăng xuất</button>
+      {Array.from({ length: 100 }).map(() => "abc").join(" ")}
     </MainContainer>
   );
 }

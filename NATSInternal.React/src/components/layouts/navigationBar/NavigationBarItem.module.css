@@ -1,0 +1,5 @@
+@media (min-width: 40rem) {
+    .navigationBarItem:is(.collapsed):hover .tooltip {
+        opacity: 100%;
+    }
+}
