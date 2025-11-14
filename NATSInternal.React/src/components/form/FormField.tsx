@@ -30,7 +30,7 @@ export default function FormField(props: FormFieldProps) {
 
   // Computed.
   const errorMessage = useMemo(() => {
-    if (!formContext || !props.path) {
+    if (!formContext || !formContext.errorCollection.isValidated || !props.path) {
       return;
     }
 
@@ -90,7 +90,9 @@ export default function FormField(props: FormFieldProps) {
       </FormFieldContext.Provider>
 
       {/* Message */}
-      <ErrorMessage message={errorMessage} showValidState={formContext.showValidState} />
+      {formContext.errorCollection.isValidated && (
+        <ErrorMessage message={errorMessage} showValidState={formContext.showValidState} />
+      )}
     </div>
   );
 }
@@ -99,11 +101,11 @@ function ErrorMessage(props: { message?: string; showValidState: boolean; }): Re
   const staticClassName = "text-sm";
 
   if (props.message) {
-    return <div className={`text-danger ${staticClassName}`}>{props.message}</div>
+    return <div className={`text-danger ${staticClassName}`}>{props.message}</div>;
   }
 
   if (props.showValidState) {
-    return <div className={`text-success ${staticClassName}`}>Hợp lệ</div>
+    return <div className={`text-success ${staticClassName}`}>Hợp lệ</div>;
   }
 
   return null;

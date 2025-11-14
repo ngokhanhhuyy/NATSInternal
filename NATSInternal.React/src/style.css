@@ -5,7 +5,7 @@
     --color-primary: var(--color-black);
     --color-primary-foreground: var(--color-white);
     --color-secondary: var(--color-white);
-    --color-danger: var(--color-red-400);
+    --color-danger: var(--color-red-600);
     --color-success: var(--color-emerald-500);
     --color-hinting: var(--color-blue-600);
 }

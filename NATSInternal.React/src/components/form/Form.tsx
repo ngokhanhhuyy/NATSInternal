@@ -45,7 +45,11 @@ export default function Form<T>(props: FormProps<T>) {
   });
   
   const contextValue = useMemo<FormContextPayload>(() => {
-    return { errorCollection, submissionState, showValidState: props.showValidState ?? true };
+    return {
+      errorCollection,
+      submissionState,
+      showValidState: props.showValidState ?? true
+    };
   }, [errorCollection, submissionState]);
 
   // Callbacks.
