@@ -4,7 +4,6 @@ import { useNavigationBarStore } from "@/stores";
 import { useRouteHelper, useTsxHelper } from "@/helpers";
 
 // Child components.
-import MainLogo from "./MainLogo";
 import NavigationBarItem from "./NavigationBarItem";
 import type { NavigationBarItemData } from "./NavigationBarItem";
 
@@ -108,17 +107,12 @@ export default function NavigationBar(): React.ReactNode {
         id="navbar-container"
         className={joinClassName(
           "bg-white md:bg-transparent w-60 md:w-full lg:w-auto h-full md:h-auto p-3 md:px-0",
-          "relative left-full md:left-0 md:translate-x-0 transition-transform duration-200 ease-in-out",
-          "flex flex-col justify-start items-stretch gap-4",
-          navigationBarStore.isExpanded ? "-translate-x-full" : ""
+          "left-full md:left-0 md:translate-x-0 transition-transform duration-200 ease-in-out",
+          "relative flex flex-col justify-start items-stretch gap-4",
+          navigationBarStore.isExpanded ? "-translate-x-full" : "-translate-x-50"
         )}
         ref={navigationBarContainerElementRef}
       >
-        {/* Application icon and name */ }
-        <div className="hidden md:block">
-          <MainLogo />
-        </div>
-
         {/* Navigation links */}
         <div id="navigation-bar-item-list" className="flex flex-col items-stretch">
           {navigationBarItems.map((item) => (

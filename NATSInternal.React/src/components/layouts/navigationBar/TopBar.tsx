@@ -33,21 +33,23 @@ export default function TopBar(): React.ReactNode {
     <div
       id="topbar"
       className={joinClassName(
-        "bg-white/80 border-b border-primary/15 p-3 ps-4 md:hidden w-full h-(--topbar-height)",
-        "flex justify-between items-stretch gap-3 fixed top-0 z-999 backdrop-blur-sm transition-colors",
+        "bg-white/80 border-b border-primary/15 w-full h-(--topbar-height)",
+        "flex justify-stretch items-stretch fixed top-0 z-999 backdrop-blur-sm transition-colors",
         isScrolled && "shadow-lg",
       )}
     >
-      <MainLogo />
-      <button
-        className={joinClassName(
-          "border px-3 rounded-lg",
-          !isScrolled ? "border-primary/15" : "border-secondary/15"
-        )}
-        onClick={navigationBarStore.toggle}
-      >
-        <Bars4Icon className="size-6" />
-      </button>
+      <div id="topbar-container" className="max-w-384 w-full flex justify-between items-stretch gap-3 p-3 ps-4 md:ps-5">
+        <MainLogo />
+        <button
+          className={joinClassName(
+            "border px-3 rounded-lg md:hidden",
+            !isScrolled ? "border-primary/15" : "border-secondary/15"
+          )}
+          onClick={navigationBarStore.toggle}
+        >
+          <Bars4Icon className="size-6" />
+        </button>
+      </div>
     </div>
   );
 }

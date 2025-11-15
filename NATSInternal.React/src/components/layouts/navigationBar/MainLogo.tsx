@@ -25,7 +25,7 @@ export default function MainLogo(): React.ReactNode {
         "rounded-[50%] fill-success shrink-0",
       )} />
 
-      <span className="text-success font-light text-2xl block md:hidden lg:block">
+      <span className="text-success font-light text-2xl hidden md:block">
         natsinternal
       </span>
     </Link>
