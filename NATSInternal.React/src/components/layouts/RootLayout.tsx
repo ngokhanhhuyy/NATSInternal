@@ -1,9 +1,9 @@
 import React from "react";
 import { useLocation } from "react-router";
-import { useNavigationBarStore } from "@/stores";
 import { useRouteHelper, useTsxHelper } from "@/helpers";
 
 // Child components.
+import TopBar from "./navigationBar/TopBar";
 import NavigationBar from "./navigationBar/NavigationBar";
 
 // Props.
@@ -13,7 +13,6 @@ type RootLayoutProps = Omit<React.ComponentPropsWithoutRef<"div">, "id">;
 export default function RootLayout(props: RootLayoutProps): React.ReactNode {
   // Dependencies.
   const location = useLocation();
-  const isNavigationBarExpanded = useNavigationBarStore();
   const { getSignInRoutePath } = useRouteHelper();
   const { joinClassName, compute } = useTsxHelper();
 
@@ -25,11 +24,16 @@ export default function RootLayout(props: RootLayoutProps): React.ReactNode {
     <div
       id="root-layout"
       className={joinClassName(
-        "bg-primary/3 w-screen h-auto min-h-screen flex justify-stretch items-stretch sm:px-3",
-        isNavigationBarExpanded ? "gap-3" : "lg-gap-3"
+        "bg-primary/3 w-screen h-auto min-h-screen flex justify-stretch items-stretch",
+        "pt-(--topbar-height) md:pt-0"
       )}
     >
-      {shouldRenderNavigationBar && <NavigationBar />}
+      {shouldRenderNavigationBar && (
+        <>
+          <TopBar />
+          <NavigationBar />
+        </>
+      )}
       {props.children}
     </div>
   );

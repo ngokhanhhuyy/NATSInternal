@@ -1,0 +1,9 @@
+.topBar {
+  background: var(--color-white);
+
+  @supports (backdrop-filter: blur(var(--blur-xs))) or (-webkit-backdrop-filter: blur(var(--blur-xs))) {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(var(--blur-xs));
+    -webkit-backdrop-filter: blur(var(--blur-xs));
+  }
+}

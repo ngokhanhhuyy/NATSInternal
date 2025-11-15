@@ -9,7 +9,7 @@ export type NavigationBarStore = {
 };
 
 export const useNavigationBarStore = create<NavigationBarStore>((set, get) => ({
-  isExpanded: true,
+  isExpanded: false,
   isSmallScreen: false,
   expand(): void {
     set({ isExpanded: true });

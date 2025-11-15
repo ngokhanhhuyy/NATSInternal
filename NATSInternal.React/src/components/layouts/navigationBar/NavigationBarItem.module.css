@@ -1,5 +1,17 @@
-@media (min-width: 40rem) {
-    .navigationBarItem:is(.collapsed):hover .tooltip {
-        opacity: 100%;
+.navigationBarItem {
+    & .tooltip {
+        visibility: hidden;
+    }
+}
+
+@media (min-width: 48rem) {
+    .navigationBarItem:hover .tooltip {
+        visibility: visible;
+    }
+}
+
+@media (min-width: 64rem) {
+    .navigationBarItem:hover .tooltip {
+        visibility: hidden;
     }
 }

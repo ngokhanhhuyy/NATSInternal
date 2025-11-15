@@ -1,13 +1,12 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router";
 import { useNavigationBarStore } from "@/stores";
-import { useApi } from "@/api";
 import { useRouteHelper, useTsxHelper } from "@/helpers";
 
 // Child components.
+import MainLogo from "./MainLogo";
 import NavigationBarItem from "./NavigationBarItem";
 import type { NavigationBarItemData } from "./NavigationBarItem";
-// import CurrentUser from "./CurrentUser";
 
 import {
   HomeIcon as HomeOutlineIcon,
@@ -18,8 +17,7 @@ import {
   CurrencyDollarIcon as DebtOutlineIcon,
   CreditCardIcon as ExpenseOutlineIcon,
   ChartPieIcon as ReportOutlineIcon,
-  IdentificationIcon as UserOutlineIcon,
-  UserIcon as PersonalOutlineIcon } from "@heroicons/react/24/outline";
+  IdentificationIcon as UserOutlineIcon } from "@heroicons/react/24/outline";
 import {
   HomeIcon as HomeSolidIcon,
   UserCircleIcon as CustomerSolidIcon,
@@ -29,9 +27,7 @@ import {
   CurrencyDollarIcon as DebtSolidIcon,
   CreditCardIcon as ExpenseSolidIcon,
   ChartPieIcon as ReportSolidIcon,
-  IdentificationIcon as UserSolidIcon,
-  UserIcon as PersonalSolidIcon,
-  StarIcon as ApplicationIcon, } from "@heroicons/react/24/solid";
+  IdentificationIcon as UserSolidIcon } from "@heroicons/react/24/solid";
 
 
 // Component.
@@ -39,29 +35,59 @@ export default function NavigationBar(): React.ReactNode {
   // Dependencies.
   const location = useLocation();
   const navigationBarStore = useNavigationBarStore();
-  const { getHomeRoutePath } = useRouteHelper();
   const { joinClassName } = useTsxHelper();
 
   // States.
-  const minWidthMediaQuery = useRef<MediaQueryList>(window.matchMedia("(min-width: 64rem)"));
+  const mdScreenMediaQuery = useRef(window.matchMedia("(min-width: 48rem)"));
+  const navigationBarElementRef = useRef<HTMLElement>(null!);
+  const navigationBarContainerElementRef = useRef<HTMLDivElement>(null!);
+  const originalDocumentHeight = useRef<string>(getComputedStyle(document.documentElement).height);
   const [activeItemName, setActiveItemName] = useState<string | null>(null);
-
-  // Callback.
-  const handleWindowSizeChange = useCallback(() => {
-    if (minWidthMediaQuery.current.matches) {
-      navigationBarStore.expand();
-    } else {
-      navigationBarStore.collapse();
-    }
-  }, []);
 
   // Effect.
   useEffect(() => {
-    handleWindowSizeChange();
-    minWidthMediaQuery.current.addEventListener("change", handleWindowSizeChange);
+    const handleMdScreenQueryMatchChanged = () => {
+      if (mdScreenMediaQuery.current.matches) {
+        navigationBarStore.collapse();
+      }
+    };
 
-    return () => minWidthMediaQuery.current.removeEventListener("change", handleWindowSizeChange);
+    handleMdScreenQueryMatchChanged();
+    mdScreenMediaQuery.current.addEventListener("change", handleMdScreenQueryMatchChanged);
+
+    return () => {
+      mdScreenMediaQuery.current.addEventListener("change", handleMdScreenQueryMatchChanged);
+    };
   }, []);
+
+  useEffect(() => {
+  }, []);
+
+  useEffect(() => {
+    const handleClicked = (event: PointerEvent) => {
+      console.log(event.target, navigationBarStore.isExpanded);
+      if (!navigationBarStore.isExpanded) {
+        return;
+      }
+
+      if (navigationBarElementRef.current === (event.target as HTMLElement)) {
+        navigationBarStore.collapse();
+      }
+    };
+
+    document.addEventListener("pointerdown", handleClicked);
+
+    if (navigationBarStore.isExpanded) {
+      originalDocumentHeight.current = document.documentElement.style.height;
+      document.documentElement.style.maxHeight = "100vh";
+      document.documentElement.style.overflow = "hidden";
+    } else {
+      document.documentElement.style.maxHeight = "unset";
+      document.documentElement.style.overflow = "unset";
+    }
+
+    return () => document.removeEventListener("pointerdown", handleClicked);
+  }, [navigationBarStore.isExpanded]);
 
   useEffect(() => {
     setActiveItemName(getNavigationBarItemNameFromRoutePath(location.pathname));
@@ -69,30 +95,30 @@ export default function NavigationBar(): React.ReactNode {
 
   // Template.
   return (
-    <nav className={joinClassName(
-      "shrink-0",
-      navigationBarStore.isExpanded ? "w-[190px]" : "w-fit"
-    )}>
-      <div id="navbar-container" className="flex flex-col justify-center items-stretch gap-1 sticky top-3 pb-[-50px]">
+    <nav
+      id="navbar"
+      className={joinClassName(
+        "h-full md:h-auto shrink-0 fixed md:relative z-1000 md:z-auto",
+        "shadow-lg md:shadow-none -mt-(--topbar-height) md:ms-3 md:mt-3",
+        "w-screen md:w-fit lg:w-54",
+        navigationBarStore.isExpanded ? "bg-black/50 backdrop-blur-xs md:bg-transparent" : "hidden md:block"
+      )}
+      ref={navigationBarElementRef}
+    >
+      <div
+        id="navbar-container"
+        className={joinClassName(
+          "bg-white md:bg-transparent w-60 md:w-full lg:w-auto h-full p-3 md:px-0",
+          "relative left-full md:left-0 md:translate-x-0 transition-all duration-100",
+          "flex flex-col justify-start items-stretch gap-4",
+          navigationBarStore.isExpanded ? "-translate-x-full" : "translate-x-0"
+        )}
+        ref={navigationBarContainerElementRef}
+      >
         {/* Application icon and name */ }
-        <a
-          className={joinClassName(
-            "flex gap-2.5 justify-around items-center mb-2 py-1.5 hover:opacity-100 hover:no-underline",
-            navigationBarStore.isExpanded && "px-2"
-          )}
-          href={getHomeRoutePath()}
-        >
-          <ApplicationIcon className={joinClassName(
-            "bg-success/10 border border-success size-10 p-1.5",
-            "rounded-[50%] fill-success shrink-0",
-          )} />
-          <span className={joinClassName(
-            "text-success font-light text-2xl origin-right scale-x-110",
-            !navigationBarStore.isExpanded && "hidden"
-          )}>
-          natsinternal
-        </span>
-        </a>
+        <div className="hidden md:block">
+          <MainLogo />
+        </div>
 
         {/* Navigation links */}
         <div id="navigation-bar-item-list" className="flex flex-col items-stretch">
@@ -101,7 +127,6 @@ export default function NavigationBar(): React.ReactNode {
               name={item.name}
               fallbackDisplayName={item.fallbackDisplayName}
               routePath={item.routePath}
-              childItems={item.childItems}
               Icon={item.Icon}
               isActive={activeItemName === item.name}
               showLabel={navigationBarStore.isExpanded}
@@ -109,16 +134,12 @@ export default function NavigationBar(): React.ReactNode {
             />
           ))}
         </div>
-
-        {/* Current user */}
-        {/* <CurrentUser /> */}
       </div>
     </nav>
   );
 }
 
 // Static variables.
-const api = useApi();
 const routeHelper = useRouteHelper();
 const navigationBarItems: NavigationBarItemData[] = [
   {
@@ -195,22 +216,6 @@ const navigationBarItems: NavigationBarItemData[] = [
       return <Component className={className} title={title} />;
     }
   },
-  {
-    name: "personal",
-    fallbackDisplayName: "Cá nhân",
-    childItems: [
-      {
-        name: "myProfile",
-        fallbackDisplayName: "Hồ sơ của tôi",
-        routePath: routeHelper.getUserProfileRoutePath((await api.authentication.getCallerDetailAsync()).id),
-        Icon: ({ className, title }) => <UserOutlineIcon className={className} title={title} />
-      }
-    ],
-    Icon: ({ isActive, className, title }) => {
-      const Component = isActive ? PersonalSolidIcon : PersonalOutlineIcon;
-      return <Component className={className} title={title} />;
-    }
-  },
 ];
 
 function getNavigationBarItemNameFromRoutePath(routePath: string): string | null {
@@ -221,6 +226,7 @@ function getNavigationBarItemNameFromRoutePath(routePath: string): string | null
   const itemNames = navigationBarItems
     .filter(pair => pair.routePath && routePath.includes(pair.routePath))
     .map(pair => pair.name);
+
   if (itemNames.length === 0) {
     return null;
   }
