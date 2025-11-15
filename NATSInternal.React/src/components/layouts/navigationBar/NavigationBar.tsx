@@ -95,9 +95,9 @@ export default function NavigationBar(): React.ReactNode {
     <nav
       id="navbar"
       className={joinClassName(
-        "h-full md:h-auto shrink-0 fixed md:relative z-1000 md:z-auto transition-all duration-200 ease-in-out",
+        "h-full md:h-auto shrink-0 fixed md:relative z-1000 md:z-auto",
         "shadow-lg md:shadow-none -mt-(--topbar-height) md:ms-3 md:mt-3",
-        "w-screen md:w-fit lg:w-54 block",
+        "w-screen md:w-fit lg:w-54 block transition-opacity md:transition-none duration-200 ease-in-out",
         navigationBarStore.isExpanded
           ? "bg-black/50 backdrop-blur-xs md:bg-transparent pointer-events-auto opacity-100"
           : "pointer-events-none md:pointer-events-auto opacity-0 md:opacity-100"
@@ -108,9 +108,9 @@ export default function NavigationBar(): React.ReactNode {
         id="navbar-container"
         className={joinClassName(
           "bg-white md:bg-transparent w-60 md:w-full lg:w-auto h-full md:h-auto p-3 md:px-0",
-          "left-full md:left-0 md:translate-x-0 transition-transform duration-200 ease-in-out",
+          "relative left-full md:left-0 md:translate-x-0 transition-transform duration-200 ease-in-out",
           "flex flex-col justify-start items-stretch gap-4",
-          navigationBarStore.isExpanded ? "-translate-x-full" : "-translate-x-50"
+          navigationBarStore.isExpanded ? "-translate-x-full" : ""
         )}
         ref={navigationBarContainerElementRef}
       >

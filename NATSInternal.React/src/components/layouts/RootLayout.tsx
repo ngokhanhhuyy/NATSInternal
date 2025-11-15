@@ -24,8 +24,8 @@ export default function RootLayout(props: RootLayoutProps): React.ReactNode {
     <div
       id="root-layout"
       className={joinClassName(
-        "bg-primary/3 w-screen h-auto min-h-screen flex justify-stretch items-stretch",
-        "pt-(--topbar-height) md:pt-0"
+        "w-screen max-w-[96rem] h-auto min-h-screen flex justify-stretch items-stretch",
+        "pt-(--topbar-height) md:pt-0 mx-auto"
       )}
     >
       {shouldRenderNavigationBar && (

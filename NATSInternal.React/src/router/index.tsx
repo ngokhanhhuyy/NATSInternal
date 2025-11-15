@@ -7,7 +7,7 @@ import MainPageLayout from "@/components/layouts/MainPageLayout";
 
 // Pages.
 import SignInPage from "@/pages/authentication/signIn/SignInPage";
-import HomePage from "@/pages/home/HomePage";
+// import HomePage from "@/pages/home/HomePage";
 import TestingPage from "@/pages/TestingPage";
 import { AuthenticationError } from "@/api";
 
@@ -30,25 +30,64 @@ const router = createBrowserRouter([
     errorElement: <AuthenticationErrorBoundary />,
     children: [
       {
-        path: "/dang-nhap",
+        path: "dang-nhap",
         Component: SignInPage,
         handle: {
           title: "Đăng nhập"
         }
       },
       {
-        path: "/",
+        path: "",
         Component: MainPageLayout,
         children: [
           {
             index: true,
-            Component: HomePage,
+            Component: TestingPage,
             handle: {
               title: "Trang chủ",
             }
-          }
+          },
+          {
+            path: "khach-hang",
+            children: [
+              {
+                index: true,
+                Component: TestingPage,
+                handle: {
+                  title: "Danh sách khách hàng"
+                }
+              },
+              {
+                path: "tao-moi",
+                Component: TestingPage,
+                handle: {
+                  title: "Tạo khách hàng mới"
+                }
+              },
+
+              {
+                path: ":id",
+                children: [
+                  {
+                    index: true,
+                    Component: TestingPage,
+                    handle: {
+                      title: "Chi tiết khách hàng"
+                    }
+                  },
+                  {
+                    path: "chinh-sua",
+                    Component: TestingPage,
+                    handle: {
+                      title: "Chỉnh sửa khách hàng"
+                    }
+                  },
+                ]
+              },
+            ],
+          },
         ]
-      }
+      },
     ]
   },
 ]);
