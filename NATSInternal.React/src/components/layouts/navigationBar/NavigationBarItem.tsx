@@ -41,7 +41,7 @@ export default function NavigationBarItem({ Icon, ...props }: NavigationBarItemP
       props.routePath && "cursor-pointer",
       props.isActive
         ? "bg-primary text-primary-foreground border-primary shadow-sm"
-        : joinClassName("bg-transparent", props.routePath && "hover:bg-primary/5"),
+        : joinClassName("bg-transparent", props.routePath && "hover:bg-primary/5 dark:hover:bg-primary/20"),
     );
   }, [props.isActive]);
 
@@ -50,12 +50,13 @@ export default function NavigationBarItem({ Icon, ...props }: NavigationBarItemP
   // Template.
   return (
     <Link className={joinClassName(className, styles.navigationBarItem)} to={props.routePath} onClick={props.onClick}>
-      {Icon && <Icon className="size-6 inline shrink-0" isActive={props.isActive} />}
+      {Icon && <Icon className="size-6 inline shrink-0 dark:stroke-white" isActive={props.isActive} />}
       <span className="inline-block md:hidden lg:inline-block">{displayName}</span>
 
       <div className={joinClassName(
-        "bg-neutral-700 text-white rounded-lg pointer-events-none transition-opacity duration-100",
-        "absolute whitespace-nowrap w-fit z-1000 shadow-md ms-2 px-2 py-0.5 left-full",
+        "bg-black/70 dark:bg-white/70 text-white dark:text-black rounded-md",
+        "pointer-events-none absolute whitespace-nowrap w-fit z-1000 shadow-md ms-2 px-3 py-2 left-full",
+        "backdrop-blur-xs",
         styles.tooltip
       )}>
         {displayName}

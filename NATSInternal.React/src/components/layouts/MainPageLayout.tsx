@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { Outlet } from "react-router";
+import React, { useMemo, useEffect, Fragment } from "react";
+import { useMatches, Outlet, Link } from "react-router";
 import { useNavigate } from "react-router";
 import { useAuthenticationStore } from "@/stores";
 import { useRouteHelper, useTsxHelper } from "@/helpers";
 
 // Child components.
 import RootLayout from "./RootLayout";
-import { ChevronUpIcon, ChevronRightIcon, HomeIcon as HomeOutlineIcon } from "@heroicons/react/24/outline";
-import { HomeIcon as HomeSolidIcon } from "@heroicons/react/24/solid";
+import { HomeIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
 // Props.
+type BreadcrumbItem = { pageTitle: string | null; breadcrumbTitle: string; routePath: string | null };
+
+// Components.
 export default function MainPageLayout(): React.ReactNode {
   // Dependencies.
   const navigate = useNavigate();
@@ -17,24 +19,11 @@ export default function MainPageLayout(): React.ReactNode {
   const { getSignInRoutePath } = useRouteHelper();
   const { joinClassName } = useTsxHelper();
 
-  // States.
-  const [isScrollToTopButtonVisible, setIsScrollToTopButtonVisible] = useState<boolean>(false);
-
   // Effect.
   useEffect(() => {
     if (!isAuthenticated) {
       navigate(getSignInRoutePath());
     }
-
-    const handleScroll = () => {
-      setIsScrollToTopButtonVisible(window.scrollY > window.innerHeight / 2);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
   }, []);
 
   // Template.
@@ -45,31 +34,90 @@ export default function MainPageLayout(): React.ReactNode {
   return (
     <RootLayout>
       <div className={joinClassName(
-        "bg-white justify-self flex-1 border border-primary/10",
-        "flex flex-col justify-start items-stretch rounded-t-2xl shadow-xl mx-3 mt-3",
+        "bg-white dark:bg-white/10 justify-self flex-1 border border-primary/10",
+        "flex flex-col justify-start items-stretch rounded-2xl shadow-xl m-3",
       )}>
         {/* The bar on top the current page, containing breadcrumb */}
         <div id="breadcrumb" className="border-b border-primary/10 p-3 gap-3 flex">
-          {/* Page title */}
-          <div className="text-xl flex items-center ms-2 lg:ms-3 translate-y-[7.5%]">Trang chủ</div>
+          <Breadcrumb />
         </div>
 
         {/* Page */}
         <Outlet />
-
-        {/* To Top Button */}
-        <button
-          type="button"
-          className={joinClassName(
-            "bg-primary text-primary-foreground p-3 fixed bottom-3 right-6 hover:cursor-pointer rounded-[50%]",
-            "transition-opacity",
-            !isScrollToTopButtonVisible && "opacity-0 pointer-events-none"
-          )}
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        >
-          <ChevronUpIcon className="size-6" />
-        </button>
       </div>
     </RootLayout>
+  );
+}
+
+function Breadcrumb(): React.ReactNode {
+  // Dependencies.
+  const matchedRoutes = useMatches();
+  const { joinClassName } = useTsxHelper();
+
+  // Computed.
+  const breadcrumItems = useMemo<BreadcrumbItem[]>(() => {
+    const items: { pageTitle: string | null; breadcrumbTitle: string; routePath: string | null }[] = [];
+    for (const matchRoute of matchedRoutes) {
+      const handle = matchRoute.handle;
+      if (typeof handle === "object" && handle != null && "breadcrumbTitle" in handle) {
+        const breadcrumbTitle = handle["breadcrumbTitle" as keyof typeof handle] as string;
+        const pageTitle = (handle["pageTitle" as keyof typeof handle] as string) ?? null;
+        items.push({ pageTitle, breadcrumbTitle, routePath: matchRoute.pathname });
+      }
+    }
+
+    return items;
+  }, [matchedRoutes]);
+
+  // Template.
+  return (
+    <div className="flex flex-wrap gap-3 items-center ms-2 lg:ms-3 translate-y-[7.5%] h-8">
+      {breadcrumItems.map((item, index) => (
+        <Fragment key={index}>
+          <BreadcrumbItem {...item} isFirst={index === 0} isLast={index === breadcrumItems.length - 1} />
+          {index < breadcrumItems.length - 1 && (
+            <ChevronRightIcon
+              className={joinClassName("size-4", index !== 0 && "hidden sm:inline")}
+              key={index}
+            />
+          )}
+        </Fragment>
+      ))}
+    </div>
+  );
+}
+
+function BreadcrumbItem(props: BreadcrumbItem & { isFirst: boolean, isLast: boolean; }): React.ReactNode {
+  // Dependencies.
+  const { joinClassName } = useTsxHelper();
+
+  // Template.
+  function renderChild(): React.ReactNode {
+    if (props.isFirst) {
+      return <HomeIcon className="size-5" />;
+    }
+    
+    if (props.isLast) {
+      return (
+        <>
+          <span className="hidden sm:inline">{props.breadcrumbTitle}</span>
+          <span className="text-lg inline sm:hidden">{props.pageTitle}</span>
+        </>
+      );
+    }
+
+    return <span className="hidden sm:inline">{props.breadcrumbTitle}</span>;
+  };
+
+  return (
+    <Link
+      to={props.routePath ?? ""}
+      className={joinClassName(
+        (!props.isFirst && !props.isLast) ? "hidden sm:inline" : "text-lg sm:text-base",
+        (props.routePath == null || props.isLast) && "pointer-events-none"
+      )}
+    >
+      {renderChild()}
+    </Link>
   );
 }

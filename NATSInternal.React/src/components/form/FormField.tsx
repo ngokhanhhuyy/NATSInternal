@@ -13,7 +13,7 @@ export type FormFieldContextPayload = {
   displayName?: string
 };
 
-export const FormFieldContext = createContext<FormFieldContextPayload>(undefined!);
+export const FormFieldContext = createContext<FormFieldContextPayload | null>(null);
 
 // Props.
 export type FormFieldProps = {
@@ -43,7 +43,7 @@ export default function FormField(props: FormFieldProps) {
     }
 
     return messages[0];
-  }, [formContext.errorCollection.details]);
+  }, [formContext?.errorCollection.details]);
 
   const displayName = useMemo(() => {
     if (props.displayName) {
@@ -65,14 +65,24 @@ export default function FormField(props: FormFieldProps) {
 
   const contextPayload = useMemo<FormFieldContextPayload>(() => {
     return {
-      isValidated: formContext.errorCollection.isValidated,
+      isValidated: !!formContext?.errorCollection.isValidated,
       hasError: !!errorMessage,
-      showValidState: formContext.showValidState,
+      showValidState: formContext?.showValidState ?? true,
       displayName: displayName ?? undefined
     };
-  }, [formContext.errorCollection.details, displayName]);
+  }, [formContext?.errorCollection.details, displayName]);
   
-  const labelClassName = compute(() => contextPayload.hasError ? "text-red-300" : "text-black/50");
+  const labelClassName = compute(() => {
+    if (contextPayload.hasError) {
+      return "text-red-500 dark:text-red-700";
+    }
+
+    if (contextPayload.isValidated && contextPayload.showValidState) {
+      return "text-emerald-500";
+    }
+
+    return "text-black/50 dark:text-white/70";
+  });
 
   // Template.
   return (
@@ -90,7 +100,7 @@ export default function FormField(props: FormFieldProps) {
       </FormFieldContext.Provider>
 
       {/* Message */}
-      {formContext.errorCollection.isValidated && (
+      {formContext?.errorCollection.isValidated && (
         <ErrorMessage message={errorMessage} showValidState={formContext.showValidState} />
       )}
     </div>
@@ -101,11 +111,11 @@ function ErrorMessage(props: { message?: string; showValidState: boolean; }): Re
   const staticClassName = "text-sm";
 
   if (props.message) {
-    return <div className={`text-danger ${staticClassName}`}>{props.message}</div>;
+    return <div className={`text-red-500 dark:text-red-700 ${staticClassName}`}>{props.message}</div>;
   }
 
   if (props.showValidState) {
-    return <div className={`text-success ${staticClassName}`}>Hợp lệ</div>;
+    return <div className={`text-emerald-500 dark:text-emerald-500 ${staticClassName}`}>Hợp lệ</div>;
   }
 
   return null;

@@ -20,14 +20,26 @@ export default function Input(props: InputProps) {
     );
 
     if (!context || !context.isValidated || (!context.hasError && !context.showValidState)) {
-      return `bg-white border-primary/10 focus:border-primary focus:outline-primary/15 ${staticClassName}`;
+      return joinClassName(
+        "bg-white dark:bg-neutral-800 border-black/10 dark:border-white/15",
+        "focus:border-black dark:focus:border-white/50 focus:outline-primary/15 dark:focus:outline-white/30",
+        staticClassName
+      );
     }
 
-    let computedClassName: string;
+    let computedClassName: string | undefined;
     if (context.hasError) {
-      computedClassName = "bg-danger/5 text-danger border-danger/70 focus:border-danger focus:outline-danger/15";
+      computedClassName = joinClassName(
+        "bg-red-500/5 dark:bg-red-600/10 text-red-500 dark:text-red-600",
+        "border-red-500/70 dark:border-red-600/70 focus:border-red-500 dark:focus:border-red-600",
+        "focus:outline-red-500/15 dark:focus:outline-red-600/40"
+      );
     } else {
-      computedClassName = "bg-success/5 text-success border-success/70 focus:border-success focus:outline-success/15";
+      computedClassName = joinClassName(
+        "bg-emerald-500/5 dark:bg-emerald-600/10 text-emerald-500 dark:text-emerald-600",
+        "border-emerald-500/70 dark:border-emerald-600/70 focus:border-emerald-500 dark:focus:border-emerald-600",
+        "focus:outline-danger/15 dark:focus:outline-emerald-600/40"
+      );
     }
 
     return joinClassName(computedClassName, staticClassName);

@@ -56,7 +56,6 @@ internal class UnitOfWork : IUnitOfWork
         {
             _ = Task.Run(async () => await _mediator.Publish(domainEvent, cancellationToken), cancellationToken);
         }
-        
 
         foreach (AbstractEntity entity in domainEntities)
         {

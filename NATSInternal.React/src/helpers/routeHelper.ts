@@ -9,6 +9,7 @@ const routeHelper = {
   },
 
   getHomeRoutePath: () => "/",
+  getDashboardRoutePath: () => "/bang-dieu-khien",
   getUserListRoutePath: () => "/nguoi-dung",
   getUserProfileRoutePath: (id: string) => `/nguoi-dung/${id}`,
   getUserCreateRoutePath: () => `/nguoi-dung/tao-moi`,

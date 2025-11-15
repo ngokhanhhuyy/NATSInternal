@@ -14,7 +14,7 @@ type FormContextPayload = {
 };
 
 // Context.
-export const FormContext = createContext<FormContextPayload>(undefined!);
+export const FormContext = createContext<FormContextPayload | null>(null);
 
 // Props.
 type FormProps<T> = {

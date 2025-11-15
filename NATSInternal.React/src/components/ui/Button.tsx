@@ -22,10 +22,14 @@ export function Button(props: ButtonProps) {
   const className = compute(() => {
     const sharedClassName = joinClassName(
       "flex justify-center items-center px-2 py-1 border",
-      "rounded-lg shadow-xs cursor-pointer transition duration-150");
+      "rounded-lg shadow-xs cursor-pointer transition-all duration-150");
       
     if (variant === "secondary") {
-      return `bg-secondary border-neutral-200 text-neutral-800 hover:bg-neutral-100 hover:border-neutral-300 ${sharedClassName}`;
+      return joinClassName(
+        "bg-white dark:bg-neutral-800 border-black/15 dark:border-white/15 text-black/80 dark:text-white/80",
+        "hover:bg-neutral-100 hover:dark:bg-neutral-800 hover:border-black/20 hover:dark:border-white/20",
+        sharedClassName
+      );
     }
 
     let variantClassNameMap: Record<Exclude<ColorVariant, "secondary">, string>;
@@ -34,18 +38,25 @@ export function Button(props: ButtonProps) {
         primary: "border-primary text-primary hover:bg-primary",
         danger: "border-danger text-danger hover:bg-danger",
         success: "border-success text-success hover:bg-success",
+        hinting: "border-hinting text-hinting hover:bg-hinting"
       };
 
       return `bg-white border hover:text-white ${variantClassNameMap[variant]} ${sharedClassName}`;
     }
     
     variantClassNameMap = {
-      primary: "bg-primary border-primary",
-      danger: "bg-danger border-danger",
-      success: "bg-success border-success",
+      primary: "bg-primary border-primary hover:opacity-80",
+      danger: "bg-red-500 dark:bg-red-700 border-red-600 dark:border-red-500 " +
+        "hover:bg-red-400 dark:hover:bg-red-600 hover:border-red-600 dark:hover:border-red-400",
+      success: "bg-emerald-500 dark:bg-emerald-600 border-emerald-500 hover:brightness-120",
+      hinting: "bg-blue-500 dark:bg-blue-600 border-blue-500 hover:brightness-140"
     };
 
-    return `text-primary-foreground hover:opacity-75 border ${variantClassNameMap[variant]} ${sharedClassName}`;
+    return joinClassName(
+      "text-primary-foreground border",
+      variantClassNameMap[variant],
+      sharedClassName
+    );
   });
 
   // Template.

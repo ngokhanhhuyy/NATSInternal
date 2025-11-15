@@ -1,11 +1,13 @@
-import { useCallback } from "react";
+import { useCallback, useId } from "react";
 import { useNavigate } from "react-router";
 import { useApi } from "@/api";
 import { useAuthenticationStore } from "@/stores";
 import { useRouteHelper } from "@/helpers";
 
-// Layout components.
+// Child components.
 import MainContainer from "@/components/layouts/MainContainer";
+import { Button } from "@/components/ui";
+import * as form from "@/components/form";
 
 // Component.
 export default function TestingPage() {
@@ -13,6 +15,7 @@ export default function TestingPage() {
   const navigate = useNavigate();
   const setIsAuthenticated = useAuthenticationStore(store => store.setIsAuthenticated);
   const api = useApi();
+  const id = useId();
   const { getSignInRoutePath } = useRouteHelper();
 
   // Callbacks.
@@ -25,8 +28,20 @@ export default function TestingPage() {
   // Template.
   return (
     <MainContainer>
-      <button onClick={signOut}>Đăng xuất</button>
-      {Array.from({ length: 100 }).map(() => "abc").join(" ")}
+      {id}
+      <Button onClick={signOut}>Đăng xuất</Button>
+      <div className="flex gap-3 my-3 flex-wrap">
+        {variants.map((variant, index) => <Button variant={variant} key={index}>{variant.toUpperCase()}</Button>)}
+      </div>
+
+      <div className="flex flex-col flex-wrap gap-3 my-3">
+        <form.FormField>
+          <form.TextInput placeholder="Some value" value="" onValueChanged={() => { }} />
+        </form.FormField>
+      </div>
+      {Array.from({ length: 10000 }, (_, index) => index).map((index) => index + "_abcxyz").join(" ")}
     </MainContainer>
   );
 }
+
+const variants: ColorVariant[] = ["primary", "secondary", "danger", "success", "hinting"];

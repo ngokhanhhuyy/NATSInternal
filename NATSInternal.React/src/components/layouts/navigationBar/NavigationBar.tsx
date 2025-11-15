@@ -63,7 +63,6 @@ export default function NavigationBar(): React.ReactNode {
 
   useEffect(() => {
     const handleClicked = (event: PointerEvent) => {
-      console.log(event.target, navigationBarStore.isExpanded);
       if (!navigationBarStore.isExpanded) {
         return;
       }
@@ -95,7 +94,7 @@ export default function NavigationBar(): React.ReactNode {
       id="navbar"
       className={joinClassName(
         "h-full md:h-auto shrink-0 fixed md:relative z-1000 md:z-auto",
-        "shadow-lg md:shadow-none -mt-(--topbar-height) md:ms-3 md:mt-3",
+        "shadow-lg md:shadow-none -mt-(--topbar-height) md:ms-3",
         "w-screen md:w-fit lg:w-54 block transition-opacity md:transition-none duration-200 ease-in-out",
         navigationBarStore.isExpanded
           ? "bg-black/50 backdrop-blur-xs md:bg-transparent pointer-events-auto opacity-100"
@@ -106,10 +105,13 @@ export default function NavigationBar(): React.ReactNode {
       <div
         id="navbar-container"
         className={joinClassName(
-          "bg-white md:bg-transparent w-60 md:w-full lg:w-auto h-full md:h-auto p-3 md:px-0",
-          "left-full md:left-0 md:translate-x-0 transition-transform duration-200 ease-in-out",
-          "relative flex flex-col justify-start items-stretch gap-4",
-          navigationBarStore.isExpanded ? "-translate-x-full" : "-translate-x-50"
+          "bg-white dark:bg-neutral-900 md:bg-transparent dark:md:bg-transparent",
+          "w-60 md:w-full lg:w-auto h-full md:h-fit p-3 md:px-0 md:pt-6",
+          "border-l md:border-none border-black/15 dark:border-white/15",
+          "md:translate-x-0 transition-transform md:transition-none duration-200 ease-in-out",
+          "relative md:sticky left-full md:left-0 top-0 md:top-(--topbar-height)",
+          "flex flex-col justify-start items-stretch gap-4",
+          navigationBarStore.isExpanded ? "-translate-x-full" : ""
         )}
         ref={navigationBarContainerElementRef}
       >

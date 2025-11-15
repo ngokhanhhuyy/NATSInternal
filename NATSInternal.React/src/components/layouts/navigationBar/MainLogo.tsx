@@ -15,17 +15,17 @@ export default function MainLogo(): React.ReactNode {
   return (
     <Link
       className={joinClassName(
-        "flex gap-1.5 md:gap-2.5 justify-center items-center",
+        "flex gap-1.5 md:gap-2.5 justify-start items-center",
         "hover:opacity-100 hover:no-underline",
       )}
       to={getHomeRoutePath()}
     >
       <ApplicationIcon className={joinClassName(
-        "bg-success/10 border border-success size-10 p-1.5",
-        "rounded-[50%] fill-success shrink-0",
+        "bg-emerald-500/10 dark:bg-emerald-500/20 border border-success size-10 p-1.5",
+        "rounded-[50%] fill-emerald-500 dark:fill-emerald-400 shrink-0",
       )} />
 
-      <span className="text-success font-light text-2xl hidden md:block">
+      <span className="text-emerald-500 dark:text-emerald-400 font-light text-2xl block">
         natsinternal
       </span>
     </Link>

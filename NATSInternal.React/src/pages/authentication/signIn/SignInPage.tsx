@@ -6,6 +6,7 @@ import { useAuthenticationStore } from "@/stores";
 import { useTsxHelper, useRouteHelper } from "@/helpers";
 
 // Child components.
+import RootLayout from "@/components/layouts/RootLayout";
 import { Form, FormField, TextInput } from "@/components/form";
 import { Button } from "@/components/ui";
 
@@ -107,65 +108,69 @@ export default function SignInPage(): React.ReactNode {
 
   // Template.
   return (
-    <div
-      className="bg-white sm:bg-black/2 flex flex-col justify-center items-center w-screen h-screen"
-      onKeyUp={(event) => event.key === "Enter" && handleEnterKeyPressedAsync()}>
-      <Form
-        className={joinClassName(
-          "bg-white border border-transparent sm:border-black/10 shadow-none sm:shadow-xs",
-          "flex flex-col rounded-xl p-8 items-stretch w-[350px] relative"
-        )}
-        submitAction={loginAsync}
-        onSubmissionSucceeded={handleLoginSucceeded}
-        onSubmissionFailed={handleLoginFailed}
-        submissionSucceededText="Đăng nhập thành công!"
-      >
-        {/* Introduction */}
-        <div className="flex flex-col mb-5 text-black">
-          <span className="text-4xl font-bold">Đăng nhập</span>
-          <span className="text-lg">
-            Chào mừng bạn đã quay trở lại.
-          </span>
+    <RootLayout>
+      <div
+        className="bg-white sm:bg-black/2 flex flex-col justify-center items-center w-screen h-screen"
+        onKeyUp={(event) => event.key === "Enter" && handleEnterKeyPressedAsync()}>
+        <Form
+          className={joinClassName(
+            "bg-white dark:bg-neutral-900",
+            "border border-transparent sm:border-black/10 dark:sm:border-white/10",
+            "shadow-none sm:shadow-xs",
+            "flex flex-col rounded-xl p-8 items-stretch w-[350px] relative"
+          )}
+          submitAction={loginAsync}
+          onSubmissionSucceeded={handleLoginSucceeded}
+          onSubmissionFailed={handleLoginFailed}
+          submissionSucceededText="Đăng nhập thành công!"
+        >
+          {/* Introduction */}
+          <div className="flex flex-col mb-5">
+            <span className="text-4xl font-bold">Đăng nhập</span>
+            <span className="text-lg">
+              Chào mừng bạn đã quay trở lại.
+            </span>
+          </div>
+
+          {/* Username */}
+          <FormField className="mb-3" path="userName">
+            <TextInput
+              autoCapitalize="off"
+              value={model.userName}
+              onValueChanged={(userName) => setModel(model => ({ ...model, userName: userName.toLowerCase() }))}
+            />
+          </FormField>
+
+          {/* Password */}
+          <FormField className="mb-5" path="password">
+            <TextInput
+              password
+              value={model.password}
+              onValueChanged={(password) => setModel(model => ({ ...model, password }))}
+            />
+          </FormField>
+
+          {/* Button */}
+          <Button type="submit" variant={buttonVariant} showSpinner={state.isSubmitting}>
+            {buttonText}
+          </Button>
+
+          {/* CommonError */}
+          {state.commonError && (
+            <span className="alert alert-danger d-flex justify-content-center mt-3 w-100">
+              <i className="bi bi-exclamation-triangle-fill me-1" />
+              {state.commonError}
+            </span>
+          )}
+        </Form>
+
+        <div className={joinClassName(
+          "text-primary/50 absolute bottom-1 sm:relative sm:bottom-unset",
+          "flex justify-end mb-3 sm:mt-7 sm:mb-0")}
+        >
+          © {new Date().getFullYear()} - Bản quyền thuộc về Ngô Khánh Huy
         </div>
-
-        {/* Username */}
-        <FormField className="mb-3" path="userName">
-          <TextInput
-            autoCapitalize="off"
-            value={model.userName}
-            onValueChanged={(userName) => setModel(model => ({ ...model, userName: userName.toLowerCase() }))}
-          />
-        </FormField>
-
-        {/* Password */}
-        <FormField className="mb-5" path="password">
-          <TextInput
-            password
-            value={model.password}
-            onValueChanged={(password) => setModel(model => ({ ...model, password }))}
-          />
-        </FormField>
-
-        {/* Button */}
-        <Button type="submit" variant={buttonVariant} showSpinner={state.isSubmitting}>
-          {buttonText}
-        </Button>
-
-        {/* CommonError */}
-        {state.commonError && (
-          <span className="alert alert-danger d-flex justify-content-center mt-3 w-100">
-            <i className="bi bi-exclamation-triangle-fill me-1" />
-            {state.commonError}
-          </span>
-        )}
-      </Form>
-
-      <div className={joinClassName(
-        "text-primary/50 absolute bottom-1 sm:relative sm:bottom-unset",
-        "flex justify-end mb-3 sm:mt-7 sm:mb-0")}
-      >
-        © {new Date().getFullYear()} - Bản quyền thuộc về Ngô Khánh Huy
       </div>
-    </div>
+    </RootLayout>
   );
 }

@@ -11,11 +11,13 @@ import SignInPage from "@/pages/authentication/signIn/SignInPage";
 import TestingPage from "@/pages/TestingPage";
 import { AuthenticationError } from "@/api";
 
+// Route helper.
+const { getSignInRoutePath, getDashboardRoutePath } = useRouteHelper();
+
 // Components.
 function AuthenticationErrorBoundary(): React.ReactNode | null {
   // Dependencies.
   const error = useRouteError();
-  const { getSignInRoutePath } = useRouteHelper();
 
   // Template.
   if (error instanceof AuthenticationError) {
@@ -33,7 +35,7 @@ const router = createBrowserRouter([
         path: "dang-nhap",
         Component: SignInPage,
         handle: {
-          title: "Đăng nhập"
+          pageTitle: "Đăng nhập"
         }
       },
       {
@@ -42,9 +44,14 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
+            element: <Navigate to={getDashboardRoutePath()} />
+          },
+          {
+            path: "bang-dieu-khien",
             Component: TestingPage,
             handle: {
-              title: "Trang chủ",
+              breadcrumbTitle: "Bảng điều khiển",
+              pageTitle: "Bảng điều khiển"
             }
           },
           {
@@ -54,14 +61,16 @@ const router = createBrowserRouter([
                 index: true,
                 Component: TestingPage,
                 handle: {
-                  title: "Danh sách khách hàng"
+                  breadcrumbTitle: "Danh sách",
+                  pageTitle: "Danh sách khách hàng"
                 }
               },
               {
                 path: "tao-moi",
                 Component: TestingPage,
                 handle: {
-                  title: "Tạo khách hàng mới"
+                  breadcrumbTitle: "Tạo mới",
+                  pageTitle: "Tạo khách hàng mới"
                 }
               },
 
@@ -72,21 +81,29 @@ const router = createBrowserRouter([
                     index: true,
                     Component: TestingPage,
                     handle: {
-                      title: "Chi tiết khách hàng"
+                      breadcrumbTitle: "Chi tiết",
+                      pageTitle: "Chi tiết khách hàng"
                     }
                   },
                   {
                     path: "chinh-sua",
                     Component: TestingPage,
                     handle: {
-                      title: "Chỉnh sửa khách hàng"
+                      breadcrumbTitle: "Chỉnh sửa",
+                      pageTitle: "Chỉnh sửa khách hàng"
                     }
                   },
                 ]
               },
             ],
+            handle: {
+              breadcrumbTitle: "Khách hàng",
+            }
           },
-        ]
+        ],
+        handle: {
+          breadcrumbTitle: "Trang chủ"
+        }
       },
     ]
   },
