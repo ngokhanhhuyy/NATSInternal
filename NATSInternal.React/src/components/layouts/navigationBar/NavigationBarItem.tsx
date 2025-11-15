@@ -24,7 +24,11 @@ export type NavigationBarItemData = {
   Icon?: (props: { isActive: boolean, className?: string, title?: string }) => React.ReactNode;
 };
 
-export type NavigationBarItemProps = NavigationBarItemData & { isActive: boolean; showLabel: boolean; };
+export type NavigationBarItemProps = NavigationBarItemData & {
+  isActive: boolean;
+  showLabel: boolean;
+  onClick(): any;
+};
 
 export default function NavigationBarItem({ Icon, ...props }: NavigationBarItemProps): React.ReactNode {
   // Dependencies.
@@ -45,7 +49,7 @@ export default function NavigationBarItem({ Icon, ...props }: NavigationBarItemP
 
   // Template.
   return (
-    <Link className={joinClassName(className, styles.navigationBarItem)} to={props.routePath}>
+    <Link className={joinClassName(className, styles.navigationBarItem)} to={props.routePath} onClick={props.onClick}>
       {Icon && <Icon className="size-6 inline shrink-0" isActive={props.isActive} />}
       <span className="inline-block md:hidden lg:inline-block">{displayName}</span>
 

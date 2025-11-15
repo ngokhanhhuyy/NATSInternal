@@ -8,6 +8,7 @@ import MainPageLayout from "@/components/layouts/MainPageLayout";
 // Pages.
 import SignInPage from "@/pages/authentication/signIn/SignInPage";
 import HomePage from "@/pages/home/HomePage";
+import TestingPage from "@/pages/TestingPage";
 import { AuthenticationError } from "@/api";
 
 // Components.
@@ -44,7 +45,6 @@ const router = createBrowserRouter([
             Component: HomePage,
             handle: {
               title: "Trang chủ",
-              
             }
           }
         ]

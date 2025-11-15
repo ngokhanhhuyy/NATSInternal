@@ -41,7 +41,6 @@ export default function NavigationBar(): React.ReactNode {
   const mdScreenMediaQuery = useRef(window.matchMedia("(min-width: 48rem)"));
   const navigationBarElementRef = useRef<HTMLElement>(null!);
   const navigationBarContainerElementRef = useRef<HTMLDivElement>(null!);
-  const originalDocumentHeight = useRef<string>(getComputedStyle(document.documentElement).height);
   const [activeItemName, setActiveItemName] = useState<string | null>(null);
 
   // Effect.
@@ -78,12 +77,10 @@ export default function NavigationBar(): React.ReactNode {
     document.addEventListener("pointerdown", handleClicked);
 
     if (navigationBarStore.isExpanded) {
-      originalDocumentHeight.current = document.documentElement.style.height;
       document.documentElement.style.maxHeight = "100vh";
       document.documentElement.style.overflow = "hidden";
     } else {
-      document.documentElement.style.maxHeight = "unset";
-      document.documentElement.style.overflow = "unset";
+      document.documentElement.removeAttribute("style");
     }
 
     return () => document.removeEventListener("pointerdown", handleClicked);
@@ -98,20 +95,22 @@ export default function NavigationBar(): React.ReactNode {
     <nav
       id="navbar"
       className={joinClassName(
-        "h-full md:h-auto shrink-0 fixed md:relative z-1000 md:z-auto",
+        "h-full md:h-auto shrink-0 fixed md:relative z-1000 md:z-auto transition-all duration-200 ease-in-out",
         "shadow-lg md:shadow-none -mt-(--topbar-height) md:ms-3 md:mt-3",
-        "w-screen md:w-fit lg:w-54",
-        navigationBarStore.isExpanded ? "bg-black/50 backdrop-blur-xs md:bg-transparent" : "hidden md:block"
+        "w-screen md:w-fit lg:w-54 block",
+        navigationBarStore.isExpanded
+          ? "bg-black/50 backdrop-blur-xs md:bg-transparent pointer-events-auto opacity-100"
+          : "pointer-events-none md:pointer-events-auto opacity-0 md:opacity-100"
       )}
       ref={navigationBarElementRef}
     >
       <div
         id="navbar-container"
         className={joinClassName(
-          "bg-white md:bg-transparent w-60 md:w-full lg:w-auto h-full p-3 md:px-0",
-          "relative left-full md:left-0 md:translate-x-0 transition-all duration-100",
+          "bg-white md:bg-transparent w-60 md:w-full lg:w-auto h-full md:h-auto p-3 md:px-0",
+          "left-full md:left-0 md:translate-x-0 transition-transform duration-200 ease-in-out",
           "flex flex-col justify-start items-stretch gap-4",
-          navigationBarStore.isExpanded ? "-translate-x-full" : "translate-x-0"
+          navigationBarStore.isExpanded ? "-translate-x-full" : "-translate-x-50"
         )}
         ref={navigationBarContainerElementRef}
       >
@@ -130,6 +129,7 @@ export default function NavigationBar(): React.ReactNode {
               Icon={item.Icon}
               isActive={activeItemName === item.name}
               showLabel={navigationBarStore.isExpanded}
+              onClick={navigationBarStore.collapse}
               key={item.name}
             />
           ))}
