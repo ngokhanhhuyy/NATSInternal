@@ -32,5 +32,15 @@ public class CustomerController : ControllerBase
     {
         return Ok(await _mediator.Send(requestDto, cancellationToken));
     }
+
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType<CustomerGetListResponseDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetDetail([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        CustomerGetDetailRequestDto requestDto = new() { Id = id };
+        return Ok(await _mediator.Send(requestDto, cancellationToken));
+    }
     #endregion
 }

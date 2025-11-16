@@ -92,7 +92,7 @@ internal class CustomerSeeder
                     ?.Replace(" ", string.Empty),
                 facebookUrl: "https://facebook.com/" + _faker.Internet.UserName().ToLower(),
                 email: _faker.Internet.Email(),
-                address: _faker.Address.FullAddress(),
+                address: _faker.Address.StreetAddress(),
                 createdDateTime: _clock.Now,
                 note: SliceNoteIfLong(_faker.Lorem.Paragraph()),
                 introducer: introducer,

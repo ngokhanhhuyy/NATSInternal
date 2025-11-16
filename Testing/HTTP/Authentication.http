@@ -23,7 +23,13 @@ Cookie: {{accessCookie}}
 ###
 # @name CustomerList
 // @no-log
-GET {{host}}/customer?sortingByFieldName=FirstName&sortingByAscending=False&page=2
+GET {{host}}/customer?sortingByFieldName=LastName&sortingByAscending=False&page=1
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name CustomerDetail
+GET {{host}}/customer/c821c45c-6c8f-475e-8c39-3c2f5c520904
 Content-Type: application/json
 Cookie: {{accessCookie}}
 

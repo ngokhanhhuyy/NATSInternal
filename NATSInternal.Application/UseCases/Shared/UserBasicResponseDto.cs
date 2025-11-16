@@ -6,11 +6,21 @@ namespace NATSInternal.Application.UseCases.Shared;
 public class UserBasicResponseDto
 {
     #region Constructors
-    internal UserBasicResponseDto(User user)
+    internal UserBasicResponseDto(User? user)
     {
-        Id = user.Id;
-        UserName = user.UserName;
-        Roles = user.Roles.Select(r => new RoleBasicResponseDto(r)).ToList();
+        if (user is not null && !user.DeletedDateTime.HasValue)
+        {
+            Id = user.Id;
+            UserName = user.UserName;
+            Roles = user.Roles.Select(r => new RoleBasicResponseDto(r)).ToList();
+        }
+        else
+        {
+            Id = Guid.Empty;
+            UserName = string.Empty;
+            Roles = new List<RoleBasicResponseDto>();
+            IsDeleted = true;
+        }
     }
     
     internal UserBasicResponseDto(
@@ -26,5 +36,6 @@ public class UserBasicResponseDto
     public string UserName { get; }
     public ICollection<RoleBasicResponseDto> Roles { get; }
     public UserExistingAuthorizationResponseDto? Authorization { get; }
+    public bool IsDeleted { get; }
     #endregion
 }

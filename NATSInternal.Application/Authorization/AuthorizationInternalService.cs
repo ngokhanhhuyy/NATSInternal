@@ -57,22 +57,27 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
 
     public bool CanChangeUserPassword(User user)
     {
-        return user.Id == _callerDetailProvider.GetId();
+        return user.DeletedDateTime is not null && user.Id == _callerDetailProvider.GetId();
     }
 
     public bool CanResetUserPassword(User user)
     {
-        return user.Id != _callerDetailProvider.GetId() && CallerHasPermission(PermissionNames.ResetOtherUserPassword);
+        return user.DeletedDateTime is not null &&
+            user.Id != _callerDetailProvider.GetId() &&
+            CallerHasPermission(PermissionNames.ResetOtherUserPassword);
     }
 
     public bool CanDeleteUser(User user)
     {
-        return user.Id != _callerDetailProvider.GetId() && CallerHasPermission(PermissionNames.DeleteUser);
+        return user.Id != _callerDetailProvider.GetId() &&
+            user.DeletedDateTime is not null &&
+            CallerHasPermission(PermissionNames.DeleteUser);
     }
 
     public bool CanAddUserToOrRemoveUserFromRoles(User user)
     {
         return user.Id != _callerDetailProvider.GetId() &&
+            user.DeletedDateTime is not null &&
             CallerHasPermission(PermissionNames.AddUserToOrRemoveUserFromRoles);
     }
 

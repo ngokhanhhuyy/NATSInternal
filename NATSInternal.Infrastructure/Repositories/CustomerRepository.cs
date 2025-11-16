@@ -18,11 +18,11 @@ internal class CustomerRepository : ICustomerRepository
     #endregion
 
     #region Methods
-    public async Task<Customer?> GetCustomerByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Customer?> GetCustomerByIdIncludingIntroducerAsync(Guid id, CancellationToken cancellationToken)
     {
         return await _context.Customers
-            .Where(c => c.Id == id && c.DeletedDateTime == null)
-            .FirstOrDefaultAsync(cancellationToken);
+            .Include(c => c.Introducer)
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 
     public void AddCustomer(Customer customer)
