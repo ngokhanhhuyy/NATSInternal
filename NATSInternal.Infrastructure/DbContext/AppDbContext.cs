@@ -3,11 +3,13 @@ using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using NATSInternal.Domain.Features.AuditLogs;
+using NATSInternal.Domain.Features.Customers;
 using NATSInternal.Domain.Features.Photos;
 using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Stocks;
 using NATSInternal.Domain.Features.Users;
 using NATSInternal.Infrastructure.DbContext.AuditLogs;
+using NATSInternal.Infrastructure.DbContext.Customers;
 
 namespace NATSInternal.Infrastructure.DbContext;
 
@@ -18,15 +20,27 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
     #endregion
 
     #region Properties
+    // User aggregate
     public DbSet<User> Users { get; private set; }
     public DbSet<Role> Roles { get; private set; }
     public DbSet<Permission> Permissions { get; private set; }
+
+    // Customer aggregate
+    public DbSet<Customer> Customers { get; private set; }
+
+    // Product aggregate
     public DbSet<Country> Countries { get; private set; }
     public DbSet<Brand> Brands { get; private set; }
     public DbSet<ProductCategory> ProductCategories { get; private set; }
     public DbSet<Product> Products { get; private set; }
+
+    // Stock aggregate
     public DbSet<Stock> Stocks { get; private set; }
+
+    // Photo aggregate
     public DbSet<Photo> Photos { get; private set; }
+
+    // AuditLog aggregate
     public DbSet<AuditLog> AuditLogs { get; private set; }
     #endregion
 
@@ -39,6 +53,9 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new RoleEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new PermissionEntityTypeConfiguration());
+        
+        // Customer entity cluster.
+        modelBuilder.ApplyConfiguration(new CustomerEntityTypeConfiguration());
 
         // Product entity cluster.
         modelBuilder.ApplyConfiguration(new BrandEntityTypeConfiguration());

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -9,10 +9,6 @@
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" Version="2025.2.2" />
         <PackageReference Include="MediatR" Version="13.1.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Features/Customers/DomainEvents/" />
     </ItemGroup>
 
 </Project>

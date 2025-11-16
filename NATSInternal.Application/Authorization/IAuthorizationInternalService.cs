@@ -1,3 +1,4 @@
+using NATSInternal.Domain.Features.Customers;
 using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Users;
 
@@ -7,6 +8,7 @@ internal interface IAuthorizationInternalService : IAuthorizationService
 {
     #region Methods
     UserExistingAuthorizationResponseDto GetUserExistingAuthorization(User targetUser);
+    CustomerExistingAuthorizationResponseDto GetCustomerExistingAuthorization(Customer customer);
     ProductExistingAuthorizationResponseDto GetProductExistingAuthorization(Product product);
     
     bool CanChangeUserPassword(User targetUser);

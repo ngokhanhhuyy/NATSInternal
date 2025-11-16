@@ -23,7 +23,7 @@ Cookie: {{accessCookie}}
 ###
 # @name CustomerList
 // @no-log
-GET {{host}}/customers?sortingByField=FirstName&sortingByAscending=False&hasRemainingDebtAmountOnly=True&page=2
+GET {{host}}/customer?sortingByFieldName=FirstName&sortingByAscending=False&page=2
 Content-Type: application/json
 Cookie: {{accessCookie}}
 

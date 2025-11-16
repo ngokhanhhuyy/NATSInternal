@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using NATSInternal.Application.Security;
+using NATSInternal.Domain.Features.Customers;
 using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Users;
 
@@ -28,6 +29,15 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
             CanResetPassword = CanResetUserPassword(user),
             CanDelete = CanDeleteUser(user),
             CanAddToOrRemoveFromRoles = CanAddUserToOrRemoveUserFromRoles(user)
+        };
+    }
+
+    public CustomerExistingAuthorizationResponseDto GetCustomerExistingAuthorization(Customer customer)
+    {
+        return new()
+        {
+            CanEdit = CallerHasPermission(PermissionNames.EditCustomer),
+            CanDelete = CallerHasPermission(PermissionNames.DeleteCustomer)
         };
     }
 

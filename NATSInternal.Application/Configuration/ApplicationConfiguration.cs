@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using NATSInternal.Application.Authorization;
 using NATSInternal.Application.UseCases.Authentication;
+using NATSInternal.Application.UseCases.Customers;
 using NATSInternal.Application.UseCases.Products;
 using NATSInternal.Application.UseCases.Products.ProductGetList;
 using NATSInternal.Application.UseCases.Users;
@@ -32,8 +33,11 @@ public static class ApplicationConfiguration
         // }
 
         // UseCases.
+        // Authentication UseCases.
         services.AddTransient<IRequestHandler<ChangePasswordRequestDto>, ChangePasswordHandler>();
         services.AddTransient<IRequestHandler<VerifyUserNameAndPasswordRequestDto>, VerifyUserNameAndPasswordHandler>();
+
+        // User UseCases.
         services.AddTransient<IRequestHandler<UserGetListRequestDto, UserGetListResponseDto>, UserGetListHandler>();
         services.AddTransient<
             IRequestHandler<UserGetDetailByIdRequestDto, UserGetDetailResponseDto>,
@@ -41,11 +45,17 @@ public static class ApplicationConfiguration
         services.AddTransient<
             IRequestHandler<UserGetDetailByUserNameRequestDto, UserGetDetailResponseDto>,
             UserGetDetailByUserNameHandler>();
-        services.AddTransient<IRequestHandler<ChangePasswordRequestDto>, ChangePasswordHandler>();
         services.AddTransient<IRequestHandler<UserCreateRequestDto, Guid>, UserCreateHandler>();
         services.AddTransient<IRequestHandler<UserAddToRolesRequestDto>, UserAddToRolesHandler>();
         services.AddTransient<IRequestHandler<UserRemoveFromRolesRequestDto>, UserRemoveFromRolesHandler>();
         services.AddTransient<IRequestHandler<UserDeleteRequestDto>, UserDeleteHandler>();
+
+        // Customer UseCases.
+        services.AddTransient<
+            IRequestHandler<CustomerGetListRequestDto, CustomerGetListResponseDto>,
+            CustomerGetListHandler>();
+
+        // Product UseCases.
         services.AddTransient<
             IRequestHandler<ProductGetListRequestDto, ProductGetListResponseDto>,
             ProductGetListHandler>();

@@ -85,12 +85,6 @@ public static class Program
             });
 
         builder.Services.AddAuthorization();
-        builder.Services.AddOpenApi();
-        builder.Services.AddSwaggerGen(options =>
-        {
-            options.SchemaFilter<ProblemDetailsSchemaFilter>();
-            options.OperationFilter<RemoveSchemaForNotFoundOperationFilter>();
-        });
         
         // Add controllers with json serialization policy.
         builder.Services
@@ -108,7 +102,6 @@ public static class Program
         
         // Swagger + OpenAPI.
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
 
         // Build application.
         WebApplication app = builder.Build();
@@ -134,15 +127,15 @@ public static class Program
         });
 
         // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
-        else
-        {
-            // app.UseHttpsRedirection();
-        }
+        // if (app.Environment.IsDevelopment())
+        // {
+        //     app.UseSwagger();
+        //     app.UseSwaggerUI();
+        // }
+        // else
+        // {
+        //     // app.UseHttpsRedirection();
+        // }
 
         app.UseMiddleware<RequestLoggingMiddleware>();
         app.UseDeveloperExceptionPage();

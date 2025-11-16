@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using FluentValidation;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -9,6 +10,7 @@ using NATSInternal.Application.Exceptions;
 
 namespace NATSInternal.Api.Filters;
 
+[UsedImplicitly]
 public class ExceptionFilter : IExceptionFilter
 {
     #region Fields

@@ -6,6 +6,7 @@ using NATSInternal.Application.Security;
 using NATSInternal.Application.Services;
 using NATSInternal.Application.Time;
 using NATSInternal.Application.UnitOfWork;
+using NATSInternal.Domain.Features.Customers;
 using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Users;
 using NATSInternal.Infrastructure.DbContext;
@@ -41,18 +42,21 @@ public static class InfrastructureConfiguration
         services.AddScoped<IDbExceptionConverter, PostgreSqlExceptionConverter>();
 
         // Repositories.
-        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         // Services.
         services.AddScoped<IListFetchingService, ListFetchingService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
+        services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<IUserService, UserService>();
         
         // Seeders.
         services.AddTransient<Seeder>();
         services.AddTransient<UserSeeder>();
+        services.AddTransient<CustomerSeeder>();
         services.AddTransient<ProductSeeder>();
         services.AddTransient<StockSeeder>();
 
