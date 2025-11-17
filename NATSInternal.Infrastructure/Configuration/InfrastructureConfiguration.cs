@@ -8,6 +8,7 @@ using NATSInternal.Application.Time;
 using NATSInternal.Application.UnitOfWork;
 using NATSInternal.Domain.Features.Customers;
 using NATSInternal.Domain.Features.Products;
+using NATSInternal.Domain.Features.Stocks;
 using NATSInternal.Domain.Features.Users;
 using NATSInternal.Infrastructure.DbContext;
 using NATSInternal.Infrastructure.Repositories;
@@ -44,6 +45,7 @@ public static class InfrastructureConfiguration
         // Repositories.
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IStockRepository, StockRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
 
         // Services.

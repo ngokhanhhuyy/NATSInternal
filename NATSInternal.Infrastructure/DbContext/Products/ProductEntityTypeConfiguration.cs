@@ -37,6 +37,11 @@ internal class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product
             .WithMany()
             .HasForeignKey(p => p.LastUpdatedUserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(p => p.DeletedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
         
         // Properties.
         builder.Property(p => p.Name).HasMaxLength(ProductContracts.NameMaxLength).IsRequired();
@@ -50,9 +55,6 @@ internal class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product
         
         // Indexes.
         builder.HasIndex(p => p.Name).IsUnique();
-        
-        // Query filters.
-        builder.HasQueryFilter(p => !p.IsDeleted);
     }
     #endregion
 }

@@ -75,26 +75,17 @@ internal class ProductService : IProductService
                 throw new NotImplementedException();
         }
 
-        var projectedQuery = query.Select(product => new
-        {
-            Product = product,
-            Stock = _context.Stocks.First(stock => stock.ProductId == product.Id),
-            ThumbnailPhoto = _context.Photos.FirstOrDefault(photo => photo.ProductId == product.Id && photo.IsThumbnail)
-        });
-
         var productPage = await _listFetchingService.GetPagedListAsync(
-            projectedQuery,
+            query,
             requestDto.Page,
             requestDto.ResultsPerPage,
             cancellationToken
         );
 
         List<ProductBasicResponseDto> productResponseDtos = productPage.Items
-            .Select(i => new ProductBasicResponseDto(
-                product: i.Product,
-                stock: i.Stock,
-                thumbnailPhoto: i.ThumbnailPhoto,
-                _authorizationInternalService.GetProductExistingAuthorization(i.Product)))
+            .Select(product => new ProductBasicResponseDto(
+                product,
+                _authorizationInternalService.GetProductExistingAuthorization(product)))
             .ToList();
 
         return new(productResponseDtos, productPage.PageCount);

@@ -112,9 +112,10 @@ internal class Product : AbstractEntity
         LastUpdatedDateTime = lastUpdatedDateTime;
     }
 
-    public void Delete()
+    public void Delete(Guid deletedUserId, DateTime deletedDateTime)
     {
-        IsDeleted = true;
+        DeletedUserId = deletedUserId;
+        DeletedDateTime = deletedDateTime;
     }
     #endregion
 }
