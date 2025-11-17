@@ -26,7 +26,7 @@ internal class ProductDeleteHandler : IRequestHandler<ProductDeleteRequestDto>
             .GetProductByIdIncludingBrandWithCountryAndCategoryAsync(requestDto.Id, cancellationToken)
             ?? throw new NotFoundException();
 
-        product.MarkAsDeleted();
+        product.Delete();
         _repository.UpdateProduct(product);
 
         try

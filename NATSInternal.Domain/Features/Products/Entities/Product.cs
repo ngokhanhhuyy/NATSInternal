@@ -52,7 +52,7 @@ internal class Product : AbstractEntity
     public bool IsDiscontinued { get; private set; }
     public DateTime CreatedDateTime { get; private set; }
     public DateTime? LastUpdatedDateTime { get; private set; }
-    public bool IsDeleted { get; private set; }
+    public DateTime? DeletedDateTime { get; private set; }
     #endregion
 
     #region ForeignKeyProperties
@@ -60,6 +60,7 @@ internal class Product : AbstractEntity
     public Guid? CategoryId { get; private set; }
     public Guid CreatedUserId { get; private set; }
     public Guid? LastUpdatedUserId { get; private set; }
+    public Guid? DeletedUserId { get; private set; }
     #endregion
 
     #region NavigationProperties
@@ -111,7 +112,7 @@ internal class Product : AbstractEntity
         LastUpdatedDateTime = lastUpdatedDateTime;
     }
 
-    public void MarkAsDeleted()
+    public void Delete()
     {
         IsDeleted = true;
     }
