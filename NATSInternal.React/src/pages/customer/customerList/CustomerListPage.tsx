@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useLoaderData, Link } from "react-router";
+import { useLoaderData, useNavigate } from "react-router";
 import { useApi } from "@/api";
 import { createCustomerListModel } from "@/models";
 import { useTsxHelper } from "@/helpers";
@@ -7,6 +7,7 @@ import { useTsxHelper } from "@/helpers";
 // Child components.
 import MainContainer from "@/components/layouts/MainContainer";
 import { Button } from "@/components/ui";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 // Api.
 const api = useApi();
@@ -26,6 +27,7 @@ export async function loadDataAsync(model?: CustomerListModel): Promise<Customer
 // Component.
 export default function CustomerListPage(): React.ReactNode {
   // Dependencies.
+  const navigate = useNavigate();
   const initialModel = useLoaderData<CustomerListModel>();
   const { joinClassName } = useTsxHelper();
 
@@ -66,15 +68,20 @@ export default function CustomerListPage(): React.ReactNode {
         {model.items.map((item, index) => (
           <div
             className={joinClassName(
+              "grid grid-cols-[1fr_auto] gap-2 items-center",
               "border-black/10 dark:border-white/10 rounded-md p-3",
               "col-span-2 xl:col-span-1 overflow-hidden",
               index !== model.items.length - 1 && "border-b"
             )}
             key={index}
           >
-            <pre>
+            <pre className="overflow-hidden">
               {JSON.stringify(item, null, 2)}
             </pre>
+
+            <Button className="aspect-square" onClick={() => navigate(item.detailRoute)}>
+              <InformationCircleIcon className="size-4" />
+            </Button>
           </div>
         ))}
       </div>
