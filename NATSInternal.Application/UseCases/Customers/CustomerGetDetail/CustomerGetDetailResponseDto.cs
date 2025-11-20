@@ -1,7 +1,6 @@
 using NATSInternal.Application.Authorization;
 using NATSInternal.Application.UseCases.Shared;
 using NATSInternal.Domain.Features.Customers;
-using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.UseCases.Customers;
 
@@ -10,9 +9,6 @@ public record CustomerGetDetailResponseDto
     #region Constructors
     internal CustomerGetDetailResponseDto(
         Customer customer,
-        User? createdUser,
-        User? lastUpdatedUser,
-        long remainingDebtAmount,
         CustomerExistingAuthorizationResponseDto authorizationResponseDto)
     {
         Id = customer.Id;
@@ -29,24 +25,15 @@ public record CustomerGetDetailResponseDto
         Email = customer.Email;
         Address = customer.Address;
         Note = customer.Note;
-        RemainingDebtAmount = remainingDebtAmount;
-        CreatedUser = new UserBasicResponseDto(createdUser);
+        CreatedUserId = customer.CreatedUserId;
         CreatedDateTime = customer.CreatedDateTime;
+        LastUpdatedUserId = customer.LastUpdatedUserId;
         LastUpdatedDateTime = customer.LastUpdatedDateTime;
         Authorization = authorizationResponseDto;
 
-        if (lastUpdatedUser is not null)
-        {
-            LastUpdatedUser = new UserBasicResponseDto(lastUpdatedUser);
-        }
-
         if (customer.Introducer is not null)
         {
-            Introducer = new CustomerBasicResponseDto(
-                customer.Introducer,
-                remainingDebtAmount,
-                authorizationResponseDto
-            );
+            Introducer = new(customer.Introducer);
         }
     }
     #endregion
@@ -66,10 +53,9 @@ public record CustomerGetDetailResponseDto
     public string? Email { get; }
     public string? Address { get; }
     public string? Note { get; }
-    public long RemainingDebtAmount { get; set; }
-    public UserBasicResponseDto CreatedUser { get; }
+    public Guid CreatedUserId { get; }
     public DateTime CreatedDateTime { get; }
-    public UserBasicResponseDto? LastUpdatedUser { get; }
+    public Guid? LastUpdatedUserId { get; }
     public DateTime? LastUpdatedDateTime { get; }
     public CustomerBasicResponseDto? Introducer { get; }
     public CustomerExistingAuthorizationResponseDto Authorization { get; }

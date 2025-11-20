@@ -9,10 +9,6 @@ internal interface IProductService
         ProductGetListRequestDto requestDto,
         CancellationToken cancellationToken = default);
 
-    Task<ProductGetDetailResponseDto> GetProductDetailAsync(
-        ProductGetDetailRequestDto requestDto,
-        CancellationToken cancellationToken = default);
-
     // Task<Page<Brand>> GetBrandListAsync(
     //     bool? sortByAscending,
     //     string? sortByFieldName,

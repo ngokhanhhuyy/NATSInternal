@@ -29,7 +29,7 @@ Cookie: {{accessCookie}}
 
 ###
 # @name CustomerDetail
-GET {{host}}/customer/c821c45c-6c8f-475e-8c39-3c2f5c520904
+GET {{host}}/customer/22ce8b27-3729-4c9c-900a-5479c9e1ab93
 Content-Type: application/json
 Cookie: {{accessCookie}}
 

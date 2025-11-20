@@ -15,6 +15,6 @@ export function getDisplayName(key: string): string | null {
   return getMetadata().displayNameList[key];
 }
 
-export function getFieldToSortOptions(): FieldToSortOptionListResponseDto {
-  return getMetadata().fieldToSortOptionsList;
+export function getFieldToSortOptions(): ListOptionsListResponseDto {
+  return getMetadata().listOptionsList;
 }

@@ -11,6 +11,7 @@ using NATSInternal.Application.Configuration;
 using NATSInternal.Application.Notification;
 using NATSInternal.Application.Security;
 using NATSInternal.Infrastructure.Configuration;
+using System.Text.Json.Serialization;
 
 namespace NATSInternal.Api;
 
@@ -98,6 +99,8 @@ public static class Program
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false));
             });
         
         // Swagger + OpenAPI.

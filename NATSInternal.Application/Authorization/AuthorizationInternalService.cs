@@ -95,6 +95,11 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
             && CallerPowerLevel() > role.PowerLevel;
     }
 
+    public bool CanCreateCustomer()
+    {
+        return CallerHasPermission(PermissionNames.CreateCustomer);
+    }
+
     public bool CanCreateProduct()
     {
         return CallerHasPermission(PermissionNames.CreateProduct);

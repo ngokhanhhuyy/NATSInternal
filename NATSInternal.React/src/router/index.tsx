@@ -8,6 +8,7 @@ import MainPageLayout from "@/components/layouts/MainPageLayout";
 // Pages.
 import SignInPage from "@/pages/authentication/signIn/SignInPage";
 // import HomePage from "@/pages/home/HomePage";
+import CustomerListPage from "@/pages/customer/customerList/CustomerListPage";
 import TestingPage from "@/pages/TestingPage";
 import { AuthenticationError } from "@/api";
 
@@ -59,7 +60,8 @@ const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                Component: TestingPage,
+                Component: CustomerListPage,
+                loader: () => import("@/pages/customer/customerList/CustomerListPage").then(m => m.loadDataAsync()),
                 handle: {
                   breadcrumbTitle: "Danh sách",
                   pageTitle: "Danh sách khách hàng"

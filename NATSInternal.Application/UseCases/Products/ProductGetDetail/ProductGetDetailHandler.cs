@@ -1,18 +1,22 @@
 using MediatR;
-using NATSInternal.Application.Services;
+using NATSInternal.Application.Authorization;
+using NATSInternal.Application.Exceptions;
+using NATSInternal.Domain.Features.Products;
 
 namespace NATSInternal.Application.UseCases.Products;
 
 internal class ProductGetDetailHandler : IRequestHandler<ProductGetDetailRequestDto, ProductGetDetailResponseDto>
 {
     #region Fields
-    private readonly IProductService _service;
+    private readonly IProductRepository _repository;
+    private readonly IAuthorizationInternalService _authorizationService;
     #endregion
     
     #region Constructors
-    public ProductGetDetailHandler(IProductService service)
+    public ProductGetDetailHandler(IProductRepository repository, IAuthorizationInternalService authorizationService)
     {
-        _service = service;
+        _repository = repository;
+        _authorizationService = authorizationService;
     }
     #endregion
     
@@ -21,7 +25,11 @@ internal class ProductGetDetailHandler : IRequestHandler<ProductGetDetailRequest
         ProductGetDetailRequestDto requestDto,
         CancellationToken cancellationToken = default)
     {
-        return await _service.GetProductDetailAsync(requestDto, cancellationToken);
+        Product product = await _repository
+            .GetProductByIdIncludingBrandWithCountryAndCategoryAsync(requestDto.Id, cancellationToken)
+            ?? throw new NotFoundException();
+        
+        return new(product, _authorizationService.GetProductExistingAuthorization(product));
     }
     #endregion
 }

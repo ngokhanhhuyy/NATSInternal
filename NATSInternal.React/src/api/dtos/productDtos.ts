@@ -30,8 +30,8 @@ declare global {
     isDiscontinued: boolean;
     createdDateTime: string;
     lastUpdatedDateTime: string | null;
-    createdUser: UserBasicResponseDto;
-    lastUpdatedUser: UserBasicResponseDto | null;
+    createdUserId: string;
+    lastUpdatedUserId: string | null;
     category: ProductCategoryBasicResponseDto | null;
     brand: BrandBasicResponseDto | null;
     photos: PhotoBasicResponseDto[];

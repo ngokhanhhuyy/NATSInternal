@@ -2,12 +2,11 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NATSInternal.Application.Localization;
-using NATSInternal.Application.UseCases.Products;
-using NATSInternal.Application.UseCases.Users;
 using System.Reflection;
 using IAuthorizationService = NATSInternal.Application.Authorization.IAuthorizationService;
-using UserFieldToSort = NATSInternal.Application.UseCases.Users.UserGetListRequestDto.FieldToSort;
+using CustomerFieldToSort = NATSInternal.Application.UseCases.Customers.CustomerGetListRequestDto.FieldToSort;
 using ProductFieldToSort = NATSInternal.Application.UseCases.Products.ProductGetListRequestDto.FieldToSort;
+using UserFieldToSort = NATSInternal.Application.UseCases.Users.UserGetListRequestDto.FieldToSort;
 
 namespace NATSInternal.Api.Controllers;
 
@@ -45,14 +44,16 @@ public class MetadataController : ControllerBase
         return Ok(new
         {
             DisplayNameList = _displayNamesData,
-            FieldToSortOptionsList = new
+            ListOptionsList = new
             {
-                User = GetFieldToSortOptions<UserFieldToSort>(UserFieldToSort.CreatedDateTime),
-                Product = GetFieldToSortOptions<ProductFieldToSort>(ProductFieldToSort.CreatedDateTime)
+                User = GetOptions<UserFieldToSort>(UserFieldToSort.CreatedDateTime, true, 15),
+                Customer = GetOptions<CustomerFieldToSort>(CustomerFieldToSort.FirstName, true, 15),
+                Product = GetOptions<ProductFieldToSort>(ProductFieldToSort.CreatedDateTime, true, 15)
             },
             CreatingAuthorizationList = new
             {
                 CanCreateUser = _authorizationService.CanCreateUser(),
+                CanCreateCustomer = _authorizationService.CanCreateCustomer(),
                 CanCreateProduct = _authorizationService.CanCreateProduct(),
                 CanCreateBrand = _authorizationService.CanCreateBrand(),
                 CanCreateProductCategory = _authorizationService.CanCreateProductCategory()
@@ -62,23 +63,29 @@ public class MetadataController : ControllerBase
     #endregion
     
     #region StaticMethods
-    private static FieldToSortOptions GetFieldToSortOptions<TEnum>(TEnum? defaultOption = null)
-        where TEnum : struct, Enum
+    private static ListOptions<TOptionEnum> GetOptions<TOptionEnum>(
+        TOptionEnum? defaultSortByFieldName = null,
+        bool? defaultSortByAscending = null,
+        int? defaultResultsPerPage = null) where TOptionEnum : struct, Enum
     {
         return new()
         {
-            Options = Enum.GetNames<TEnum>().ToList(),
-            DefaultOption = defaultOption?.ToString()
+            SortByFieldNameOptions = Enum.GetValues<TOptionEnum>().ToList(),
+            DefaultSortByFieldName = defaultSortByFieldName,
+            DefaultSortByAscending = defaultSortByAscending,
+            DefaultResultsPerPage = defaultResultsPerPage
         };
     }
     #endregion
     
     #region Classes
-    private class FieldToSortOptions
+    private class ListOptions<TOptionEnum> where TOptionEnum : struct, Enum
     {
         #region Properties
-        public required List<string> Options { [UsedImplicitly] get; init; }
-        public required string? DefaultOption { [UsedImplicitly] get; init; }
+        public required List<TOptionEnum> SortByFieldNameOptions { [UsedImplicitly] get; init; }
+        public required TOptionEnum? DefaultSortByFieldName { [UsedImplicitly] get; init; }
+        public required bool? DefaultSortByAscending { [UsedImplicitly] get; init; }
+        public required int? DefaultResultsPerPage { [UsedImplicitly] get; init; }
         #endregion
     }
     #endregion

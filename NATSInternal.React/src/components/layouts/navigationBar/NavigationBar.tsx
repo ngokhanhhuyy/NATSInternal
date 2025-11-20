@@ -85,8 +85,12 @@ export default function NavigationBar(): React.ReactNode {
   }, [navigationBarStore.isExpanded]);
 
   useEffect(() => {
-    setActiveItemName(getNavigationBarItemNameFromRoutePath(location.pathname));
-  }, [location]);
+    for (const item of navigationBarItems) {
+      if (location.pathname.startsWith(item.routePath)) {
+        setActiveItemName(item.name);
+      }
+    }
+  }, [location.pathname]);
 
   // Template.
   return (
@@ -213,19 +217,3 @@ const navigationBarItems: NavigationBarItemData[] = [
     }
   },
 ];
-
-function getNavigationBarItemNameFromRoutePath(routePath: string): string | null {
-  if (routePath === routeHelper.getHomeRoutePath()) {
-    return "home";
-  }
-
-  const itemNames = navigationBarItems
-    .filter(pair => pair.routePath && routePath.includes(pair.routePath))
-    .map(pair => pair.name);
-
-  if (itemNames.length === 0) {
-    return null;
-  }
-
-  return itemNames[0];
-}

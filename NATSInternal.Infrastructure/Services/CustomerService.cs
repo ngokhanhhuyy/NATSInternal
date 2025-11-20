@@ -80,7 +80,6 @@ internal class CustomerService : ICustomerService
         List<CustomerBasicResponseDto> productResponseDtos = productPage.Items
             .Select(customer => new CustomerBasicResponseDto(
                 customer,
-                0L,
                 _authorizationInternalService.GetCustomerExistingAuthorization(customer)))
             .ToList();
 

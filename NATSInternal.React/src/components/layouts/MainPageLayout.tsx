@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, Fragment } from "react";
-import { useMatches, Outlet, Link } from "react-router";
+import { useMatches, Outlet, Link, useNavigation } from "react-router";
 import { useNavigate } from "react-router";
 import { useAuthenticationStore } from "@/stores";
 import { useRouteHelper, useTsxHelper } from "@/helpers";
@@ -14,10 +14,14 @@ type BreadcrumbItem = { pageTitle: string | null; breadcrumbTitle: string; route
 // Components.
 export default function MainPageLayout(): React.ReactNode {
   // Dependencies.
+  const navigation = useNavigation();
   const navigate = useNavigate();
   const isAuthenticated = useAuthenticationStore(store => store.isAuthenticated);
   const { getSignInRoutePath } = useRouteHelper();
-  const { joinClassName } = useTsxHelper();
+  const { joinClassName, compute } = useTsxHelper();
+
+  // Computed.
+  const isNavigating = compute<boolean>(() => Boolean(navigation.location));
 
   // Effect.
   useEffect(() => {
@@ -36,6 +40,7 @@ export default function MainPageLayout(): React.ReactNode {
       <div className={joinClassName(
         "bg-white dark:bg-white/10 justify-self flex-1 border border-primary/10",
         "flex flex-col justify-start items-stretch rounded-2xl shadow-xl m-3",
+        isNavigating && "opacity-50 pointer-events-none"
       )}>
         {/* The bar on top the current page, containing breadcrumb */}
         <div id="breadcrumb" className="border-b border-primary/10 p-3 gap-3 flex">

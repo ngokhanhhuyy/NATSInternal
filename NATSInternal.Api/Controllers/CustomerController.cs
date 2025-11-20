@@ -5,7 +5,7 @@ using NATSInternal.Application.UseCases.Customers;
 
 namespace NATSInternal.Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/customers")]
 [ApiController]
 [Authorize]
 public class CustomerController : ControllerBase

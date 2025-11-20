@@ -37,12 +37,12 @@ export default function RootLayout(props: RootLayoutProps): React.ReactNode {
     <div
       id="root-layout"
       className={joinClassName(
-        "w-screen h-auto min-h-screen flex justify-stretch items-stretch",
+        "w-screen h-auto min-h-screen grid-cols-[auto_1fr] justify-stretch items-stretch",
         shouldRenderNavigationBar && "pt-(--topbar-height)"
       )}
     >
       {shouldRenderNavigationBar && <TopBar />}
-      <div className="max-w-384 flex justify-stretch items-stretch mx-auto">
+      <div className="max-w-384 flex justify-stretch items-stretch mx-auto transition-opacity">
         {shouldRenderNavigationBar && <NavigationBar />}
         {props.children}
       </div>

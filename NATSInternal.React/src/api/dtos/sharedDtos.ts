@@ -12,6 +12,17 @@ declare global {
     displayName: string;
     powerLevel: number;
   };
+
+  type CustomerBasicResponseDto = {
+    id: string;
+    fullName: string;
+    nickName: string | null;
+    gender: Gender;
+    birthday: string | null;
+    phoneNumber: string | null;
+    authorization: CustomerExistingAuthorizationResponseDto | null;
+    isDeleted: boolean;
+  };
   
   type ProductBasicResponseDto = {
     id: string;

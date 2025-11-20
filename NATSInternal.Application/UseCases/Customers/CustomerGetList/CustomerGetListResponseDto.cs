@@ -5,9 +5,9 @@ namespace NATSInternal.Application.UseCases.Customers;
 public class CustomerGetListResponseDto : IPageableListResponseDto<CustomerBasicResponseDto>
 {
     #region Constructors
-    public CustomerGetListResponseDto(ICollection<CustomerBasicResponseDto> productResponseDtos, int pageCount)
+    public CustomerGetListResponseDto(ICollection<CustomerBasicResponseDto> responseDtos, int pageCount)
     {
-        Items = productResponseDtos;
+        Items = responseDtos;
         PageCount = pageCount;
     }
     #endregion
