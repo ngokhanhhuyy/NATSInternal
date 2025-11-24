@@ -13,8 +13,20 @@ declare global {
   
   type ProductUpdateRequestDto = AbstractProductUpsertRequestDto & { id: string; };
   
+  type ProductGetListProductResponseDto = {
+    id: string;
+    name: string;
+    unit: string;
+    defaultAmountBeforeVatPerUnit: number;
+    defaultVatPercentagePerUnit: number;
+    stockingQuantity: number;
+    isResupplyNeeded: boolean;
+    thumbnailUrl: string | null;
+    authorization: ProductExistingAuthorizationResponseDto;
+  };
+
   type ProductGetListResponseDto = {
-    items: ProductBasicResponseDto[];
+    items: ProductGetListProductResponseDto[];
     pageCount: number;
   };
 

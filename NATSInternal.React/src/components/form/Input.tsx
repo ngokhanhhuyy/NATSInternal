@@ -3,7 +3,7 @@ import { useTsxHelper } from "@/helpers";
 import { FormFieldContext } from "./FormField";
 
 // Props.
-type InputProps = { render: (className?: string, displayName?: string) => React.ReactNode };
+type InputProps = { render: (className?: string, path?: string, displayName?: string) => React.ReactNode };
 
 // Component.
 export default function Input(props: InputProps) {
@@ -14,7 +14,7 @@ export default function Input(props: InputProps) {
   // Computed.
   const className = compute(() => {
     const staticClassName = joinClassName(
-      "border rounded-lg px-2 py-1 shadow-xs focus:shadow-sm",
+      "border rounded-lg px-2 py-1 shadow-xs focus:shadow-sm min-h-[30px]",
       "transition duration-200 [transition-property:outline-color] [transition-duration:.1s]",
       "outline-3 outline-transparent"
     );
@@ -45,5 +45,5 @@ export default function Input(props: InputProps) {
     return joinClassName(computedClassName, staticClassName);
   });
 
-  return props.render(className, context?.displayName);
+  return props.render(className, context?.path, context?.displayName);
 }

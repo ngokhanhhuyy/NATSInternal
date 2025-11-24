@@ -111,7 +111,7 @@ export default function NavigationBar(): React.ReactNode {
         className={joinClassName(
           "bg-white dark:bg-neutral-900 md:bg-transparent dark:md:bg-transparent",
           "w-60 md:w-full lg:w-auto h-full md:h-fit p-3 md:px-0 md:pt-6",
-          "border-l md:border-none border-black/15 dark:border-white/15",
+          "border-l md:border-none border-transparent dark:border-white/15",
           "md:translate-x-0 transition-transform md:transition-none duration-200 ease-in-out",
           "relative md:sticky left-full md:left-0 top-0 md:top-(--topbar-height)",
           "flex flex-col justify-start items-stretch gap-4",

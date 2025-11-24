@@ -13,6 +13,7 @@
     "preview:rsbuild": "rsbuild preview"
   },
   "dependencies": {
+    "@custom-react-hooks/use-throttle": "^1.5.1",
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/vite": "^4.1.16",
     "bootstrap-icons": "^1.13.1",

@@ -10,6 +10,7 @@ internal class CustomerGetDetailHandler : IRequestHandler<CustomerGetDetailReque
 {
     #region Fields
     private readonly ICustomerRepository _customerRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IAuthorizationInternalService _authorizationService;
     #endregion
 
@@ -20,6 +21,7 @@ internal class CustomerGetDetailHandler : IRequestHandler<CustomerGetDetailReque
         IAuthorizationInternalService authorizationService)
     {
         _customerRepository = customerRepository;
+        _userRepository = userRepository;
         _authorizationService = authorizationService;
     }
     #endregion
@@ -39,10 +41,20 @@ internal class CustomerGetDetailHandler : IRequestHandler<CustomerGetDetailReque
             throw new NotFoundException();
         }
 
+        User? createdUser = await _userRepository.GetUserByIdAsync(customer.CreatedUserId, cancellationToken);
+        User? lastUpdatedUser = null;
+        if (customer.LastUpdatedUserId.HasValue)
+        {
+            lastUpdatedUser = await _userRepository.GetUserByIdAsync(
+                customer.LastUpdatedUserId.Value,
+                cancellationToken
+            );
+        }
+
         CustomerExistingAuthorizationResponseDto authorizationResponseDto = _authorizationService
             .GetCustomerExistingAuthorization(customer);
 
-        return new(customer, authorizationResponseDto);
+        return new(customer, createdUser, lastUpdatedUser, 0L, authorizationResponseDto);
     }
     #endregion
 }

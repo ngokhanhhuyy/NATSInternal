@@ -12,30 +12,14 @@ public class UserBasicResponseDto
         {
             Id = user.Id;
             UserName = user.UserName;
-            Roles = user.Roles.Select(r => new RoleBasicResponseDto(r)).ToList();
+            IsDeleted = false;
         }
-        else
-        {
-            Id = Guid.Empty;
-            UserName = string.Empty;
-            Roles = new List<RoleBasicResponseDto>();
-            IsDeleted = true;
-        }
-    }
-    
-    internal UserBasicResponseDto(
-        User user,
-        UserExistingAuthorizationResponseDto authorizationResponseDto) : this(user)
-    {
-        Authorization = authorizationResponseDto;
     }
     #endregion
     
     #region Properties
-    public Guid Id { get; }
-    public string UserName { get; }
-    public ICollection<RoleBasicResponseDto> Roles { get; }
-    public UserExistingAuthorizationResponseDto? Authorization { get; }
-    public bool IsDeleted { get; }
+    public Guid Id { get; } = Guid.Empty;
+    public string UserName { get; } = string.Empty;
+    public bool IsDeleted { get; } = true;
     #endregion
 }

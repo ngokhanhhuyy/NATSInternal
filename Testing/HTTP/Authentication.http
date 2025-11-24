@@ -41,7 +41,7 @@ Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
-# @name ProductList
+# @name ProductGetList
 // @no-log
 GET {{host}}/products
 Content-Type: application/json
@@ -129,6 +129,13 @@ Cookie: {{accessCookie}}
     "customersId": 2,
     "updatedReason": "Removed note"
 }
+
+###
+# @name PhotoGetMultipleByProductIds
+# @no-log
+GET {{host}}/photos
+Content-Type: application/json
+Cookie: {{accessCookie}}
 
 ###
 # @name Stats-MonthlyDetail

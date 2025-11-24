@@ -7,6 +7,7 @@ using NATSInternal.Application.Services;
 using NATSInternal.Application.Time;
 using NATSInternal.Application.UnitOfWork;
 using NATSInternal.Domain.Features.Customers;
+using NATSInternal.Domain.Features.Photos;
 using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Stocks;
 using NATSInternal.Domain.Features.Users;
@@ -47,6 +48,7 @@ public static class InfrastructureConfiguration
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IStockRepository, StockRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IPhotoRepository, PhotoRepository>();
 
         // Services.
         services.AddScoped<IListFetchingService, ListFetchingService>();

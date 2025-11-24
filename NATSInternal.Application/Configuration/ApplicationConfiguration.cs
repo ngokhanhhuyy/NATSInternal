@@ -4,8 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using NATSInternal.Application.Authorization;
 using NATSInternal.Application.UseCases.Authentication;
 using NATSInternal.Application.UseCases.Customers;
+using NATSInternal.Application.UseCases.Photos;
 using NATSInternal.Application.UseCases.Products;
 using NATSInternal.Application.UseCases.Products.ProductGetList;
+using NATSInternal.Application.UseCases.Shared;
 using NATSInternal.Application.UseCases.Users;
 using NATSInternal.Application.Validation;
 
@@ -65,6 +67,14 @@ public static class ApplicationConfiguration
         services.AddTransient<
             IRequestHandler<ProductGetDetailRequestDto, ProductGetDetailResponseDto>,
             ProductGetDetailHandler>();
+
+        // Photo UseCases.
+        services.AddTransient<
+            IRequestHandler<PhotoGetSingleRequestDto, PhotoBasicResponseDto>,
+            PhotoGetSingleHandler>();
+        services.AddTransient<
+            IRequestHandler<PhotoGetMultipleByProductIdsRequestDto, ICollection<PhotoBasicResponseDto>>,
+            PhotoGetMultipleByProductIdsHandler>();
 
         // Services.
         services.AddScoped<IAuthorizationService, AuthorizationInternalService>();

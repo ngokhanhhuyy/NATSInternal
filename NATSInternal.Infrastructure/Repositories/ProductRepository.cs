@@ -65,7 +65,7 @@ internal class ProductRepository : IProductRepository
         _context.Brands.Remove(brand);
     }
 
-    public async Task<ProductCategory?> GetCategoryByNameAsync(
+    public async Task<ProductCategory?> GetCategoryByIdAsync(
         string name,
         CancellationToken cancellationToken = default)
     {

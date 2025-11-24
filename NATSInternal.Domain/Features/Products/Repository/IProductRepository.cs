@@ -21,7 +21,7 @@ internal interface IProductRepository
 
     void RemoveBrand(Brand brand);
 
-    Task<ProductCategory?> GetCategoryByNameAsync(string name, CancellationToken cancellationToken = default);
+    Task<ProductCategory?> GetCategoryByIdAsync(string name, CancellationToken cancellationToken = default);
 
     void AddCategory(ProductCategory category);
 

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using NATSInternal.Application.Authorization;
 using NATSInternal.Application.Services;
 using NATSInternal.Application.UseCases.Products;
-using NATSInternal.Application.UseCases.Shared;
+using NATSInternal.Domain.Features.Photos;
 using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Stocks;
 using NATSInternal.Infrastructure.DbContext;
@@ -37,7 +37,8 @@ internal class ProductService : IProductService
     {
         IQueryable<Product> query = _context.Products
             .Include(p => p.Brand)
-            .Include(p => p.Category);
+            .Include(p => p.Category)
+            .Where(p => p.DeletedDateTime == null);
 
         if (requestDto.BrandId.HasValue)
         {
@@ -59,35 +60,65 @@ internal class ProductService : IProductService
             );
         }
 
-        bool sortByAscendingOrDefault = requestDto.SortByAscending ?? true;
+        var projectedQuery = query.Select(product => new ProductWithStockAndThumbnail
+        {
+            Product = product,
+            Stock = _context.Stocks.First(stock => stock.ProductId == product.Id),
+            Thumbnail = _context.Photos.FirstOrDefault(photo => photo.ProductId == product.Id && photo.IsThumbnail)
+        });
+
         switch (requestDto.SortByFieldName)
         {
-            case nameof(Product.CreatedDateTime) or null:
-                query = query.ApplySorting(p => p.CreatedDateTime, sortByAscendingOrDefault);
+            case nameof(ProductGetListRequestDto.FieldToSort.Name):
+                projectedQuery = projectedQuery.ApplySorting(pst => pst.Product.Name, requestDto.SortByAscending);
                 break;
-            case nameof(Stock.StockingQuantity):
-                query = query.ApplySorting(
-                    p => EF.Property<int>(p, nameof(Stock.StockingQuantity)),
-                    sortByAscendingOrDefault);
+            case nameof(ProductGetListRequestDto.FieldToSort.DefaultAmountBeforeVatPerUnit):
+                projectedQuery = projectedQuery.ApplySorting(
+                    pst => pst.Product.DefaultAmountBeforeVatPerUnit,
+                    requestDto.SortByAscending
+                );
+                break;
+            case nameof(ProductGetListRequestDto.FieldToSort.CreatedDateTime):
+                projectedQuery = projectedQuery.ApplySorting(
+                    pst => pst.Product.CreatedDateTime,
+                    requestDto.SortByAscending
+                );
+                break;
+            case nameof(ProductGetListRequestDto.FieldToSort.StockingQuantity):
+                projectedQuery = projectedQuery.ApplySorting(
+                    pst => pst.Stock != null ? pst.Stock.StockingQuantity : 0,
+                    requestDto.SortByAscending
+                );
                 break;
             default:
                 throw new NotImplementedException();
         }
 
-        var productPage = await _listFetchingService.GetPagedListAsync(
-            query,
+        Page<ProductWithStockAndThumbnail> queryResult = await _listFetchingService.GetPagedListAsync(
+            projectedQuery,
             requestDto.Page,
             requestDto.ResultsPerPage,
             cancellationToken
         );
 
-        List<ProductBasicResponseDto> productResponseDtos = productPage.Items
-            .Select(product => new ProductBasicResponseDto(
-                product,
-                _authorizationInternalService.GetProductExistingAuthorization(product)))
+        List<ProductGetListProductResponseDto> productResponseDtos = queryResult.Items
+            .Select(pst => new ProductGetListProductResponseDto(
+                pst.Product,
+                pst.Stock,
+                pst.Thumbnail,
+                _authorizationInternalService.GetProductExistingAuthorization(pst.Product)))
             .ToList();
 
-        return new(productResponseDtos, productPage.PageCount);
+        return new(productResponseDtos, queryResult.PageCount);
     }
+    #endregion
+}
+
+file class ProductWithStockAndThumbnail
+{
+    #region Properties
+    public required Product Product { get; init; }
+    public required Stock? Stock { get; init; }
+    public required Photo? Thumbnail { get; init; }
     #endregion
 }

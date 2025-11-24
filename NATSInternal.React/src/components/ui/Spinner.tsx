@@ -1,3 +1,4 @@
+import React from "react";
 import { useTsxHelper } from "@/helpers";
 import styles from "./Spinner.module.css";
 

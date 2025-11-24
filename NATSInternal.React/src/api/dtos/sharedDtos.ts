@@ -2,8 +2,7 @@ declare global {
   type UserBasicResponseDto = {
     id: string;
     userName: string;
-    roles: RoleBasicResponseDto[];
-    authorization: UserExistingAuthorizationResponseDto;
+    isDeleted: boolean;
   };
 
   type RoleBasicResponseDto = {
@@ -17,10 +16,6 @@ declare global {
     id: string;
     fullName: string;
     nickName: string | null;
-    gender: Gender;
-    birthday: string | null;
-    phoneNumber: string | null;
-    authorization: CustomerExistingAuthorizationResponseDto | null;
     isDeleted: boolean;
   };
   
@@ -28,12 +23,7 @@ declare global {
     id: string;
     name: string;
     unit: string;
-    defaultAmountBeforeVatPerUnit: number;
-    defaultVatPercentagePerUnit: number;
-    stockingQuantity: number;
-    isResupplyNeeded: boolean;
-    thumbnailUrl: string | null;
-    authorization: ProductExistingAuthorizationResponseDto;
+    isDeleted: boolean;
   };
   
   type BrandBasicResponseDto = {

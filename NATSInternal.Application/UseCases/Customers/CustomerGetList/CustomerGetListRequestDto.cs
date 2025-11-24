@@ -8,11 +8,11 @@ namespace NATSInternal.Application.UseCases.Customers;
 public class CustomerGetListRequestDto : ISortableAndPageableListRequestDto, IRequest<CustomerGetListResponseDto>
 {
     #region Properties
-    public bool? SortByAscending { get; set; }
-    public string? SortByFieldName { get; set; }
-    public int? Page { get; set; }
-    public int? ResultsPerPage { get; set; }
-    public string? SearchContent { get; set; }
+    public bool SortByAscending { get; set; } = true;
+    public string SortByFieldName { get; set; } = nameof(FieldToSort.LastName);
+    public int Page { get; set; } = 1;
+    public int ResultsPerPage { get; set; } = 15;
+    public string? SearchContent { get; set; } = string.Empty;
     #endregion
 
     #region Methods

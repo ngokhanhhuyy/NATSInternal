@@ -10,6 +10,7 @@ export type FormFieldContextPayload = {
   isValidated: boolean;
   hasError: boolean;
   showValidState: boolean;
+  path?: string;
   displayName?: string
 };
 
@@ -68,6 +69,7 @@ export default function FormField(props: FormFieldProps) {
       isValidated: !!formContext?.errorCollection.isValidated,
       hasError: !!errorMessage,
       showValidState: formContext?.showValidState ?? true,
+      path: props.path,
       displayName: displayName ?? undefined
     };
   }, [formContext?.errorCollection.details, displayName]);

@@ -54,7 +54,7 @@ internal class ProductCreateHandler : IRequestHandler<ProductCreateRequestDto, G
         ProductCategory? category = null;
         if (requestDto.CategoryName is not null)
         {
-            category = await _repository.GetCategoryByNameAsync(requestDto.CategoryName, cancellationToken);
+            category = await _repository.GetCategoryByIdAsync(requestDto.CategoryName, cancellationToken);
             if (category is null)
             {
                 category = new(requestDto.CategoryName, _clock.Now);

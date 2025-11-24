@@ -12,7 +12,12 @@ export function getMetadata(): MetadataResponseDto {
 }
 
 export function getDisplayName(key: string): string | null {
-  return getMetadata().displayNameList[key];
+  let camelCaseKey: string = key;
+  if (camelCaseKey[0] !== camelCaseKey[0].toLowerCase()) {
+    camelCaseKey = camelCaseKey[0].toLowerCase() + camelCaseKey.substring(1);
+  }
+
+  return getMetadata().displayNameList[camelCaseKey];
 }
 
 export function getFieldToSortOptions(): ListOptionsListResponseDto {

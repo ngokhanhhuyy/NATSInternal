@@ -31,13 +31,13 @@ Cookie: {{accessCookie}}
 @orderByField = orderByField=DebtRemainingAmount
 @page = page=100
 @resultsPerPage = resultsPerPage=15
-@hasRemainingDebtAmountOnly = hasRemainingDebtAmountOnly=True
+@hasDebtRemainingAmountOnly = hasDebtRemainingAmountOnly=True
 GET {{host}}/customer
     ?orderByAsceding=False
     &orderByField=DebtRemainingAmount
     &page=100
     &resultsPerPage=15
-    &hasRemainingDebtAmountOnly=True
+    &hasDebtRemainingAmountOnly=True
 Content-Type: application/json
 Cookie: {{accessCookie}}
 

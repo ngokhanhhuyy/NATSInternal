@@ -8,10 +8,10 @@ namespace NATSInternal.Application.UseCases.Products;
 public class ProductGetListRequestDto : ISortableAndPageableListRequestDto, IRequest<ProductGetListResponseDto>
 {
     #region Properties
-    public bool? SortByAscending { get; set; }
-    public string? SortByFieldName { get; set; }
-    public int? Page { get; set; }
-    public int? ResultsPerPage { get; set; }
+    public bool SortByAscending { get; set; } = true;
+    public string SortByFieldName { get; set; } = nameof(FieldToSort.Name);
+    public int Page { get; set; } = 1;
+    public int ResultsPerPage { get; set; } = 15;
     public Guid? BrandId { get; set; }
     public Guid? CategoryId { get; set; }
     public string? SearchContent { get; set; }
@@ -29,9 +29,10 @@ public class ProductGetListRequestDto : ISortableAndPageableListRequestDto, IReq
     #region Enums
     public enum FieldToSort
     {
-        UserName,
-        RoleMaxPowerLevel,
-        CreatedDateTime
+        Name,
+        DefaultAmountBeforeVatPerUnit,
+        CreatedDateTime,
+        StockingQuantity
     }
     #endregion
 }

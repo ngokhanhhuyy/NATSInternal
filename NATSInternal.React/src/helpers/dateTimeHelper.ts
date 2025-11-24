@@ -418,24 +418,26 @@ function getISOStringFromDate(date: [number, number, number]): string {
   return `${year}/${monthAsString}/${dateOfMonthAsString}`;
 }
 
-export function useDateTimeUtility() {
-  return {
-    getDateTimeISOString,
-    getDateISOString,
-    getTimeISOString,
-    getHTMLDateTimeInputString,
-    getCurrentDateTimeHTMLInputString,
-    getHTMLDateInputString,
-    getCurrentDateHTMLInputString,
-    getHTMLTimeInputString,
-    getCurrentTimeHTMLInputString,
-    getDisplayDateTimeString,
-    getDisplayDateString,
-    getDisplayTimeString,
-    compareDates,
-    compareDateTimes,
-    getDeltaTextRelativeToNow,
-    getDateFromISOString,
-    getISOStringFromDate
-  };
+const dateTimeHelper = {
+  getDateTimeISOString,
+  getDateISOString,
+  getTimeISOString,
+  getHTMLDateTimeInputString,
+  getCurrentDateTimeHTMLInputString,
+  getHTMLDateInputString,
+  getCurrentDateHTMLInputString,
+  getHTMLTimeInputString,
+  getCurrentTimeHTMLInputString,
+  getDisplayDateTimeString,
+  getDisplayDateString,
+  getDisplayTimeString,
+  compareDates,
+  compareDateTimes,
+  getDeltaTextRelativeToNow,
+  getDateFromISOString,
+  getISOStringFromDate
+};
+
+export function useDateTimeHelper() {
+  return dateTimeHelper;
 }

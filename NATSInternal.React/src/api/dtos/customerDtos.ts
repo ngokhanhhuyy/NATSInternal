@@ -10,8 +10,19 @@ declare global {
   }>;
 
   type CustomerGetListResponseDto = {
-    items: CustomerBasicResponseDto[];
+    items: CustomerGetListCustomerResponseDto[];
     pageCount: number;
+  };
+
+  type CustomerGetListCustomerResponseDto = {
+    id: string;
+    fullName: string;
+    nickName: string | null;
+    gender: Gender;
+    birthday: string | null;
+    phoneNumber: string | null;
+    debtRemainingAmount: number;
+    authorization: CustomerExistingAuthorizationResponseDto;
   };
 
   type CustomerGetDetailResponseDto = {
@@ -19,19 +30,22 @@ declare global {
     firstName: string;
     middleName: string | null;
     lastName: string;
+    fullName: string;
     nickName: string;
     gender: Gender;
-    fullName: string;
+    birthday: string | null;
+    phoneNumber: string | null;
     zaloNumber: string | null;
     facebookUrl: string | null;
     email: string | null;
     address: string | null;
     note: string | null;
-    createdUserId: string;
+    createdUser: UserBasicResponseDto;
     createdDateTime: string;
-    lastUpdatedUserId: string | null;
+    lastUpdatedUser: UserBasicResponseDto | null;
     lastUpdatedDateTime: string | null;
-    intrducer: CustomerBasicResponseDto | null;
+    debtRemainingAmount: number;
+    introducer: CustomerBasicResponseDto | null;
     authorization: CustomerExistingAuthorizationResponseDto;
   };
 }

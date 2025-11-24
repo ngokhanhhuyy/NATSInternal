@@ -1,13 +1,18 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useTransition } from "react";
 import { useLoaderData, useNavigate } from "react-router";
 import { useApi } from "@/api";
 import { createCustomerListModel } from "@/models";
+import { getDisplayName } from "@/metadata";
 import { useTsxHelper } from "@/helpers";
 
 // Child components.
 import MainContainer from "@/components/layouts/MainContainer";
-import { Button } from "@/components/ui";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import Row from "./Row";
+import Cells from "./Cells";
+import { Form, FormField, TextInput, SelectInput } from "@/components/form";
+import { Button, MainPaginator } from "@/components/ui";
+import { FunnelIcon as FunnelOutlineIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "@heroicons/react/24/solid";
 
 // Api.
 const api = useApi();
@@ -15,7 +20,6 @@ const api = useApi();
 // Loader
 export async function loadDataAsync(model?: CustomerListModel): Promise<CustomerListModel> {
   if (model) {
-
     const responseDto = await api.customer.getListAsync(model.toRequestDto());
     return model.mapFromResponseDto(responseDto);
   }
@@ -34,7 +38,26 @@ export default function CustomerListPage(): React.ReactNode {
   // States
   const [model, setModel] = useState(() => initialModel);
   const [isInitialRendering, setIsInitialRendering] = useState(() => true);
-  const [isReloading, setIsReloading] = useState(() => false);
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [isReloading, startTransition] = useTransition();
+
+  // Computed.
+  const sortByFieldNameOptions = useMemo(() => {
+    return model.sortByFieldNameOptions.map((fieldName) => ({
+      value: fieldName,
+      displayName: getDisplayName(fieldName) ?? undefined
+    }));
+  }, []);
+
+  // Callbacks.
+  async function reloadAsync(): Promise<void> {
+    startTransition(async () => {
+      const reloadedModel = await loadDataAsync(model);
+      setModel(reloadedModel);
+    });
+
+    await Promise.resolve();
+  }
 
   // Effect.
   useEffect(() => {
@@ -43,70 +66,111 @@ export default function CustomerListPage(): React.ReactNode {
       return;
     }
 
-    setIsReloading(true);
-    const reloadAsync = async () => {
-      const reloadedModel = await loadDataAsync(model);
-      setModel(reloadedModel);
-      setIsReloading(false);
-    };
-
     reloadAsync();
-  }, [model.sortByAscending, model.sortByFieldName, model.page, model.resultsPerPage, model.searchContent]);
+  }, [model.sortByAscending, model.sortByFieldName, model.page, model.resultsPerPage]);
 
   // Template.
   return (
-    <MainContainer className={joinClassName(isReloading && "cursor-wait")}>
-      <div className={joinClassName("flex flex-wrap gap-2 mb-3", isReloading && "pointer-events-none")}>
-        <Paginator
-          page={model.page}
-          pageCount={model.pageCount}
-          onPageClicked={(page) => setModel(m => ({ ...m, page }))}
-        />
-      </div>
+    <MainContainer
+      description="Danh sách các khách hàng đã và đang giao dịch với cửa hàng."
+      className={joinClassName(isReloading && "cursor-wait")}
+    >
+      <div className="w-full flex gap-3 mb-3">
+        <Button onClick={() => navigate(model.createRoute)}>
+          <PlusIcon className="size-4 me-0.5" />
+          <span>Tạo mới</span>
+        </Button>
 
-      <div className="grid grid-cols-2 gap-3">
-        {model.items.map((item, index) => (
-          <div
-            className={joinClassName(
-              "grid grid-cols-[1fr_auto] gap-2 items-center",
-              "border-black/10 dark:border-white/10 rounded-md p-3",
-              "col-span-2 xl:col-span-1 overflow-hidden",
-              index !== model.items.length - 1 && "border-b"
+        <Button
+          variant={isFilterVisible ? "primary" : undefined}
+          onClick={() => setIsFilterVisible(isVisible => !isVisible)}
+        >
+          <FunnelOutlineIcon className="size-4 me-1" />
+          <span>Bộ lọc</span>
+        </Button>
+      </div>
+      
+      <Form
+        className={joinClassName(
+          "w-full grid grid-cols-2 md:grid-cols-12",
+          "justify-stretch items-stretch gap-3 mb-5 transition-all duration-200",
+          !isFilterVisible && "hidden"
+        )}
+        submitAction={reloadAsync}
+        showSucceededAnnouncement={false}
+      >
+        <div className="grid grid-cols-[1fr_auto] col-span-2 md:col-span-6 items-end">
+          <FormField path="searchContent">
+            <TextInput
+              className="rounded-r-none z-2 not-[focus]:border-r-transparent"
+              placeholder="Tìm kiếm"
+              value={model.searchContent}
+              onValueChanged={(searchContent) => setModel(m => ({ ...m, searchContent }))}
+            />
+          </FormField>
+
+          <Button type="submit" className="rounded-l-none">
+            <MagnifyingGlassIcon className="size-4 me-1" />
+          </Button>
+        </div>
+
+        <FormField className="md:col-span-3" path="sortByFieldName">
+          <SelectInput
+            options={sortByFieldNameOptions}
+            value={model.sortByFieldName}
+            onValueChanged={(sortByFieldName) => setModel(m => ({ ...m, sortByFieldName }))}
+          />
+        </FormField>
+
+        <FormField className="md:col-span-3" path="sortByAscending">
+          <Button className="justify-start" onClick={() => setModel(m => ({ ...m, sortByAscending: !m.sortByAscending }))}>
+            {model.sortByAscending ? "Từ nhỏ đến lớn" : "Từ lớn đến nhỏ"}
+          </Button>
+        </FormField>
+      </Form>
+
+      <div className={joinClassName(
+        "border border-black/10 dark:border-white/10 overscroll-x-none h-fit",
+        "overflow-x-auto w-full max-w-full rounded-lg transition-opacity mb-3",
+        isReloading && "opacity-50 pointer-events-none"
+      )}>
+        <table className="border-collapse min-w-max w-full">
+          <thead className="whitespace-nowrap">
+            <tr className={joinClassName(
+              "bg-black/5 dark:bg-white/5 border-b border-black/10 dark:border-white/10",
+              "text-black/50 dark:text-white/50 font-bold"
+            )}>
+              <td className="px-3 py-2">Họ và tên</td>
+              <td className="px-3 py-2">Biệt danh</td>
+              <td className="px-3 py-2">Giới tính</td>
+              <td className="px-3 py-2">Số điện thoại</td>
+              <td className="px-3 py-2">Ngày sinh</td>
+              <td className="px-3 py-2">Nợ còn lại</td>
+              <td/>
+            </tr>
+          </thead>
+          <tbody>
+            {model.items.length ? model.items.map((customer, index) => (
+              <Row key={index}>
+                <Cells model={customer} />
+              </Row>
+            )) : (
+              <Row>
+                <td className="px-3 py-2 text-center" colSpan={6}>
+                  Không có kết quả
+                </td>
+              </Row> 
             )}
-            key={index}
-          >
-            <pre className="overflow-hidden">
-              {JSON.stringify(item, null, 2)}
-            </pre>
-
-            <Button className="aspect-square" onClick={() => navigate(item.detailRoute)}>
-              <InformationCircleIcon className="size-4" />
-            </Button>
-          </div>
-        ))}
+          </tbody>
+        </table>
       </div>
+
+      <MainPaginator
+        page={model.page}
+        pageCount={model.pageCount}
+        isReloading={isReloading}
+        onPageChanged={(page) => setModel(m => ({ ...m, page }))}
+      />
     </MainContainer>
   );
-}
-
-type PaginatorProps = {
-  page: number;
-  pageCount: number;
-  onPageClicked: (page: number) => any;
-};
-
-function Paginator(props: PaginatorProps): React.ReactNode {
-  // Computed.
-  const pageArray = useMemo(() => Array.from({ length: props.pageCount }, (_, index) => index + 1), [props.pageCount]);
-
-  // Template.
-  return pageArray.map((pageNumber) => (
-    <Button
-      className="px-3"
-      variant={pageNumber === props.page ? "primary" : undefined}
-      onClick={() => props.onPageClicked(pageNumber)}
-      key={pageNumber}>
-      {pageNumber}
-    </Button>
-  ));
 }

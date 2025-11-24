@@ -11,7 +11,7 @@ type ButtonProps = {
   showSpinner?: boolean;
 } & React.ComponentPropsWithoutRef<"button">;
 
-export function Button(props: ButtonProps) {
+export default function Button(props: ButtonProps) {
   // Props.
   const { type = "button", variant = "secondary", outline = false, showSpinner, ...domProps } = props;
 
@@ -21,7 +21,7 @@ export function Button(props: ButtonProps) {
   // Computed.
   const className = compute(() => {
     const sharedClassName = joinClassName(
-      "flex justify-center items-center px-2 py-1 border",
+      "flex justify-center items-center px-2 py-1 border min-h-[30px]",
       "rounded-lg shadow-xs cursor-pointer transition-all duration-150");
       
     if (variant === "secondary") {

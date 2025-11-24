@@ -1,26 +1,25 @@
-import { useDateTimeUtility, useRouteHelper } from "@/helpers";
+import { useAvatarHelper, useRouteHelper } from "@/helpers";
 
 declare global {
   type CustomerBasicModel = Readonly<{
     id: string;
     fullName: string;
     nickName: string | null;
-    gender: Gender;
-    birthday: string | null;
-    phoneNumber: string | null;
     isDeleted: boolean;
-    authorization: CustomerExistingAuthorizationResponseDto | null;
+    get avatarUrl(): string;
     get detailRoute(): string;
   }>;
 }
 
-const dateTimeUtility = useDateTimeUtility();
+const avatarHelper = useAvatarHelper();
 const { getCustomerDetailRoutePath } = useRouteHelper();
 
 export function createCustomerBasicModel(responseDto: CustomerBasicResponseDto): CustomerBasicModel {
   return {
     ...responseDto,
-    birthday: responseDto.birthday && dateTimeUtility.getDisplayDateString(responseDto.birthday),
+    get avatarUrl(): string {
+      return avatarHelper.getDefaultAvatarUrlByFullName(this.fullName);
+    },
     get detailRoute(): string {
       return getCustomerDetailRoutePath(this.id);
     }

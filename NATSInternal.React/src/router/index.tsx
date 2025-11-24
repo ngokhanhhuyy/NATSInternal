@@ -1,4 +1,4 @@
-import React from "react";
+import React, { lazy } from "react";
 import { createBrowserRouter, RouterProvider, useRouteError, Navigate } from "react-router";
 import { useRouteHelper } from "@/helpers";
 
@@ -8,7 +8,8 @@ import MainPageLayout from "@/components/layouts/MainPageLayout";
 // Pages.
 import SignInPage from "@/pages/authentication/signIn/SignInPage";
 // import HomePage from "@/pages/home/HomePage";
-import CustomerListPage from "@/pages/customer/customerList/CustomerListPage";
+const CustomerListPage = lazy(() => import("@/pages/customer/customerList/CustomerListPage"));
+const CustomerDetailPage = lazy(() => import("@/pages/customer/customerDetail/CustomerDetailPage"));
 import TestingPage from "@/pages/TestingPage";
 import { AuthenticationError } from "@/api";
 
@@ -81,7 +82,11 @@ const router = createBrowserRouter([
                 children: [
                   {
                     index: true,
-                    Component: TestingPage,
+                    Component: CustomerDetailPage,
+                    loader: async ({ params }) => {
+                      const module = await import("@/pages/customer/customerDetail/CustomerDetailPage");
+                      return module.loadDataAsync(params.id as string);
+                    },
                     handle: {
                       breadcrumbTitle: "Chi tiết",
                       pageTitle: "Chi tiết khách hàng"

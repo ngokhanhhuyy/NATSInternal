@@ -17,18 +17,17 @@ export default function TextInput(props: TextInputProps) {
   const { joinClassName } = useTsxHelper();
 
   // Template.
-  function renderInput(className?: string, displayName?: string) {
+  function renderInput(className?: string, path?: string, displayName?: string) {
     return (
-      <>
-        <input
-          {...domProps}
-          className={joinClassName(props.className, className)}
-          type={password ? "password" : "text"}
-          placeholder={props.placeholder ?? displayName}
-          value={value}
-          onInput={(event) => onValueChanged((event.target as HTMLInputElement).value)}
-        />
-      </>
+      <input
+        {...domProps}
+        name={path}
+        className={joinClassName(className, props.className)}
+        type={password ? "password" : "text"}
+        placeholder={props.placeholder ?? displayName}
+        value={value}
+        onInput={(event) => onValueChanged((event.target as HTMLInputElement).value)}
+      />
     );
   }
 

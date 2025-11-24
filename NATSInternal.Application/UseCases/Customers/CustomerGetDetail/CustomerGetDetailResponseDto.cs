@@ -1,6 +1,7 @@
 using NATSInternal.Application.Authorization;
 using NATSInternal.Application.UseCases.Shared;
 using NATSInternal.Domain.Features.Customers;
+using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.UseCases.Customers;
 
@@ -9,6 +10,9 @@ public record CustomerGetDetailResponseDto
     #region Constructors
     internal CustomerGetDetailResponseDto(
         Customer customer,
+        User? createdUser,
+        User? lastUpdatedUser,
+        long debtRemainingAmount,
         CustomerExistingAuthorizationResponseDto authorizationResponseDto)
     {
         Id = customer.Id;
@@ -25,11 +29,16 @@ public record CustomerGetDetailResponseDto
         Email = customer.Email;
         Address = customer.Address;
         Note = customer.Note;
-        CreatedUserId = customer.CreatedUserId;
+        CreatedUser = new(createdUser);
         CreatedDateTime = customer.CreatedDateTime;
-        LastUpdatedUserId = customer.LastUpdatedUserId;
         LastUpdatedDateTime = customer.LastUpdatedDateTime;
+        DebtRemainingAmount = debtRemainingAmount;
         Authorization = authorizationResponseDto;
+
+        if (lastUpdatedUser is not null)
+        {
+            LastUpdatedUser = new(lastUpdatedUser);
+        }
 
         if (customer.Introducer is not null)
         {
@@ -53,10 +62,11 @@ public record CustomerGetDetailResponseDto
     public string? Email { get; }
     public string? Address { get; }
     public string? Note { get; }
-    public Guid CreatedUserId { get; }
+    public UserBasicResponseDto CreatedUser { get; }
     public DateTime CreatedDateTime { get; }
-    public Guid? LastUpdatedUserId { get; }
+    public UserBasicResponseDto? LastUpdatedUser { get; }
     public DateTime? LastUpdatedDateTime { get; }
+    public long DebtRemainingAmount { get; }
     public CustomerBasicResponseDto? Introducer { get; }
     public CustomerExistingAuthorizationResponseDto Authorization { get; }
     #endregion

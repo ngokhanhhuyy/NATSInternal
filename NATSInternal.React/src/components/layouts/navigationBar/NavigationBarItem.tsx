@@ -5,18 +5,6 @@ import { useTsxHelper } from "@/helpers";
 import styles from "./NavigationBarItem.module.css";
 
 // Types.
-export type NavigationBarItemName = 
-  | "home"
-  | "customer"
-  | "product"
-  | "supply"
-  | "order"
-  | "debt"
-  | "expense"
-  | "report"
-  | "user"
-  | "personal";
-
 export type NavigationBarItemData = {
   name: string;
   fallbackDisplayName?: string;
@@ -51,7 +39,9 @@ export default function NavigationBarItem({ Icon, ...props }: NavigationBarItemP
   return (
     <Link className={joinClassName(className, styles.navigationBarItem)} to={props.routePath} onClick={props.onClick}>
       {Icon && <Icon className="size-6 inline shrink-0 dark:stroke-white" isActive={props.isActive} />}
-      <span className="inline-block md:hidden lg:inline-block">{displayName}</span>
+      <span className="inline-block md:hidden lg:inline-block">
+        {displayName}
+      </span>
 
       <div className={joinClassName(
         "bg-black/70 dark:bg-white/70 text-white dark:text-black rounded-md",

@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NATSInternal.Domain.Features.Users;
 using NATSInternal.Application.Services;
-using NATSInternal.Application.UseCases.Shared;
 using NATSInternal.Application.UseCases.Users;
 using NATSInternal.Infrastructure.DbContext;
 using NATSInternal.Infrastructure.Extensions;
@@ -34,7 +33,10 @@ internal class UserService : IUserService
         UserGetListRequestDto requestDto,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<User> query = _context.Users.Include(u => u.Roles).ThenInclude(r => r.Permissions);
+        IQueryable<User> query = _context.Users
+            .Include(u => u.Roles)
+            .ThenInclude(r => r.Permissions)
+            .Where(u => u.DeletedDateTime != null);
 
         if (requestDto.RoleId.HasValue)
         {
@@ -46,36 +48,35 @@ internal class UserService : IUserService
             query = query.Where(u => requestDto.SearchContent.ToLower().Contains(u.UserName.ToLower()));
         }
 
-        bool sortByAscendingOrDefault = requestDto.SortByAscending ?? true;
         switch (requestDto.SortByFieldName)
         {
             case nameof(UserGetListRequestDto.FieldToSort.UserName):
-                query = query.ApplySorting(u => u.UserName, sortByAscendingOrDefault);
+                query = query.ApplySorting(u => u.UserName, requestDto.SortByAscending);
                 break;
-            case nameof(UserGetListRequestDto.FieldToSort.CreatedDateTime) or null:
-                query = query.ApplySorting(u => u.CreatedDateTime, sortByAscendingOrDefault);
+            case nameof(UserGetListRequestDto.FieldToSort.CreatedDateTime):
+                query = query.ApplySorting(u => u.CreatedDateTime, requestDto.SortByAscending);
                 break;
             case nameof(UserGetListRequestDto.FieldToSort.RoleMaxPowerLevel):
-                query = query.ApplySorting(
-                    u => u.Roles.Max(r => r.PowerLevel),
-                    sortByAscendingOrDefault);
+                query = query.ApplySorting(u => u.Roles.Max(r => r.PowerLevel), requestDto.SortByAscending);
                 break;
             default:
                 throw new NotImplementedException();
         }
 
-        Page<User> userPage = await _listFetchingService.GetPagedListAsync(
+        Page<User> queryResult = await _listFetchingService.GetPagedListAsync(
             query,
             requestDto.Page,
             requestDto.ResultsPerPage,
             cancellationToken
         );
 
-        List<UserBasicResponseDto> userResponseDtos = userPage.Items
-            .Select(u => new UserBasicResponseDto(u, _authorizationInternalService.GetUserExistingAuthorization(u)))
+        List<UserGetListUserResponseDto> userResponseDtos = queryResult.Items
+            .Select(u => new UserGetListUserResponseDto(
+                u,
+                _authorizationInternalService.GetUserExistingAuthorization(u)))
             .ToList();
 
-        return new(userResponseDtos, userPage.PageCount);
+        return new(userResponseDtos, queryResult.PageCount);
     }
     #endregion
 }

@@ -119,7 +119,7 @@ internal class ProductUpdateHandler : IRequestHandler<ProductUpdateRequestDto>
             return null;
         }
 
-        ProductCategory? category = await _repository.GetCategoryByNameAsync(
+        ProductCategory? category = await _repository.GetCategoryByIdAsync(
             requestDto.CategoryName,
             cancellationToken
         );

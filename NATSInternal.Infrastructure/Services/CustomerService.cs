@@ -1,8 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using NATSInternal.Application.Authorization;
 using NATSInternal.Application.Services;
 using NATSInternal.Application.UseCases.Customers;
-using NATSInternal.Application.UseCases.Shared;
 using NATSInternal.Domain.Features.Customers;
 using NATSInternal.Infrastructure.DbContext;
 using NATSInternal.Infrastructure.Extensions;
@@ -38,31 +36,31 @@ internal class CustomerService : ICustomerService
 
         if (requestDto.SearchContent is not null && requestDto.SearchContent.Length > 0)
         {
+            string searchContent = requestDto.SearchContent.ToLower();
             query = query.Where(c =>
-                EF.Functions.Like(c.FullName.ToLower(), $"%{requestDto.SearchContent}%") ||
-                EF.Functions.Like(c.PhoneNumber, $"%{requestDto.SearchContent}%") ||
-                EF.Functions.Like(c.ZaloNumber, $"%{requestDto.SearchContent}%") ||
-                EF.Functions.Like(c.FacebookUrl, $"%{requestDto.SearchContent}%") ||
-                EF.Functions.Like(c.Email, $"%{requestDto.SearchContent}%") ||
-                EF.Functions.Like(c.Address, $"%{requestDto.SearchContent}%") ||
-                EF.Functions.Like(c.ZaloNumber, $"%{requestDto.SearchContent}%")
+                c.FullName.ToLower().Contains(searchContent) ||
+                c.NickName != null && c.NickName.ToLower().Contains(searchContent) ||
+                c.PhoneNumber != null && c.PhoneNumber.Contains(searchContent) ||
+                c.ZaloNumber != null && c.ZaloNumber.Contains(searchContent) ||
+                c.FacebookUrl != null && c.FacebookUrl.ToLower().Contains(searchContent) ||
+                c.Email != null && c.Email.ToLower().Contains(searchContent) ||
+                c.Address != null && c.Address.ToLower().Contains(searchContent)
             );
         }
 
-        bool sortByAscendingOrDefault = requestDto.SortByAscending ?? true;
         switch (requestDto.SortByFieldName)
         {
-            case nameof(CustomerGetListRequestDto.FieldToSort.LastName) or null:
-                query = query.ApplySorting(p => p.LastName, sortByAscendingOrDefault);
+            case nameof(CustomerGetListRequestDto.FieldToSort.LastName):
+                query = query.ApplySorting(p => p.LastName, requestDto.SortByAscending);
                 break;
             case nameof(CustomerGetListRequestDto.FieldToSort.FirstName):
-                query = query.ApplySorting(p => p.FirstName, sortByAscendingOrDefault);
+                query = query.ApplySorting(p => p.FirstName, requestDto.SortByAscending);
                 break;
             case nameof(CustomerGetListRequestDto.FieldToSort.Birthday):
-                query = query.ApplySorting(p => p.Birthday, sortByAscendingOrDefault);
+                query = query.ApplySorting(p => p.Birthday, requestDto.SortByAscending);
                 break;
             case nameof(CustomerGetListRequestDto.FieldToSort.CreatedDateTime):
-                query = query.ApplySorting(p => p.CreatedDateTime, sortByAscendingOrDefault);
+                query = query.ApplySorting(p => p.CreatedDateTime, requestDto.SortByAscending);
                 break;
             case nameof(CustomerGetListRequestDto.FieldToSort.DebtRemainingAmount):
                 break;
@@ -70,20 +68,20 @@ internal class CustomerService : ICustomerService
                 throw new NotImplementedException();
         }
 
-        Page<Customer> productPage = await _listFetchingService.GetPagedListAsync(
+        Page<Customer> queryResult = await _listFetchingService.GetPagedListAsync(
             query,
             requestDto.Page,
             requestDto.ResultsPerPage,
             cancellationToken
         );
 
-        List<CustomerBasicResponseDto> productResponseDtos = productPage.Items
-            .Select(customer => new CustomerBasicResponseDto(
-                customer,
-                _authorizationInternalService.GetCustomerExistingAuthorization(customer)))
+        List<CustomerGetListCustomerResponseDto> productResponseDtos = queryResult.Items
+            .Select(c => new CustomerGetListCustomerResponseDto(
+                c,
+                _authorizationInternalService.GetCustomerExistingAuthorization(c)))
             .ToList();
 
-        return new(productResponseDtos, productPage.PageCount);
+        return new(productResponseDtos, queryResult.PageCount);
     }
     #endregion
 }

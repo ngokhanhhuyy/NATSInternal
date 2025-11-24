@@ -23,12 +23,20 @@ type FormProps<T> = {
   onSubmissionFailed?: (error: Error, errorHandled: boolean) => any;
   submissionSucceededText?: string;
   showValidState?: boolean;
+  showSucceededAnnouncement?: boolean;
 } & React.ComponentPropsWithoutRef<"form">;
 
 // Component.
 export default function Form<T>(props: FormProps<T>) {
   // Props.
-  const { submitAction, onSubmissionSucceeded, onSubmissionFailed, submissionSucceededText, ...domProps } = props;
+  const {
+    submitAction,
+    onSubmissionSucceeded,
+    onSubmissionFailed,
+    submissionSucceededText,
+    showSucceededAnnouncement,
+    ...domProps
+  } = props;
   
   // Dependencies.
   const { compute, joinClassName } = useTsxHelper();
@@ -84,14 +92,14 @@ export default function Form<T>(props: FormProps<T>) {
         noValidate
         onSubmit={handleSubmitAsync}
       >
-        {submissionState !== "submissionSucceeded" && domProps.children}
-        {submissionState === "submissionSucceeded" && (
-          <div className="bg-success/20 border border-success rounded-lg flex justify-center items-center">
-            <span className="text-success brightness-80 font-lg mx-2.5 my-7.5">
-              {submissionSucceededText ?? "Lưu thành công"}
-            </span>
-          </div>
-        )}
+        {submissionState === "submissionSucceeded" && showSucceededAnnouncement
+          ? (
+            <div className="bg-success/20 border border-success rounded-lg flex justify-center items-center">
+              <span className="text-success brightness-80 font-lg mx-2.5 my-7.5">
+                {submissionSucceededText ?? "Lưu thành công"}
+              </span>
+            </div>
+          ) : domProps.children}
       </form>
     </FormContext.Provider>
   );
