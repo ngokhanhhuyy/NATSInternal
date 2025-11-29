@@ -59,6 +59,9 @@ public static class ApplicationConfiguration
         services.AddTransient<
             IRequestHandler<CustomerGetDetailRequestDto, CustomerGetDetailResponseDto>,
             CustomerGetDetailHandler>();
+        services.AddTransient<IRequestHandler<CustomerCreateRequestDto, Guid>, CustomerCreateHandler>();
+        services.AddTransient<IRequestHandler<CustomerUpdateRequestDto>, CustomerUpdateHandler>();
+        services.AddTransient<IRequestHandler<CustomerDeleteRequestDto>, CustomerDeleteHandler>();
 
         // Product UseCases.
         services.AddTransient<

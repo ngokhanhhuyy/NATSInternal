@@ -82,7 +82,7 @@ export default function CustomerListPage(): React.ReactNode {
         </Button>
 
         <Button
-          variant={isFilterVisible ? "primary" : undefined}
+          className={isFilterVisible ? "primary" : undefined}
           onClick={() => setIsFilterVisible(isVisible => !isVisible)}
         >
           <FunnelOutlineIcon className="size-4 me-1" />

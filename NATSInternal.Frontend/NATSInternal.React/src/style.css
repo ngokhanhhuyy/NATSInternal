@@ -33,7 +33,7 @@ a:not(.hover\:underline):not(.hover\:overline):not(.hover\:line-through):not(.ho
     text-decoration: underline;
 }
 
-/* input:not([type="checkbox"]) {
+input:not([type="checkbox"]) {
     background: white;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
@@ -44,7 +44,7 @@ a:not(.hover\:underline):not(.hover\:overline):not(.hover\:line-through):not(.ho
 
     &:focus {
         border-color: var(--color-primary);
-        outline: 3px solid rgba(from var(--color-primary) r g b, 15%);
+        outline: 3px solid rgba(0, 0, 0, 15);
         box-shadow: 1px 5px 8px rgba(0, 0, 0, 0.08);
     }
 
@@ -60,7 +60,7 @@ a:not(.hover\:underline):not(.hover\:overline):not(.hover\:line-through):not(.ho
     }
 } */
 
-/* input[type="checkbox"] {
+input[type="checkbox"] {
     border: 3px solid red !important;
     accent-color: var(--color-indigo-500);
 
@@ -70,87 +70,55 @@ a:not(.hover\:underline):not(.hover\:overline):not(.hover\:line-through):not(.ho
         width: 10px;
         height: 10px;
     }
-} */
+}
 
-/* button {
-    --solid-hover-filter: brightness(1.35);
-    background: white;
-    border: 1px solid var(--border-color);
+.button {
+    --padding-inline: calc(var(--spacing) * 2);
+    --padding-block: calc(var(--spacing) * 1);
+    background: white;  
+    color: oklch(from var(--color-black) l c h / 80%);
+    border: 1px solid oklch(from var(--color-black) l c h / 15%);
     border-radius: var(--radius-lg);
-    padding: .35rem .5rem;
+    padding-inline: var(--padding-inline);
+    padding-block: var(--padding-block);
     transition: .25s ease;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
+    align-self: stretch;
     box-shadow: var(--shadow-xs);
 
+    html.dark & {
+        background: var(--color-neutral-800);
+        color: var(--color-white);
+        border-color: oklch(from var(--color-white) l c h / 15%);
+    }
+
     &:hover {
-        filter: brightness(.97);
+        filter: brightness(.95);
     }
 
-    &:active {
-        filter: brightness(.9);
-    }
-
-    &:disabled {
-        filter: opacity(.5);
-        cursor: default;
-    }
-
-    &.indigo {
-        background: var(--color-indigo-500);
-        color: white;
-        border-color: var(--color-indigo-500);
-
-        &:hover {
-            filter: var(--solid-hover-filter);
-        }
-    }
-
-    &.indigo-outline {
-        background: white;
-        color: var(--color-indigo-500);
-        border-color: var(--color-indigo-500);
-
-        &:hover {
-            background: var(--color-indigo-500);
-            color: white;
-            border-color: var(--color-indigo-500);
-        }
-    }
-
-    &.red {
-        background: var(--color-red-500);
-        color: white;
-        border-color: var(--color-red-500);
-
-        &:hover {
-            background: var(--color-red-400);
-            border-color: var(--color-red-400);
-        }
-    }
-
-    &.red-outline {
-        background: white;
-        color: var(--color-red-500);
-        border-color: var(--color-red-500);
-
-        &:hover {
-            background: var(--color-red-500);
-            color: white;
-            border-color: var(--color-red-500);
-        }
+    html.dark &:hover {
+        background: var(--color-neutral-800);
+        color: var(--color-white);
+        border-color: oklch(from var(--color-white) l c h / 20%);
     }
 
     &.primary {
-        background: var(--color-primary);
+        background: black;
         color: white;
-        border-color: var(--color-primary);
+        border-color: black;
+
+        html.dark & {
+            background: white;
+            color: black;
+            border-color: white;
+        }
 
         &:hover {
-            background: rgba(var(--color-primary), 0.7);
-            border-color: rgba(var(--color-primary), 0.7);
+            background: rgba(0, 0, 0, 70%);
+            border-color: rgba(0, 0, 0, 70%);
         }
     }
-} */
+}

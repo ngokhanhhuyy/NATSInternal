@@ -42,7 +42,7 @@ export default function CustomerDetailPage(): React.ReactNode {
 
       {(
         <div className="flex justify-end">
-          <Button variant="primary" onClick={() => navigate(model.updateRoute)}>
+          <Button className="primary" onClick={() => navigate(model.updateRoute)}>
             <PencilSquareIcon className="size-4 me-1" />
             <span>Chỉnh sửa</span>
           </Button>

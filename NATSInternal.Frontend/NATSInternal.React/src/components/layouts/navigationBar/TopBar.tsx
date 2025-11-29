@@ -3,8 +3,8 @@ import { useNavigationBarStore, useThemeStore } from "@/stores";
 import { useTsxHelper } from "@/helpers";
 
 // Child component.
-import { Button } from "@/components/ui";
 import MainLogo from "./MainLogo";
+import { Button } from "@/components/ui";
 import { Bars4Icon, MoonIcon, SunIcon, Cog6ToothIcon } from "@heroicons/react/24/solid";
 
 // Component.
@@ -51,7 +51,7 @@ export default function TopBar(): React.ReactNode {
         <ThemeToggleButton />
 
         {/* Navigation bar toggle button */}
-        <Button className="h-full aspect-[1.2] md:hidden shrink-0" onClick={navigationBarStore.toggle}>
+        <Button className="aspect-[1.2] md:hidden shrink-0" onClick={navigationBarStore.toggle}>
           <Bars4Icon className="size-6" />
         </Button>
       </div>
@@ -74,7 +74,7 @@ function ThemeToggleButton(): React.ReactNode {
   }
 
   return (
-    <Button className="h-full aspect-[1.2]" onClick={themeStore.toggle}>
+    <Button type="button" className="h-full aspect-[1.2]" onClick={themeStore.toggle}>
       {icon}
     </Button>
   );

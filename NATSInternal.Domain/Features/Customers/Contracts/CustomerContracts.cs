@@ -3,7 +3,6 @@ namespace NATSInternal.Domain.Features.Customers;
 public static class CustomerContracts
 {
     #region Constants
-    public const int FirstNameMinLength = 1;
     public const int FirstNameMaxLength = 10;
     public const int MiddleNameMaxLength = 20;
     public const int LastNameMinLength = 1;

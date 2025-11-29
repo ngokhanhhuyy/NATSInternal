@@ -10,12 +10,13 @@ export default defineConfig({
       index: "./src/main.tsx"
     }
   },
-  html: {
-    template: "./src/index.html"
-  },
+  // html: {
+  //   template: "./src/index.html"
+  // },
   output: {
     filename: {
       js: "[name].[hash].js",
+      css: "[name].[hash].css"
     },
     cssModules: {
       namedExport: false,

@@ -23,13 +23,63 @@ Cookie: {{accessCookie}}
 ###
 # @name CustomerList
 // @no-log
-GET {{host}}/customer?sortingByFieldName=LastName&sortingByAscending=False&page=1
+GET {{host}}/customers?sortingByFieldName=LastName&sortingByAscending=False&page=1
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
 # @name CustomerDetail
-GET {{host}}/customer/22ce8b27-3729-4c9c-900a-5479c9e1ab93
+GET {{host}}/customers/3406641a-0005-43e8-a569-801ff90b76e7
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name CustomerCreate
+POST {{host}}/customers
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+{
+    "firstName": "Ngô",
+    "middleName": "Khánh",
+    "lastName": "Huy",
+    "nickName": "Huy Nino",
+    "gender": "Male",
+    "birthday": "1997-08-30",
+    "phoneNumber": "09037632117",
+    "zaloNumber": "09037632117",
+    "facebookUrl": "https://facebook.com/huy.nino.97",
+    "email": "ngokhanhhuyy@gmail.com",
+    "address": "173 Lý Thái Tổ, phường Buôn Ma Thuột 2",
+    "note": null,
+    "introducerId": null
+}
+
+###
+# @name CustomerUpdate
+PUT {{host}}/customers/3406641a-0005-43e8-a569-801ff90b76e7
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+{
+    "firstName": "",
+    "middleName": "Khánh",
+    "lastName": "Huy",
+    "nickName": "Huy Nino 123",
+    "gender": "Male",
+    "birthday": "1997-08-30",
+    "phoneNumber": "09037632117",
+    "zaloNumber": "09037632117",
+    "facebookUrl": "https://facebook.com/huy.nino.97",
+    "email": "ngokhanhhuyy@gmail.com",
+    "address": "173 Lý Thái Tổ, phường Buôn Ma Thuột 2",
+    "note": null,
+    "introducerId": null
+}
+
+###
+# @name CustomerDelete
+DELETE {{host}}/customers/3406641a-0005-43e8-a569-801ff90b76e7
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
@@ -50,7 +100,7 @@ Cookie: {{accessCookie}}
 ###
 # @name ProductDetail
 // @no-log
-GET {{host}}/productsde91b603-a202-4adc-a684-2c646e3f2f8b
+GET {{host}}/products/de91b603-a202-4adc-a684-2c646e3f2f8b
 Content-Type: application/json
 Cookie: {{accessCookie}}
 

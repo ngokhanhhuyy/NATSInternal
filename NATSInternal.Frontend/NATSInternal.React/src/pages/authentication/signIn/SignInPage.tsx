@@ -151,7 +151,7 @@ export default function SignInPage(): React.ReactNode {
           </FormField>
 
           {/* Button */}
-          <Button type="submit" variant={buttonVariant} showSpinner={state.isSubmitting}>
+          <Button type="submit" className={buttonVariant} showSpinner={state.isSubmitting}>
             {buttonText}
           </Button>
 

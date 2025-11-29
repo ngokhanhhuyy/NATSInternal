@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { usePaginationHelper, useTsxHelper, type PaginationRange } from "@/helpers";
 
 // Child components.
-import Button from "./Button.tsx";
+import { Button } from "../ui";
 
 // Types.
 type PaginationRanges = {
@@ -59,7 +59,7 @@ export default function MainPaginator(props: MainPaginatorProps): React.ReactNod
     const endingPage = paginationRanges.largeScreen.endingPage;
     return Array.from({ length: endingPage - (startingPage - 1) }, (_, index) => index + startingPage).map(page => (
       <Button
-        variant={currentPage === page ? "primary" : undefined}
+        className={currentPage === page ? "primary" : undefined}
         onClick={() => handlePageButtonClick(page)}
         key={page}
       >
@@ -82,7 +82,7 @@ export default function MainPaginator(props: MainPaginatorProps): React.ReactNod
           "flex gap-2",
           !isPageExceedingSmallScreenRange(1) && "hidden"
         )}>
-          <Button onClick={() => handlePageButtonClick(1)}>{1}</Button>
+          <Button type="button" className="button" onClick={() => handlePageButtonClick(1)}>{1}</Button>
           <span>...</span>
         </div>
       )}
@@ -93,7 +93,9 @@ export default function MainPaginator(props: MainPaginatorProps): React.ReactNod
           !isPageExceedingSmallScreenRange(pageCount) && "hidden"
         )}>
           <span>...</span>
-          <Button onClick={() => handlePageButtonClick(pageCount)}>{pageCount}</Button>
+          <Button type="button" className="button" onClick={() => handlePageButtonClick(pageCount)}>
+            {pageCount}
+          </Button>
         </div>
       )}
     </div>

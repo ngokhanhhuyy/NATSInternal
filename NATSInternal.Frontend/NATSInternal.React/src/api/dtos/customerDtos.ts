@@ -48,4 +48,21 @@ declare global {
     introducer: CustomerBasicResponseDto | null;
     authorization: CustomerExistingAuthorizationResponseDto;
   };
+
+  type CustomerUpsertRequestDto = {
+    firstName: string;
+    middleName: string | null;
+    lastName: string;
+    fullName: string;
+    nickName: string;
+    gender: Gender;
+    birthday: string | null;
+    phoneNumber: string | null;
+    zaloNumber: string | null;
+    facebookUrl: string | null;
+    email: string | null;
+    address: string | null;
+    note: string | null;
+    introducerId: string | null;
+  };
 }
