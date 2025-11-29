@@ -53,8 +53,7 @@ declare global {
     firstName: string;
     middleName: string | null;
     lastName: string;
-    fullName: string;
-    nickName: string;
+    nickName: string | null;
     gender: Gender;
     birthday: string | null;
     phoneNumber: string | null;
