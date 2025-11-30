@@ -6,10 +6,10 @@ type Enumerable = string | any[];
 interface IRuleBuilderOptions {
   notNullOrUndefined(): this;
   withMessage(message: string): this;
-  withName(name: string): this
+  withName(name: string): this;
 }
 
-interface IEnumerableRuleBuilderOptions<P extends string | any[]>extends IRuleBuilderOptions {
+interface IEnumerableRuleBuilderOptions<P extends string | any[]> extends IRuleBuilderOptions {
   notEmpty(): this;
   minimumLength(length: number): this;
   maximumLength(length: number): this;
@@ -28,22 +28,24 @@ type RuleInformation = {
   validators: (() => void)[];
 };
 
-
 export function createValidator<R>(requestDto: R, ruleFor: (builder: RuleBuilder) => object) {
   const ruleInformationList: RuleInformation[] = [];
-  const errors: ApiErrorDetails = { };
+  const errors: ApiErrorDetails = {};
   const builder = <P>(getProperty: (dto: R) => P) => {
     const property = getProperty(requestDto);
     if (typeof requestDto === "string" || Array.isArray(property)) {
-      return 
+      return;
     }
   };
 }
 
-function createRuleBuilderOptions<R, P>(requestDto: R, property: P, ruleInformationList: RuleInformation[], errors: ApiErrorDetails): IRuleBuilderOptions<R, P> {
+function createRuleBuilderOptions<R, P>(
+  requestDto: R,
+  property: P,
+  ruleInformationList: RuleInformation[],
+  errors: ApiErrorDetails
+): IRuleBuilderOptions<R, P> {
   return {
-    notNullOrUndefined(): this {
-      
-    }
-  }
+    notNullOrUndefined(): this {}
+  };
 }

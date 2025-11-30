@@ -49,3 +49,5 @@ declare global {
     authorization: CustomerExistingAuthorizationResponseDto;
   };
 }
+
+export {};

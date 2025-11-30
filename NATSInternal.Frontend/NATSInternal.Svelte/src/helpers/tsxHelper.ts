@@ -8,7 +8,7 @@ const helper: TsxHelper = {
     return computer();
   },
   joinClassName: (...classNames) => {
-    return classNames.filter(name => name).join(" ") || undefined;
+    return classNames.filter((name) => name).join(" ") || undefined;
   }
 };
 

@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NATSInternal.Application.Localization;
 using System.Reflection;

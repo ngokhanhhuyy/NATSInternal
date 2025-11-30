@@ -33,30 +33,92 @@ a:not(.hover\:underline):not(.hover\:overline):not(.hover\:line-through):not(.ho
     text-decoration: underline;
 }
 
-input:not([type="checkbox"]) {
+input:not([type="checkbox"]), select {
+    --padding-inline: calc(var(--spacing) * 2);
+    --padding-block: calc(var(--spacing) * 1);
     background: white;
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(0, 0, 0, 10%);
     border-radius: var(--radius-lg);
-    padding: .35rem .5rem;
+    padding-inline: var(--padding-inline);
+    padding-block: var(--padding-block);
     box-shadow: var(--shadow-xs);
     transition: .2s linear, outline .1s linear;
-    outline: 0 solid;
+    outline: 0.15rem solid transparent;
+    min-height: calc(var(--spacing) * 9);
+
+    .form-field.valid:not(:disabled) & {
+        background: oklch(from var(--color-emerald-500) l c h / 5%);
+        color: var(--color-emerald-500);
+        border-color: oklch(from var(--color-emerald-500) l c h / 70%);
+
+        &:focus {
+            border-color: var(--color-emerald-500);
+            outline-color: oklch(from var(--color-emerald-500) l c h / 15%);
+        }
+    }
+
+    .form-field.invalid:not(:disabled) & {
+        background: oklch(from var(--color-red-500) l c h / 5%);
+        color: var(--color-red-500);
+        border-color: oklch(from var(--color-red-500) l c h / 70%);
+
+        &:focus {
+            outline-color: oklch(from var(--color-red-500) l c h / 15%);
+        }
+    }
+
+    html.dark & {
+        background: var(--color-neutral-800);
+        border-color: rgba(255, 255, 255, 0.15);
+
+        &:focus {
+            border-color: rgba(255, 255, 255, 0.5);
+            outline-color: rgba(255, 255, 255, 30%);
+        }
+
+        .form-field.valid:not(:disabled) & {
+            background: oklch(from var(--color-emerald-600) l c h / 10%);
+            color: var(--color-emerald-600);
+            border-color: oklch(from var(--color-emerald-600) l c h / 70%);
+
+            &:focus {
+                border-color: var(--color-emerald-600);
+                outline-color: oklch(from var(--color-emerald-500) l c h / 15%);
+            }
+        }
+
+        .form-field.invalid:not(:disabled) & {
+            background: oklch(from var(--color-red-600) l c h / 10%);
+            color: var(--color-red-600);
+            border-color: oklch(from var(--color-red-600) l c h / 70%);
+
+            &:focus {
+                border-color: var(--color-red-600);
+                outline-color: oklch(from var(--color-red-500) l c h / 15%);
+            }
+        }
+    }
 
     &:focus {
-        border-color: var(--color-primary);
-        outline: 3px solid rgba(0, 0, 0, 15);
-        box-shadow: 1px 5px 8px rgba(0, 0, 0, 0.08);
+        border-color: rgba(0, 0, 0, 50%);
+        outline-color: rgba(0, 0, 0, 15%);
+        box-shadow: var(--shadow-md);
+    }
+
+    &:disabled {
+        opacity: 50%;
+        cursor: default;
     }
 
     &.invalid {
         background: var(--color-red-50);
         color: var(--color-red-800);
         border-color: var(--color-red-300);
-    }
 
-    &.invalid:focus {
-        border-color: var(--color-red-500);
-        outline-color: var(--color-red-200);
+        &:focus {
+            border-color: var(--color-red-500);
+            outline-color: var(--color-red-200);
+        }
     }
 } */
 
@@ -76,8 +138,8 @@ input[type="checkbox"] {
     --padding-inline: calc(var(--spacing) * 2);
     --padding-block: calc(var(--spacing) * 1);
     background: white;  
-    color: oklch(from var(--color-black) l c h / 80%);
-    border: 1px solid oklch(from var(--color-black) l c h / 15%);
+    color: rgba(0, 0, 0, 80%);
+    border: 1px solid rgba(0, 0, 0, 15%);
     border-radius: var(--radius-lg);
     padding-inline: var(--padding-inline);
     padding-block: var(--padding-block);
@@ -119,6 +181,36 @@ input[type="checkbox"] {
         &:hover {
             background: rgba(0, 0, 0, 70%);
             border-color: rgba(0, 0, 0, 70%);
+        }
+    }
+}
+
+.form-field {
+    & label, & .validation-message {
+        font-size: var(--text-sm);
+    }
+
+    & label {
+        opacity: 75%;
+    }
+
+    &.valid, &.invalid label {
+        opacity: 75%;
+    }
+
+    &.valid {
+        & label, & .validation-message {
+            color: var(--color-emerald-700);
+        }
+
+        html.dark & label, html.dark & .validation-message {
+            color: var(--color-emerald-300);
+        }
+    }
+
+    &.invalid {
+        & label, & .validation-message {
+            color: var(--color-red-500);
         }
     }
 }

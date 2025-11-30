@@ -9,7 +9,6 @@ import { FormContext } from "@/components/form/Form";
 export type FormFieldContextPayload = {
   isValidated: boolean;
   hasError: boolean;
-  showValidState: boolean;
   path?: string;
   displayName?: string
 };
@@ -27,7 +26,7 @@ export type FormFieldProps = {
 export default function FormField(props: FormFieldProps) {
   // Dependencies.
   const formContext = useContext(FormContext);
-  const { compute, joinClassName } = useTsxHelper();
+  const { joinClassName } = useTsxHelper();
 
   // Computed.
   const errorMessage = useMemo(() => {
@@ -68,30 +67,21 @@ export default function FormField(props: FormFieldProps) {
     return {
       isValidated: !!formContext?.errorCollection.isValidated,
       hasError: !!errorMessage,
-      showValidState: formContext?.showValidState ?? true,
       path: props.path,
       displayName: displayName ?? undefined
     };
   }, [formContext?.errorCollection.details, displayName]);
-  
-  const labelClassName = compute(() => {
-    if (contextPayload.hasError) {
-      return "text-red-500 dark:text-red-700";
-    }
-
-    if (contextPayload.isValidated && contextPayload.showValidState) {
-      return "text-emerald-500";
-    }
-
-    return "text-black/50 dark:text-white/70";
-  });
 
   // Template.
   return (
-    <div className={joinClassName(props.className, "form-field flex flex-col justify-stretched")}>
+    <div className={joinClassName(
+      props.className,
+      "form-field flex flex-col justify-stretched",
+      formContext?.errorCollection.isValidated && (errorMessage ? "invalid" : "valid")
+    )}>
       {/* Label */}
       {displayName && (
-        <label htmlFor={props.path} className={joinClassName(labelClassName, "block text-sm")}>
+        <label htmlFor={props.path}>
           {displayName}
         </label>
       )}
@@ -102,23 +92,7 @@ export default function FormField(props: FormFieldProps) {
       </FormFieldContext.Provider>
 
       {/* Message */}
-      {formContext?.errorCollection.isValidated && (
-        <ErrorMessage message={errorMessage} showValidState={formContext.showValidState} />
-      )}
+      <span className="validation-message">{errorMessage}</span>
     </div>
   );
-}
-
-function ErrorMessage(props: { message?: string; showValidState: boolean; }): React.ReactNode {
-  const staticClassName = "text-sm";
-
-  if (props.message) {
-    return <div className={`text-red-500 dark:text-red-700 ${staticClassName}`}>{props.message}</div>;
-  }
-
-  if (props.showValidState) {
-    return <div className={`text-emerald-500 dark:text-emerald-500 ${staticClassName}`}>Hợp lệ</div>;
-  }
-
-  return null;
 }

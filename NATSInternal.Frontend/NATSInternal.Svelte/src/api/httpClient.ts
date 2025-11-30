@@ -6,7 +6,7 @@ type ProblemDetails = {
   type: string;
   title: string;
   status: number;
-  errors: ApiErrorDetails
+  errors: ApiErrorDetails;
 };
 
 /**
@@ -20,7 +20,7 @@ async function convertResponseErrorToException(response: Response): Promise<Erro
     // Validation error.
     case 400:
     case 422:
-      const problemDetails = await response.json() as ProblemDetails;
+      const problemDetails = (await response.json()) as ProblemDetails;
       return response.status === 400
         ? new errors.ValidationError(problemDetails.errors)
         : new errors.OperationError(problemDetails.errors);
@@ -65,11 +65,12 @@ async function convertResponseErrorToException(response: Response): Promise<Erro
  * @returns A `Task` which resolves to a `Response` instance containing the data in the response from the server.
  */
 async function executeAsync(
-    method: string,
-    endpointPath: string,
-    requestDto?: object,
-    params?: Params,
-    delay: number = 300): Promise<Response> {
+  method: string,
+  endpointPath: string,
+  requestDto?: object,
+  params?: Params,
+  delay: number = 300
+): Promise<Response> {
   let endpointUrl = "/api" + endpointPath;
   if (params != null && getQueryString(params) != null) {
     endpointUrl += "?" + getQueryString(params);
@@ -86,10 +87,7 @@ async function executeAsync(
   }
 
   const sendRequest = async () => fetch(endpointUrl, requestInit);
-  const [response] = await Promise.all([
-    sendRequest(),
-    new Promise(resolve => setTimeout(resolve, delay))
-  ]);
+  const [response] = await Promise.all([sendRequest(), new Promise((resolve) => setTimeout(resolve, delay))]);
 
   if (response.ok) {
     return response;
@@ -111,12 +109,9 @@ async function executeAsync(
  * @returns A `Promise` which resolves to an object as an implementation of type `TResponseDto`.
  * @example getAsync<ResponseDtos.User.Detail>("user/1");
  */
-async function getAsync<TResponseDto>(
-    endpointPath: string,
-    params?: Params,
-    delay?: number): Promise<TResponseDto> {
+async function getAsync<TResponseDto>(endpointPath: string, params?: Params, delay?: number): Promise<TResponseDto> {
   const response = await executeAsync("get", endpointPath, undefined, params, delay);
-  return await response.json() as TResponseDto;
+  return (await response.json()) as TResponseDto;
 }
 
 /**
@@ -134,12 +129,13 @@ async function getAsync<TResponseDto>(
  * @example postAsync<int>("user");
  */
 async function postAsync<TResponseDto>(
-    endpointPath: string,
-    requestDto: object,
-    params?: Params,
-    delay?: number): Promise<TResponseDto> {
+  endpointPath: string,
+  requestDto: object,
+  params?: Params,
+  delay?: number
+): Promise<TResponseDto> {
   const response = await executeAsync("post", endpointPath, requestDto, params, delay);
-  return await response.json() as TResponseDto;
+  return (await response.json()) as TResponseDto;
 }
 
 /**
@@ -156,10 +152,11 @@ async function postAsync<TResponseDto>(
  * @example postAndIgnoreAsync("user/changePasswordAsync/1");
  */
 async function postAndIgnoreAsync(
-    endpointPath: string,
-    requestDto: object,
-    params?: Params,
-    delay?: number): Promise<void> {
+  endpointPath: string,
+  requestDto: object,
+  params?: Params,
+  delay?: number
+): Promise<void> {
   await executeAsync("post", endpointPath, requestDto, params, delay);
 }
 
@@ -179,12 +176,13 @@ async function postAndIgnoreAsync(
  * @example putAsync<boolean>("user/1", requestDto);
  */
 async function putAsync<TResponseDto>(
-    endpointPath: string,
-    requestDto: object,
-    params?: Params,
-    delay?: number): Promise<TResponseDto> {
+  endpointPath: string,
+  requestDto: object,
+  params?: Params,
+  delay?: number
+): Promise<TResponseDto> {
   const response = await executeAsync("put", endpointPath, requestDto, params, delay);
-  return await response.json() as TResponseDto;
+  return (await response.json()) as TResponseDto;
 }
 
 /**
@@ -201,10 +199,11 @@ async function putAsync<TResponseDto>(
  * @example putAndIgnoreAsync("user/1", requestDto);
  */
 async function putAndIgnoreAsync(
-    endpointPath: string,
-    requestDto: object,
-    params?: Record<string, any>,
-    delay?: number): Promise<void> {
+  endpointPath: string,
+  requestDto: object,
+  params?: Record<string, any>,
+  delay?: number
+): Promise<void> {
   await executeAsync("put", endpointPath, requestDto, params, delay);
 }
 
@@ -223,7 +222,7 @@ async function putAndIgnoreAsync(
  */
 async function deleteAsync<TResponseDto>(endpointPath: string, params?: Params, delay?: number): Promise<TResponseDto> {
   const response = await executeAsync("delete", endpointPath, undefined, params, delay);
-  return await response.json() as TResponseDto;
+  return (await response.json()) as TResponseDto;
 }
 
 /**
@@ -241,7 +240,6 @@ async function deleteAsync<TResponseDto>(endpointPath: string, params?: Params, 
 async function deleteAndIgnoreAsync(endpointPath: string, params?: Params, delay?: number): Promise<void> {
   await executeAsync("delete", endpointPath, undefined, params, delay);
 }
-
 
 export function useHttpClient() {
   return {

@@ -19,7 +19,7 @@ export default function Input(props: InputProps) {
       "outline-3 outline-transparent"
     );
 
-    if (!context || !context.isValidated || (!context.hasError && !context.showValidState)) {
+    if (!context || !context.isValidated) {
       return joinClassName(
         "bg-white dark:bg-neutral-800 border-black/10 dark:border-white/15",
         "focus:border-black dark:focus:border-white/50 focus:outline-primary/15 dark:focus:outline-white/30",
@@ -38,12 +38,12 @@ export default function Input(props: InputProps) {
       computedClassName = joinClassName(
         "bg-emerald-500/5 dark:bg-emerald-600/10 text-emerald-500 dark:text-emerald-600",
         "border-emerald-500/70 dark:border-emerald-600/70 focus:border-emerald-500 dark:focus:border-emerald-600",
-        "focus:outline-danger/15 dark:focus:outline-emerald-600/40"
+        "focus:outline-emerald-600/15 dark:focus:outline-emerald-600/40"
       );
     }
 
     return joinClassName(computedClassName, staticClassName);
   });
 
-  return props.render(className, context?.path, context?.displayName);
+  return props.render(context?.path, context?.displayName);
 }

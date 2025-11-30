@@ -46,7 +46,7 @@ export function createCustomerListModel(responseDto: CustomerGetListResponseDto)
     sortByAscending: customerListOptions.defaultSortByAscending ?? true,
     sortByFieldName: customerListOptions.defaultSortByFieldName ?? "",
     page: 1,
-    resultsPerPage:  customerListOptions.defaultResultsPerPage,
+    resultsPerPage: customerListOptions.defaultResultsPerPage,
     searchContent: "",
     items: [],
     pageCount: 0,
@@ -67,7 +67,7 @@ export function createCustomerListModel(responseDto: CustomerGetListResponseDto)
       const requestDto: CustomerGetListRequestDto = {
         sortByAscending: this.sortByAscending,
         sortByFieldName: this.sortByFieldName,
-        page: this.page,
+        page: this.page
       };
 
       if (this.resultsPerPage) {
@@ -103,5 +103,5 @@ function createCustomerListCustomerModel(responseDto: CustomerGetListCustomerRes
     get detailRoute(): string {
       return getCustomerDetailRoutePath(this.id);
     }
-  }; 
+  };
 }

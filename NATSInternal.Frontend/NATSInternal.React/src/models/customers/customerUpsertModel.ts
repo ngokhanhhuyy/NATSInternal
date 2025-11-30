@@ -1,5 +1,5 @@
 import { createCustomerBasicModel } from "../shared/customerBasicModel";
-import { useRouteHelper } from "@/helpers";
+import { useGuidHelper, useRouteHelper } from "@/helpers";
 
 declare global {
   type CustomerUpsertModel = {
@@ -23,11 +23,12 @@ declare global {
   };
 }
 
+const { getEmptyGuid } = useGuidHelper();
 const { getCustomerDetailRoutePath } = useRouteHelper();
 
 export function createCustomerUpsertModel(responseDto?: CustomerGetDetailResponseDto): CustomerUpsertModel {
   return {
-    id: responseDto?.id ?? "",
+    id: responseDto?.id ?? getEmptyGuid(),
     firstName: responseDto?.firstName ?? "",
     middleName: responseDto?.middleName ?? "",
     lastName: responseDto?.lastName ?? "",
@@ -43,10 +44,6 @@ export function createCustomerUpsertModel(responseDto?: CustomerGetDetailRespons
     introducer: (responseDto?.introducer && createCustomerBasicModel(responseDto.introducer)) ?? null,
     authorization: responseDto?.authorization ?? null,
     get detailRoute(): string {
-      if (!this.id) {
-        throw new Error("Cannot generate route path from null or empty id");
-      }
-      
       return getCustomerDetailRoutePath(this.id);
     },
     toRequestDto() {

@@ -6,7 +6,7 @@ import { useMetadataApi, type MetadataApi } from "./metadataApi";
 
 interface IApi {
   authentication: AuthenticationApi;
-  customer: CustomerApi,
+  customer: CustomerApi;
   user: UserApi;
   photo: PhotoApi;
   metadata: MetadataApi;

@@ -10,7 +10,6 @@ type SubmissionState = "notSubmitting" | "submitting" | "submissionSucceeded";
 type FormContextPayload = {
   errorCollection: ErrorCollectionModel;
   submissionState: SubmissionState;
-  showValidState: boolean;
 };
 
 // Context.
@@ -88,7 +87,12 @@ export default function Form<T>(props: FormProps<T>) {
     <FormContext.Provider value={contextValue}>
       <form
         {...domProps}
-        className={joinClassName(domProps.className, submittingClassName, "transition transition-500")}
+        className={joinClassName(
+          domProps.className,
+          submittingClassName,
+          "transition transition-500",
+          submissionState === "submitting" && "cursor-wait"
+        )}
         noValidate
         onSubmit={handleSubmitAsync}
       >

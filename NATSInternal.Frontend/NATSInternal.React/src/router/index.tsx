@@ -10,6 +10,7 @@ import SignInPage from "@/pages/authentication/signIn/SignInPage";
 // import HomePage from "@/pages/home/HomePage";
 const CustomerListPage = lazy(() => import("@/pages/customer/customerList/CustomerListPage"));
 const CustomerDetailPage = lazy(() => import("@/pages/customer/customerDetail/CustomerDetailPage"));
+const CustomerCreatePage = lazy(() => import("@/pages/customer/customerUpsert/CustomerCreatePage"));
 import TestingPage from "@/pages/TestingPage";
 import { AuthenticationError } from "@/api";
 
@@ -70,7 +71,7 @@ const router = createBrowserRouter([
               },
               {
                 path: "tao-moi",
-                Component: TestingPage,
+                Component: CustomerCreatePage,
                 handle: {
                   breadcrumbTitle: "Tạo mới",
                   pageTitle: "Tạo khách hàng mới"

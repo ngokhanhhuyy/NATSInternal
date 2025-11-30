@@ -8,11 +8,11 @@ declare global {
     categoryId: string;
     searchContent: string;
   }>;
-  
+
   type ProductCreateRequestDto = AbstractProductUpsertRequestDto;
-  
-  type ProductUpdateRequestDto = AbstractProductUpsertRequestDto & { id: string; };
-  
+
+  type ProductUpdateRequestDto = AbstractProductUpsertRequestDto & { id: string };
+
   type ProductGetListProductResponseDto = {
     id: string;
     name: string;
@@ -63,3 +63,5 @@ type AbstractProductUpsertRequestDto = {
   categoryName: string | null;
   photos: PhotoCreateOrUpdateRequestDto[];
 };
+
+export {};

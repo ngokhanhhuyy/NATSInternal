@@ -18,7 +18,7 @@ const productApi: ProductApi = {
     return httpClient.getAsync(`/products/${id}`);
   },
   async createAsync(requestDto: ProductCreateRequestDto): Promise<string> {
-    return httpClient.postAsync("/products",requestDto);
+    return httpClient.postAsync("/products", requestDto);
   },
   async updateAsync(id: string, requestDto: ProductUpdateRequestDto): Promise<void> {
     httpClient.putAndIgnoreAsync(`/products/${id}`, requestDto);

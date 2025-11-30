@@ -10,9 +10,11 @@ declare global {
     canEdit: boolean;
     canDelete: boolean;
   };
-  
+
   type ProductExistingAuthorizationResponseDto = {
     canEdit: boolean;
     canDelete: boolean;
   };
 }
+
+export {};

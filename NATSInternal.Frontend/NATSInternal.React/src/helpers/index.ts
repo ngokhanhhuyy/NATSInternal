@@ -1,6 +1,7 @@
 export * from "./avatarHelper";
 export * from "./currencyHelper";
 export * from "./dateTimeHelper";
+export * from "./guidHelper";
 export * from "./jsonHelper";
 export * from "./paginationHelper";
 export * from "./phoneNumberHelper";

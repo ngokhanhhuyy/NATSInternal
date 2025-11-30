@@ -16,9 +16,9 @@ const api: AuthenticationApi = {
   },
 
   async clearAccessCookieAsync(): Promise<void> {
-    return await httpClient.postAndIgnoreAsync("/authentication/clear-access-cookie", {  });
+    return await httpClient.postAndIgnoreAsync("/authentication/clear-access-cookie", {});
   },
-  
+
   async getCallerDetailAsync(): Promise<UserGetDetailResponseDto> {
     return await httpClient.getAsync("/authentication/caller-detail");
   },
@@ -28,7 +28,7 @@ const api: AuthenticationApi = {
   },
 
   async checkAuthenticationStatusAsync(): Promise<void> {
-    await httpClient.postAndIgnoreAsync("/authentication/check-authentication-status", { });
+    await httpClient.postAndIgnoreAsync("/authentication/check-authentication-status", {});
   }
 };
 

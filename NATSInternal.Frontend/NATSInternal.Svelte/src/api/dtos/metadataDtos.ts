@@ -7,7 +7,7 @@ declare global {
     defaultSortByAscending: boolean | null;
     defaultResultsPerPage: number | null;
   };
-  
+
   type ListOptionsListResponseDto = {
     user: ListOptionsResponseDto;
     customer: ListOptionsResponseDto;
@@ -26,3 +26,5 @@ declare global {
     creatingAuthorizationList: CreatingAuthorizationListResponseDto;
   };
 }
+
+export {};

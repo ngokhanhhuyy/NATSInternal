@@ -3,3 +3,5 @@ declare global {
     productIds: string[];
   };
 }
+
+export {};

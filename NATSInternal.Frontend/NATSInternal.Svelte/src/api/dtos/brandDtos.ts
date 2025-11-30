@@ -1,3 +1,8 @@
 declare global {
-  type Brand
+  type Brand = {
+    id: number;
+    name: string;
+  };
 }
+
+export {};

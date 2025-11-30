@@ -17,13 +17,14 @@ v.setSpecificMessage(v.minLength, (issue) => {
 });
 
 export function validateUsingSchema<
-    TSchema extends v.BaseSchema<TInput, TOutput, TIssue>,
-    TInput,
-    TOutput,
-    TIssue extends v.BaseIssue<TOutput>>(schema: TSchema, input: TInput): void {
+  TSchema extends v.BaseSchema<TInput, TOutput, TIssue>,
+  TInput,
+  TOutput,
+  TIssue extends v.BaseIssue<TOutput>
+>(schema: TSchema, input: TInput): void {
   const parsingResult = v.safeParse(schema, input);
   if (!parsingResult.success) {
-    const mappedErrors: { [key: string]: string } = { };
+    const mappedErrors: { [key: string]: string } = {};
     for (const issue of parsingResult.issues) {
       console.log(issue.kind);
       const dottedPath = v.getDotPath(issue) ?? "";

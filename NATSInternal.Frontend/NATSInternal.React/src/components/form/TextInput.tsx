@@ -3,15 +3,15 @@ import Input from "./Input";
 
 // Props.
 export type TextInputProps = {
-  password?: boolean;
+  type?: "text" | "password" | "tel" | "email"
   value: string;
   onValueChanged(newValue: string): any;
-} & React.ComponentPropsWithoutRef<"input">;
+} & Omit<React.ComponentPropsWithoutRef<"input">, "type">;
 
 // Component.
 export default function TextInput(props: TextInputProps) {
   // Props.
-  const { password, value, onValueChanged, ...domProps } = props;
+  const { value, onValueChanged, ...domProps } = props;
 
   // Dependencies.
   const { joinClassName } = useTsxHelper();
@@ -23,7 +23,6 @@ export default function TextInput(props: TextInputProps) {
         {...domProps}
         name={path}
         className={joinClassName(className, props.className)}
-        type={password ? "password" : "text"}
         placeholder={props.placeholder ?? displayName}
         value={value}
         onInput={(event) => onValueChanged((event.target as HTMLInputElement).value)}

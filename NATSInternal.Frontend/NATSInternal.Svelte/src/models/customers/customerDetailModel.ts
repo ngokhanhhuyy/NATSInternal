@@ -52,7 +52,7 @@ export function createCustomerDetailModel(responseDto: CustomerGetDetailResponse
     get avatarUrl(): string {
       return getDefaultAvatarUrlByFullName(this.fullName);
     },
-    get displayDebtRemainingAmountText(): string{
+    get displayDebtRemainingAmountText(): string {
       return getAmountDisplayText(this.debtRemainingAmount);
     },
     get updateRoute(): string {

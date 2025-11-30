@@ -1,7 +1,7 @@
 import type { ApiErrorDetails } from "@/api";
 
 declare global {
-  type ErrorDetailModel = { propertyPath: string; message: string; };
+  type ErrorDetailModel = { propertyPath: string; message: string };
   type ErrorCollectionModel = {
     isValidated: boolean;
     details: ErrorDetailModel[];
@@ -18,13 +18,12 @@ export function createErrorCollectionModel(): ErrorCollectionModel {
       return {
         ...model,
         isValidated: true,
-        details: Object
-          .entries(apiErrors)
+        details: Object.entries(apiErrors)
           .map(([key, value]) => ({ propertyPath: key, message: value }))
           .filter((detail) => detail.message)
-        };
+      };
     },
-    clear: () => ({ ...model, details: [] }),
+    clear: () => ({ ...model, details: [] })
   };
 
   return model;

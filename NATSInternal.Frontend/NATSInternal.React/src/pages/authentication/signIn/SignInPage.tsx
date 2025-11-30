@@ -144,7 +144,7 @@ export default function SignInPage(): React.ReactNode {
           {/* Password */}
           <FormField className="mb-5" path="password">
             <TextInput
-              password
+              type="password"
               value={model.password}
               onValueChanged={(password) => setModel(model => ({ ...model, password }))}
             />

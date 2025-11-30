@@ -13,13 +13,11 @@ const mockUserApi: UserApi = {
     for (const user of mockDatabase.users) {
       let shouldPick = false;
 
-      if (requestDto.searchContent &&
-          requestDto.searchContent.toLowerCase().includes(user.userName.toLowerCase()))
-      {
+      if (requestDto.searchContent && requestDto.searchContent.toLowerCase().includes(user.userName.toLowerCase())) {
         shouldPick = true;
       }
 
-      if (requestDto.roleId && user.roles.map(role => role.id).includes(requestDto.roleId)) {
+      if (requestDto.roleId && user.roles.map((role) => role.id).includes(requestDto.roleId)) {
         shouldPick = true;
       }
 
@@ -61,7 +59,7 @@ const mockUserApi: UserApi = {
 
     const pageOrDefault = requestDto.page ?? 1;
     const resultsPerPageOrDefault = requestDto.resultsPerPage ?? 15;
-    
+
     const pageCount = Math.ceil(sortedUsers.length / resultsPerPageOrDefault);
     const skipUserCount = resultsPerPageOrDefault * (pageOrDefault - 1);
     let takenUserCount = 0;
@@ -108,7 +106,7 @@ export function useMockUserApi(): UserApi {
 export function createUserBasicResponseDto(user: User): UserBasicResponseDto {
   return {
     ...user,
-    roles: user.roles.map(role => ({
+    roles: user.roles.map((role) => ({
       id: role.id,
       name: role.name,
       displayName: role.displayName,
@@ -130,12 +128,12 @@ export function createRoleBasicResponseDto(role: Role): RoleBasicResponseDto {
 export function createUserGetDetailResponseDto(user: User): UserGetDetailResponseDto {
   return {
     ...user,
-    roles: user.roles.map(role => ({
+    roles: user.roles.map((role) => ({
       id: role.id,
       name: role.name,
       displayName: role.displayName,
       powerLevel: role.powerLevel,
-      permissionNames: role.permissions.map(permission => permission.name)
+      permissionNames: role.permissions.map((permission) => permission.name)
     })),
     authorization: getUserExistingAuthorization(user)
   };
@@ -163,12 +161,12 @@ function compareRoleMaxPowerLevel(previousRoles: Role[], currentRoles: Role[], b
   const currentPowerLevel = getMaxPowerLevelFromRoles(currentRoles);
   let comparedResult = currentPowerLevel - previousPowerLevel;
   if (byAscending) {
-    comparedResult = - comparedResult;
+    comparedResult = -comparedResult;
   }
 
   return comparedResult;
 }
 
 function getMaxPowerLevelFromRoles(roles: Role[]): number {
-  return Math.max(...roles.map(role => role.powerLevel));
+  return Math.max(...roles.map((role) => role.powerLevel));
 }
