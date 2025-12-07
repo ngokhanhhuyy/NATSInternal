@@ -1,0 +1,319 @@
+{
+  "editor.semanticTokenColorCustomizations": {
+    "[GitHub Light]": {
+      "enabled": true,
+      "rules": {
+        "class": {
+          "foreground": "#BF3989"
+        },
+        "interface": {
+          "foreground": "#6f42c1"
+        },
+        "type": {
+          "foreground": "#BF3989"
+        },
+        "enum": {
+          "foreground": "#BF3989"
+        },
+        "property": {
+          "foreground": "#109c00"
+        },
+        "function": {
+          "foreground": "#6f42c1"
+        },
+        "clsParameter": {
+          "foreground": "#e36209",
+          "fontStyle": "italic"
+        },
+        "selfParameter": {
+          "foreground": "#e36209",
+          "fontStyle": "italic"
+        },
+        "typeParameter": {
+          "foreground": "#e36209"
+        },
+        "magicFunction": {
+          "foreground": "#BF3989"
+        },
+        "razorTagHelperAttribute": {
+          "foreground": "#d73a49",
+          "fontStyle": ""
+        },
+        "razorTagHelperElement": {
+          "foreground": "#d73a49",
+          "fontStyle": ""
+        },
+        "razorComponentAttribute": {
+          "foreground": "#d73a49",
+          "fontStyle": ""
+        },
+        "razorComponentElement": {
+          "foreground": "#d73a49",
+          "fontStyle": ""
+        },
+        "xmlDocCommentName": {
+          "foreground": "#22863A"
+        }
+      }
+    },
+    "[GitHub Dark]": {
+      "enabled": true,
+      "rules": {
+        "class": {
+          "foreground": "#f183c5"
+        },
+        "interface": {
+          "foreground": "#f183c5"
+        },
+        "type": {
+          "foreground": "#f183c5"
+        },
+        "enum": {
+          "foreground": "#f183c5"
+        },
+        "property": {
+          "foreground": "#B7DC6F"
+        },
+        "clsParameter": {
+          "foreground": "#ffab70",
+          "fontStyle": "italic"
+        },
+        "selfParameter": {
+          "foreground": "#ffab70",
+          "fontStyle": "italic"
+        },
+        "typeParameter": {
+          "foreground": "#ffab70"
+        },
+        "magicFunction": {
+          "foreground": "#f183c5"
+        },
+        "razorTagHelperAttribute": {
+          "foreground": "#f97583"
+        },
+        "razorTagHelperElement": {
+          "foreground": "#f97583"
+        },
+        "razorComponentAttribute": {
+          "foreground": "#f97583"
+        },
+        "razorComponentElement": {
+          "foreground": "#f97583",
+          "fontStyle": ""
+        },
+        "xmlDocCommentName": {
+          "foreground": "#85E89D"
+        }
+      }
+    },
+    "[Flatland Monokai]": {
+      "enabled": true,
+      "rules": {
+        "typeParameter": "#FD971F",
+        "interface": {
+          "foreground": "#A6E22E",
+          "fontStyle": "underline"
+        }
+      }
+    },
+    "[Default Dark Modern]": {
+      "rules": {
+        "property": "#DCDCDC",
+        "field": "#DCDCDC",
+        "namespace": "#DCDCDC",
+        "struct": "#86c691",
+        "interface": "#b8d7a3"
+      }
+    },
+    "[Default Dark+]": {
+      "rules": {
+        "property": "#DCDCDC",
+        "field": "#DCDCDC",
+        "namespace": "#DCDCDC",
+        "struct": "#86c691",
+        "interface": "#b8d7a3"
+      }
+    }
+  },
+  "editor.tokenColorCustomizations": {
+    "[GitHub Light]": {
+      "textMateRules": [
+        {
+          "scope": ["string", "punctuation.definition.string", "string punctuation.section.embedded source"],
+          "settings": {
+            "foreground": "#003470"
+          }
+        },
+        {
+          "scope": [
+            "source.tsx meta.var.expr.tsx meta.arrow.tsx meta.block.tsx meta.tag.tsx entity.name.tag.tsx support.class.component.tsx",
+            "support.class.component.tsx"
+          ],
+          "settings": {
+            "foreground": "#BF3989"
+          }
+        }
+      ]
+    },
+    "[GitHub Dark]": {
+      "textMateRules": [
+        {
+          "scope": ["string", "punctuation.definition.string", "string punctuation.section.embedded source"],
+          "settings": {
+            "foreground": "#fff08f"
+          }
+        },
+        {
+          "scope": ["entity.name.type.cs"],
+          "settings": {
+            "foreground": "#f183c5"
+          }
+        },
+        {
+          "scope": [
+            "source.tsx meta.function.tsx meta.block.tsx meta.tag.tsx entity.name.tag.tsx support.class.component.tsx",
+            "support.class.component.tsx"
+          ],
+          "settings": {
+            "foreground": "#f183c5"
+          }
+        },
+        {
+          "scope": [
+            "source.tsx meta.var.expr.tsx meta.arrow.tsx meta.block.tsx meta.tag.tsx entity.name.tag.tsx support.class.component.tsx"
+          ],
+          "settings": {
+            "foreground": "#f183c5"
+          }
+        }
+      ]
+    },
+    "[Flatland Monokai]": {
+      "textMateRules": [
+        {
+          "scope": ["source.tsx meta.interface.tsx storage.type.interface.tsx"],
+          "settings": {
+            "foreground": "#F92672"
+          }
+        },
+        {
+          "scope": [
+            "source.tsx meta.var.expr.tsx storage.type.tsx",
+            "storage.type.type.tsx",
+            "storage.type.class.ts",
+            "storage.type.type.ts",
+            "storage.type.ts",
+            "support.type.primitive.ts"
+          ],
+          "settings": {
+            "foreground": "#F92672"
+          }
+        },
+        {
+          "scope": ["variable.language.this.ts"],
+          "settings": {
+            "foreground": "#FD971F"
+          }
+        },
+        {
+          "scope": [
+            "entity.name.type.alias.ts",
+            "entity.name.type.class.ts",
+            "entity.other.inherited-class.ts",
+            "variable.language.super.ts"
+          ],
+          "settings": {
+            "foreground": "#66D9EF"
+          }
+        }
+      ]
+    }
+  },
+  "workbench.colorCustomizations": {
+    "[GitHub Light]": {
+      "textCodeBlock.background": "#e8e8e8",
+      "menu.border": "#d4d4d4",
+      "menu.selectionBackground": "#6F42C1",
+      "menu.selectionForeground": "#ffffff",
+      "widget.shadow": "#00000029"
+    },
+    "[GitHub Dark]": {
+      "menu.border": "#646464",
+      "menu.selectionBackground": "#6F42C1",
+      "menu.selectionForeground": "#ffffff",
+      "widget.shadow": "#00000029"
+    },
+    "[JetBrains Rider Dark Theme]": {
+      "panel.border": "#383b3f",
+      "sideBar.border": "#383b3f",
+      "titleBar.border": "#383b3f",
+      "editorWidget.border": "#4c5055",
+      "statusBar.border": "#383b3f",
+      "editorGroup.border": "#383b3f",
+      "activityBar.border": "#383b3f",
+      "sideBarSectionHeader.border": "#383b3f",
+      "sideBarTitle.border": "#383b3f",
+      "editor.selectionBackground": "#2d455c"
+    }
+  },
+  "editor.inlineSuggest.enabled": false,
+  "database-client.autoSync": true,
+  "workbench.iconTheme": "vscode-jetbrains-icon-theme-2023-light",
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.astro": true,
+    "**/.config": true,
+    "**/.github": true,
+    "**/.idea": true,
+    "**/.vs": true,
+    "**/.vscode": true,
+    "**/bin": true,
+    "**/node_modules": true,
+    "**/obj": true,
+    "**/Thumbs.db": false
+  },
+  "editor.fontFamily": "JetBrains Mono, Iosevka SS18, Monaco, 'Courier New', monospace",
+  "editor.fontSize": 13,
+  "editor.inlineSuggest.edits.allowCodeShifting": "never",
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.tabSize": 2
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.tabSize": 2
+  },
+  "files.autoSave": "afterDelay",
+  "git.enableSmartCommit": true,
+  "git.autofetch": true,
+  "javascript.preferences.quoteStyle": "double",
+  "typescript.preferences.quoteStyle": "double",
+  "editor.fontLigatures": true,
+  "editor.minimap.enabled": false,
+  "dotnet.codeLens.enableReferencesCodeLens": false,
+  "editor.rulers": [120],
+  "terminal.integrated.fontSize": 13,
+  "python.analysis.typeCheckingMode": "strict",
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportWildcardImportFromLibrary": "none"
+  },
+  "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "explorer.confirmDelete": false,
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "workbench.colorTheme": "GitHub Light",
+  "window.autoDetectColorScheme": true,
+  "workbench.preferredLightColorTheme": "GitHub Light",
+  "icontheme.darkIconTheme": "vscode-jetbrains-icon-theme-2023-dark",
+  "icontheme.lightIconTheme": "vscode-jetbrains-icon-theme-2023-light",
+  "workbench.editor.wrapTabs": true,
+  "guides.stack.style": "dashed",
+  "guides.overrideDefault": true,
+  "guides.active.style": "none",
+  "editor.renderWhitespace": "all",
+  "svelte.enable-ts-plugin": true,
+  "prettier.bracketSameLine": true,
+  "workbench.preferredDarkColorTheme": "Default Dark+"
+}
