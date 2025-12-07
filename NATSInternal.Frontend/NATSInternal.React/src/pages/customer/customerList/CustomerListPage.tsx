@@ -7,7 +7,6 @@ import { createCustomerListModel } from "@/models";
 import MainContainer from "@/components/layouts/MainContainer";
 import FilterBlock from "./FilterBlock";
 import TableBlockProps from "./TableBlock";
-import { MainPaginator } from "@/components/ui";
 
 // Api.
 const api = useApi();
@@ -67,13 +66,10 @@ export default function CustomerListPage(): React.ReactNode {
           isReloading={isReloading}
         />
 
-        <TableBlockProps model={model} />
-
-        <MainPaginator
-          page={model.page}
-          pageCount={model.pageCount}
-          isReloading={isReloading}
+        <TableBlockProps
+          model={model}
           onPageChanged={(page) => setModel(m => ({ ...m, page }))}
+          isReloading={isReloading}
         />
       </div>
     </MainContainer>

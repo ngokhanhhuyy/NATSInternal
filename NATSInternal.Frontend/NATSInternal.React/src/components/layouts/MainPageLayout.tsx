@@ -38,7 +38,7 @@ export default function MainPageLayout(): React.ReactNode {
   return (
     <RootLayout>
       <div id="main-page-layout" className={joinClassName(
-        "bg-white dark:bg-neutral-800 justify-self flex-1 border border-b-0 border-primary/10",
+        "bg-white dark:bg-white/10 justify-self flex-1 border border-b-0 border-primary/10",
         "flex flex-col justify-start items-stretch rounded-t-2xl mx-3 mt-3 overflow-x-hidden",
         "shadow-lg transition-opacity",
         isNavigating && "opacity-50 dark:opacity-70 pointer-events-none"

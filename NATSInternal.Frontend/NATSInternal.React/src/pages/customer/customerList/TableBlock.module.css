@@ -1,25 +1,23 @@
-@reference "tailwindcss";
+@import "tailwindcss";
 
 .tableBlock {
-    --border-color: rgba(0, 0, 0, 7.5%);
+    --border-color: rgba(0, 0, 0, 10%);
 
     :global(html.dark) & {
-        --border-color: rgba(255, 255, 255, 7.5%);
+        --border-color: rgba(255, 255, 255, 10%);
     }
 
-    & :global(td),
-    & :global(th){
+    & :global(td), & :global(th) {
         border-style: solid;
         border-color: var(--border-color);
-    }
-
-    & :global(tr:not(:last-child) td),
-    & :global(th){
         border-bottom-width: 1px;
     }
 
-    & :global(td:not(:last-child)),
-    & :global(th:not(:last-child)){
+    & :global(tr:last-child td) {
+        border-bottom-width: 0;
+    }
+
+    & :global(td:not(:last-child)), & :global(th:not(:last-child)){
         border-right-width: 1px;
     }
 }

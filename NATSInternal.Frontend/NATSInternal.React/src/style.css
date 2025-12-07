@@ -152,7 +152,7 @@ input[type="checkbox"] {
     --padding-inline-coeffecient: 2;
     --padding-block-coeffecient: 1;
     --min-height-coeffecient: 9;
-    background: rgba(255, 255, 255, 10%);
+    background: rgba(255, 255, 255);
     color: rgba(0, 0, 0, 80%);
     border: 1px solid rgba(0, 0, 0, 15%);
     border-radius: var(--radius-lg);
@@ -167,7 +167,7 @@ input[type="checkbox"] {
     /* box-shadow: var(--shadow-xs); */
 
     &:hover {
-        background: rgba(0, 0, 0, 10%);
+        background: var(--color-neutral-100);
 
         &:is(a) {
             text-decoration: none !important;
