@@ -9,11 +9,8 @@ import { Button } from "@/components/ui";
 
 // Props.
 export type ModalProps = {
-  pickedModel: CustomerBasicModel | null;
-  listModel: CustomerListModel;
-  onListModelChanged(changedData: Partial<CustomerListModel>): any;
+  model: CustomerBasicModel | null;
   isVisible: boolean;
-  isReloading: boolean;
   onPicked(customer: CustomerListCustomerModel): any;
   onUnpicked(): any;
   onCancel(): any;
@@ -44,7 +41,6 @@ export default function Modal(props: ModalProps): React.ReactNode {
       className={joinClassName(
         "bg-black/50 w-screen h-screen flex justify-center items-center z-1000",
         "fixed top-0 left-0 backdrop-blur-md transition-opacity",
-        props.isReloading && "cursor-wait",
         props.isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       )}
     >
@@ -61,18 +57,13 @@ export default function Modal(props: ModalProps): React.ReactNode {
 
         {/* Body */}
         <div className="border-y border-black/10 dark:border-white/10 p-3">
-          {props.pickedModel ? (
+          {props.model ? (
             <PickedIntroducerInfo
-              model={props.pickedModel}
+              model={props.model}
               onUnpicked={props.onUnpicked}
             />
           ): (
-            <List
-              model={props.listModel}
-              onModelChanged={(changedData) => props.onListModelChanged(changedData)}
-              onPicked={props.onPicked}
-              isReloading={props.isReloading}
-            />
+            <List onPicked={props.onPicked} />
           )}
         </div>
 

@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import { useNavigate, useLoaderData } from "react-router";
 import { useApi } from "@/api";
 import { createCustomerUpsertModel } from "@/models/customers/customerUpsertModel";
+import { useRouteHelper } from "@/helpers";
 
 // Child components.
 import CustomerUpsertPage from "./CustomerUpsertPage";
@@ -19,17 +20,26 @@ export default function CustomerUpdatePage(): React.ReactNode {
   const navigate = useNavigate();
   const api = useApi();
   const initialModel = useLoaderData<CustomerUpsertModel>();
+  const { getCustomerListRoutePath, getCustomerDetailRoutePath } = useRouteHelper();
 
   // States.
   const [model, setModel] = useState(() => initialModel);
 
   // Callbacks.
-  const handleSubmit = async (): Promise<void> => {
+  const handleUpdate = async (): Promise<void> => {
     await api.customer.updateAsync(model.id, model.toRequestDto());
   };
 
-  const handleSubmissionSucceeded = useCallback((): void => {
-    navigate(model.id);
+  const handleDelete = useCallback(async () => {
+    await api.customer.deleteAsync(model.id);
+  }, [model.id]);
+
+  const handleUpdatingSucceeded = useCallback((): void => {
+    navigate(getCustomerDetailRoutePath(model.id));
+  }, []);
+
+  const handleDeletionSucceeded = useCallback((): void => {
+    navigate(getCustomerListRoutePath());
   }, []);
 
   // Template.
@@ -42,8 +52,10 @@ export default function CustomerUpdatePage(): React.ReactNode {
       isForCreating={true}
       model={model}
       onModelChanged={(changedData) => setModel(m => ({ ...m, ...changedData }))}
-      submitAction={handleSubmit}
-      onSubmissionSucceeded={handleSubmissionSucceeded}
+      upsertAction={handleUpdate}
+      onUpsertingSucceeded={handleUpdatingSucceeded}
+      deleteAction={handleDelete}
+      onDeletionSucceeded={handleDeletionSucceeded}
     />
   );
 }

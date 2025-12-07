@@ -119,9 +119,9 @@ export default function SignInPage(): React.ReactNode {
             "shadow-none sm:shadow-xs",
             "flex flex-col rounded-xl p-8 items-stretch w-[350px] relative"
           )}
-          submitAction={loginAsync}
-          onSubmissionSucceeded={handleLoginSucceeded}
-          onSubmissionFailed={handleLoginFailed}
+          upsertAction={loginAsync}
+          onUpsertingSucceeded={handleLoginSucceeded}
+          onUpsertingFailed={handleLoginFailed}
           submissionSucceededText="Đăng nhập thành công!"
         >
           {/* Introduction */}

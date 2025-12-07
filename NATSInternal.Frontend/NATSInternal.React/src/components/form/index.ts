@@ -6,3 +6,4 @@ export { default as BooleanSelectInput } from "./BooleanSelectInput";
 export { default as TextInput } from "./TextInput";
 export { default as TextAreaInput } from "./TextAreaInput";
 export { default as SubmitButton } from "./SubmitButton";
+export { default as DeleteButton } from "./DeleteButton";

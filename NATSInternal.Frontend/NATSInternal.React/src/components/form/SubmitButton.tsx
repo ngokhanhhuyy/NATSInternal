@@ -16,7 +16,13 @@ export default function SubmitButton(props: SubmitButtonProps): React.ReactNode 
   const { compute } = useTsxHelper();
   
   // Computed.
-  const isSubmitting = compute<boolean>(() => formContext?.submissionState === "submitting");
+  const isSubmitting = compute<boolean>(() => {
+    if (!formContext) {
+      return false;
+    }
+
+    return formContext.submissionState === "submitting" && formContext.submissionType === "upsert";
+  });
   
   // Template.
   return (

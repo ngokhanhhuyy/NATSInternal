@@ -96,7 +96,7 @@ export default function CustomerListPage(): React.ReactNode {
           isReloading && "pointer-events-none",
           !isFilterVisible && "hidden"
         )}
-        submitAction={reloadAsync}
+        upsertAction={reloadAsync}
         showSucceededAnnouncement={false}
       >
         <div className="grid grid-cols-[1fr_auto] col-span-2 md:col-span-6 items-end">

@@ -33,15 +33,21 @@ a:not(.hover\:underline):not(.hover\:overline):not(.hover\:line-through):not(.ho
     text-decoration: underline;
 }
 
+input {
+    html.dark & {
+        color-scheme: dark;
+    }
+}
+
 input:not([type="checkbox"]), select, textarea {
     --padding-inline: calc(var(--spacing) * 2);
     --padding-block: calc(var(--spacing) * 1);
     background: white;
-    border: 1px solid rgba(0, 0, 0, 10%);
+    border: 1px solid rgba(0, 0, 0, 15%);
     border-radius: var(--radius-lg);
     padding-inline: var(--padding-inline);
     padding-block: var(--padding-block);
-    box-shadow: var(--shadow-xs);
+    /* box-shadow: var(--shadow-xs); */
     transition: .2s linear, outline .1s linear;
     outline: 0.15rem solid transparent;
     min-height: calc(var(--spacing) * 9);
@@ -115,6 +121,17 @@ textarea {
     min-height: calc(var(--spacing) * 30);
 }
 
+select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75em center;
+    background-size: .9em auto;
+    appearance: none;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    position: relative;
+}
+
 input[type="checkbox"] {
     border: 3px solid red !important;
     accent-color: var(--color-indigo-500);
@@ -143,7 +160,7 @@ input[type="checkbox"] {
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: var(--shadow-xs);
+    /* box-shadow: var(--shadow-xs); */
 
     &:hover {
         background: var(--color-neutral-100);

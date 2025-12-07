@@ -16,11 +16,11 @@ export default function CustomerCreatePage(): React.ReactNode {
   const [model, setModel] = useState(() => createCustomerUpsertModel());
 
   // Callbacks.
-  const handleSubmit = async (): Promise<string> => {
+  const handleCreate = async (): Promise<string> => {
     return await api.customer.createAsync(model.toRequestDto());
   };
 
-  const handleSubmissionSucceeded = useCallback((createdId: string): void => {
+  const handleCreatingSucceeded = useCallback((createdId: string): void => {
     navigate(createdId);
   }, []);
 
@@ -31,8 +31,8 @@ export default function CustomerCreatePage(): React.ReactNode {
       isForCreating={true}
       model={model}
       onModelChanged={(changedData) => setModel(m => ({ ...m, ...changedData }))}
-      submitAction={handleSubmit}
-      onSubmissionSucceeded={handleSubmissionSucceeded}
+      upsertAction={handleCreate}
+      onUpsertingSucceeded={handleCreatingSucceeded}
     />
   );
 }

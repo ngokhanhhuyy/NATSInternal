@@ -4,34 +4,43 @@ import { createErrorCollectionModel } from "@/models";
 import { useTsxHelper } from "@/helpers";
 
 // Type.
-type SubmissionState = "notSubmitting" | "submitting" | "submissionSucceeded";
+export type SubmissionState = "notSubmitting" | "submitting" | "submissionSucceeded";
+export type SubmissionType = "upsert" | "delete";
 
 // Payload.
 type FormContextPayload = {
   errorCollection: ErrorCollectionModel;
   submissionState: SubmissionState;
+  submissionType: SubmissionType | null;
+  handleDeletionAsync?(): Promise<void>;
 };
 
 // Context.
 export const FormContext = createContext<FormContextPayload | null>(null);
 
 // Props.
-type FormProps<T> = {
-  submitAction: () => Promise<T>;
-  onSubmissionSucceeded?: (result: T) => any;
-  onSubmissionFailed?: (error: Error, errorHandled: boolean) => any;
+type FormProps<TUpsertResult> = {
+  upsertAction: () => Promise<TUpsertResult>;
+  onUpsertingSucceeded?: (result: TUpsertResult) => any;
+  onUpsertingFailed?: (error: Error, errorHandled: boolean) => any;
+  deleteAction?: () => Promise<void>;
+  onDeletionSucceeded?: () => any;
+  onDeletionFailed?: (error: Error, errorHandled: boolean) => any;
   submissionSucceededText?: string;
   showValidState?: boolean;
   showSucceededAnnouncement?: boolean;
 } & React.ComponentPropsWithoutRef<"form">;
 
 // Component.
-export default function Form<T>(props: FormProps<T>) {
+export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
   // Props.
   const {
-    submitAction,
-    onSubmissionSucceeded,
-    onSubmissionFailed,
+    upsertAction,
+    onUpsertingSucceeded,
+    onUpsertingFailed,
+    deleteAction,
+    onDeletionSucceeded,
+    onDeletionFailed,
     submissionSucceededText,
     showSucceededAnnouncement,
     ...domProps
@@ -43,6 +52,7 @@ export default function Form<T>(props: FormProps<T>) {
   // States.
   const [errorCollection, setErrorCollection] = useState(createErrorCollectionModel);
   const [submissionState, setSubmissionState] = useState<SubmissionState>("notSubmitting");
+  const [submissionType, setSubmissionType] = useState<SubmissionType | null>(null);
 
   // Computed.
   const submittingClassName = compute(() => {
@@ -55,29 +65,54 @@ export default function Form<T>(props: FormProps<T>) {
     return {
       errorCollection,
       submissionState,
-      showValidState: props.showValidState ?? true
+      submissionType,
+      handleDeletionAsync
     };
   }, [errorCollection, submissionState]);
 
   // Callbacks.
-  async function handleSubmitAsync(event: React.FormEvent): Promise<void> {
+  async function handleUpsertingAsync(event: React.FormEvent): Promise<void> {
     event.preventDefault();
     setErrorCollection(errorCollection => errorCollection.clear());
     setSubmissionState("submitting");
+    setSubmissionType("upsert");
 
     try {
-      const result = await submitAction();
-      onSubmissionSucceeded?.(result);
+      const result = await upsertAction();
+      onUpsertingSucceeded?.(result);
       setSubmissionState("submissionSucceeded");
     } catch (error) {
       setSubmissionState("notSubmitting");
+      setSubmissionType(null);
       if (error instanceof ValidationError || error instanceof OperationError) {
         setErrorCollection(errorCollection => errorCollection.mapFromApiErrorDetails(error.errors));
-        onSubmissionFailed?.(error, true);
+        onUpsertingFailed?.(error, true);
         return;
       }
 
-      onSubmissionFailed?.(error as Error, false);
+      onUpsertingFailed?.(error as Error, false);
+      throw error;
+    }
+  }
+
+  async function handleDeletionAsync(): Promise<void> {
+    setSubmissionState("submitting");
+    setSubmissionType("upsert");
+
+    try {
+      await deleteAction?.();
+      onDeletionSucceeded?.();
+      setSubmissionState("submissionSucceeded");
+    } catch (error) {
+      setSubmissionState("notSubmitting");
+      setSubmissionType(null);
+      if (error instanceof ValidationError || error instanceof OperationError) {
+        setErrorCollection(errorCollection => errorCollection.mapFromApiErrorDetails(error.errors));
+        onDeletionFailed?.(error, true);
+        return;
+      }
+
+      onUpsertingFailed?.(error as Error, false);
       throw error;
     }
   }
@@ -94,7 +129,7 @@ export default function Form<T>(props: FormProps<T>) {
           submissionState === "submitting" && "cursor-wait"
         )}
         noValidate
-        onSubmit={handleSubmitAsync}
+        onSubmit={handleUpsertingAsync}
       >
         {submissionState === "submissionSucceeded" && showSucceededAnnouncement
           ? (

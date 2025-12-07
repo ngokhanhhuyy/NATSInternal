@@ -59,7 +59,6 @@ export default function Paginator(props: PaginatorProps): React.ReactNode {
   }
 
   const renderPageWithNumberButtons = (): React.ReactNode[] => {
-    console.log(paginationRanges);
     const startingPage = paginationRanges.smScreen.startingPage;
     const endingPage = paginationRanges.smScreen.endingPage;
     const arrayLength = endingPage - (startingPage - 1);
