@@ -85,7 +85,7 @@ internal static class RuleBuilderOptionsExtensions
         {
             try
             {
-                MagickImage _ = new MagickImage(file);
+                MagickImage _ = new(file);
                 return true;
             }
             catch (MagickMissingDelegateErrorException)

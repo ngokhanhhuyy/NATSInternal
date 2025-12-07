@@ -1,53 +1,87 @@
 using MediatR;
+using NATSInternal.Application.Authorization;
+using NATSInternal.Application.Localization;
 using NATSInternal.Application.UseCases.Customers;
 using NATSInternal.Application.UseCases.Products;
 using NATSInternal.Application.UseCases.Users;
 using NATSInternal.Domain.Features.Customers;
 using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Users;
+using System.Reflection;
 
 namespace NATSInternal.Application.UseCases.Metadata;
 
-public class MetadataGetHandler : IRequestHandler<Unit, MetadataGetResponseDto>
+internal class MetadataGetHandler : IRequestHandler<MetadataGetRequestDto, MetadataGetResponseDto>
 {
+    #region Fields
+    private readonly IAuthorizationInternalService _authorizationService;
+    private static readonly IDictionary<string, string> _displayNames;
+    #endregion
+
+    #region Constructors
+    static MetadataGetHandler()
+    {
+        FieldInfo[] fields = typeof(DisplayNames).GetFields(BindingFlags.Public | BindingFlags.Static);
+        _displayNames = fields
+            .Where(f => f.GetValue(null) is not null)
+            .ToDictionary(f => f.Name, f => (string)f.GetValue(null)!);
+    }
+    
+    public MetadataGetHandler(IAuthorizationInternalService authorizationService)
+    {
+        _authorizationService = authorizationService;
+    }
+    #endregion
+
     #region Methods
     public async Task<MetadataGetResponseDto> Handle(
-        MetadatagetRequestDto requestDto,
+        MetadataGetRequestDto requestDto,
         CancellationToken cancellationToken = default)
     {
         await Task.CompletedTask;
 
-        Dictionary<string, MetadataListOptionsResponseDto> listOptionsList = new();
-
         UserGetListRequestDto userGetListRequestDto = new();
-        listOptionsList.Add(
-            nameof(User),
-            new MetadataListOptionsResponseDto<UserGetListRequestDto.FieldToSort>(
-                resourceName: nameof(User),
-                defaultSortByField: UserGetListRequestDto.FieldToSort.CreatedDateTime,
-                userGetListRequestDto.SortByAscending,
-                userGetListRequestDto.ResultsPerPage
-            ));
-
         CustomerGetListRequestDto customerGetListRequestDto = new();
-        listOptionsList.Add(
-            nameof(Customer),
-            new MetadataListOptionsResponseDto<CustomerGetListRequestDto.FieldToSort>(
-                resourceName: nameof(User),
-                defaultSortByField: UserGetListRequestDto.FieldToSort.CreatedDateTime,
-                userGetListRequestDto.SortByAscending,
-                userGetListRequestDto.ResultsPerPage
-            ));
+        ProductGetListRequestDto productGetListRequestDto = new();
 
-        UserGetListRequestDto productGetListRequestDto = new();
-        listOptionsList.Add(
-            nameof(User),
-            new MetadataListOptionsResponseDto<UserGetListRequestDto.FieldToSort>(
-                resourceName: nameof(User),
-                defaultSortByField: UserGetListRequestDto.FieldToSort.CreatedDateTime,
-                userGetListRequestDto.SortByAscending,
-                userGetListRequestDto.ResultsPerPage
-            ));
+        MetadataGetListOptionsListResponseDto listOptionsList = new()
+        {
+            Customer = new()
+            {
+                ResourceName = nameof(Customer),
+                DefaultSortByFieldName = customerGetListRequestDto.SortByFieldName,
+                DefaultSortByAscending = customerGetListRequestDto.SortByAscending,
+                DefaultResultsPerPage = customerGetListRequestDto.ResultsPerPage
+            },
+            Product = new()
+            {
+                ResourceName = nameof(Product),
+                DefaultSortByFieldName = productGetListRequestDto.SortByFieldName,
+                DefaultSortByAscending = productGetListRequestDto.SortByAscending,
+                DefaultResultsPerPage = productGetListRequestDto.ResultsPerPage
+            },
+            User = new()
+            {
+                ResourceName = nameof(User),
+                DefaultSortByFieldName = userGetListRequestDto.SortByFieldName,
+                DefaultSortByAscending = userGetListRequestDto.SortByAscending,
+                DefaultResultsPerPage = userGetListRequestDto.ResultsPerPage
+            }
+        };
+
+        return new()
+        {
+            DisplayNameList = _displayNames,
+            ListOptionsList = listOptionsList,
+            CreatingAuthorizationList = new()
+            {
+                CanCreateUser = _authorizationService.CanCreateUser(),
+                CanCreateCustomer = _authorizationService.CanCreateCustomer(),
+                CanCreateProduct = _authorizationService.CanCreateProduct(),
+                CanCreateBrand = _authorizationService.CanCreateBrand(),
+                CanCreateProductCategory = _authorizationService.CanCreateProductCategory()
+            }
+        };
     }
     #endregion
 }

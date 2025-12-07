@@ -1,30 +1,33 @@
 declare global {
-  type DisplayNameListResponseDto = Record<string, string>;
+  type MetadataGetResponseDto = {
+    displayNameList: MetadataGetDisplayNamesListResponseDto;
+    listOptionsList: MetadataGetListOptionsListResponseDto;
+    creatingAuthorizationList: MetadataGetCreatingAuthorizationListResponseDto;
+  };
 
-  type ListOptionsResponseDto = {
+  type MetadataGetDisplayNamesListResponseDto = Record<string, string>;
+
+  type MetadataGetListOptionsListResponseDto = {
+    user: MetadataGetListOptionsResponseDto;
+    customer: MetadataGetListOptionsResponseDto;
+    product: MetadataGetListOptionsResponseDto;
+  };
+
+  type MetadataGetListOptionsResponseDto = {
+    resourceName: string;
     sortByFieldNameOptions: string[];
     defaultSortByFieldName: string | null;
     defaultSortByAscending: boolean | null;
     defaultResultsPerPage: number | null;
   };
 
-  type ListOptionsListResponseDto = {
-    user: ListOptionsResponseDto;
-    customer: ListOptionsResponseDto;
-    product: ListOptionsResponseDto;
-  };
-
-  type CreatingAuthorizationListResponseDto = {
-    user: boolean;
-    customer: boolean;
-    product: boolean;
-  };
-
-  type MetadataResponseDto = {
-    displayNameList: DisplayNameListResponseDto;
-    listOptionsList: ListOptionsListResponseDto;
-    creatingAuthorizationList: CreatingAuthorizationListResponseDto;
+  type MetadataGetCreatingAuthorizationListResponseDto = {
+    canCreateUser: boolean;
+    canCreateCustomer: boolean;
+    canCreateProduct: boolean;
+    canCreateBrand: boolean;
+    canCreateProductCategory: boolean;
   };
 }
 
-export {};
+export { }

@@ -1,4 +1,4 @@
-import { createCustomerBasicModel } from "../shared/customerBasicModel";
+import { createCustomerBasicModelFromResponseDto } from "@/models";
 import { useGuidHelper, useRouteHelper } from "@/helpers";
 
 declare global {
@@ -16,7 +16,7 @@ declare global {
     email: string;
     address: string;
     note: string;
-    introducer: CustomerBasicResponseDto | null;
+    introducer: CustomerBasicModel | null;
     detailRoute: string;
     authorization: CustomerExistingAuthorizationResponseDto | null;
     toRequestDto(): CustomerUpsertRequestDto;
@@ -41,7 +41,7 @@ export function createCustomerUpsertModel(responseDto?: CustomerGetDetailRespons
     email: responseDto?.email ?? "",
     address: responseDto?.address ?? "",
     note: responseDto?.note ?? "",
-    introducer: (responseDto?.introducer && createCustomerBasicModel(responseDto.introducer)) ?? null,
+    introducer: (responseDto?.introducer && createCustomerBasicModelFromResponseDto(responseDto.introducer)) ?? null,
     authorization: responseDto?.authorization ?? null,
     get detailRoute(): string {
       return getCustomerDetailRoutePath(this.id);

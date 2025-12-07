@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NATSInternal.Application.Authorization;
 using NATSInternal.Application.UseCases.Authentication;
 using NATSInternal.Application.UseCases.Customers;
+using NATSInternal.Application.UseCases.Metadata;
 using NATSInternal.Application.UseCases.Photos;
 using NATSInternal.Application.UseCases.Products;
 using NATSInternal.Application.UseCases.Products.ProductGetList;
@@ -27,12 +28,6 @@ public static class ApplicationConfiguration
         {
             Culture = new System.Globalization.CultureInfo("vi")
         };
-
-        // ValidatorOptions.Global.PropertyNameResolver = (_, b, _) =>
-        // {
-        //     string? name = 
-        //     return b.Name.FirstOrDefault()?.ToString().ToLower() + b.Name[1..] ?? 
-        // }
 
         // UseCases.
         // Authentication UseCases.
@@ -78,6 +73,9 @@ public static class ApplicationConfiguration
         services.AddTransient<
             IRequestHandler<PhotoGetMultipleByProductIdsRequestDto, ICollection<PhotoBasicResponseDto>>,
             PhotoGetMultipleByProductIdsHandler>();
+
+        // Metadata UseCases.
+        services.AddTransient<IRequestHandler<MetadataGetRequestDto, MetadataGetResponseDto>, MetadataGetHandler>();
 
         // Services.
         services.AddScoped<IAuthorizationService, AuthorizationInternalService>();

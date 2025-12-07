@@ -5,12 +5,13 @@ import * as Solid from "solid-js";
 declare global {
   namespace JSX {
     type Element = Solid.JSX.Element;
-    type DivElementProps = Solid.JSX.IntrinsicElements["div"];
-    type SpanElementProps = Solid.JSX.IntrinsicElements["span"];
-    type InputElementProps = Solid.JSX.IntrinsicElements["input"];
-    type TextAreaElementProps = Solid.JSX.IntrinsicElements["textarea"];
-    type SelectAreaElementProps = Solid.JSX.IntrinsicElements["select"];
-    type FormElementProps = Solid.JSX.IntrinsicElements["form"];
+    type HTMLDivAttributes = Solid.JSX.IntrinsicElements["div"];
+    type HTMLSpanAttributes = Solid.JSX.IntrinsicElements["span"];
+    type HTMLInputAttributes = Solid.JSX.IntrinsicElements["input"];
+    type HTMLTextAreaAttributes = Solid.JSX.IntrinsicElements["textarea"];
+    type HTMLSelectAttributes = Solid.JSX.IntrinsicElements["select"];
+    type HTMLFormAttributes = Solid.JSX.IntrinsicElements["form"];
+    type HTMLButtonAttributes = Solid.JSX.IntrinsicElements["button"];
     type CSSProperties = Solid.JSX.CSSProperties;
     interface IntrinsicElements extends Solid.JSX.IntrinsicElements {}
     interface ElementChildrenAttribute extends Solid.JSX.ElementChildrenAttribute {}

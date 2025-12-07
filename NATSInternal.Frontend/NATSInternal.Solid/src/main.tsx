@@ -1,7 +1,5 @@
 import { render } from "solid-js/web";
-import "@/assets/main.css";
-import "bootstrap";
-import "bootstrap/dist/css/bootstrap.css";
+import "./style.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import App from "./App";
 

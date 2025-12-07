@@ -3,7 +3,7 @@ import { useApi } from "@/api";
 const api = useApi();
 const metadata = await api.metadata.getMetadataAsync();
 
-export function getMetadata(): MetadataResponseDto {
+export function getMetadata(): MetadataGetResponseDto {
   if (metadata == null) {
     throw new Error("Metadata has not been loaded.");
   }
@@ -20,6 +20,6 @@ export function getDisplayName(key: string): string | null {
   return getMetadata().displayNameList[camelCaseKey];
 }
 
-export function getFieldToSortOptions(): ListOptionsListResponseDto {
+export function getFieldToSortOptions(): MetadataGetListOptionsListResponseDto {
   return getMetadata().listOptionsList;
 }

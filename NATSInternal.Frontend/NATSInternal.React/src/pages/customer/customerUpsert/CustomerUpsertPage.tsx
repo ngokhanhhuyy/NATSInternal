@@ -1,10 +1,10 @@
 import React from "react";
-import { Link } from "react-router";
+import { useValidationHelper } from "@/helpers";
 
 // Child components.
 import MainContainer from "@/components/layouts/MainContainer";
-import { Button } from "@/components/ui";
-import { Form, FormField, TextInput, SelectInput, DateTimeInput } from "@/components/form";
+import IntroducerInput from "./introducerPicker.tsx/IntroducerInput";
+import { Form, FormField, TextInput, TextAreaInput, SelectInput, DateTimeInput, SubmitButton } from "@/components/form";
 
 // Props.
 type CustomerUpsertPageProps<T> = {
@@ -14,10 +14,14 @@ type CustomerUpsertPageProps<T> = {
   onModelChanged(changedData: Partial<CustomerUpsertModel>): any;
   submitAction(): Promise<T>;
   onSubmissionSucceeded(submissionResult: T): any;
+  renderButtons?(): React.ReactNode;
 };
 
 // Component.
 export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>): React.ReactNode {
+  // Dependencies.
+  const { validatePhoneNumber } = useValidationHelper();
+
   // Template;
   return (
     <MainContainer description={props.description}>
@@ -26,9 +30,9 @@ export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>)
         submitAction={props.submitAction}
         onSubmissionSucceeded={props.onSubmissionSucceeded}
       >
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-6 gap-3">
           {/* FirstName */}
-          <FormField path="firstName">
+          <FormField path="firstName" className="sm:col-span-2">
             <TextInput
               placeholder="Nguyễn"
               value={props.model.firstName}
@@ -37,7 +41,7 @@ export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>)
           </FormField>
 
           {/* MiddleName */}
-          <FormField path="middleName">
+          <FormField path="middleName" className="sm:col-span-2">
             <TextInput
               placeholder="Văn"
               value={props.model.middleName}
@@ -46,7 +50,7 @@ export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>)
           </FormField>
 
           {/* LastName */}
-          <FormField path="lastName">
+          <FormField path="lastName" className="sm:col-span-2">
             <TextInput
               placeholder="An"
               value={props.model.lastName}
@@ -55,9 +59,9 @@ export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>)
           </FormField>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-6 gap-3">
           {/* NickName */}
-          <FormField path="nickName">
+          <FormField path="nickName" className="sm:col-span-2">
             <TextInput
               placeholder="Anh An"
               value={props.model.nickName}
@@ -66,9 +70,8 @@ export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>)
           </FormField>
 
           {/* Gender */}
-          <FormField path="gender">
+          <FormField path="gender" className="sm:col-span-2">
             <SelectInput
-              disabled
               options={[{ value: "Male", displayName: "Nam" }, { value: "Female", displayName: "Nữ" }]}
               value={props.model.gender}
               onValueChanged={(gender: Gender) => props.onModelChanged({ gender })}
@@ -76,7 +79,7 @@ export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>)
           </FormField>
 
           {/* Birthday */}
-          <FormField path="birthday">
+          <FormField path="birthday" className="sm:col-span-2">
             <DateTimeInput
               type="date"
               value={props.model.birthday}
@@ -85,28 +88,73 @@ export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>)
           </FormField>
 
           {/* PhoneNumber */}
-          <FormField path="phoneNumber">
+          <FormField path="phoneNumber" className="sm:col-span-2">
             <TextInput
               type="tel"
               placeholder="0123 456 789"
               value={props.model.phoneNumber}
               onValueChanged={(phoneNumber) => {
-                if (!phoneNumber.length || /^[0-9+]+$/g.test(phoneNumber)) {
+                if (!phoneNumber.length || validatePhoneNumber(phoneNumber)) {
                   props.onModelChanged({ phoneNumber });
                 }
               }}
             />
           </FormField>
+
+          {/* ZaloNumber */}
+          <FormField path="zaloNumber" className="sm:col-span-2">
+            <TextInput
+              type="tel"
+              placeholder="0123 456 789"
+              value={props.model.zaloNumber}
+              onValueChanged={(zaloNumber) => {
+                if (!zaloNumber.length || validatePhoneNumber(zaloNumber)) {
+                  props.onModelChanged({ zaloNumber });
+                }
+              }}
+            />
+          </FormField>
+
+          {/* Email */}
+          <FormField path="email" className="sm:col-span-2">
+            <TextInput
+              placeholder="nguyenvanan@gmail.com"
+              value={props.model.email}
+              onValueChanged={(email) => props.onModelChanged({ email })}
+            />
+          </FormField>
+
+          {/* Address */}
+          <FormField path="address" className="sm:col-span-3">
+            <TextInput
+              placeholder="123 Nguyễn Tất Thành"
+              value={props.model.address}
+              onValueChanged={(address) => props.onModelChanged({ address })}
+            />
+          </FormField>
+
+          {/* Introducer */}
+          <FormField path="introducer" className="sm:col-span-3">
+            <IntroducerInput
+              model={props.model.introducer}
+              onModelChanged={introducer => props.onModelChanged({ introducer })}
+            />
+          </FormField>
+
+          {/* Note */}
+          <FormField path="note" className="sm:col-span-6">
+            <TextAreaInput
+              placeholder="Ghi chú"
+              value={props.model.note}
+              onValueChanged={(note) => props.onModelChanged({ note })}
+            />
+          </FormField>
         </div>
 
         <div className="flex justify-end gap-3">
-          <Button type="submit" className="primary">Lưu</Button>
+          <SubmitButton/>
         </div>
       </Form>
-
-      <div className="p-3 border border-black/10 dark:border-white/10 rounded-lg">
-        <pre>{JSON.stringify(props.model.toRequestDto(), null, 2)}</pre>
-      </div>
     </MainContainer>
   );
 }

@@ -6,22 +6,35 @@ declare global {
     fullName: string;
     nickName: string | null;
     isDeleted: boolean;
-    get avatarUrl(): string;
-    get detailRoute(): string;
+    avatarUrl: string;
+    detailRoute: string;
   }>;
 }
 
 const avatarHelper = useAvatarHelper();
 const { getCustomerDetailRoutePath } = useRouteHelper();
 
-export function createCustomerBasicModel(responseDto: CustomerBasicResponseDto): CustomerBasicModel {
+function createFromResponseDto(responseDto: CustomerBasicResponseDto): CustomerBasicModel {
   return {
     ...responseDto,
-    get avatarUrl(): string {
-      return avatarHelper.getDefaultAvatarUrlByFullName(this.fullName);
-    },
-    get detailRoute(): string {
-      return getCustomerDetailRoutePath(this.id);
-    }
+    avatarUrl: avatarHelper.getDefaultAvatarUrlByFullName(responseDto.fullName),
+    detailRoute: getCustomerDetailRoutePath(responseDto.id)
   };
 }
+
+function createFromCustomerListCustomerModel(model: CustomerListCustomerModel): CustomerBasicModel {
+  const { id, fullName, nickName, avatarUrl, detailRoute } = model;
+  return {
+    id,
+    fullName,
+    nickName,
+    isDeleted: false,
+    avatarUrl,
+    detailRoute
+  };
+}
+
+export {
+  createFromResponseDto as createCustomerBasicModelFromResponseDto,
+  createFromCustomerListCustomerModel as createCustomerBasicModelFromCustomerListCustomerModel
+};

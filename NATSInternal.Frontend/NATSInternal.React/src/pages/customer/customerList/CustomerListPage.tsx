@@ -7,11 +7,10 @@ import { useTsxHelper } from "@/helpers";
 
 // Child components.
 import MainContainer from "@/components/layouts/MainContainer";
-import Row from "./Row";
-import Cells from "./Cells";
+import TableBlockProps from "./TableBlock";
 import { Form, FormField, TextInput, SelectInput } from "@/components/form";
 import { Button, MainPaginator } from "@/components/ui";
-import { FunnelIcon as FunnelOutlineIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { FunnelIcon, MagnifyingGlassIcon, BarsArrowUpIcon, BarsArrowDownIcon } from "@heroicons/react/24/outline";
 import { PlusIcon } from "@heroicons/react/24/solid";
 
 // Api.
@@ -73,7 +72,7 @@ export default function CustomerListPage(): React.ReactNode {
   return (
     <MainContainer
       description="Danh sách các khách hàng đã và đang giao dịch với cửa hàng."
-      className={joinClassName(isReloading && "cursor-wait")}
+      isLoading={isReloading}
     >
       <div className="w-full flex gap-3 mb-3">
         <Button onClick={() => navigate(model.createRoute)}>
@@ -85,7 +84,7 @@ export default function CustomerListPage(): React.ReactNode {
           className={isFilterVisible ? "primary" : undefined}
           onClick={() => setIsFilterVisible(isVisible => !isVisible)}
         >
-          <FunnelOutlineIcon className="size-4 me-1" />
+          <FunnelIcon className="size-4 me-1" />
           <span>Bộ lọc</span>
         </Button>
       </div>
@@ -93,16 +92,17 @@ export default function CustomerListPage(): React.ReactNode {
       <Form
         className={joinClassName(
           "w-full grid grid-cols-2 md:grid-cols-12",
-          "justify-stretch items-stretch gap-3 mb-5 transition-all duration-200",
+          "justify-stretch items-stretch gap-3 mb-5",
+          isReloading && "pointer-events-none",
           !isFilterVisible && "hidden"
         )}
         submitAction={reloadAsync}
         showSucceededAnnouncement={false}
       >
         <div className="grid grid-cols-[1fr_auto] col-span-2 md:col-span-6 items-end">
-          <FormField path="searchContent">
+          <FormField path="searchContent" className="-me-px">
             <TextInput
-              className="rounded-r-none z-2 not-[focus]:border-r-transparent"
+              className="rounded-r-none z-2"
               placeholder="Tìm kiếm"
               value={model.searchContent}
               onValueChanged={(searchContent) => setModel(m => ({ ...m, searchContent }))}
@@ -123,47 +123,26 @@ export default function CustomerListPage(): React.ReactNode {
         </FormField>
 
         <FormField className="md:col-span-3" path="sortByAscending">
-          <Button className="justify-start" onClick={() => setModel(m => ({ ...m, sortByAscending: !m.sortByAscending }))}>
-            {model.sortByAscending ? "Từ nhỏ đến lớn" : "Từ lớn đến nhỏ"}
+          <Button
+            className="justify-start"
+            onClick={() => setModel(m => ({ ...m, sortByAscending: !m.sortByAscending }))}
+          >
+            {model.sortByAscending ? (
+              <>
+                <BarsArrowDownIcon className="size-4.5 me-2" />
+                <span>Từ nhỏ đến lớn</span>
+              </>
+            ) : (
+              <>
+                <BarsArrowUpIcon className="size-4.5 me-2" />
+                <span>Từ lớn đến nhỏ</span>
+              </>
+            )}
           </Button>
         </FormField>
       </Form>
 
-      <div className={joinClassName(
-        "border border-black/10 dark:border-white/10 overscroll-x-none h-fit",
-        "overflow-x-auto w-full max-w-full rounded-lg transition-opacity mb-3",
-        isReloading && "opacity-50 pointer-events-none"
-      )}>
-        <table className="border-collapse min-w-max w-full">
-          <thead className="whitespace-nowrap">
-            <tr className={joinClassName(
-              "bg-black/5 dark:bg-white/5 border-b border-black/10 dark:border-white/10",
-              "text-black/50 dark:text-white/50 font-bold"
-            )}>
-              <td className="px-3 py-2">Họ và tên</td>
-              <td className="px-3 py-2">Biệt danh</td>
-              <td className="px-3 py-2">Giới tính</td>
-              <td className="px-3 py-2">Số điện thoại</td>
-              <td className="px-3 py-2">Ngày sinh</td>
-              <td className="px-3 py-2">Nợ còn lại</td>
-              <td/>
-            </tr>
-          </thead>
-          <tbody>
-            {model.items.length ? model.items.map((customer, index) => (
-              <Row key={index}>
-                <Cells model={customer} />
-              </Row>
-            )) : (
-              <Row>
-                <td className="px-3 py-2 text-center" colSpan={6}>
-                  Không có kết quả
-                </td>
-              </Row> 
-            )}
-          </tbody>
-        </table>
-      </div>
+      <TableBlockProps model={model} />
 
       <MainPaginator
         page={model.page}

@@ -1,88 +1,75 @@
 using JetBrains.Annotations;
-using System.Reflection;
-using NATSInternal.Application.Localization;
+using CustomerGetListFieldToSort = NATSInternal.Application.UseCases.Customers.CustomerGetListRequestDto.FieldToSort;
+using ProductGetListFieldToSort = NATSInternal.Application.UseCases.Products.ProductGetListRequestDto.FieldToSort;
+using UserGetListFieldToSort = NATSInternal.Application.UseCases.Users.UserGetListRequestDto.FieldToSort;
 
 namespace NATSInternal.Application.UseCases.Metadata;
 
 public class MetadataGetResponseDto
 {
+    #region Properties
+    public required IDictionary<string, string> DisplayNameList { [UsedImplicitly] get; init; }
+    public required MetadataGetListOptionsListResponseDto ListOptionsList { [UsedImplicitly] get; init; }
+    public required MetadataGetCreatingAuthorizationListResponseDto CreatingAuthorizationList
+    {
+        [UsedImplicitly] get;
+        init;
+    }
+    #endregion
+}
+
+public class MetadataGetListOptionsListResponseDto
+{
+    #region Properties
+    public required MetadataGetListOptionsResponseDto<CustomerGetListFieldToSort> Customer
+    {
+        [UsedImplicitly] get;
+        init;
+    }
+
+    public required MetadataGetListOptionsResponseDto<ProductGetListFieldToSort> Product
+    {
+        [UsedImplicitly]get;
+        init;
+    }
+
+    public required MetadataGetListOptionsResponseDto<UserGetListFieldToSort> User
+    {
+        [UsedImplicitly] get;
+        init;
+    }
+    #endregion
+}
+
+public class MetadataGetListOptionsResponseDto<TOptionEnum> where TOptionEnum : struct, Enum 
+{
     #region Fields
-    private static readonly IDictionary<string, string> _displayNames;
+    private static readonly IEnumerable<TOptionEnum> SortByFieldOptions;
     #endregion
 
     #region Constructors
-    static MetadataGetResponseDto()
-    {
-        FieldInfo[] fields = typeof(DisplayNames).GetFields(BindingFlags.Public | BindingFlags.Static);
-        _displayNames = fields
-            .Where(f => f.GetValue(null) is not null)
-            .ToDictionary(f => f.Name, f => (string)f.GetValue(null)!);
-    }
-
-    public MetadataGetResponseDto()
-    {
-        DisplayNames = _displayNames;
-    }
-    #endregion
-
-    #region Properties
-    public IDictionary<string, string> DisplayNames { get; }
-    public required IDictionary<string, MetadataListOptionsResponseDto> ListOptionsList { get; init; }
-    public required IDictionary<string, bool> CreatingAuthorizationList { get; init; }
-    #endregion
-}
-
-public class MetadataListOptionsResponseDto
-{
-    #region Constructors
-    public MetadataListOptionsResponseDto(
-        string resourceName,
-        IEnumerable<string>? sortByFieldNameOptions = null,
-        string? defaultSortByFieldName = null,
-        bool? defaultSortByAscending = null,
-        int? defaultResultsPerPage = null)
-    {
-        ResourceName = resourceName;
-        SortByFieldNameOptions = sortByFieldNameOptions ?? new List<string>();
-        DefaultSortByFieldName = defaultSortByFieldName;
-        DefaultSortByAscending = defaultSortByAscending;
-        DefaultResultsPerPage = defaultResultsPerPage;
-    }
-    #endregion
-
-    #region Properties
-    public string ResourceName { [UsedImplicitly] get; }
-    public IEnumerable<string> SortByFieldNameOptions { [UsedImplicitly] get; }
-    public string? DefaultSortByFieldName { [UsedImplicitly] get; }
-    public bool? DefaultSortByAscending { [UsedImplicitly] get; }
-    public int? DefaultResultsPerPage { [UsedImplicitly] get; }
-    #endregion
-}
-
-public class MetadataListOptionsResponseDto<TOptionEnum> : MetadataListOptionsResponseDto
-    where TOptionEnum : struct, Enum 
-{
-    #region Constructors
-    static MetadataListOptionsResponseDto()
+    static MetadataGetListOptionsResponseDto()
     {
         SortByFieldOptions = Enum.GetValues<TOptionEnum>().ToList();
     }
-
-    public MetadataListOptionsResponseDto(
-        string resourceName,
-        TOptionEnum? defaultSortByField = null,
-        bool? defaultSortByAscending = null,
-        int? defaultResultsPerPage = null) : base(
-            resourceName,
-            SortByFieldOptions.Select(f => f.ToString()),
-            defaultSortByField?.ToString(),
-            defaultSortByAscending,
-            defaultResultsPerPage)
-    {
-    }
     #endregion
 
-    #region StaticProperties
-    private static IEnumerable<TOptionEnum> SortByFieldOptions { get; }
+    #region Properties
+    public required string ResourceName { [UsedImplicitly] get; init; }
+    public IEnumerable<string> SortByFieldNameOptions => SortByFieldOptions.Select(o => o.ToString());
+    public required string? DefaultSortByFieldName { [UsedImplicitly] get; init; }
+    public required bool? DefaultSortByAscending { [UsedImplicitly] get; init; }
+    public required int? DefaultResultsPerPage { [UsedImplicitly] get; init; }
+    #endregion
+}
+
+public class MetadataGetCreatingAuthorizationListResponseDto
+{
+    #region Properties
+    public required bool CanCreateUser { get; init; }
+    public required bool CanCreateCustomer { get; init; }
+    public required bool CanCreateProduct { get; init; }
+    public required bool CanCreateBrand { get; init; }
+    public required bool CanCreateProductCategory { get; init; }
     #endregion
 }

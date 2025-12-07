@@ -1,17 +1,17 @@
 export type PaginationRange = {
   startingPage: number;
   endingPage: number;
-}
+};
 
 export type PaginationRangeOptions = {
   currentPage: number;
   pageCount: number;
   visibleButtons: number;
-}
+};
 
 export type PaginationHelper = {
   getPaginationRange(options: PaginationRangeOptions): PaginationRange;
-}
+};
 
 const paginationHelper: PaginationHelper = {
   getPaginationRange(options: PaginationRangeOptions): PaginationRange {

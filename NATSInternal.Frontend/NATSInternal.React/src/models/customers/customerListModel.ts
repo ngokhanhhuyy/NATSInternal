@@ -41,7 +41,7 @@ const { formatRawPhoneNumber } = usePhoneNumberHelper();
 const { getCustomerCreateRoutePath, getCustomerDetailRoutePath } = useRouteHelper();
 const customerListOptions = getMetadata().listOptionsList.customer;
 
-export function createCustomerListModel(responseDto: CustomerGetListResponseDto): CustomerListModel {
+export function createCustomerListModel(responseDto?: CustomerGetListResponseDto): CustomerListModel {
   const model: CustomerListModel = {
     sortByAscending: customerListOptions.defaultSortByAscending ?? true,
     sortByFieldName: customerListOptions.defaultSortByFieldName ?? "",
@@ -82,7 +82,11 @@ export function createCustomerListModel(responseDto: CustomerGetListResponseDto)
     }
   };
 
-  return model.mapFromResponseDto(responseDto);
+  if (responseDto) {
+    return model.mapFromResponseDto(responseDto);
+  }
+
+  return model;
 }
 
 function createCustomerListCustomerModel(responseDto: CustomerGetListCustomerResponseDto): CustomerListCustomerModel {
@@ -102,6 +106,6 @@ function createCustomerListCustomerModel(responseDto: CustomerGetListCustomerRes
     },
     get detailRoute(): string {
       return getCustomerDetailRoutePath(this.id);
-    }
+    },
   }; 
 }

@@ -11,6 +11,7 @@ import SignInPage from "@/pages/authentication/signIn/SignInPage";
 const CustomerListPage = lazy(() => import("@/pages/customer/customerList/CustomerListPage"));
 const CustomerDetailPage = lazy(() => import("@/pages/customer/customerDetail/CustomerDetailPage"));
 const CustomerCreatePage = lazy(() => import("@/pages/customer/customerUpsert/CustomerCreatePage"));
+const CustomerUpdatePage = lazy(() => import("@/pages/customer/customerUpsert/CustomerUpdatePage"));
 import TestingPage from "@/pages/TestingPage";
 import { AuthenticationError } from "@/api";
 
@@ -95,7 +96,11 @@ const router = createBrowserRouter([
                   },
                   {
                     path: "chinh-sua",
-                    Component: TestingPage,
+                    Component: CustomerUpdatePage,
+                    loader: async ({ params }) => {
+                      const module = await import("@/pages/customer/customerUpsert/CustomerUpdatePage");
+                      return module.loadDataAsync(params.id as string);
+                    },
                     handle: {
                       breadcrumbTitle: "Chỉnh sửa",
                       pageTitle: "Chỉnh sửa khách hàng"

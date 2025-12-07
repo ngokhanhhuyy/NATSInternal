@@ -17,9 +17,10 @@ export default defineConfig({
   output: {
     filename: {
       js: "[name].[hash].js",
+      css: "[name].[hash].css"
     },
     cssModules: {
-      namedExport: true,
+      namedExport: false,
     },
   },
   performance: {

@@ -21,7 +21,7 @@ type FormProps<T> = {
   onSubmissionSucceeded?: (result: T) => any;
   onSubmissionFailed?: (error: Error, errorHandled: boolean) => any;
   submissionSucceededText?: string;
-} & JSX.FormElementProps;
+} & JSX.HTMLFormAttributes;
 
 // Component.
 export default function Form<T>(props: FormProps<T>) {

@@ -5,10 +5,11 @@ import { useTsxHelper } from "@/helpers";
 // Props.
 type MainContainerProps = {
   description: string;
+  isLoading?: boolean;
 } & React.ComponentPropsWithoutRef<"div">;
 
 // Component.
-export default function MainContainer({ className, ...props }: MainContainerProps): React.ReactNode {
+export default function MainContainer({ className, isLoading, ...props }: MainContainerProps): React.ReactNode {
   // Dependencies.
   const matchedRoutes = useMatches();
   const { joinClassName, compute } = useTsxHelper();
@@ -37,7 +38,15 @@ export default function MainContainer({ className, ...props }: MainContainerProp
 
   // Template.
   return (
-    <div id="main-container" className={joinClassName("m-5", className)} {...props}>
+    <div
+      {...props}
+      id="main-container"
+      className={joinClassName(
+        className,
+        "m-5 transition-opacity",
+        isLoading && "opacity-50 cursor-wait"
+      )}
+    >
       <div className="flex flex-col mb-5">
         <span className="text-2xl">{pageTitle}</span>
         <span className="text-md opacity-50">{props.description}</span>

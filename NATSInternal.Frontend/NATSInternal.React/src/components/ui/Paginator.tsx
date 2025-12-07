@@ -2,22 +2,22 @@ import React, { useMemo } from "react";
 import { usePaginationHelper, useTsxHelper, type PaginationRange } from "@/helpers";
 
 // Child components.
-import { Button } from "../ui";
+import { Button } from ".";
 
 // Types.
 type PaginationRanges = {
-  largeScreen: PaginationRange,
-  smallScreen: PaginationRange,
+  smScreen: PaginationRange,
+  xsScreen: PaginationRange,
 };
 
-type MainPaginatorProps = {
+export type PaginatorProps = {
   page: number;
   pageCount: number;
   isReloading: boolean;
   onPageChanged: (page: number) => any;
 } & React.ComponentPropsWithoutRef<"div">;
 
-export default function MainPaginator(props: MainPaginatorProps): React.ReactNode {
+export default function Paginator(props: PaginatorProps): React.ReactNode {
   // Props.
   const { page: currentPage, pageCount, isReloading, onPageChanged, className, ...domProps } = props;
 
@@ -27,24 +27,24 @@ export default function MainPaginator(props: MainPaginatorProps): React.ReactNod
 
   // Computed.
   const paginationRanges: PaginationRanges = useMemo(() => ({
-    largeScreen: getPaginationRange({
+    smScreen: getPaginationRange({
       currentPage,
       pageCount,
       visibleButtons: 5
     }),
-    smallScreen: getPaginationRange({
+    xsScreen: getPaginationRange({
       currentPage,
       pageCount,
       visibleButtons: 3
     }),
   }), [currentPage, pageCount]);
 
-  const isPageExceedingSmallScreenRange = (page: number) => {
-    return page < paginationRanges.smallScreen.startingPage || page > paginationRanges.smallScreen.endingPage;
+  const isPageExceedingXsScreenRange = (page: number) => {
+    return page < paginationRanges.xsScreen.startingPage || page > paginationRanges.xsScreen.endingPage;
   };
 
-  const isPageExceedingLargeScreenRange = (page: number) => {
-    return page < paginationRanges.largeScreen.startingPage || page > paginationRanges.largeScreen.endingPage;
+  const isPageExceedingSmScreenRange = (page: number) => {
+    return page < paginationRanges.smScreen.startingPage || page > paginationRanges.smScreen.endingPage;
   };
 
   // Callbacks.
@@ -54,12 +54,23 @@ export default function MainPaginator(props: MainPaginatorProps): React.ReactNod
   };
 
   // Template.
+  if (!pageCount) {
+    return null;
+  }
+
   const renderPageWithNumberButtons = (): React.ReactNode[] => {
-    const startingPage = paginationRanges.largeScreen.startingPage;
-    const endingPage = paginationRanges.largeScreen.endingPage;
-    return Array.from({ length: endingPage - (startingPage - 1) }, (_, index) => index + startingPage).map(page => (
+    console.log(paginationRanges);
+    const startingPage = paginationRanges.smScreen.startingPage;
+    const endingPage = paginationRanges.smScreen.endingPage;
+    const arrayLength = endingPage - (startingPage - 1);
+
+    return Array.from({ length: arrayLength }, (_, index) => index + startingPage).map(page => (
       <Button
-        className={currentPage === page ? "primary" : undefined}
+        className={joinClassName(
+          "min-w-8.5",
+          isPageExceedingXsScreenRange(page) && "hidden sm:flex",
+          currentPage === page ? "primary" : undefined
+        )}
         onClick={() => handlePageButtonClick(page)}
         key={page}
       >
@@ -73,27 +84,27 @@ export default function MainPaginator(props: MainPaginatorProps): React.ReactNod
       className={joinClassName(
         className,
         "flex flex-row justify-center gap-2",
-        props.isReloading && "opacity-50 pointer-events-none"
+        props.isReloading && "pointer-events-none"
       )}
       {...domProps}
     >
-      {isPageExceedingLargeScreenRange(1) && (
+      {isPageExceedingSmScreenRange(1) && (
         <div className={joinClassName(
           "flex gap-2",
-          !isPageExceedingSmallScreenRange(1) && "hidden"
+          !isPageExceedingXsScreenRange(1) && "hidden"
         )}>
-          <Button type="button" className="button" onClick={() => handlePageButtonClick(1)}>{1}</Button>
+          <Button className="button min-w-8.5" onClick={() => handlePageButtonClick(1)}>{1}</Button>
           <span>...</span>
         </div>
       )}
       {renderPageWithNumberButtons()}
-      {isPageExceedingLargeScreenRange(pageCount) && (
+      {isPageExceedingSmScreenRange(pageCount) && (
         <div className={joinClassName(
           "flex gap-2",
-          !isPageExceedingSmallScreenRange(pageCount) && "hidden"
+          !isPageExceedingXsScreenRange(pageCount) && "hidden"
         )}>
           <span>...</span>
-          <Button type="button" className="button" onClick={() => handlePageButtonClick(pageCount)}>
+          <Button className="button min-w-8.5" onClick={() => handlePageButtonClick(pageCount)}>
             {pageCount}
           </Button>
         </div>

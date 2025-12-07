@@ -1,3 +1,3 @@
-export * from "./htmlHelper";
+export * from "./tsxHelper";
 export * from "./jsonHelper";
 export * from "./routeHelper";

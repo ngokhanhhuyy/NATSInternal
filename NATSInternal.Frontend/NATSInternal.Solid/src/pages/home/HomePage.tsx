@@ -21,7 +21,7 @@ function createReactiveObject<T extends object>(target: T): T {
   }
 
   return result as T;
-} 
+}
 
 type Model = { userName: string; roles: string[]; };
 
@@ -46,7 +46,7 @@ export default function HomePage() {
         onRoleRemoved={(index) => model.roles.splice(index, 1)}
       />
     </div>
-  )
+  );
 }
 
 type RoleManagerProps = {
@@ -62,12 +62,12 @@ function RoleManager(props: RoleManagerProps) {
   const addRole = (): void => {
     props.model.push(state.roleName);
     state.roleName = "";
-  }
+  };
 
   return (
     <div>
       <input
-        class="form-control mb-3"
+        class="mb-3 rounded-lg"
         type="text"
         value={state.roleName}
         onInput={event => state.roleName = event.target.value}
