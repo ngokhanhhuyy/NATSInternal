@@ -2,9 +2,9 @@ import React from "react";
 import { Link } from "react-router";
 
 // Child components.
-import MainBlock from "./MainBlock";
 import FieldContainer from "./FieldContainer";
 import Field from "./Field";
+import { Block } from "@/components/ui";
 
 // Props.
 type ManagementBlock = { model: CustomerDetailModel };
@@ -13,7 +13,7 @@ type ManagementBlock = { model: CustomerDetailModel };
 export default function ManagementBlock(props: ManagementBlock): React.ReactNode {
   // Template.
   return (
-    <MainBlock title="Quản lý">
+    <Block title="Quản lý" bodyClassName="p-3">
       <FieldContainer>
         {/* CreatedUser */}
         <Field name="createdUser">
@@ -55,6 +55,6 @@ export default function ManagementBlock(props: ManagementBlock): React.ReactNode
           </Field>
         )}
       </FieldContainer>
-    </MainBlock>
+    </Block>
   );
 }

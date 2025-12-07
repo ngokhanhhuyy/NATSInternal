@@ -51,7 +51,7 @@ export default function TopBar(): React.ReactNode {
         <ThemeToggleButton />
 
         {/* Navigation bar toggle button */}
-        <Button className="aspect-[1.2] md:hidden shrink-0" onClick={navigationBarStore.toggle}>
+        <Button className="h-full aspect-[1.2] md:hidden shrink-0" onClick={navigationBarStore.toggle}>
           <Bars4Icon className="size-6" />
         </Button>
       </div>

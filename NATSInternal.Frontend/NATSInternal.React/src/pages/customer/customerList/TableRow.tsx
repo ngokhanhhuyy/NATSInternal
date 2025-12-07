@@ -2,23 +2,17 @@ import React from "react";
 import { Link } from "react-router";
 import { useTsxHelper } from "@/helpers";
 
-// Child components.
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
-
 // Props.
-type RowProps = { model: CustomerListCustomerModel };
+type TableRowProps = { model: CustomerListCustomerModel };
 
 // Component.
-export default function Row(props: RowProps): React.ReactNode {
+export default function TableRow(props: TableRowProps): React.ReactNode {
   // Dependencies.
   const { joinClassName } = useTsxHelper();
 
   // Template.
   return (
-    <tr className={joinClassName(
-      "odd:bg-black/3 dark:odd:bg-white/3",
-      "border-b last:border-b-0 border-black/10 dark:border-white/10 whitespace-nowrap"
-    )}>
+    <tr className="odd:bg-black/3 dark:odd:bg-white/3 whitespace-nowrap">
       <td className="px-3 py-2">
         <Link to={props.model.detailRoute} className="font-bold">
           {props.model.fullName}
@@ -46,14 +40,8 @@ export default function Row(props: RowProps): React.ReactNode {
         {props.model.formattedBirthday}
       </td>
 
-      <td className="px-3 py-2">
+      <td className={joinClassName("px-3 py-2", !props.model.debtRemainingAmount && "opacity-25")}>
         {props.model.formattedDebtRemainingAmount}
-      </td>
-
-      <td className="px-3 py-2 text-end">
-        <Link className="button small aspect-square w-fit p-2.5" to={props.model.detailRoute}>
-          <InformationCircleIcon className="size-4" />
-        </Link>
       </td>
     </tr>
   );

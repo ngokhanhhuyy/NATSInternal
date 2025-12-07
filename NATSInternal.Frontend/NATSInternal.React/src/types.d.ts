@@ -1,3 +1,5 @@
+import React from "react";
+
 declare module '*.module.scss' {
   const styles: { [className: string]: string };
   export default styles;
@@ -12,6 +14,7 @@ declare global {
         : T[K];
   };
   type ColorVariant = "primary" | "secondary" | "danger" | "success" | "hinting";
+  type ComponentProps<TComponent> = TComponent extends (props: infer TProps) => React.ReactNode ? TProps : never;
 
   declare module "react-router" {
     interface RouteHandle {

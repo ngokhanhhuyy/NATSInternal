@@ -26,9 +26,9 @@ export default function DeleteButton(props: DeleteButtonProps): React.ReactNode 
   
   // Template.
   return (
-    <Button {...props} type="button" className="danger min-w-20" showSpinner={isSubmitting}>
+    <Button {...props} type="button" className="danger min-w-20">
       {!isSubmitting && <TrashIcon className="size-4.5 me-1" />}
-      <span>{isSubmitting ? "Đang xoá" : "Xoá"}</span>
+      <span>{isSubmitting ? "Đang xoá dữ liệu" : "Xoá dữ liệu"}</span>
     </Button>
   );
 }

@@ -1,9 +1,9 @@
 import React from "react";
 
 // Child components
-import MainBlock from "./MainBlock";
 import FieldContainer from "./FieldContainer";
 import Field from "./Field";
+import { Block } from "@/components/ui";
 
 // Props.
 type CustomerPersonalInformationProps = { model: CustomerDetailModel };
@@ -12,12 +12,13 @@ type CustomerPersonalInformationProps = { model: CustomerDetailModel };
 export default function CustomerPersonalInformation(props: CustomerPersonalInformationProps): React.ReactNode {
   // Template.
   return (
-    <MainBlock title="Thông tin cá nhân">
+    <Block title="Thông tin cá nhân" bodyClassName="flex flex-col gap-3 p-3">
       <div className="grid grid-cols-[auto_1fr] gap-3">
         {/* Avatar */}
         <img
           className="bg-black/5 dark:bg-white/5 border border-black/15 dark:border-white/25 p-1 rounded-lg"
           src={props.model.avatarUrl}
+          alt={props.model.fullName}
         />
 
         {/* Names */}
@@ -83,6 +84,6 @@ export default function CustomerPersonalInformation(props: CustomerPersonalInfor
           </Field>
         )}
       </FieldContainer>
-    </MainBlock>
+    </Block>
   );
 }

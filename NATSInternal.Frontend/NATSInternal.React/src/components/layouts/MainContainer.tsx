@@ -9,7 +9,10 @@ type MainContainerProps = {
 } & React.ComponentPropsWithoutRef<"div">;
 
 // Component.
-export default function MainContainer({ className, isLoading, ...props }: MainContainerProps): React.ReactNode {
+export default function MainContainer(props: MainContainerProps): React.ReactNode {
+  // Props.
+  const { description, isLoading, ...domProps } = props;
+
   // Dependencies.
   const matchedRoutes = useMatches();
   const { joinClassName, compute } = useTsxHelper();
@@ -39,15 +42,15 @@ export default function MainContainer({ className, isLoading, ...props }: MainCo
   // Template.
   return (
     <div
-      {...props}
+      {...domProps}
       id="main-container"
       className={joinClassName(
-        className,
-        "m-5 transition-opacity",
+        props.className,
+        "flex flex-col justify-stretch gap-5 m-5 transition-opacity",
         isLoading && "opacity-50 cursor-wait"
       )}
     >
-      <div className="flex flex-col mb-5">
+      <div className="flex flex-col">
         <span className="text-2xl">{pageTitle}</span>
         <span className="text-md opacity-50">{props.description}</span>
       </div>

@@ -26,9 +26,9 @@ export default function SubmitButton(props: SubmitButtonProps): React.ReactNode 
   
   // Template.
   return (
-    <Button {...props} type="submit" className="primary min-w-20" showSpinner={isSubmitting}>
+    <Button {...props} type="submit" className="min-w-20">
       {!isSubmitting && <ArrowDownOnSquareStackIcon className="size-4.5 me-1" />}
-      <span>{isSubmitting ? "Đang lưu" : "Lưu"}</span>
+      <span>{isSubmitting ? "Đang lưu dữ liệu" : "Lưu dữ liệu"}</span>
     </Button>
   );
 }

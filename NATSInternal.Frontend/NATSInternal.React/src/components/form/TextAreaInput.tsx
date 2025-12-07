@@ -3,13 +3,13 @@ import { useTsxHelper } from "@/helpers";
 import Input from "./Input";
 
 // Props.
-export type TextInputProps = {
+export type TextAreaInputProps = {
   value: string;
   onValueChanged(newValue: string): any;
 } & React.ComponentPropsWithoutRef<"textarea">;
 
 // Component.
-export default function TextInput(props: TextInputProps): React.ReactNode {
+export default function TextAreaInputProps(props: TextAreaInputProps): React.ReactNode {
   // Props.
   const { value, onValueChanged, ...domProps } = props;
 

@@ -4,7 +4,8 @@ import { useValidationHelper } from "@/helpers";
 // Child components.
 import MainContainer from "@/components/layouts/MainContainer";
 import IntroducerInput from "./introducerPicker.tsx/IntroducerInput";
-import { Form, FormField, TextInput, TextAreaInput, SelectInput, DateTimeInput, SubmitButton, DeleteButton } from "@/components/form";
+import { Form, FormField, TextInput, TextAreaInput, SelectInput } from "@/components/form";
+import { DateTimeInput, SubmitButton, DeleteButton } from "@/components/form";
 import { Block } from "@/components/ui";
 
 // Props.
@@ -34,7 +35,7 @@ export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>)
         onUpsertingSucceeded={props.onUpsertingSucceeded}
 
       >
-        <Block title="Thông tin cá nhân khách hàng" bodyClassName="flex flex-col gap-3 px-3 pt-2 pb-3">
+        <Block title="Thông tin cá nhân khách hàng" bodyClassName="flex flex-col gap-3 px-4 pt-2.5 pb-4">
           <div className="grid grid-cols-1 sm:grid-cols-6 gap-3">
             {/* FirstName */}
             <FormField path="firstName" className="sm:col-span-2">
@@ -141,8 +142,8 @@ export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>)
             {/* Introducer */}
             <FormField path="introducer" className="sm:col-span-3">
               <IntroducerInput
-                model={props.model.introducer}
-                onModelChanged={introducer => props.onModelChanged({ introducer })}
+                value={props.model.introducer}
+                onValueChanged={introducer => props.onModelChanged({ introducer })}
               />
             </FormField>
 

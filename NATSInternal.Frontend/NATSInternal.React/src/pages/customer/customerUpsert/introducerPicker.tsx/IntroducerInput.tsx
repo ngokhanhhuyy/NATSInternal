@@ -1,18 +1,25 @@
 import React, { useState, useCallback } from "react";
 import { createCustomerBasicModelFromCustomerListCustomerModel } from "@/models";
+import { useTsxHelper } from "@/helpers";
 
 // Child component.
 import Modal from "./Modal";
-import { Button } from "@/components/ui";
+import { TextInput, type TextInputProps } from "@/components/form";
 
 // Props.
 export type IntroducerInputProps = {
-  model: CustomerBasicModel | null;
-  onModelChanged(changedModel: CustomerBasicModel | null): any;
-} & React.ComponentPropsWithoutRef<"button">;
+  value: CustomerBasicModel | null;
+  onValueChanged(changedModel: CustomerBasicModel | null): any;
+} & Omit<TextInputProps, "value" | "onValueChanged">;
 
 // Component.
-export default function IntroducerInput({ model, onModelChanged, ...props }: IntroducerInputProps): React.ReactNode {
+export default function IntroducerInput(props: IntroducerInputProps): React.ReactNode {
+  // Props.
+  const { value, onValueChanged: onModelChanged, ...domProps } = props;
+
+  // Dependencies.
+  const { joinClassName } = useTsxHelper();
+
   // States.
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
@@ -35,12 +42,16 @@ export default function IntroducerInput({ model, onModelChanged, ...props }: Int
   // Template.
   return (
     <>
-      <Button {...props} onClick={() => setIsModalVisible(v => !v)}>
-        {model?.fullName ?? "Chưa chọn"}
-      </Button>
+      <TextInput
+        {...domProps}
+        className={joinClassName(value == null && "text-black/50 dark:text-white/50")}
+        value={value?.fullName ?? "Chưa chọn người giới thiệu"}
+        onValueChanged={() => undefined}
+        onClick={() => setIsModalVisible(v => !v)} readOnly
+      />
 
       <Modal
-        model={model}
+        model={value}
         isVisible={isModalVisible}
         onPicked={handlePicked}
         onUnpicked={handleUnpicked}

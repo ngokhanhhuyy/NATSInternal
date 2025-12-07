@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, useLoaderData } from "react-router";
+import { Link, useLoaderData } from "react-router";
 import { useApi } from "@/api";
 import { createCustomerDetailModel } from "@/models/customers/customerDetailModel";
 
@@ -9,7 +9,6 @@ import PersonalInformationBlock from "./PersonalInformationBlock";
 import ManagementBlock from "./ManagementBlock";
 import DebtBlock from "./DebtBlock";
 import RecentTransactionsBlock from "./RecentTransactions";
-import { Button } from "@/components/ui";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 // Data loder.
@@ -22,7 +21,6 @@ export async function loadDataAsync(id: string): Promise<CustomerDetailModel> {
 // Components.
 export default function CustomerDetailPage(): React.ReactNode {
   // Dependencies.
-  const navigate = useNavigate();
   const model = useLoaderData<CustomerDetailModel>();
 
   // Template.
@@ -31,23 +29,23 @@ export default function CustomerDetailPage(): React.ReactNode {
       "Thông tin chi tiết về khách hàng, bao gồm thông tin cá nhân " +
       "và thông tin về nợ các giao dịch gần nhất"
     }>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-        <PersonalInformationBlock model={model} />
-        <div className="flex flex-col gap-3">
-          <DebtBlock model={model} />
-          <ManagementBlock model={model} />
+      <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="flex flex-col gap-3">
+            <PersonalInformationBlock model={model} />
+            <DebtBlock model={model} />
+            <ManagementBlock model={model} />
+          </div>
           <RecentTransactionsBlock model={model} />
         </div>
-      </div>
 
-      {(
         <div className="flex justify-end">
-          <Button className="primary" onClick={() => navigate(model.updateRoute)}>
-            <PencilSquareIcon className="size-4 me-1" />
+          <Link className="button gap-1.5" to={model.updateRoute}>
+            <PencilSquareIcon className="size-4" />
             <span>Chỉnh sửa</span>
-          </Button>
+          </Link>
         </div>
-      )}
+      </div>
     </MainContainer>
   );
 }

@@ -1,7 +1,7 @@
 import React from "react";
 
 // Child components.
-import MainBlock from "./MainBlock";
+import { Block } from "@/components/ui";
 
 // Props.
 type RecentTransactionsBlockProps = { model: CustomerDetailModel };
@@ -10,10 +10,8 @@ type RecentTransactionsBlockProps = { model: CustomerDetailModel };
 export default function RecentTransactionsBlock(_: RecentTransactionsBlockProps): React.ReactNode {
   // Template.
   return (
-    <MainBlock title="Giao dịch gần nhất" className="h-full">
-      <div className="h-full flex justify-center items-center opacity-50">
-        Không có giao dịch nào
-      </div>
-    </MainBlock>
+    <Block title="Giao dịch gần nhất" className="h-full" bodyClassName="flex justify-center items-center p-5">
+      <span className="opacity-50">Không có giao dịch nào</span>
+    </Block>
   );
 }
