@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLoaderData } from "react-router";
 import { useApi } from "@/api";
-import { createCustomerDetailModel } from "@/models/customers/customerDetailModel";
+import { createCustomerDetailModel } from "@/models/customer/customerDetailModel";
 
 // Child components.
 import MainContainer from "@/components/layouts/MainContainer";

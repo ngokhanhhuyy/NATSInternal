@@ -22,11 +22,7 @@ export default function Block(props: BlockProps): React.ReactNode {
   return (
     <div
       {...domProps}
-      className={joinClassName(
-        "block-container",
-        "flex flex-col overflow-hidden box-border",
-        className
-      )}
+      className={joinClassName("block-container", "flex flex-col overflow-hidden box-border", className)}
     >
       {/* Header */}
       <div className={joinClassName(
@@ -42,7 +38,7 @@ export default function Block(props: BlockProps): React.ReactNode {
 
       {/* Body */}
       <div className={joinClassName(
-        "block-body border-x border-black/10 dark:border-white/15 flex-1",
+        "block-body border-x border-black/15 dark:border-white/15 flex-1",
         !props.footerChildren && "border-b rounded-b-lg",
         props.bodyClassName,
       )}>

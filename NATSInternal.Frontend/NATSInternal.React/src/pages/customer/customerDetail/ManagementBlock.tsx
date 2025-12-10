@@ -36,9 +36,9 @@ export default function ManagementBlock(props: ManagementBlock): React.ReactNode
         {/* LastUpdatedUser */}
         {props.model.lastUpdatedUser && (
           <Field name="lastUpdatedUser">
-            {!props.model.createdUser.isDeleted ? (
-              <Link to={props.model.createdUser.detailRoute}>
-                @{props.model.createdUser.userName}
+            {(props.model.lastUpdatedUser && !props.model.createdUser.isDeleted) ? (
+              <Link to={props.model.lastUpdatedUser.detailRoute}>
+                @{props.model.lastUpdatedUser.userName}
               </Link>
             ) : (
               <span className="line-through">

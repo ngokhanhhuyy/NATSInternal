@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate, useLoaderData } from "react-router";
 import { useApi } from "@/api";
-import { createCustomerUpsertModel } from "@/models/customers/customerUpsertModel";
+import { createCustomerUpsertModel } from "@/models/customer/customerUpsertModel";
 import { useRouteHelper } from "@/helpers";
 
 // Child components.
