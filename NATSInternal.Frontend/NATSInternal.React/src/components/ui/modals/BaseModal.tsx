@@ -5,11 +5,11 @@ import { useTsxHelper } from "@/helpers";
 // Props.
 type BaseModalProps = {
   isVisible: boolean;
-  onVisibilityChanged(isVisible: boolean): any;
+  onHidden(): any;
   title?: string;
-  headerContent?: React.ReactNode | React.ReactNode[];
-  bodyContent?: React.ReactNode | React.ReactNode[];
-  footerContent?: React.ReactNode | React.ReactNode[];
+  headerChildren?: React.ReactNode | React.ReactNode[];
+  children?: React.ReactNode | React.ReactNode[];
+  footerChildren?: React.ReactNode | React.ReactNode[];
   closeOnEscapeKeyDown?: boolean;
 };
 
@@ -21,7 +21,7 @@ export default function Modal(props: BaseModalProps): React.ReactNode {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((props.closeOnEscapeKeyDown ?? true) && event.key === "Escape") {
-        props.onVisibilityChanged(false);
+        props.onHidden();
       }
     };
 
@@ -48,21 +48,21 @@ export default function Modal(props: BaseModalProps): React.ReactNode {
       )}>
         {/* Header */}
         <div className="flex justify-between items-center p-3">
-          <div className="text-sm font-bold opacity-75 p-3">
+          <div className="text-sm font-bold opacity-75">
             {props.title && props.title.toUpperCase()}
           </div>
 
-          {props.headerContent}
+          {props.headerChildren}
         </div>
 
         {/* Body */}
-        <div className="border-y border-black/10 dark:border-white/10 p-3">
-          {props.bodyContent}
+        <div className="border-y border-black/10 dark:border-white/10">
+          {props.children}
         </div>
 
         {/* Footer */}
         <div className="flex justify-end gap-3 p-3">
-          {props.footerContent}
+          {props.footerChildren}
         </div>
       </div>
     </div>

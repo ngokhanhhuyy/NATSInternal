@@ -16,13 +16,19 @@ export const useThemeStore = create<ThemeStore>((set, get) => {
   type ThemeData = { theme: Theme, auto: boolean };
   const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
   const themeData: ThemeData = { theme: "light", auto: true };
-  const saveData = () => localStorage.setItem("themeData", JSON.stringify(themeData));
-  const themeDataJson = localStorage.getItem("themeData");
-  if (themeDataJson) {
-    const parsedData = JSON.parse(themeDataJson) as ThemeData;
-    themeData.theme = parsedData.theme;
-    themeData.auto = parsedData.auto;
+  const savedTheme = localStorage.getItem("theme") as Theme | null;
+  if (savedTheme) {
+    themeData.theme = savedTheme;
+    themeData.auto = false;
+  } else {
+    themeData.theme = mediaQuery.matches ? "dark" : "light";
+    themeData.auto = true;
   }
+
+  applyThemeToDOM(themeData.theme);
+
+  const saveData = () => localStorage.setItem("theme", get().theme);
+  const clearData = () => localStorage.removeItem("theme");
 
   const handleMediaQueryMatchChanged = () => {
     if (!get().auto) {
@@ -79,7 +85,7 @@ export const useThemeStore = create<ThemeStore>((set, get) => {
         auto
       });
 
-      saveData();
+      clearData();
     }
   };
 });

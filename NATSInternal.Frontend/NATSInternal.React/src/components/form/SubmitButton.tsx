@@ -16,6 +16,10 @@ export default function SubmitButton(props: SubmitButtonProps): React.ReactNode 
   const { compute } = useTsxHelper();
   
   // Computed.
+  const shouldDisable = compute(() => {
+    return formContext != null && formContext.isModelDirty != null && !formContext.isModelDirty;
+  });
+
   const isSubmitting = compute<boolean>(() => {
     if (!formContext) {
       return false;
@@ -26,7 +30,7 @@ export default function SubmitButton(props: SubmitButtonProps): React.ReactNode 
   
   // Template.
   return (
-    <Button {...props} type="submit" className="min-w-20">
+    <Button {...props} disabled={shouldDisable} type="submit" className="min-w-20">
       {!isSubmitting && <ArrowDownOnSquareStackIcon className="size-4.5 me-1" />}
       <span>{isSubmitting ? "Đang lưu dữ liệu" : "Lưu dữ liệu"}</span>
     </Button>

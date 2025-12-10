@@ -13,6 +13,7 @@ type FormContextPayload = {
   submissionState: SubmissionState;
   submissionType: SubmissionType | null;
   handleDeletionAsync?(): Promise<void>;
+  isModelDirty?: boolean;
 };
 
 // Context.
@@ -26,9 +27,7 @@ type FormProps<TUpsertResult> = {
   deleteAction?: () => Promise<void>;
   onDeletionSucceeded?: () => any;
   onDeletionFailed?: (error: Error, errorHandled: boolean) => any;
-  submissionSucceededText?: string;
-  showValidState?: boolean;
-  showSucceededAnnouncement?: boolean;
+  isModelDirty?: boolean;
 } & React.ComponentPropsWithoutRef<"form">;
 
 // Component.
@@ -41,8 +40,7 @@ export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
     deleteAction,
     onDeletionSucceeded,
     onDeletionFailed,
-    submissionSucceededText,
-    showSucceededAnnouncement,
+    isModelDirty,
     ...domProps
   } = props;
   
@@ -66,9 +64,10 @@ export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
       errorCollection,
       submissionState,
       submissionType,
-      handleDeletionAsync
+      handleDeletionAsync,
+      isModelDirty
     };
-  }, [errorCollection, submissionState]);
+  }, [errorCollection, submissionState, isModelDirty]);
 
   // Callbacks.
   async function handleUpsertingAsync(event: React.FormEvent): Promise<void> {
@@ -131,14 +130,7 @@ export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
         noValidate
         onSubmit={handleUpsertingAsync}
       >
-        {submissionState === "submissionSucceeded" && showSucceededAnnouncement
-          ? (
-            <div className="bg-success/20 border border-success rounded-lg flex justify-center items-center">
-              <span className="text-success brightness-80 font-lg mx-2.5 my-7.5">
-                {submissionSucceededText ?? "Lưu thành công"}
-              </span>
-            </div>
-          ) : domProps.children}
+        {domProps.children}
       </form>
     </FormContext.Provider>
   );
