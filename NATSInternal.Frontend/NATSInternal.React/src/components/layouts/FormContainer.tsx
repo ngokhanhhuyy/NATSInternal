@@ -1,10 +1,10 @@
-import React, { useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useBlocker, type BlockerFunction } from "react-router";
 
 // Child component.
 import MainContainer from "./MainContainer";
 import { Form } from "@/components/form";
-import { YesNoModal } from "@/components/ui";
+import { FormSubmissionSucceededModal, FormSubmissionFailedModal, YesNoModal } from "@/components/ui";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 // Props.
@@ -20,7 +20,38 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
   }, [props.isModelDirty]);
   const blocker = useBlocker(shouldBlock);
 
+  // States.
+  const [isSucceededModalVisible, setIsSucceededModalVisible] = useState<boolean>(false);
+  const [isFailedModalVisible, setIsFailedModalVisible] = useState<boolean>(false);
+  const [onSucceededModalHidden, setOnSucceededModalHidden] = useState<(() => void) | undefined>(undefined);
+  const [onFailedModalHidden, setOnFailedModalHidden] = useState<(() => void) | undefined>(undefined);
+
   // Callbacks.
+  const handleUpsertingSucceeded = useCallback((result: TUpsertResult) => {
+    setIsSucceededModalVisible(true);
+    setOnSucceededModalHidden(() => props.onUpsertingSucceeded?.(result));
+  }, [props.onUpsertingSucceeded]);
+
+  const handleSucceededModalHidden = useCallback(() => {
+    setIsSucceededModalVisible(false);
+    setTimeout(() => onSucceededModalHidden?.(), 200);
+  }, []);
+
+  const handleFormFailed = useCallback((error: Error, errorHandled: boolean) => {
+    setIsFailedModalVisible(true);
+    if (props.onUpsertingFailed != null) {
+      setOnFailedModalHidden(props.onUpsertingFailed(error, errorHandled));
+    }
+  }, []);
+
+  const handleSubmissionFailedModalHidden = useCallback(() => {
+    setIsFailedModalVisible(false);
+  }, []);
+
+  const handleSubmissionFailedModalHidden = useCallback(() => {
+    setIsFailedModalVisible(false);
+  }, []);
+
   const handleNavigationConfirmationAnswered = useCallback((answer: boolean) => {
     if (answer) {
       blocker.proceed?.();
@@ -37,8 +68,8 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
       <Form
         className="flex flex-col gap-3"
         upsertAction={props.upsertAction}
-        onUpsertingSucceeded={props.onUpsertingSucceeded}
-        onUpsertingFailed={props.onUpsertingFailed}
+        onUpsertingSucceeded={handleUpsertingSucceeded}
+        onUpsertingFailed={handleFormFailed}
         deleteAction={props.deleteAction}
         onDeletionSucceeded={props.onDeletionSucceeded}
         onDeletionFailed={props.onDeletionFailed}
@@ -57,6 +88,17 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
         noButtonText="Quay lại"
         onAnswer={handleNavigationConfirmationAnswered}
       />
+
+      <FormSubmissionSucceededModal
+        isVisible={isSucceededModalVisible}
+        onHidden={onSucceededModalHidden}
+      />
+
+      <FormSubmissionFailedModal
+        isVisible={isFailedModalVisible}
+        onHidden={handleSubmissionFailedModalHidden}
+      />
+
     </MainContainer>
   );
 }

@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useTsxHelper } from "@/helpers";
 
 // Props.
 type BaseModalProps = {
   isVisible: boolean;
-  onHidden(): any;
+  onHidden?(): any;
+  onVisibilityTransitionFinished?(): any;
   title?: string;
   headerChildren?: React.ReactNode | React.ReactNode[];
   children?: React.ReactNode | React.ReactNode[];
@@ -13,15 +14,27 @@ type BaseModalProps = {
   closeOnEscapeKeyDown?: boolean;
 };
 
-export default function Modal(props: BaseModalProps): React.ReactNode {
+export default function BaseModal(props: BaseModalProps) {
   // Dependencies.
   const { joinClassName } = useTsxHelper();
 
+  // States.
+  const elementRef = useRef<HTMLDivElement>(null!);
+
   // Effect.
+  useEffect(() => {
+    const handleTransitionEnd = () => {
+      props.onVisibilityTransitionFinished?.();
+    };
+
+    elementRef.current.addEventListener("transitionend", handleTransitionEnd);
+    return () => elementRef.current.removeEventListener("transitionend", handleTransitionEnd);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((props.closeOnEscapeKeyDown ?? true) && event.key === "Escape") {
-        props.onHidden();
+        props.onHidden?.();
       }
     };
 
@@ -34,6 +47,7 @@ export default function Modal(props: BaseModalProps): React.ReactNode {
   // Template.
   return createPortal((
     <div
+      ref={elementRef}
       id="customer-introducer-picker-modal"
       className={joinClassName(
         "bg-black/50 w-screen h-screen flex justify-center items-center z-1000",

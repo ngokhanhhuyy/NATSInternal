@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useImperativeHandle, useRef, forwardRef } from "react";
 import { useTsxHelper } from "@/helpers";
 
 // Child component.
@@ -14,10 +14,10 @@ type YesNoModalProps = {
   noButtonText?: string;
   noButtonClassName?: string;
   onAnswer(answer: boolean): any;
-} & Omit<ComponentProps<typeof BaseModal>, "onHidden">;
+};
 
 // Component.
-export default function YesNoModalProps(props: YesNoModalProps): React.ReactNode {
+const YesNoModalProps = forwardRef(props: YesNoModalProps): React.ReactNode {
   // Dependencies.
   const { joinClassName } = useTsxHelper();
 
