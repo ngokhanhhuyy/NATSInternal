@@ -18,8 +18,8 @@ export default function Modal(props: ModalProps): React.ReactNode {
   // Template
   return (
     <BaseModal
-      isVisible={props.isVisible}
-      onHidden={props.onCancel}
+      isOpen={props.isVisible}
+      onClosed={props.onCancel}
       title="Chọn người giới thiệu"
       footerChildren={(
         <Button className="h-fit" onClick={props.onCancel}>Huỷ bỏ</Button>

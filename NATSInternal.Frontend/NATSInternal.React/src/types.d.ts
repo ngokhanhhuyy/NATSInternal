@@ -15,6 +15,9 @@ declare global {
   };
   type ColorVariant = "primary" | "secondary" | "danger" | "success" | "hinting";
   type ComponentProps<TComponent> = TComponent extends (props: infer TProps) => React.ReactNode ? TProps : never;
+  type ForwardRefComponentHandler<T> = T extends React.ForwardRefExoticComponent<
+    React.PropsWithoutRef<any> & React.RefAttributes<infer R>
+  > ? R : never;
 
   declare module "react-router" {
     interface RouteHandle {

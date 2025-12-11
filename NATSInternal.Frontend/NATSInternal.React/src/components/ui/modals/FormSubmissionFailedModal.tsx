@@ -1,30 +1,31 @@
-import React from "react";
+import React, { useRef, useImperativeHandle, forwardRef } from "react";
 
 // Child components.
-import BaseModal from "./BaseModal";
-import { Button } from "@/components/ui";
+import ConfirmationModal, { type ConfirmationModalHandler } from "./ConfirmationModal";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
-// Props.
-type FormSubmissionFailedModalProps = Omit<
-  ComponentProps<typeof BaseModal>,
-  "title" | "headerChildren" | "footerChildren"
->;
-
 // Component.
-export default function FormSubmissionFailedModal(props: FormSubmissionFailedModalProps): React.ReactNode {
-  // Template.
-  const footerChildren = <Button className="h-fit" onClick={props.onHidden}>Đồng ý</Button>;
+const FormSubmissionFailedModal = forwardRef<ConfirmationModalHandler, { }>((_, ref): React.ReactNode => {
+  // States.
+  const componentRef = useRef<ConfirmationModalHandler>(null!);
 
+  // Handle.
+  useImperativeHandle(ref, () => ({
+    async confirmAsync(): Promise<void> {
+      await componentRef.current.confirmAsync();
+    }
+  }));
+
+  // Template.
   return (
-    <BaseModal {...props} title="Dữ liệu không hợp lệ" footerChildren={footerChildren}>
-      <div className="grid grid-cols-[auto_1fr] gap-5 p-5">
-        <ExclamationTriangleIcon className="size-8 shrink-0 grow-0 self-center" />
-        <div className="flex flex-col">
-          <span>Dữ liệu đã nhập không hợp lệ.</span>
-          <span>Vui lòng kiểm tra lại.</span>
-        </div>
-      </div>
-    </BaseModal>
+    <ConfirmationModal
+      ref={componentRef}
+      title="Dữ liệu không hợp lệ"
+      IconComponent={ExclamationTriangleIcon}
+      informationContent={["Dữ liệu đã nhập không hợp lệ.", "Vui lòng kiểm tra lại."]}
+    />
   );
-}
+});
+
+FormSubmissionFailedModal.displayName = "FormSubmissionFailedModal";
+export default FormSubmissionFailedModal;

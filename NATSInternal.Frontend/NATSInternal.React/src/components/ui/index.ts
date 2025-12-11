@@ -4,6 +4,7 @@ export { default as Collapsible, type CollapsibleProps } from "./Collapsible";
 export { default as MainPaginator, type PaginatorProps } from "./Paginator";
 export { default as NewTabLink, type NewTabLinkProps } from "./NewTabLink";
 export { default as BaseModal } from "./modals/BaseModal";
+export { default as ConfirmationModal, type ConfirmationModalHandler } from "./modals/ConfirmationModal";
 export { default as FormSubmissionFailedModal } from "./modals/FormSubmissionFailedModal";
 export { default as FormSubmissionSucceededModal } from "./modals/FormSubmissionSucceededModal";
-export { default as YesNoModal } from "./modals/YesNoModal";
+export { default as YesNoModal, type YesNoModalHandler } from "./modals/YesNoModal";

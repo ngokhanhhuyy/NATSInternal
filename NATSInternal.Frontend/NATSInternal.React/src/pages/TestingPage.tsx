@@ -27,11 +27,15 @@ export default function TestingPage() {
 
   // Template.
   return (
-    <MainContainer>
+    <MainContainer description="Trang kiểm tra dành để kiểm tra các component.">
       {id}
       <Button onClick={signOut}>Đăng xuất</Button>
       <div className="flex gap-3 my-3 flex-wrap">
-        {variants.map((variant, index) => <Button variant={variant} key={index}>{variant.toUpperCase()}</Button>)}
+        {variants.map((variant, index) => (
+          <Button className={variant} key={index}>
+            {(variant ?? "Default").toUpperCase()}
+          </Button>)
+        )}
       </div>
 
       <div className="flex flex-col flex-wrap gap-3 my-3">
@@ -44,4 +48,4 @@ export default function TestingPage() {
   );
 }
 
-const variants: ColorVariant[] = ["primary", "secondary", "danger", "success", "hinting"];
+const variants = [undefined, "primary", "danger"];

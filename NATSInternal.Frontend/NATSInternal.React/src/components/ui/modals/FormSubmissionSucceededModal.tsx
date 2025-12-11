@@ -1,29 +1,30 @@
-import React from "react";
+import React, { useRef, useImperativeHandle, forwardRef } from "react";
 
 // Child components.
-import BaseModal from "./BaseModal";
-import { Button } from "@/components/ui";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-
-// Props.
-type FormSubmissionSucceededModalProps = Omit<
-  ComponentProps<typeof BaseModal>,
-  "title" | "headerChildren" | "footerChildren"
->;
+import ConfirmationModal, { type ConfirmationModalHandler } from "./ConfirmationModal";
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 
 // Component.
-export default function FormSubmissionSucceededModal(props: FormSubmissionSucceededModalProps): React.ReactNode {
-  // Template.
-  const footerChildren = <Button className="h-fit" onClick={props.onHidden}>Đồng ý</Button>;
+const FormSubmissionSucceededModal = forwardRef<ConfirmationModalHandler, { }>((_, ref): React.ReactNode => {
+  // States.
+  const componentRef = useRef<ConfirmationModalHandler>(null!);
 
+  // Handle.
+  useImperativeHandle(ref, () => ({
+    async confirmAsync(): Promise<void> {
+      await componentRef.current.confirmAsync();
+    }
+  }));
+
+  // Template.
   return (
-    <BaseModal {...props} title="Lưu thành công" footerChildren={footerChildren}>
-      <div className="grid grid-cols-[auto_1fr] gap-5 p-5">
-        <ExclamationTriangleIcon className="size-8 shrink-0 grow-0 self-center" />
-        <div className="flex justify-start items-center">
-          <span>Dữ liệu đã được lưu thành công.</span>
-        </div>
-      </div>
-    </BaseModal>
+    <ConfirmationModal
+      title="Dữ liệu không hợp lệ"
+      IconComponent={ExclamationCircleIcon}
+      informationContent={["Dữ liệu đã nhập không hợp lệ.", "Vui lòng kiểm tra lại."]}
+    />
   );
-}
+});
+
+FormSubmissionSucceededModal.displayName = "FormSubmissionSucceededModal";
+export default FormSubmissionSucceededModal;

@@ -4,9 +4,9 @@ import { useTsxHelper } from "@/helpers";
 
 // Props.
 type BaseModalProps = {
-  isVisible: boolean;
-  onHidden?(): any;
-  onVisibilityTransitionFinished?(): any;
+  isOpen: boolean;
+  onClosed?(): any;
+  onOpenCloseTransitionFinished?(): any;
   title?: string;
   headerChildren?: React.ReactNode | React.ReactNode[];
   children?: React.ReactNode | React.ReactNode[];
@@ -19,22 +19,22 @@ export default function BaseModal(props: BaseModalProps) {
   const { joinClassName } = useTsxHelper();
 
   // States.
-  const elementRef = useRef<HTMLDivElement>(null!);
+  const elementRef = useRef<HTMLDivElement | null>(null);
 
   // Effect.
   useEffect(() => {
     const handleTransitionEnd = () => {
-      props.onVisibilityTransitionFinished?.();
+      props.onOpenCloseTransitionFinished?.();
     };
 
-    elementRef.current.addEventListener("transitionend", handleTransitionEnd);
-    return () => elementRef.current.removeEventListener("transitionend", handleTransitionEnd);
+    elementRef.current?.addEventListener("transitionend", handleTransitionEnd);
+    return () => elementRef.current?.removeEventListener("transitionend", handleTransitionEnd);
   }, []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((props.closeOnEscapeKeyDown ?? true) && event.key === "Escape") {
-        props.onHidden?.();
+        props.onClosed?.();
       }
     };
 
@@ -52,13 +52,13 @@ export default function BaseModal(props: BaseModalProps) {
       className={joinClassName(
         "bg-black/50 w-screen h-screen flex justify-center items-center z-1000",
         "fixed top-0 left-0 backdrop-blur-md transition-opacity",
-        props.isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
+        props.isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
       )}
     >
       <div className={joinClassName(
         "bg-white dark:bg-neutral-800 border border-transparent dark:border-white/10",
         "rounded-xl shadow w-full max-w-sm mx-3 sm:mx-auto transition-all",
-        props.isVisible ? "scale-100" : "scale-0"
+        props.isOpen ? "scale-100" : "scale-0"
       )}>
         {/* Header */}
         <div className="flex justify-between items-center p-3">
@@ -75,7 +75,7 @@ export default function BaseModal(props: BaseModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 p-3">
+        <div className="flex justify-end gap-3 p-2">
           {props.footerChildren}
         </div>
       </div>

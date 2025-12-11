@@ -1,11 +1,11 @@
-import React, { useState, useCallback } from "react";
+import React, { useRef, useCallback, useEffect } from "react";
 import { useBlocker, type BlockerFunction } from "react-router";
 
 // Child component.
 import MainContainer from "./MainContainer";
 import { Form } from "@/components/form";
-import { FormSubmissionSucceededModal, FormSubmissionFailedModal, YesNoModal } from "@/components/ui";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { ConfirmationModal, YesNoModal, type ConfirmationModalHandler, type YesNoModalHandler } from "@/components/ui";
+import { ExclamationCircleIcon, ExclamationTriangleIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 
 // Props.
 type FormContainerProps<TUpsertResult> = {
@@ -16,60 +16,54 @@ type FormContainerProps<TUpsertResult> = {
 export default function FormContainer<TUpsertResult>(props: FormContainerProps<TUpsertResult>): React.ReactNode {
   // Blocker.
   const shouldBlock = useCallback<BlockerFunction>(() => {
-    return props.isModelDirty != null && props.isModelDirty;
+    return props.isModelDirty === true && !isSubmissionSucceeded.current;
   }, [props.isModelDirty]);
   const blocker = useBlocker(shouldBlock);
 
   // States.
-  const [isSucceededModalVisible, setIsSucceededModalVisible] = useState<boolean>(false);
-  const [isFailedModalVisible, setIsFailedModalVisible] = useState<boolean>(false);
-  const [onSucceededModalHidden, setOnSucceededModalHidden] = useState<(() => void) | undefined>(undefined);
-  const [onFailedModalHidden, setOnFailedModalHidden] = useState<(() => void) | undefined>(undefined);
+  const isSubmissionSucceeded = useRef<boolean>(false);
+  const dirtyModelConfirmationModelRef = useRef<YesNoModalHandler>(null!);
+  const formSubmissionSucceededModalRef = useRef<ConfirmationModalHandler>(null!);
+  const formSubmissionFailedModalRef = useRef<ConfirmationModalHandler>(null!);
 
   // Callbacks.
   const handleUpsertingSucceeded = useCallback((result: TUpsertResult) => {
-    setIsSucceededModalVisible(true);
-    setOnSucceededModalHidden(() => props.onUpsertingSucceeded?.(result));
+    isSubmissionSucceeded.current = true;
+    formSubmissionSucceededModalRef.current
+      .confirmAsync()
+      .then(() => props.onUpsertingSucceeded?.(result));
   }, [props.onUpsertingSucceeded]);
 
-  const handleSucceededModalHidden = useCallback(() => {
-    setIsSucceededModalVisible(false);
-    setTimeout(() => onSucceededModalHidden?.(), 200);
-  }, []);
+  const handleUpsertingFailed = useCallback((error: Error, isErrorHandled: boolean) => {
+    formSubmissionFailedModalRef.current
+      .confirmAsync()
+      .then(() => props.onUpsertingFailed?.(error, isErrorHandled));
+  }, [props.onUpsertingFailed]);
 
-  const handleFormFailed = useCallback((error: Error, errorHandled: boolean) => {
-    setIsFailedModalVisible(true);
-    if (props.onUpsertingFailed != null) {
-      setOnFailedModalHidden(props.onUpsertingFailed(error, errorHandled));
+  // Effect.
+  useEffect(() => {
+    if (blocker.state === "blocked") {
+      dirtyModelConfirmationModelRef.current
+        .getAnswerAsync()
+        .then(answer => {
+          if (answer) {
+            blocker.proceed?.();
+            return;
+          }
+
+          blocker.reset?.();
+        });
     }
-  }, []);
+  }, [blocker.state]);
 
-  const handleSubmissionFailedModalHidden = useCallback(() => {
-    setIsFailedModalVisible(false);
-  }, []);
-
-  const handleSubmissionFailedModalHidden = useCallback(() => {
-    setIsFailedModalVisible(false);
-  }, []);
-
-  const handleNavigationConfirmationAnswered = useCallback((answer: boolean) => {
-    if (answer) {
-      blocker.proceed?.();
-      return;
-    }
-
-    blocker.reset?.();
-  }, [blocker]);
-
-
-    // Template.
+  // Template.
   return (
     <MainContainer description={props.description}>
       <Form
         className="flex flex-col gap-3"
         upsertAction={props.upsertAction}
         onUpsertingSucceeded={handleUpsertingSucceeded}
-        onUpsertingFailed={handleFormFailed}
+        onUpsertingFailed={handleUpsertingFailed}
         deleteAction={props.deleteAction}
         onDeletionSucceeded={props.onDeletionSucceeded}
         onDeletionFailed={props.onDeletionFailed}
@@ -79,26 +73,31 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
       </Form>
 
       <YesNoModal
-        IconComponent={ExclamationTriangleIcon}
+        ref={dirtyModelConfirmationModelRef}
+        IconComponent={ExclamationCircleIcon}
+        iconClassName="stroke-yellow-500 dark:stroke-yellow-600"
         title="Xác nhận chuyển hướng"
         questionContent={["Dữ liệu thay đổi chưa được lưu. ", "Bạn có chắc chắn muốn chuyển hướng?"]}
-        isVisible={blocker.state === "blocked"}
         yesButtonText="Chắc chắn"
         yesButtonClassName="danger"
         noButtonText="Quay lại"
-        onAnswer={handleNavigationConfirmationAnswered}
       />
 
-      <FormSubmissionSucceededModal
-        isVisible={isSucceededModalVisible}
-        onHidden={onSucceededModalHidden}
+      <ConfirmationModal
+        ref={formSubmissionSucceededModalRef}
+        title="Lưu thành công"
+        IconComponent={CheckCircleIcon}
+        iconClassName="stroke-emerald-600"
+        informationContent="Dữ liệu đã được lưu thành công."
       />
 
-      <FormSubmissionFailedModal
-        isVisible={isFailedModalVisible}
-        onHidden={handleSubmissionFailedModalHidden}
+      <ConfirmationModal
+        ref={formSubmissionFailedModalRef}
+        title="Dữ liệu không hợp lệ"
+        IconComponent={ExclamationTriangleIcon}
+        iconClassName="stroke-red-600"
+        informationContent={["Dữ liệu đã nhập không hợp lệ.", "Vui lòng kiểm tra lại."]}
       />
-
     </MainContainer>
   );
 }
