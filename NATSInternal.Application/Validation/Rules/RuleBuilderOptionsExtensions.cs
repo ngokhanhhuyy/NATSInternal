@@ -79,6 +79,12 @@ internal static class RuleBuilderOptionsExtensions
             .Matches(@"^[\\x21-\\x7E]+$");
     }
 
+    public static IRuleBuilderOptions<T, string?> IsValidName<T>(this IRuleBuilder<T, string?> ruleBuilder)
+    {
+        const string regexPattern = "^[A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸỳỵỷỹ]+$";
+        return ruleBuilder.Matches(regexPattern);
+    }
+
     public static IRuleBuilderOptions<T, byte[]> IsValidImage<T>(this IRuleBuilder<T, byte[]> ruleBuilder)
     {
         return ruleBuilder.Must(file =>
@@ -167,10 +173,7 @@ internal static class RuleBuilderOptionsExtensions
         get
         {
             DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
-            return new DateTime(
-                currentDateTime.AddMonths(-1).Year,
-                currentDateTime.AddMonths(-1).Month,
-                1, 0, 0, 0);
+            return new(currentDateTime.AddMonths(-1).Year, currentDateTime.AddMonths(-1).Month, 1, 0, 0, 0);
         }
     }
     #endregion

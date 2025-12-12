@@ -1,5 +1,6 @@
 using FluentValidation;
 using NATSInternal.Application.Localization;
+using NATSInternal.Application.Validation.Rules;
 using NATSInternal.Application.Validation.Validators;
 using NATSInternal.Domain.Features.Customers;
 
@@ -14,54 +15,58 @@ internal class CustomerUpsertValidator<TRequestDto> : Validator<TRequestDto>
         RuleFor(dto => dto.FirstName)
             .NotEmpty()
             .MaximumLength(CustomerContracts.FirstNameMaxLength)
-            .WithName(dto => DisplayNames.FirstName);
+            .IsValidName()
+            .WithName(DisplayNames.FirstName);
         RuleFor(dto => dto.MiddleName)
             .MinimumLength(1)
             .MaximumLength(CustomerContracts.MiddleNameMaxLength)
-            .WithName(dto => DisplayNames.MiddleName);
+            .IsValidName()
+            .WithName(DisplayNames.MiddleName);
         RuleFor(dto => dto.LastName)
             .NotEmpty()
             .MaximumLength(CustomerContracts.LastNameMaxLength)
-            .WithName(dto => DisplayNames.LastName);
+            .IsValidName()
+            .WithName(DisplayNames.LastName);
         RuleFor(dto => dto.NickName)
             .MinimumLength(1)
             .MaximumLength(CustomerContracts.NickNameMaxLength)
-            .WithName(dto => DisplayNames.NickName);
+            .Matches(@"^\p{L}+$")
+            .WithName(DisplayNames.NickName);
         RuleFor(dto => dto.Gender)
             .IsInEnum()
             .WithMessage(ErrorMessages.Invalid)
-            .WithName(dto => DisplayNames.Gender);
+            .WithName(DisplayNames.Gender);
         RuleFor(dto => dto.Birthday)
             .Must(EqualOrEarlierThanToday)
-            .WithName(dto => DisplayNames.Birthday);
+            .WithName(DisplayNames.Birthday);
         RuleFor(dto => dto.PhoneNumber)
             .MaximumLength(CustomerContracts.PhoneNumberMaxLength)
             .Matches(@"^[0-9]*$")
             .WithMessage(ErrorMessages.Invalid)
-            .WithName(dto => DisplayNames.PhoneNumber);
+            .WithName(DisplayNames.PhoneNumber);
         RuleFor(dto => dto.ZaloNumber)
             .MaximumLength(CustomerContracts.ZaloNumberMaxLength)
             .Matches(@"^[0-9]*$")
             .WithMessage(ErrorMessages.Invalid)
-            .WithName(dto => DisplayNames.ZaloNumber);
+            .WithName(DisplayNames.ZaloNumber);
         RuleFor(dto => dto.FacebookUrl)
             .Must(IsValidFacebookUrl)
             .WithMessage(ErrorMessages.Invalid)
-            .WithName(dto => DisplayNames.FacebookUrl);
+            .WithName(DisplayNames.FacebookUrl);
         RuleFor(dto => dto.Email)
             .EmailAddress()
-            .WithName(dto => DisplayNames.Email);
+            .WithName(DisplayNames.Email);
         RuleFor(dto => dto.Address)
             .MaximumLength(CustomerContracts.AddressMaxLength)
-            .WithName(dto => DisplayNames.Address);
+            .WithName(DisplayNames.Address);
         RuleFor(dto => dto.Note)
             .MaximumLength(CustomerContracts.NoteMaxLength)
-            .WithName(dto => DisplayNames.Note);
+            .WithName(DisplayNames.Note);
     }
     #endregion
 
     #region ProtectedMethods
-    protected virtual bool IsValidFacebookUrl(string? url)
+    protected bool IsValidFacebookUrl(string? url)
     {
         if (url == null)
         {

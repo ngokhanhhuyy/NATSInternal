@@ -31,9 +31,12 @@ const ConfirmationModal = forwardRef<ConfirmationModalHandler, ConfirmationModal
   // Callbacks.
   const handleOkButtonClicked = () => {
     setIsOpen(false);
-    setTimeout(() => {
+  };
+
+  const handleOpenOrCloseTransitionEnded = () => {
+    if (!isOpen) {
       confirmationPromise.current?.();
-    }, 200);
+    }
   };
   
   // Handler.
@@ -55,6 +58,7 @@ const ConfirmationModal = forwardRef<ConfirmationModalHandler, ConfirmationModal
     <BaseModal
       isOpen={isOpen}
       onClosed={() => setIsOpen(false)}
+      onOpenOrCloseTransitionEnded={handleOpenOrCloseTransitionEnded}
       title={props.title}
       footerChildren={footerChildren}
     >

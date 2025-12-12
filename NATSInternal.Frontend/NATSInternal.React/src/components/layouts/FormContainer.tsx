@@ -1,5 +1,7 @@
-import React, { useRef, useCallback, useEffect } from "react";
+import React, { useRef, useCallback, useEffect, useState } from "react";
 import { useBlocker, type BlockerFunction } from "react-router";
+import { OperationError, ValidationError } from "@/api";
+import { useTsxHelper } from "@/helpers";
 
 // Child component.
 import MainContainer from "./MainContainer";
@@ -14,6 +16,8 @@ type FormContainerProps<TUpsertResult> = {
 
 // Component.
 export default function FormContainer<TUpsertResult>(props: FormContainerProps<TUpsertResult>): React.ReactNode {
+  // Dependencies.
+  const { joinClassName } = useTsxHelper();
   // Blocker.
   const shouldBlock = useCallback<BlockerFunction>(() => {
     return props.isModelDirty === true && !isSubmissionSucceeded.current;
@@ -25,6 +29,7 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
   const dirtyModelConfirmationModelRef = useRef<YesNoModalHandler>(null!);
   const formSubmissionSucceededModalRef = useRef<ConfirmationModalHandler>(null!);
   const formSubmissionFailedModalRef = useRef<ConfirmationModalHandler>(null!);
+  const [formUpsertingErrorMessages, setFormUpsertingErrorMessages] = useState<string[] | null>(null);
 
   // Callbacks.
   const handleUpsertingSucceeded = useCallback((result: TUpsertResult) => {
@@ -37,7 +42,14 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
   const handleUpsertingFailed = useCallback((error: Error, isErrorHandled: boolean) => {
     formSubmissionFailedModalRef.current
       .confirmAsync()
-      .then(() => props.onUpsertingFailed?.(error, isErrorHandled));
+      .then(() => {
+        if (error instanceof ValidationError || error instanceof OperationError) {
+          setFormUpsertingErrorMessages(Object.values(error.errors));
+        }
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        props.onUpsertingFailed?.(error, isErrorHandled);
+      });
   }, [props.onUpsertingFailed]);
 
   // Effect.
@@ -59,6 +71,20 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
   // Template.
   return (
     <MainContainer description={props.description}>
+      {formUpsertingErrorMessages && (
+        <div className={joinClassName(
+          "bg-red-500/5 border border-red-500 dark:border-red-400/50 text-red-500 dark:text-red-400",
+          "flex items-center gap-3 rounded-lg px-4 py-2"
+        )}>
+          <ExclamationCircleIcon className="size-7" />
+          <div className="flex flex-col">
+            {formUpsertingErrorMessages.map((message, index) => (
+              <span key={index}>{message}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
       <Form
         className="flex flex-col gap-3"
         upsertAction={props.upsertAction}

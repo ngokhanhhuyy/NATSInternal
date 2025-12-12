@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useTsxHelper } from "@/helpers";
 
@@ -6,7 +6,7 @@ import { useTsxHelper } from "@/helpers";
 type BaseModalProps = {
   isOpen: boolean;
   onClosed?(): any;
-  onOpenCloseTransitionFinished?(): any;
+  onOpenOrCloseTransitionEnded?(isOpen: boolean): any;
   title?: string;
   headerChildren?: React.ReactNode | React.ReactNode[];
   children?: React.ReactNode | React.ReactNode[];
@@ -21,27 +21,27 @@ export default function BaseModal(props: BaseModalProps) {
   // States.
   const elementRef = useRef<HTMLDivElement | null>(null);
 
-  // Effect.
-  useEffect(() => {
-    const handleTransitionEnd = () => {
-      props.onOpenCloseTransitionFinished?.();
-    };
+  // Callbacks.
+  const handleTransitionEnd = useCallback((event: React.TransitionEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) {
+      return;
+    }
 
-    elementRef.current?.addEventListener("transitionend", handleTransitionEnd);
-    return () => elementRef.current?.removeEventListener("transitionend", handleTransitionEnd);
-  }, []);
+    if (event.propertyName !== "opacity") {
+      return;
+    }
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if ((props.closeOnEscapeKeyDown ?? true) && event.key === "Escape") {
-        props.onClosed?.();
-      }
-    };
+    props.onOpenOrCloseTransitionEnded?.(props.isOpen);
+  }, [props.onOpenOrCloseTransitionEnded, props.isOpen]);
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
+  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+    if (event.target !== event.currentTarget) {
+      return;
+    }
+
+    if ((props.closeOnEscapeKeyDown ?? true) && event.key === "Escape") {
+      props.onClosed?.();
+    }
   }, [props.closeOnEscapeKeyDown]);
 
   // Template.
@@ -54,6 +54,8 @@ export default function BaseModal(props: BaseModalProps) {
         "fixed top-0 left-0 backdrop-blur-md transition-opacity",
         props.isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
       )}
+      onTransitionEnd={handleTransitionEnd}
+      onKeyDown={handleKeyDown}
     >
       <div className={joinClassName(
         "bg-white dark:bg-neutral-800 border border-transparent dark:border-white/10",
