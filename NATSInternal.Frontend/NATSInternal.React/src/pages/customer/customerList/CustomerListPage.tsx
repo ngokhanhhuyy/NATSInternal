@@ -4,8 +4,8 @@ import { useApi } from "@/api";
 import { createCustomerListModel } from "@/models";
 
 // Child components.
-import MainContainer from "@/components/layouts/MainContainer";
-import FilterBlock from "./FilterBlock";
+import { MainContainer } from "@/components/layouts";
+import { SearchablePageableListPageFilterBlock } from "@/components/ui";
 import TableBlockProps from "./TableBlock";
 
 // Api.
@@ -59,7 +59,7 @@ export default function CustomerListPage(): React.ReactNode {
       isLoading={isReloading}
     >
       <div className="flex flex-col items-stretch gap-3">
-        <FilterBlock
+        <SearchablePageableListPageFilterBlock
           model={model}
           onModelChanged={changedData => setModel(m => ({ ...m, ...changedData }))}
           onSearchButtonClicked={reloadAsync}

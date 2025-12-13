@@ -3,7 +3,7 @@ import { useAvatarHelper, useCurrencyHelper, useDateTimeHelper } from "@/helpers
 import { usePhoneNumberHelper, useRouteHelper } from "@/helpers";
 
 declare global {
-  type CustomerListModel = {
+  type CustomerListModel = Implements<IPageableListModel<CustomerListCustomerModel>, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
@@ -15,7 +15,7 @@ declare global {
     get createRoute(): string;
     mapFromResponseDto(responseDto: CustomerGetListResponseDto): CustomerListModel;
     toRequestDto(): CustomerGetListRequestDto;
-  };
+  }>;
 
   type CustomerListCustomerModel = Readonly<{
     id: string;

@@ -1,7 +1,7 @@
 import { useHttpClient } from "./httpClient";
 
 export type ProductApi = {
-  getListAsync(requestDto: ProductGetListRequestDto): Promise<ProductGetListResponseDto>;
+  getListAsync(requestDto?: ProductGetListRequestDto): Promise<ProductGetListResponseDto>;
   getDetailAsync(id: string): Promise<ProductGetDetailResponseDto>;
   createAsync(requestDto: ProductCreateRequestDto): Promise<string>;
   updateAsync(id: string, requestDto: ProductUpdateRequestDto): Promise<void>;
@@ -11,7 +11,7 @@ export type ProductApi = {
 const httpClient = useHttpClient();
 
 const productApi: ProductApi = {
-  async getListAsync(requestDto: ProductGetListRequestDto): Promise<ProductGetListResponseDto> {
+  async getListAsync(requestDto?: ProductGetListRequestDto): Promise<ProductGetListResponseDto> {
     return httpClient.getAsync("/products", requestDto);
   },
   async getDetailAsync(id: string): Promise<ProductGetDetailResponseDto> {
@@ -21,10 +21,10 @@ const productApi: ProductApi = {
     return httpClient.postAsync("/products",requestDto);
   },
   async updateAsync(id: string, requestDto: ProductUpdateRequestDto): Promise<void> {
-    httpClient.putAndIgnoreAsync(`/products/${id}`, requestDto);
+    await httpClient.putAndIgnoreAsync(`/products/${id}`, requestDto);
   },
   async deleteAsync(id: string): Promise<void> {
-    httpClient.deleteAndIgnoreAsync(`/products/${id}`);
+    await httpClient.deleteAndIgnoreAsync(`/products/${id}`);
   }
 };
 

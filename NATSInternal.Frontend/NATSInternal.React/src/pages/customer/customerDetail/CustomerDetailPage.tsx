@@ -4,7 +4,7 @@ import { useApi } from "@/api";
 import { createCustomerDetailModel } from "@/models/customer/customerDetailModel";
 
 // Child components.
-import MainContainer from "@/components/layouts/MainContainer";
+import { MainContainer } from "@/components/layouts";
 import PersonalInformationBlock from "./PersonalInformationBlock";
 import ManagementBlock from "./ManagementBlock";
 import DebtBlock from "./DebtBlock";

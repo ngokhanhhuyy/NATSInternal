@@ -122,7 +122,6 @@ export default function SignInPage(): React.ReactNode {
           upsertAction={loginAsync}
           onUpsertingSucceeded={handleLoginSucceeded}
           onUpsertingFailed={handleLoginFailed}
-          submissionSucceededText="Đăng nhập thành công!"
         >
           {/* Introduction */}
           <div className="flex flex-col mb-5">

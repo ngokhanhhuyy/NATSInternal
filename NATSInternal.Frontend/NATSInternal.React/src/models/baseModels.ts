@@ -1,14 +1,16 @@
 declare global {
-  type ClonableModel<TModel extends object> = TModel & {
-    $clone(changedData: CloneableModelChangedData<TModel>): ClonableModel<TModel>;
-  };
-
-  type CloneableModelChangedData<TModel extends object> = Omit<
-    Partial<ReadOnlyPropertiesOmitted<MethodsOmitted<TModel>>>,
-    "$clone"
-  >;
-}
-
-export function createCloneMethod<TModel extends ClonableModel<object>>(getTarget: () => TModel) {
-  return (changedData: CloneableModelChangedData<TModel>) => ({ ...getTarget(), ...changedData });
+  interface IPageableListModel<TItemModel extends object> {
+    sortByAscending: boolean;
+    sortByFieldName: string;
+    page: number;
+    resultsPerPage: number | null;
+    items: TItemModel[];
+    pageCount: number;
+    get sortByFieldNameOptions(): string[];
+    get createRoute(): string;
+  }
+  
+  interface ISearchablePagableListModel<TItemModel extends object> extends IPageableListModel<TItemModel> {
+    searchContent: string;
+  }
 }

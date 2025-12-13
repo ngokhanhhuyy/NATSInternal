@@ -1,6 +1,6 @@
 declare global {
   type ProductGetListRequestDto = Partial<{
-    sortByAscending: string;
+    sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
     resultsPerPage: number;

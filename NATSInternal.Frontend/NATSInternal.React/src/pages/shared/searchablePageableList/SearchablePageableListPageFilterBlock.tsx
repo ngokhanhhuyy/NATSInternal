@@ -3,21 +3,24 @@ import { getDisplayName } from "@/metadata";
 import { useTsxHelper } from "@/helpers";
 
 // Child component.
-import { Block, Button, Collapsible } from "@/components/ui";
+import { Button, Block, Collapsible } from "@/components/ui";
 import { FormField, TextInput, SelectInput } from "@/components/form";
 import { Bars3BottomLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { BarsArrowUpIcon, BarsArrowDownIcon } from "@heroicons/react/24/outline";
 
 // Props.
-type FilterBlockProps = {
-  model: CustomerListModel;
-  onModelChanged(changedData: Partial<CustomerListModel>): any;
+type Props<TListModel extends ISearchablePagableListModel<TItemModel>, TItemModel extends object> = {
+  model: TListModel;
+  onModelChanged(changedData: Partial<TListModel>): any;
   onSearchButtonClicked(): any;
   isReloading: boolean;
 };
 
 // Component.
-export default function FilterBlock(props: FilterBlockProps): React.ReactNode {
+function SearchablePageableListPageFilterBlock<
+      TListModel extends ISearchablePagableListModel<TItemModel>,
+      TItemModel extends object>
+    (props: Props<TListModel, TItemModel>): React.ReactNode {
   // Dependencies.
   const { joinClassName } = useTsxHelper();
 
@@ -46,7 +49,7 @@ export default function FilterBlock(props: FilterBlockProps): React.ReactNode {
         <TextInput
           placeholder="Tìm kiếm"
           value={props.model.searchContent}
-          onValueChanged={(searchContent) => props.onModelChanged({ searchContent })}
+          onValueChanged={(searchContent) => props.onModelChanged({ searchContent } as Partial<TListModel>)}
         />
 
         <Button className="shrink-0 gap-1" onClick={props.onSearchButtonClicked}>
@@ -70,14 +73,16 @@ export default function FilterBlock(props: FilterBlockProps): React.ReactNode {
             <SelectInput
               options={sortByFieldNameOptions}
               value={props.model.sortByFieldName}
-              onValueChanged={(sortByFieldName) => props.onModelChanged({ sortByFieldName })}
+              onValueChanged={(sortByFieldName) => props.onModelChanged({ sortByFieldName } as Partial<TListModel>)}
             />
           </FormField>
 
           <FormField path="sortByAscending">
             <Button
               className="justify-start as-input gap-2"
-              onClick={() => props.onModelChanged({ sortByAscending: !props.model.sortByAscending })}
+              onClick={() => {
+                props.onModelChanged({ sortByAscending: !props.model.sortByAscending } as Partial<TListModel>);
+              }}
             >
               {props.model.sortByAscending ? (
                 <>
@@ -97,3 +102,5 @@ export default function FilterBlock(props: FilterBlockProps): React.ReactNode {
     </Block>
   );
 }
+
+export default SearchablePageableListPageFilterBlock;

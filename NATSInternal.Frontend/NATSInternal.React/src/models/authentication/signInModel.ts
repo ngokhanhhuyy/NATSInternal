@@ -1,17 +1,13 @@
-import { createCloneMethod } from "../baseModels";
-import type { VerifyUserNameAndPasswordRequestDto } from "@/api";
-
 declare global {
-  type SignInModel = ClonableModel<{
+  type SignInModel = {
     userName: string;
     password: string;
     toRequestDto(): VerifyUserNameAndPasswordRequestDto;
-  }>;
+  };
 }
 
 export function createSignInModel(): SignInModel {
-  const model: SignInModel = {
-    $clone: createCloneMethod(() => model),
+  return {
     userName: "",
     password: "",
     toRequestDto(): VerifyUserNameAndPasswordRequestDto {
@@ -21,6 +17,4 @@ export function createSignInModel(): SignInModel {
       };
     }
   };
-
-  return model;
 }

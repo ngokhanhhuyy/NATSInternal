@@ -3,8 +3,8 @@ import { useDirtyModelChecker } from "@/hooks/dirtyModelCheckerHook";
 import { useValidationHelper } from "@/helpers";
 
 // Child components.
-import FormContainer from "@/components/layouts/FormContainer";
-import IntroducerInput from "./introducerPicker.tsx/IntroducerInput";
+import { FormContainer } from "@/components/layouts";
+import IntroducerInput from "./introducerPicker/IntroducerInput";
 import { FormField, TextInput, TextAreaInput, SelectInput } from "@/components/form";
 import { DateTimeInput, SubmitButton, DeleteButton } from "@/components/form";
 import { Block } from "@/components/ui";

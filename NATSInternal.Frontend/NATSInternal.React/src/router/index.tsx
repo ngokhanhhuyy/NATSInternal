@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider, useRouteError, Navigate } from "re
 import { useRouteHelper } from "@/helpers";
 
 // Layouts.
-import MainPageLayout from "@/components/layouts/MainPageLayout";
+import { MainPageLayout } from "@/components/layouts";
 
 // Pages.
 import SignInPage from "@/pages/authentication/signIn/SignInPage";
@@ -12,6 +12,7 @@ const CustomerListPage = lazy(() => import("@/pages/customer/customerList/Custom
 const CustomerDetailPage = lazy(() => import("@/pages/customer/customerDetail/CustomerDetailPage"));
 const CustomerCreatePage = lazy(() => import("@/pages/customer/customerUpsert/CustomerCreatePage"));
 const CustomerUpdatePage = lazy(() => import("@/pages/customer/customerUpsert/CustomerUpdatePage"));
+const ProductListPage = lazy(() => import("@/pages/product/productList/ProductListPage"));
 import TestingPage from "@/pages/TestingPage";
 import { AuthenticationError } from "@/api";
 
@@ -113,6 +114,23 @@ const router = createBrowserRouter([
               breadcrumbTitle: "Khách hàng",
             }
           },
+          {
+            path: "san-pham",
+            children: [
+              {
+                index: true,
+                Component: ProductListPage,
+                loader: async () => {
+                  const module = await import("@/pages/product/productList/ProductListPage");
+                  return module.loadDataAsync();
+                },
+                handle: {
+                  breadcrumbTitle: "Danh sách",
+                  pageTitle: "Danh sách sản phẩm"
+                }
+              }
+            ]
+          }
         ],
         handle: {
           breadcrumbTitle: "Trang chủ"
