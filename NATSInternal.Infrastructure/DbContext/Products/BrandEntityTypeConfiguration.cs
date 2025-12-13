@@ -13,7 +13,11 @@ internal class BrandEntityTypeConfiguration : IEntityTypeConfiguration<Brand>
         builder.HasKey(b => b.Id);
 
         // Relationship.
-        builder.HasOne(b => b.Country).WithMany().OnDelete(DeleteBehavior.SetNull);
+        builder
+            .HasOne(b => b.Country)
+            .WithMany()
+            .HasForeignKey(b => b.CountryId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         // Properties.
         builder.Property(b => b.Name).HasMaxLength(BrandContracts.NameMaxLength).IsRequired();
@@ -24,8 +28,9 @@ internal class BrandEntityTypeConfiguration : IEntityTypeConfiguration<Brand>
         builder.Property(b => b.Address).HasMaxLength(BrandContracts.AddressMaxLength);
         builder.Property(b => b.CreatedDateTime).IsRequired();
 
-        // Ignored.
-        builder.Ignore(b => b.Country);
+        // Index.
+        builder.HasIndex(b => b.Name);
+        builder.HasIndex(b => b.CreatedDateTime);
     }
     #endregion
 }

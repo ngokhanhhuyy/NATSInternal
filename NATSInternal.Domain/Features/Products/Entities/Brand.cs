@@ -11,9 +11,9 @@ internal class Brand : AbstractEntity
     #endregion
 
     #region Constructors
-#nullable disable
+    #nullable disable
     private Brand() { }
-#nullable enable
+    #nullable enable
 
     public Brand(
         string name,
@@ -54,7 +54,7 @@ internal class Brand : AbstractEntity
     public Country? Country
     {
         get => _country;
-        set
+        private set
         {
             CountryId = value?.Id;
             _country = value;

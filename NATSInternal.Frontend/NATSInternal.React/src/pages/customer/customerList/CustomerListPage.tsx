@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useTransition } from "react";
+import React from "react";
+import { Link } from "react-router";
 import { useLoaderData } from "react-router";
 import { useApi } from "@/api";
 import { createCustomerListModel } from "@/models";
+import { useTsxHelper } from "@/helpers";
 
 // Child components.
-import { MainContainer } from "@/components/layouts";
-import { SearchablePageableListPageFilterBlock } from "@/components/ui";
-import TableBlockProps from "./TableBlock";
+import SearchablePageableListPage from "@/pages/shared/searchablePageableList/SearchablePageableListPage";
 
 // Api.
 const api = useApi();
@@ -26,52 +26,58 @@ export async function loadDataAsync(model?: CustomerListModel): Promise<Customer
 export default function CustomerListPage(): React.ReactNode {
   // Dependencies.
   const initialModel = useLoaderData<CustomerListModel>();
-
-  // States
-  const [model, setModel] = useState(() => initialModel);
-  const [isInitialRendering, setIsInitialRendering] = useState(() => true);
-  const [isReloading, startTransition] = useTransition();
-
-  // Callbacks.
-  async function reloadAsync(): Promise<void> {
-    startTransition(async () => {
-      const reloadedModel = await loadDataAsync(model);
-      setModel(reloadedModel);
-    });
-
-    await Promise.resolve();
-  }
-
-  // Effect.
-  useEffect(() => {
-    if (isInitialRendering) {
-      setIsInitialRendering(false);
-      return;
-    }
-
-    reloadAsync();
-  }, [model.sortByAscending, model.sortByFieldName, model.page, model.resultsPerPage]);
+  const { joinClassName } = useTsxHelper();
 
   // Template.
   return (
-    <MainContainer
+    <SearchablePageableListPage<CustomerListModel, CustomerListCustomerModel>
       description="Danh sách các khách hàng đã và đang giao dịch với cửa hàng."
-      isLoading={isReloading}
-    >
-      <div className="flex flex-col items-stretch gap-3">
-        <SearchablePageableListPageFilterBlock
-          model={model}
-          onModelChanged={changedData => setModel(m => ({ ...m, ...changedData }))}
-          onSearchButtonClicked={reloadAsync}
-          isReloading={isReloading}
-        />
+      initialModel={initialModel}
+      loadDataAsync={loadDataAsync}
+      renderTableHeaderRowChildren={() => (
+        <>
+          <th>Họ và tên</th>
+          <th>Biệt danh</th>
+          <th>Giới tính</th>
+          <th>Số điện thoại</th>
+          <th>Ngày sinh</th>
+          <th>Nợ còn lại</th>
+        </>
+      )}
+      renderTableBodyRowChildren={(itemModel) => (
+        <>
+          <td className="px-3 py-2">
+            <Link to={itemModel.detailRoute} className="font-bold">
+              {itemModel.fullName}
+            </Link>
+          </td>
 
-        <TableBlockProps
-          model={model}
-          onPageChanged={(page) => setModel(m => ({ ...m, page }))}
-          isReloading={isReloading}
-        />
-      </div>
-    </MainContainer>
+          <td className="px-3 py-2">
+            {itemModel.nickName && (
+              <span className="opacity-50">{itemModel.nickName}</span>
+            )}
+          </td>
+
+          <td className={joinClassName(
+            "px-3 py-2",
+            itemModel.gender === "Male" ? "text-blue-700 dark:text-blue-400" : "text-red-700 dark:text-red-400"
+          )}>
+            {itemModel.gender === "Male" ? "Nam" : "Nữ"}
+          </td>
+
+          <td className="px-3 py-2">
+            {itemModel.formattedPhoneNumber}
+          </td>
+
+          <td className="px-3 py-2">
+            {itemModel.formattedBirthday}
+          </td>
+
+          <td className={joinClassName("px-3 py-2", !itemModel.debtRemainingAmount && "opacity-25")}>
+            {itemModel.formattedDebtRemainingAmount}
+          </td>
+        </>
+      )}
+    />
   );
 }

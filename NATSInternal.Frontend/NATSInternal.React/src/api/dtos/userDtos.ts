@@ -1,7 +1,7 @@
 declare global {
-  type UserGetListRequestDto = Partial<{
+  type UserGetListRequestDto = ImplementsPartial<ISortableAndPageableListRequestDto, {
     sortByAscending: boolean;
-    sortByFieldName: "CreatedDateTime" | "UserName" | "RoleMaxPowerLevel";
+    sortByFieldName: string;
     page: number;
     resultsPerPage: number;
     searchContent: string;

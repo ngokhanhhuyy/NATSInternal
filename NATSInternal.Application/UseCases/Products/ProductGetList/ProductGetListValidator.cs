@@ -6,11 +6,11 @@ using NATSInternal.Application.Validation.Validators;
 namespace NATSInternal.Application.UseCases.Products;
 
 [UsedImplicitly]
-internal class ProductListValidator
+internal class ProductGetListValidator
     : BaseSortableAndPageableListValidator<ProductGetListRequestDto, ProductGetListRequestDto.FieldToSort>
 {
     #region Constructors
-    public ProductListValidator()
+    public ProductGetListValidator()
     {
         RuleFor(dto => dto.SearchContent)
             .MaximumLength(255)

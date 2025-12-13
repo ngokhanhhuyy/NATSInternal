@@ -4,4 +4,7 @@ export * from "./customer/customerDetailModel";
 export * from "./customer/customerUpsertModel";
 export * from "./product/productListModel";
 export * from "./shared/customerBasicModel";
+export * from "./shared/brandBasicModel";
+export * from "./shared/productCategoryBasicModel";
+export * from "./shared/userBasicModel";
 export * from "./error/errorCollectionModel";

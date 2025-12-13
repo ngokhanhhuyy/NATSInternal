@@ -3,13 +3,16 @@ import React, { useState, useEffect, useTransition } from "react";
 // Child components.
 import { MainContainer } from "@/components/layouts";
 import SearchablePageableListPageFilterBlock from "./SearchablePageableListPageFilterBlock";
+import SearchablePageableListPageTableBlock from "./SearchablePageableListPageTableBlock";
 
 // Props.
 type Props<TListModel extends ISearchablePagableListModel<TItemModel>, TItemModel extends object> = {
   description: string;
   initialModel: TListModel;
   loadDataAsync(model?: TListModel): Promise<TListModel>;
-  renderChildren?(isReloading: boolean): React.ReactNode;
+  renderTableHeaderRowChildren?(): React.ReactNode;
+  renderTableBodyRowChildren?(itemModel: TItemModel): React.ReactNode;
+  children?: React.ReactNode | React.ReactNode[];
 };
 
 // Components.
@@ -55,6 +58,17 @@ export default function SearchablePageableListPage<
           onSearchButtonClicked={reloadAsync}
           isReloading={isReloading}
         />
+
+        <SearchablePageableListPageTableBlock
+          model={model}
+          onPageChanged={page => setModel(m => ({ ...m, page }))}
+          onResultsPerPageChanged={resultsPerPage => setModel(m => ({ ...m, page: 1, resultsPerPage }))}
+          isReloading={isReloading}
+          renderHeaderRowChildren={props.renderTableHeaderRowChildren}
+          renderBodyRowChildren={props.renderTableBodyRowChildren}
+        />
+
+        {props.children}
       </div>
     </MainContainer>
   );

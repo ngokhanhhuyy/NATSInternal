@@ -2,7 +2,7 @@ using FluentValidation;
 using MediatR;
 using NATSInternal.Application.Services;
 
-namespace NATSInternal.Application.UseCases.Products.ProductGetList;
+namespace NATSInternal.Application.UseCases.Products;
 
 internal class ProductGetListHandler : IRequestHandler<ProductGetListRequestDto, ProductGetListResponseDto>
 {

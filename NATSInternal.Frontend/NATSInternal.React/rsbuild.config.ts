@@ -39,7 +39,7 @@ export default defineConfig({
     port: 5173,
     historyApiFallback: true,
     publicDir: {
-      name: "./src/assets"
+      name: "./public"
     },
     headers: {
       "Allow-Control-Allow-Origin": "*",

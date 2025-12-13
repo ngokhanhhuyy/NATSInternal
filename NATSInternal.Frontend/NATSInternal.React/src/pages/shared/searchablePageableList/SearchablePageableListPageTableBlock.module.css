@@ -11,6 +11,15 @@
         border-style: solid;
         border-color: var(--border-color);
         border-bottom-width: 1px;
+        padding-inline: calc(var(--spacing) * 3);
+    }
+
+    & :global(td) {
+        padding-block: calc(var(--spacing) * 1);
+    }
+
+    & :global(td) {
+        padding-block: calc(var(--spacing) * 2);
     }
 
     & :global(tr:last-child td) {

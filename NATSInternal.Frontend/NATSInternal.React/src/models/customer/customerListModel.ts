@@ -3,11 +3,11 @@ import { useAvatarHelper, useCurrencyHelper, useDateTimeHelper } from "@/helpers
 import { usePhoneNumberHelper, useRouteHelper } from "@/helpers";
 
 declare global {
-  type CustomerListModel = Implements<IPageableListModel<CustomerListCustomerModel>, {
+  type CustomerListModel = Implements<ISortableAndPageableListModel<CustomerListCustomerModel>, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
-    resultsPerPage: number | null;
+    resultsPerPage: number;
     searchContent: string;
     items: CustomerListCustomerModel[];
     pageCount: number;

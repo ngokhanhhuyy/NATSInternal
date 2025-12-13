@@ -120,10 +120,7 @@ const router = createBrowserRouter([
               {
                 index: true,
                 Component: ProductListPage,
-                loader: async () => {
-                  const module = await import("@/pages/product/productList/ProductListPage");
-                  return module.loadDataAsync();
-                },
+                loader: () => import("@/pages/product/productList/ProductListPage").then(m => m.loadDataAsync()),
                 handle: {
                   breadcrumbTitle: "Danh sách",
                   pageTitle: "Danh sách sản phẩm"

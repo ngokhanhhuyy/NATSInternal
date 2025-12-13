@@ -13,7 +13,16 @@ export type BlockProps = {
 // Component.
 export default function Block(props: BlockProps): React.ReactNode {
   // Props.
-  const { title, headerChildren: headerContent, bodyClassName, className, children, ...domProps } = props;
+  const {
+    title,
+    headerChildren,
+    bodyClassName,
+    footerChildren,
+    footerClassName,
+    className,
+    children,
+    ...domProps
+  } = props;
 
   // Dependencies.
   const { joinClassName } = useTsxHelper();

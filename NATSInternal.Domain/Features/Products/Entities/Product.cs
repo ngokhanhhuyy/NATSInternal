@@ -2,7 +2,7 @@ using NATSInternal.Domain.Seedwork;
 
 namespace NATSInternal.Domain.Features.Products;
 
-internal class Product : AbstractEntity
+internal class Product : AbstractAggregateRootEntity
 {
     #region Fields
     private Brand? _brand;

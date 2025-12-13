@@ -1,7 +1,7 @@
 declare global {
   type Gender = "Male" | "Female";
 
-  type CustomerGetListRequestDto = Partial<{
+  type CustomerGetListRequestDto = ImplementsPartial<ISortableAndPageableListRequestDto, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;

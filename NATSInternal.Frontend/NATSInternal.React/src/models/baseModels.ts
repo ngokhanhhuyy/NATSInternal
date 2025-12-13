@@ -1,16 +1,24 @@
 declare global {
-  interface IPageableListModel<TItemModel extends object> {
+  interface ISortableListModel<TItemModel extends object> {
     sortByAscending: boolean;
     sortByFieldName: string;
+    items: TItemModel[];
+  }
+
+  interface IPageableListModel<TItemModel extends object> {
     page: number;
-    resultsPerPage: number | null;
+    resultsPerPage: number;
     items: TItemModel[];
     pageCount: number;
-    get sortByFieldNameOptions(): string[];
-    get createRoute(): string;
   }
-  
-  interface ISearchablePagableListModel<TItemModel extends object> extends IPageableListModel<TItemModel> {
+
+  interface ISortableAndPageableListModel<TItemModel extends object> extends
+      ISortableListModel<TItemModel>,
+      IPageableListModel<TItemModel> {
+    createRoute: string;
+  }
+
+  interface ISearchablePagableListModel<TItemModel extends object> extends ISortableAndPageableListModel<TItemModel> {
     searchContent: string;
   }
 }

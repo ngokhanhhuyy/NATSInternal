@@ -7,7 +7,6 @@ using NATSInternal.Application.UseCases.Customers;
 using NATSInternal.Application.UseCases.Metadata;
 using NATSInternal.Application.UseCases.Photos;
 using NATSInternal.Application.UseCases.Products;
-using NATSInternal.Application.UseCases.Products.ProductGetList;
 using NATSInternal.Application.UseCases.Shared;
 using NATSInternal.Application.UseCases.Users;
 using NATSInternal.Application.Validation;
@@ -65,6 +64,22 @@ public static class ApplicationConfiguration
         services.AddTransient<
             IRequestHandler<ProductGetDetailRequestDto, ProductGetDetailResponseDto>,
             ProductGetDetailHandler>();
+        services.AddTransient<IRequestHandler<ProductCreateRequestDto, Guid>, ProductCreateHandler>();
+        services.AddTransient<IRequestHandler<ProductUpdateRequestDto>, ProductUpdateHandler>();
+        services.AddTransient<IRequestHandler<ProductDeleteRequestDto>, ProductDeleteHandler>();
+        services.AddTransient<
+            IRequestHandler<BrandGetListRequestDto, BrandGetListResponseDto>,
+            BrandGetListHandler>();
+        services.AddTransient<
+            IRequestHandler<BrandGetAllRequestDto, IEnumerable<BrandBasicResponseDto>>,
+            BrandGetAllHandler>();
+        services.AddTransient<
+            IRequestHandler<ProductCategoryGetAllRequestDto, IEnumerable<ProductCategoryBasicResponseDto>>,
+            ProductCategoryGetAllHandler>();
+        services.AddTransient<
+            IRequestHandler<ProductCategoryGetListRequestDto, ProductCategoryGetListResponseDto>,
+            ProductCategoryGetListHandler>();
+
 
         // Photo UseCases.
         services.AddTransient<

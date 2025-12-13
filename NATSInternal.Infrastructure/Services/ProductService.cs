@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using NATSInternal.Application.Authorization;
 using NATSInternal.Application.Services;
 using NATSInternal.Application.UseCases.Products;
+using NATSInternal.Application.UseCases.Shared;
 using NATSInternal.Domain.Features.Photos;
 using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Stocks;
@@ -109,7 +110,97 @@ internal class ProductService : IProductService
                 _authorizationInternalService.GetProductExistingAuthorization(pst.Product)))
             .ToList();
 
-        return new(productResponseDtos, queryResult.PageCount);
+        return new(productResponseDtos, queryResult.PageCount, queryResult.ItemCount);
+    }
+
+    public async Task<IEnumerable<BrandBasicResponseDto>> GetAllBrandsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Brands
+            .OrderBy(b => b.Name)
+            .Select(b => new BrandBasicResponseDto(b))
+            .ToListAsync(cancellationToken);
+    }
+    
+    public async Task<BrandGetListResponseDto> GetPaginatedBrandListAsync(
+        BrandGetListRequestDto requestDto,
+        CancellationToken cancellationToken = default)
+    {
+        IQueryable<Brand> query = _context.Brands.Include(b => b.Country);
+
+        if (requestDto.SearchContent is not null && requestDto.SearchContent.Length > 0)
+        {
+            query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{requestDto.SearchContent.ToLower()}%"));
+        }
+
+        switch (requestDto.SortByFieldName)
+        {
+            case nameof(BrandGetListRequestDto.FieldToSort.Name):
+                query = query.ApplySorting(b => b.Name, requestDto.SortByAscending);
+                break;
+            case nameof(BrandGetListRequestDto.FieldToSort.CreatedDateTime):
+                query = query.ApplySorting(b => b.CreatedDateTime, requestDto.SortByAscending);
+                break;
+            default:
+                throw new NotImplementedException();
+        }
+
+        Page<Brand> queryResult = await _listFetchingService.GetPagedListAsync(
+            query,
+            requestDto.Page,
+            requestDto.ResultsPerPage,
+            cancellationToken
+        );
+
+        IEnumerable<BrandGetListBrandResponseDto> brandResponseDtos = queryResult.Items
+            .Select(b => new BrandGetListBrandResponseDto(b));
+
+        return new(brandResponseDtos, queryResult.PageCount, queryResult.ItemCount);
+    }
+
+    public async Task<IEnumerable<ProductCategoryBasicResponseDto>> GetAllProductCategoriesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.ProductCategories
+            .OrderBy(pc => pc.Name)
+            .Select(pc => new ProductCategoryBasicResponseDto(pc))
+            .ToListAsync(cancellationToken);
+    }
+    
+    public async Task<ProductCategoryGetListResponseDto> GetPaginatedProductCategoryListAsync(
+        ProductCategoryGetListRequestDto requestDto,
+        CancellationToken cancellationToken = default)
+    {
+        IQueryable<ProductCategory> query = _context.ProductCategories;
+
+        if (requestDto.SearchContent is not null && requestDto.SearchContent.Length > 0)
+        {
+            query = query.Where(p => EF.Functions.Like(p.Name.ToLower(), $"%{requestDto.SearchContent.ToLower()}%"));
+        }
+
+        switch (requestDto.SortByFieldName)
+        {
+            case nameof(BrandGetListRequestDto.FieldToSort.Name):
+                query = query.ApplySorting(b => b.Name, requestDto.SortByAscending);
+                break;
+            case nameof(BrandGetListRequestDto.FieldToSort.CreatedDateTime):
+                query = query.ApplySorting(b => b.CreatedDateTime, requestDto.SortByAscending);
+                break;
+            default:
+                throw new NotImplementedException();
+        }
+
+        Page<ProductCategory> queryResult = await _listFetchingService.GetPagedListAsync(
+            query,
+            requestDto.Page,
+            requestDto.ResultsPerPage,
+            cancellationToken
+        );
+
+        IEnumerable<ProductCategoryGetListProductCategoryResponseDto> categoryResponseDtos = queryResult.Items
+            .Select(pc => new ProductCategoryGetListProductCategoryResponseDto(pc));
+
+        return new(categoryResponseDtos, queryResult.PageCount, queryResult.ItemCount);
     }
     #endregion
 }

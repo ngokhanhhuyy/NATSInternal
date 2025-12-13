@@ -1,6 +1,10 @@
 using JetBrains.Annotations;
 using CustomerGetListFieldToSort = NATSInternal.Application.UseCases.Customers.CustomerGetListRequestDto.FieldToSort;
 using ProductGetListFieldToSort = NATSInternal.Application.UseCases.Products.ProductGetListRequestDto.FieldToSort;
+using BrandGetListFieldToSort = NATSInternal.Application.UseCases.Products.BrandGetListRequestDto.FieldToSort;
+using ProductCategoryListFieldToSort = NATSInternal.Application.UseCases.Products
+    .ProductCategoryGetListRequestDto
+    .FieldToSort;
 using UserGetListFieldToSort = NATSInternal.Application.UseCases.Users.UserGetListRequestDto.FieldToSort;
 
 namespace NATSInternal.Application.UseCases.Metadata;
@@ -30,6 +34,18 @@ public class MetadataGetListOptionsListResponseDto
     public required MetadataGetListOptionsResponseDto<ProductGetListFieldToSort> Product
     {
         [UsedImplicitly]get;
+        init;
+    }
+
+    public required MetadataGetListOptionsResponseDto<BrandGetListFieldToSort> Brand
+    {
+        [UsedImplicitly] get;
+        init;
+    }
+
+    public required MetadataGetListOptionsResponseDto<BrandGetListFieldToSort> ProductCategory
+    {
+        [UsedImplicitly] get;
         init;
     }
 

@@ -3,7 +3,7 @@ import { getDisplayName } from "@/metadata";
 import { useTsxHelper } from "@/helpers";
 
 // Child component.
-import { Button, Block, Collapsible } from "@/components/ui";
+import { Button, Block } from "@/components/ui";
 import { FormField, TextInput, SelectInput } from "@/components/form";
 import { Bars3BottomLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { BarsArrowUpIcon, BarsArrowDownIcon } from "@heroicons/react/24/outline";
@@ -40,7 +40,7 @@ function SearchablePageableListPageFilterBlock<
     <Block
       title="Tìm kiếm và sắp xếp"
       bodyClassName={joinClassName(
-        "flex flex-col items-stretch gap-3 pt-3 px-3",
+        "flex flex-col items-stretch gap-3 p-3",
         props.isReloading && "pointer-events-none",
       )}
     >
@@ -67,8 +67,8 @@ function SearchablePageableListPageFilterBlock<
       </div>
 
       {/* Collapsible advanced filter */}
-      <Collapsible isCollapsed={isAdvancedFilterCollapsed}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+      {!isAdvancedFilterCollapsed && (
+        <div className={"grid grid-cols-1 sm:grid-cols-2 gap-3"}>
           <FormField path="sortByFieldName">
             <SelectInput
               options={sortByFieldNameOptions}
@@ -98,7 +98,7 @@ function SearchablePageableListPageFilterBlock<
             </Button>
           </FormField>
         </div>
-      </Collapsible>
+      )}
     </Block>
   );
 }

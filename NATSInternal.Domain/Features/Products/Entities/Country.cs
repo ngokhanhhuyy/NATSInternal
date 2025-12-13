@@ -5,9 +5,9 @@ namespace NATSInternal.Domain.Features.Products;
 internal class Country : AbstractEntity
 {
     #region Constructors
-#nullable disable
+    #nullable disable
     private Country() { }
-#nullable enable
+    #nullable enable
 
     public Country(string name, string code)
     {

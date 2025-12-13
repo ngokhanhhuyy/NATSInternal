@@ -11,14 +11,15 @@ declare global {
     user: MetadataGetListOptionsResponseDto;
     customer: MetadataGetListOptionsResponseDto;
     product: MetadataGetListOptionsResponseDto;
+    brand: MetadataGetListOptionsResponseDto;
   };
 
   type MetadataGetListOptionsResponseDto = {
     resourceName: string;
     sortByFieldNameOptions: string[];
-    defaultSortByFieldName: string | null;
-    defaultSortByAscending: boolean | null;
-    defaultResultsPerPage: number | null;
+    defaultSortByFieldName: string;
+    defaultSortByAscending: boolean;
+    defaultResultsPerPage: number;
   };
 
   type MetadataGetCreatingAuthorizationListResponseDto = {

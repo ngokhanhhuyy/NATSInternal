@@ -76,7 +76,7 @@ internal class UserService : IUserService
                 _authorizationInternalService.GetUserExistingAuthorization(u)))
             .ToList();
 
-        return new(userResponseDtos, queryResult.PageCount);
+        return new(userResponseDtos, queryResult.PageCount, queryResult.ItemCount);
     }
     #endregion
 }

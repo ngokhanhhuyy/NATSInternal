@@ -3,7 +3,8 @@ namespace NATSInternal.Application.UseCases;
 public interface IPageableListResponseDto<TItem>
 {
     #region Properties
-    ICollection<TItem> Items { get; }
+    IEnumerable<TItem> Items { get; }
     int PageCount { get; }
+    int ItemCount { get; }
     #endregion
 }

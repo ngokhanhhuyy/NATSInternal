@@ -40,9 +40,11 @@ internal class MetadataGetHandler : IRequestHandler<MetadataGetRequestDto, Metad
     {
         await Task.CompletedTask;
 
-        UserGetListRequestDto userGetListRequestDto = new();
         CustomerGetListRequestDto customerGetListRequestDto = new();
         ProductGetListRequestDto productGetListRequestDto = new();
+        BrandGetListRequestDto brandGetListRequestDto = new();
+        ProductCategoryGetListRequestDto productCategoryGetListRequestDto = new();
+        UserGetListRequestDto userGetListRequestDto = new();
 
         MetadataGetListOptionsListResponseDto listOptionsList = new()
         {
@@ -59,6 +61,22 @@ internal class MetadataGetHandler : IRequestHandler<MetadataGetRequestDto, Metad
                 DefaultSortByFieldName = productGetListRequestDto.SortByFieldName,
                 DefaultSortByAscending = productGetListRequestDto.SortByAscending,
                 DefaultResultsPerPage = productGetListRequestDto.ResultsPerPage
+            },
+            Brand = new()
+            {
+                ResourceName = nameof(Brand),
+                DefaultSortByFieldName = brandGetListRequestDto.SortByFieldName,
+                DefaultSortByAscending = brandGetListRequestDto.SortByAscending,
+                DefaultResultsPerPage = brandGetListRequestDto.ResultsPerPage
+
+            },
+            ProductCategory = new()
+            {
+                ResourceName = nameof(ProductCategory),
+                DefaultSortByFieldName = productCategoryGetListRequestDto.SortByFieldName,
+                DefaultSortByAscending = productCategoryGetListRequestDto.SortByAscending,
+                DefaultResultsPerPage = productCategoryGetListRequestDto.ResultsPerPage
+
             },
             User = new()
             {

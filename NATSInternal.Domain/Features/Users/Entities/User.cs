@@ -10,9 +10,9 @@ internal class User : AbstractAggregateRootEntity
     #endregion
 
     #region Constructors
-#nullable disable
+    #nullable disable
     private User() { }
-#nullable enable
+    #nullable enable
 
     public User(string userName, string passwordHash, DateTime createdDateTime)
     {

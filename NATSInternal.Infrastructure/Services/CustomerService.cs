@@ -75,13 +75,12 @@ internal class CustomerService : ICustomerService
             cancellationToken
         );
 
-        List<CustomerGetListCustomerResponseDto> productResponseDtos = queryResult.Items
+        IEnumerable<CustomerGetListCustomerResponseDto> productResponseDtos = queryResult.Items
             .Select(c => new CustomerGetListCustomerResponseDto(
                 c,
-                _authorizationInternalService.GetCustomerExistingAuthorization(c)))
-            .ToList();
+                _authorizationInternalService.GetCustomerExistingAuthorization(c)));
 
-        return new(productResponseDtos, queryResult.PageCount);
+        return new(productResponseDtos, queryResult.PageCount, queryResult.ItemCount);
     }
     #endregion
 }

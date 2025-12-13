@@ -1,5 +1,5 @@
 declare global {
-  type ProductGetListRequestDto = Partial<{
+  type ProductGetListRequestDto = ImplementsPartial<ISortableAndPageableListRequestDto, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
@@ -22,6 +22,8 @@ declare global {
     stockingQuantity: number;
     isResupplyNeeded: boolean;
     thumbnailUrl: string | null;
+    category: ProductCategoryBasicResponseDto | null;
+    brand: BrandBasicResponseDto | null;
     authorization: ProductExistingAuthorizationResponseDto;
   };
 

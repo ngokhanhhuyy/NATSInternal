@@ -14,10 +14,30 @@ internal class CustomerEntityTypeConfiguration : IEntityTypeConfiguration<Custom
         builder.HasKey(c => c.Id);
 
         // Relationships.
-        builder.HasOne(c => c.Introducer).WithMany();
-        builder.HasOne<User>().WithMany().HasForeignKey(c => c.CreatedUserId).IsRequired();
-        builder.HasOne<User>().WithMany().HasForeignKey(c => c.LastUpdatedUserId);
-        builder.HasOne<User>().WithMany().HasForeignKey(c => c.DeletedUserId);
+        builder
+            .HasOne(c => c.Introducer)
+            .WithMany()
+            .HasForeignKey(c => c.IntroducerId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(c => c.CreatedUserId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(c => c.LastUpdatedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(c => c.DeletedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         // Properties.
         builder.Property(c => c.FirstName).HasMaxLength(CustomerContracts.FirstNameMaxLength).IsRequired();

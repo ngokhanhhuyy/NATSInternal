@@ -93,7 +93,7 @@ Cookie: {{accessCookie}}
 ###
 # @name ProductGetList
 // @no-log
-GET {{host}}/products
+GET {{host}}/products?searchContent=Awesome
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
@@ -101,6 +101,24 @@ Cookie: {{accessCookie}}
 # @name ProductDetail
 // @no-log
 GET {{host}}/products/de91b603-a202-4adc-a684-2c646e3f2f8b
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name BrandGetAll
+GET {{host}}/products/brands/all
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name BrandGetList
+GET {{host}}/products/brands
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name ProductCategoryGetAll
+GET {{host}}/products/categories/all
 Content-Type: application/json
 Cookie: {{accessCookie}}
 

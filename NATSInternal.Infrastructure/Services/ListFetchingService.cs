@@ -27,7 +27,7 @@ internal class ListFetchingService : IListFetchingService
             .Take(resultsPerPageOrDefault)
             .ToListAsync(cancellationToken);
 
-        return new(entities, pageCount);
+        return new(entities, pageCount, resultCount);
     }
     #endregion
 }

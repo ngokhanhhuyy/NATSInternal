@@ -1,12 +1,14 @@
+import { createBrandBasicModel } from "../shared/brandBasicModel";
+import { createProductCategoryBasicModel } from "../shared/productCategoryBasicModel";
 import { getMetadata } from "@/metadata";
 import { useCurrencyHelper, useRouteHelper } from "@/helpers";
 
 declare global {
-  type ProductListModel = Implements<IPageableListModel<ProductListProductModel>, {
+  type ProductListModel = Implements<ISortableAndPageableListModel<ProductListProductModel>, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
-    resultsPerPage: number | null;
+    resultsPerPage: number;
     searchContent: string;
     items: ProductListProductModel[];
     pageCount: number;
@@ -26,6 +28,8 @@ declare global {
     isResupplyNeeded: boolean;
     thumbnailUrl: string | null;
     authorization: ProductExistingAuthorizationResponseDto;
+    category: ProductCategoryBasicModel | null;
+    brand: BrandBasicModel | null;
     formattedDefaultAmountBeforeVatPerUnit: string;
     detailRoute: string;
   }>;
@@ -87,6 +91,8 @@ export function createProductListProductModel(responseDto: ProductGetListProduct
   return {
     ...responseDto,
     formattedDefaultAmountBeforeVatPerUnit: getAmountDisplayText(responseDto.defaultAmountBeforeVatPerUnit),
+    category: responseDto.category && createProductCategoryBasicModel(responseDto.category),
+    brand: responseDto.brand && createBrandBasicModel(responseDto.brand),
     detailRoute: getProductDetailRoutePath(responseDto.id)
   };
 }
