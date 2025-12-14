@@ -3,7 +3,11 @@ import { useAvatarHelper, useCurrencyHelper, useDateTimeHelper } from "@/helpers
 import { usePhoneNumberHelper, useRouteHelper } from "@/helpers";
 
 declare global {
-  type CustomerListModel = Implements<ISortableAndPageableListModel<CustomerListCustomerModel>, {
+  type CustomerListModel = Implements<
+      ISearchableListModel<CustomerListCustomerModel> &
+      ISortableListModel<CustomerListCustomerModel> &
+      IPageableListModel<CustomerListCustomerModel> &
+      IUpsertableListModel<CustomerListCustomerModel>, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
@@ -11,8 +15,9 @@ declare global {
     searchContent: string;
     items: CustomerListCustomerModel[];
     pageCount: number;
+    itemCount: number;
     get sortByFieldNameOptions(): string[];
-    get createRoute(): string;
+    get createRoutePath(): string;
     mapFromResponseDto(responseDto: CustomerGetListResponseDto): CustomerListModel;
     toRequestDto(): CustomerGetListRequestDto;
   }>;
@@ -50,17 +55,19 @@ export function createCustomerListModel(responseDto?: CustomerGetListResponseDto
     searchContent: "",
     items: [],
     pageCount: 0,
+    itemCount: 0,
     get sortByFieldNameOptions(): string[] {
       return customerListOptions.sortByFieldNameOptions;
     },
-    get createRoute(): string {
+    get createRoutePath(): string {
       return getCustomerCreateRoutePath();
     },
     mapFromResponseDto(responseDto: CustomerGetListResponseDto): CustomerListModel {
       return {
         ...this,
         items: responseDto.items.map(createCustomerListCustomerModel),
-        pageCount: responseDto.pageCount
+        pageCount: responseDto.pageCount,
+        itemCount: responseDto.itemCount
       };
     },
     toRequestDto(): CustomerGetListRequestDto {

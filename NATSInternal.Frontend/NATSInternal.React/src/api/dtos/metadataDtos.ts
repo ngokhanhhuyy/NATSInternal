@@ -12,6 +12,7 @@ declare global {
     customer: MetadataGetListOptionsResponseDto;
     product: MetadataGetListOptionsResponseDto;
     brand: MetadataGetListOptionsResponseDto;
+    productCategory: MetadataGetListOptionsResponseDto;
   };
 
   type MetadataGetListOptionsResponseDto = {

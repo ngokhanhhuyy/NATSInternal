@@ -12,7 +12,7 @@ declare global {
     items: CustomerListCustomerModel[];
     pageCount: number;
     get sortByFieldNameOptions(): string[];
-    get createRoute(): string;
+    get createRoutePath(): string;
     mapFromResponseDto(responseDto: CustomerGetListResponseDto): CustomerListModel;
     toRequestDto(): CustomerGetListRequestDto;
   };
@@ -53,7 +53,7 @@ export function createCustomerListModel(responseDto: CustomerGetListResponseDto)
     get sortByFieldNameOptions(): string[] {
       return customerListOptions.sortByFieldNameOptions;
     },
-    get createRoute(): string {
+    get createRoutePath(): string {
       return getCustomerCreateRoutePath();
     },
     mapFromResponseDto(responseDto: CustomerGetListResponseDto): CustomerListModel {

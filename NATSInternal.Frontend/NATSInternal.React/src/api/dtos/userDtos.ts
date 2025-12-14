@@ -1,5 +1,8 @@
 declare global {
-  type UserGetListRequestDto = ImplementsPartial<ISortableAndPageableListRequestDto, {
+  type UserGetListRequestDto = ImplementsPartial<
+      ISearchableListRequestDto &
+      IPageableListRequestDto &
+      ISortableListRequestDto, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
@@ -8,9 +11,14 @@ declare global {
     roleId: string;
   }>;
 
-  type UserGetListResponseDto = {
-    items: UserBasicResponseDto[];
+  type UserGetListResponseDto = Implements<IPageableListResponseDto<UserGetListUserResponseDto>, {
+    items: UserGetListUserResponseDto[];
     pageCount: number;
+    itemCount: number;
+  }>;
+
+  type UserGetListUserResponseDto = UserBasicResponseDto & {
+    authorization: UserExistingAuthorizationResponseDto;
   };
 
   type UserGetDetailResponseDto = {

@@ -1,3 +1,0 @@
-namespace NATSInternal.Application.UseCases;
-
-public interface ISortableAndPageableListRequestDto : ISortableListRequestDto, IPageableListRequestDto;

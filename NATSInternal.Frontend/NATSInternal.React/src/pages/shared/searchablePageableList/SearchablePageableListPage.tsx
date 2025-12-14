@@ -6,7 +6,13 @@ import SearchablePageableListPageFilterBlock from "./SearchablePageableListPageF
 import SearchablePageableListPageTableBlock from "./SearchablePageableListPageTableBlock";
 
 // Props.
-type Props<TListModel extends ISearchablePagableListModel<TItemModel>, TItemModel extends object> = {
+type Props<
+    TListModel extends
+      ISearchableListModel<TItemModel> &
+      ISortableListModel<TItemModel> &
+      IPageableListModel<TItemModel> &
+      IUpsertableListModel<TItemModel>,
+    TItemModel extends object> = {
   description: string;
   initialModel: TListModel;
   loadDataAsync(model?: TListModel): Promise<TListModel>;
@@ -17,7 +23,11 @@ type Props<TListModel extends ISearchablePagableListModel<TItemModel>, TItemMode
 
 // Components.
 export default function SearchablePageableListPage<
-      TListModel extends ISearchablePagableListModel<TItemModel>,
+      TListModel extends
+        ISearchableListModel<TItemModel> &
+        ISortableListModel<TItemModel> &
+        IPageableListModel<TItemModel> &
+        IUpsertableListModel<TItemModel>,
       TItemModel extends object>
     (props: Props<TListModel, TItemModel>): React.ReactNode {
   // States.

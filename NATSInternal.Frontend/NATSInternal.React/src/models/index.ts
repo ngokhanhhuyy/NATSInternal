@@ -3,6 +3,8 @@ export * from "./customer/customerListModel";
 export * from "./customer/customerDetailModel";
 export * from "./customer/customerUpsertModel";
 export * from "./product/productListModel";
+export * from "./brand/brandListModel";
+export * from "./productCategory/productCategoryListModel";
 export * from "./shared/customerBasicModel";
 export * from "./shared/brandBasicModel";
 export * from "./shared/productCategoryBasicModel";

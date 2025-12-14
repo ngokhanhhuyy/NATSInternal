@@ -9,7 +9,13 @@ import { Bars3BottomLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/ou
 import { BarsArrowUpIcon, BarsArrowDownIcon } from "@heroicons/react/24/outline";
 
 // Props.
-type Props<TListModel extends ISearchablePagableListModel<TItemModel>, TItemModel extends object> = {
+type Props<
+    TListModel extends
+      ISearchableListModel<TItemModel> &
+      ISortableListModel<TItemModel> &
+      IPageableListModel<TItemModel> &
+      IUpsertableListModel<TItemModel>,
+    TItemModel extends object> = {
   model: TListModel;
   onModelChanged(changedData: Partial<TListModel>): any;
   onSearchButtonClicked(): any;
@@ -18,7 +24,11 @@ type Props<TListModel extends ISearchablePagableListModel<TItemModel>, TItemMode
 
 // Component.
 function SearchablePageableListPageFilterBlock<
-      TListModel extends ISearchablePagableListModel<TItemModel>,
+      TListModel extends
+        ISearchableListModel<TItemModel> &
+        ISortableListModel<TItemModel> &
+        IPageableListModel<TItemModel> &
+        IUpsertableListModel<TItemModel>,
       TItemModel extends object>
     (props: Props<TListModel, TItemModel>): React.ReactNode {
   // Dependencies.

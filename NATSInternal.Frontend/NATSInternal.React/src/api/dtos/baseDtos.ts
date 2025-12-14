@@ -9,7 +9,23 @@ declare global {
     resultsPerPage: number;
   }
 
-  interface ISortableAndPageableListRequestDto extends ISortableListRequestDto, IPageableListRequestDto { }
+  interface ISearchableListRequestDto {
+    searchContent: string;
+  }
+
+  interface IPageableListResponseDto<TItem extends object> {
+    items: TItem[];
+    pageCount: number;
+    itemCount: number;
+  }
+
+  interface IUpsertableListResponseDto<TItem extends IUpsertableExistingAuthorizationResponseDto>
+    extends IPageableListResponseDto<TItem> { }
+
+  interface IUpsertableExistingAuthorizationResponseDto {
+    canEdit: boolean;
+    canDelete: boolean;
+  }
 }
 
 export { };

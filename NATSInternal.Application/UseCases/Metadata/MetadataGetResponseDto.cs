@@ -43,7 +43,7 @@ public class MetadataGetListOptionsListResponseDto
         init;
     }
 
-    public required MetadataGetListOptionsResponseDto<BrandGetListFieldToSort> ProductCategory
+    public required MetadataGetListOptionsResponseDto<ProductCategoryListFieldToSort> ProductCategory
     {
         [UsedImplicitly] get;
         init;

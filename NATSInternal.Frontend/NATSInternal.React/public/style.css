@@ -51,7 +51,7 @@ input:not([type="checkbox"]), select, textarea {
     padding-block: var(--padding-block);
     /* box-shadow: var(--shadow-xs); */
     transition: .2s linear, outline .1s linear;
-    outline: 0.15rem solid transparent;
+    outline: 0.25rem solid transparent;
     min-height: calc(var(--spacing) * var(--min-height-coeffecient));
 
     /* .form-field.valid:not(:disabled) & {
@@ -179,6 +179,14 @@ input[type="checkbox"] {
     justify-content: center;
     align-items: center;
     /* box-shadow: var(--shadow-xs); */
+
+    &.block-header-button {
+        border-color: rgba(0, 0, 0, 20%);
+
+        html.dark & {
+            border-color: rgba(255, 255, 255, 20%);
+        }
+    }
 
     &:hover {
         background: var(--color-neutral-100);

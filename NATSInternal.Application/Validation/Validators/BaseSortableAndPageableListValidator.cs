@@ -3,7 +3,7 @@ using NATSInternal.Application.UseCases;
 namespace NATSInternal.Application.Validation.Validators;
 
 internal class BaseSortableAndPageableListValidator<TListRequestDto, TFieldToSort> : Validator<TListRequestDto>
-    where TListRequestDto : ISortableAndPageableListRequestDto
+    where TListRequestDto : ISortableListRequestDto, IPageableListRequestDto
     where TFieldToSort : struct, Enum
 {
     #region Constructors

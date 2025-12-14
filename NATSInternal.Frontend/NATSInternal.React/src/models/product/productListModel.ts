@@ -4,7 +4,11 @@ import { getMetadata } from "@/metadata";
 import { useCurrencyHelper, useRouteHelper } from "@/helpers";
 
 declare global {
-  type ProductListModel = Implements<ISortableAndPageableListModel<ProductListProductModel>, {
+  type ProductListModel = Implements<
+      ISearchableListModel<ProductListProductModel> &
+      ISortableListModel<ProductListProductModel> &
+      IPageableListModel<ProductListProductModel> &
+      IUpsertableListModel<ProductListProductModel>, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
@@ -12,8 +16,9 @@ declare global {
     searchContent: string;
     items: ProductListProductModel[];
     pageCount: number;
+    itemCount: number;
     get sortByFieldNameOptions(): string[];
-    get createRoute(): string;
+    get createRoutePath(): string;
     mapFromResponseDto(responseDto: ProductGetListResponseDto): ProductListModel;
     toRequestDto(): ProductGetListRequestDto;
   }>;
@@ -48,17 +53,19 @@ export function createProductListModel(responseDto?: ProductGetListResponseDto):
     searchContent: "",
     items: [],
     pageCount: 0,
+    itemCount: 0,
     get sortByFieldNameOptions(): string[] {
       return productListOptions.sortByFieldNameOptions;
     },
-    get createRoute(): string {
+    get createRoutePath(): string {
       return getProductCreateRoutePath();
     },
     mapFromResponseDto(responseDto: ProductGetListResponseDto): ProductListModel {
       return {
         ...this,
         items: responseDto.items.map(createProductListProductModel),
-        pageCount: responseDto.pageCount
+        pageCount: responseDto.pageCount,
+        itemCount: responseDto.itemCount
       };
     },
     toRequestDto(): ProductGetListRequestDto {

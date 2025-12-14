@@ -1,7 +1,10 @@
 declare global {
   type Gender = "Male" | "Female";
 
-  type CustomerGetListRequestDto = ImplementsPartial<ISortableAndPageableListRequestDto, {
+  type CustomerGetListRequestDto = ImplementsPartial<
+      ISearchableListRequestDto &
+      IPageableListRequestDto &
+      ISortableListRequestDto, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
@@ -9,10 +12,11 @@ declare global {
     searchContent: string;
   }>;
 
-  type CustomerGetListResponseDto = {
+  type CustomerGetListResponseDto = Implements<IPageableListResponseDto<CustomerGetListCustomerResponseDto>, {
     items: CustomerGetListCustomerResponseDto[];
     pageCount: number;
-  };
+    itemCount: number;
+  }>;
 
   type CustomerGetListCustomerResponseDto = {
     id: string;

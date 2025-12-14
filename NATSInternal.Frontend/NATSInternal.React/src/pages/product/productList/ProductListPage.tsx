@@ -1,54 +1,38 @@
 import React from "react";
 import { useLoaderData, Link } from "react-router";
 import { useApi } from "@/api";
-import { createProductListModel, createBrandBasicModel, createProductCategoryBasicModel } from "@/models";
+import { createProductListModel } from "@/models";
 
 // Child components.
 import SearchablePageableListPage from "@/pages/shared/searchablePageableList/SearchablePageableListPage";
-import { BrandListBlock, ProductCategoryListBlock } from "./BrandListBlock";
+import { BrandListBlock, ProductCategoryListBlock } from "./SecondaryBlocks";
 
 // Api.
 const api = useApi();
 
-// Types.
-type InitialModels = {
-  productList: ProductListModel;
-  brands: BrandBasicModel[];
-  categories: ProductCategoryBasicModel[];
-};
-
 // Data loader.
-export async function loadDataAsync(): Promise<InitialModels> {
-  const [productList, brands, categories] = await Promise.all([
-    loadProductListAsync(),
-    api.brand.getAllAsync().then(responseDtos => responseDtos.map(createBrandBasicModel)),
-    api.productCategory.getAllAsync().then(responseDtos => responseDtos.map(createProductCategoryBasicModel))
-  ]);
-
-  return { productList, brands, categories };
-}
-
-async function loadProductListAsync(model?: ProductListModel): Promise<ProductListModel> {
+export async function loadDataAsync(model?: ProductListModel): Promise<ProductListModel> {
   if (model) {
     const responseDto = await api.product.getListAsync(model.toRequestDto());
     return model.mapFromResponseDto(responseDto);
   }
 
-  const responseDto = await api.product.getListAsync();
-  return createProductListModel(responseDto);
+  model = createProductListModel();
+  const responseDto = await api.product.getListAsync(model.toRequestDto());
+  return model.mapFromResponseDto(responseDto);
 }
 
 // Components.
 export default function ProductListPage(): React.ReactNode {
   // Dependencies.
-  const initialModels = useLoaderData<InitialModels>();
+  const initialModel = useLoaderData<ProductListModel>();
 
   // Template.
   return (
     <SearchablePageableListPage<ProductListModel, ProductListProductModel>
       description="Danh sách các sản phẩm trong kho, kể cả các sản phẩm đã ngừng kinh doanh."
-      initialModel={initialModels.productList}
-      loadDataAsync={loadProductListAsync}
+      initialModel={initialModel}
+      loadDataAsync={loadDataAsync}
       renderTableHeaderRowChildren={() => (
         <>
           <th>Tên sản phẩm</th>
@@ -74,9 +58,9 @@ export default function ProductListPage(): React.ReactNode {
         </>
       )}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
-        <BrandListBlock model={initialModels.brands} />
-        <ProductCategoryListBlock model={initialModels.categories} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
+        <BrandListBlock />
+        <ProductCategoryListBlock />
       </div>
     </SearchablePageableListPage>
   );

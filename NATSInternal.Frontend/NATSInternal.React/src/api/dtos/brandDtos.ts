@@ -1,5 +1,8 @@
 declare global {
-  type BrandGetListRequestDto = ImplementsPartial<ISortableAndPageableListRequestDto, {
+  type BrandGetListRequestDto = ImplementsPartial<
+      ISearchableListRequestDto &
+      IPageableListRequestDto &
+      ISortableListRequestDto, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
@@ -7,15 +10,15 @@ declare global {
     searchContent: string;
   }>;
 
-  type BrandGetListResponseDto = Readonly<{
+  type BrandGetListResponseDto = Implements<IPageableListResponseDto<BrandGetListBrandResponseDto>, {
     items: BrandGetListBrandResponseDto[];
     pageCount: number;
     itemCount: number;
   }>;
 
-  type BrandGetListBrandResponseDto = Readonly<{
+  type BrandGetListBrandResponseDto = {
     id: string;
     name: string;
     countryName: string;
-  }>;
+  };
 }

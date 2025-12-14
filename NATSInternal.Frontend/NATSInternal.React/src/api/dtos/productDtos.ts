@@ -1,5 +1,8 @@
 declare global {
-  type ProductGetListRequestDto = ImplementsPartial<ISortableAndPageableListRequestDto, {
+  type ProductGetListRequestDto = ImplementsPartial<
+      ISearchableListRequestDto &
+      IPageableListRequestDto &
+      ISortableListRequestDto, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
@@ -27,10 +30,11 @@ declare global {
     authorization: ProductExistingAuthorizationResponseDto;
   };
 
-  type ProductGetListResponseDto = {
+  type ProductGetListResponseDto = Implements<IPageableListResponseDto<ProductGetListProductResponseDto>, {
     items: ProductGetListProductResponseDto[];
     pageCount: number;
-  };
+    itemCount: number;
+  }>;
 
   type ProductGetDetailResponseDto = {
     id: string;

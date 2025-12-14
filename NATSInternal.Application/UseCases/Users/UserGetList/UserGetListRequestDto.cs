@@ -4,7 +4,7 @@ using MediatR;
 namespace NATSInternal.Application.UseCases.Users;
 
 [UsedImplicitly]
-public class UserGetListRequestDto : ISortableAndPageableListRequestDto, IRequest<UserGetListResponseDto>
+public class UserGetListRequestDto : IRequest<UserGetListResponseDto>, ISortableListRequestDto, IPageableListRequestDto
 {
     #region Properties
     public bool SortByAscending { get; set; } = true;

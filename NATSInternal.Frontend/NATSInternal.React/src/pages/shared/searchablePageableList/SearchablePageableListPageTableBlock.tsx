@@ -9,7 +9,13 @@ import { SelectInput } from "@/components/form";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
 // Props.
-type Props<TListModel extends ISearchablePagableListModel<TItemModel>, TItemModel extends object> = {
+type Props<
+    TListModel extends
+      ISearchableListModel<TItemModel> &
+      ISortableListModel<TItemModel> &
+      IPageableListModel<TItemModel> &
+      IUpsertableListModel<TItemModel>,
+    TItemModel extends object> = {
   model: TListModel;
   onPageChanged(page: number): any;
   onResultsPerPageChanged(resultsPerPage: number): any;
@@ -20,7 +26,11 @@ type Props<TListModel extends ISearchablePagableListModel<TItemModel>, TItemMode
 
 // Component.
 export default function SearchablePageableListPageTableBlock<
-      TListModel extends ISearchablePagableListModel<TItemModel>,
+      TListModel extends
+        ISearchableListModel<TItemModel> &
+        ISortableListModel<TItemModel> &
+        IPageableListModel<TItemModel> &
+        IUpsertableListModel<TItemModel>,
       TItemModel extends object>
     (props: Props<TListModel, TItemModel>): React.ReactNode {
   // Dependencies.
@@ -51,10 +61,7 @@ export default function SearchablePageableListPageTableBlock<
             onValueChanged={resultsPerPageAsString => props.onResultsPerPageChanged(parseInt(resultsPerPageAsString))}
           />
 
-          <Link
-            className="button border-black/20 dark:border-white/20 small gap-1 shrink-0"
-            to={props.model.createRoute}
-          >
+          <Link className="button block-header-button small gap-1 shrink-0" to={props.model.createRoutePath}>
             <PlusIcon className="size-4.5" />
             <span>Tạo mới</span>
           </Link>

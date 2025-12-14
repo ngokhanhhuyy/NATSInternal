@@ -2,38 +2,37 @@ import { getMetadata } from "@/metadata";
 import { useRouteHelper } from "@/helpers";
 
 declare global {
-  type BrandListModel = Implements<
-      ISearchableListModel<BrandListBrandModel> &
-      ISortableListModel<BrandListBrandModel> &
-      IPageableListModel<BrandListBrandModel> &
-      IUpsertableListModel<BrandListBrandModel>, {
+  type ProductCategoryListModel = Implements<
+      ISearchableListModel<ProductCategoryListProductCategoryModel> &
+      ISortableListModel<ProductCategoryListProductCategoryModel> &
+      IPageableListModel<ProductCategoryListProductCategoryModel> &
+      IUpsertableListModel<ProductCategoryListProductCategoryModel>, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
     resultsPerPage: number;
     searchContent: string;
-    items: BrandListBrandModel[];
+    items: ProductCategoryListProductCategoryModel[];
     pageCount: number;
     itemCount: number;
     get sortByFieldNameOptions(): string[];
     get createRoutePath(): string;
-    mapFromResponseDto(responseDto: BrandGetListResponseDto): BrandListModel;
-    toRequestDto(): BrandGetListRequestDto;
+    mapFromResponseDto(responseDto: ProductCategoryGetListResponseDto): ProductCategoryListModel;
+    toRequestDto(): ProductCategoryGetListRequestDto;
   }>;
 
-  type BrandListBrandModel = Readonly<{
+  type ProductCategoryListProductCategoryModel = Readonly<{
     id: string;
     name: string;
     countryName: string;
-    detailRoute: string;
   }>;
 }
 
-const { getBrandDetailRoutePath, getBrandCreateRoutePath } = useRouteHelper();
+const { getProductCategoryCreateRoutePath } = useRouteHelper();
 const listOptions = getMetadata().listOptionsList.brand;
 
-export function createBrandListModel(responseDto?: BrandGetListResponseDto): BrandListModel {
-  const model: BrandListModel = {
+function createListModel(responseDto?: ProductCategoryGetListResponseDto): ProductCategoryListModel {
+  const model: ProductCategoryListModel = {
     sortByAscending: listOptions.defaultSortByAscending ?? true,
     sortByFieldName: listOptions.defaultSortByFieldName ?? "",
     page: 1,
@@ -46,18 +45,18 @@ export function createBrandListModel(responseDto?: BrandGetListResponseDto): Bra
       return listOptions.sortByFieldNameOptions;
     },
     get createRoutePath(): string {
-      return getBrandCreateRoutePath();
+      return getProductCategoryCreateRoutePath();
     },
-    mapFromResponseDto(responseDto: BrandGetListResponseDto): BrandListModel {
+    mapFromResponseDto(responseDto: ProductCategoryGetListResponseDto): ProductCategoryListModel {
       return {
         ...this,
-        items: responseDto.items.map(createBrandListBrandModel),
+        items: responseDto.items.map(createProductCategoryModel),
         pageCount: responseDto.pageCount,
         itemCount: responseDto.itemCount
       };
     },
-    toRequestDto(): BrandGetListRequestDto {
-      const requestDto: BrandGetListRequestDto = {
+    toRequestDto(): ProductGetListRequestDto {
+      const requestDto: ProductGetListRequestDto = {
         sortByAscending: this.sortByAscending,
         sortByFieldName: this.sortByFieldName,
         page: this.page,
@@ -82,9 +81,12 @@ export function createBrandListModel(responseDto?: BrandGetListResponseDto): Bra
   return model;
 }
 
-export function createBrandListBrandModel(responseDto: BrandGetListBrandResponseDto): BrandListBrandModel {
-  return {
-    ...responseDto,
-    detailRoute: getBrandDetailRoutePath(responseDto.id)
-  };
+function createProductCategoryModel(
+    responseDto: ProductCategoryGetListProductCategoryResponseDto): ProductCategoryListProductCategoryModel {
+  return { ...responseDto };
 }
+
+export {
+  createListModel as createProductCategoryListModel,
+  createProductCategoryModel as createProductCategoryListProductCategoryModel
+};
