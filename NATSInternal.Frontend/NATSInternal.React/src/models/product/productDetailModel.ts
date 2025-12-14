@@ -19,3 +19,5 @@ declare global {
     authorization: ProductExistingAuthorizationResponseDto;
   };
 }
+
+// TODO: Define PhotoBasicModel

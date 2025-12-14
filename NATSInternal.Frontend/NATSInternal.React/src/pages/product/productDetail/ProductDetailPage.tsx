@@ -10,6 +10,8 @@ export default function ProductDetailPage(): React.ReactNode {
   // Dependencies.
   const model = useLoaderData<ProductDetailModel>
 
+  // TODO: Define ProductDetailPage
+
   // Templates.
   return (
     <MainContainer description={description}>
