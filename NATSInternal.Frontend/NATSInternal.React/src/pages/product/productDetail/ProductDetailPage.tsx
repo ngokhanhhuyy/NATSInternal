@@ -1,15 +1,21 @@
 import React from "react";
-import {  }
+import { useLoaderData, Link } from "react-router";
 
 // Child components.
-import { MainContainer } from "@/components/layouts"; 
+import { MainContainer } from "@/components/layouts";
+import { Block } from "@/components/ui";
 
 // Components.
 export default function ProductDetailPage(): React.ReactNode {
+  // Dependencies.
+  const model = useLoaderData<ProductDetailModel>
+
   // Templates.
   return (
     <MainContainer description={description}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
 
+      </div>
     </MainContainer>
   );
 }
