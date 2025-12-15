@@ -32,7 +32,7 @@ internal abstract class AbstractProductUpsertValidator<TRequestDto> : Validator<
         RuleFor(dto => dto.DefaultVatPercentage)
             .GreaterThanOrEqualTo(0)
             .LessThanOrEqualTo(100)
-            .WithName(DisplayNames.DefaultVatPercentage);
+            .WithName(DisplayNames.DefaultVatPercentagePerUnit);
         RuleFor(dto => dto.Photos).ContainsNoOrOneThumbnail();
 
         RuleSet("CreateAndUpdate", () =>

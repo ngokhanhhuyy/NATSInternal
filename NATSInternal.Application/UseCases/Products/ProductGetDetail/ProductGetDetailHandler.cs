@@ -1,21 +1,31 @@
 using MediatR;
 using NATSInternal.Application.Authorization;
 using NATSInternal.Application.Exceptions;
+using NATSInternal.Domain.Features.Photos;
 using NATSInternal.Domain.Features.Products;
+using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.UseCases.Products;
 
 internal class ProductGetDetailHandler : IRequestHandler<ProductGetDetailRequestDto, ProductGetDetailResponseDto>
 {
     #region Fields
-    private readonly IProductRepository _repository;
+    private readonly IPhotoRepository _photoRepository;
+    private readonly IProductRepository _productRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IAuthorizationInternalService _authorizationService;
     #endregion
     
     #region Constructors
-    public ProductGetDetailHandler(IProductRepository repository, IAuthorizationInternalService authorizationService)
+    public ProductGetDetailHandler(
+        IPhotoRepository photoRepository,
+        IProductRepository productRepository,
+        IUserRepository userRepository,
+        IAuthorizationInternalService authorizationService)
     {
-        _repository = repository;
+        _photoRepository = photoRepository;
+        _productRepository = productRepository;
+        _userRepository = userRepository;
         _authorizationService = authorizationService;
     }
     #endregion
@@ -25,11 +35,34 @@ internal class ProductGetDetailHandler : IRequestHandler<ProductGetDetailRequest
         ProductGetDetailRequestDto requestDto,
         CancellationToken cancellationToken = default)
     {
-        Product product = await _repository
+        Product product = await _productRepository
             .GetProductByIdIncludingBrandWithCountryAndCategoryAsync(requestDto.Id, cancellationToken)
             ?? throw new NotFoundException();
+
+        ICollection<Photo> photos = await _photoRepository.GetMultiplePhotosByProductIdsAsync(
+            [product.Id],
+            cancellationToken
+        );
+
+        User? createdUser = await _userRepository.GetUserByIdAsync(product.CreatedUserId, cancellationToken);
+        if (product.LastUpdatedUserId is null)
+        {
+            return new(product, createdUser, photos, _authorizationService.GetProductExistingAuthorization(product));
+        }
+
+        User? lastUpdatedUser = await _userRepository.GetUserByIdAsync(
+            product.LastUpdatedUserId.Value,
+            cancellationToken
+        );
         
-        return new(product, _authorizationService.GetProductExistingAuthorization(product));
+        return new(
+            product,
+            createdUser,
+            lastUpdatedUser,
+            photos,
+            _authorizationService.GetProductExistingAuthorization(product)
+        );
+
     }
     #endregion
 }

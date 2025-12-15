@@ -1,6 +1,8 @@
 using NATSInternal.Application.Authorization;
 using NATSInternal.Application.UseCases.Shared;
+using NATSInternal.Domain.Features.Photos;
 using NATSInternal.Domain.Features.Products;
+using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.UseCases.Products;
 
@@ -9,6 +11,8 @@ public class ProductGetDetailResponseDto
     #region Constructors
     internal ProductGetDetailResponseDto(
         Product product,
+        User? createdUser,
+        IEnumerable<Photo> photos,
         ProductExistingAuthorizationResponseDto authorizationResponseDto)
     {
         Id = product.Id;
@@ -20,7 +24,9 @@ public class ProductGetDetailResponseDto
         IsForRetail = product.IsForRetail;
         IsDiscontinued = product.IsDiscontinued;
         CreatedDateTime = product.CreatedDateTime;
+        CreatedUser = new(createdUser);
         LastUpdatedDateTime = product.LastUpdatedDateTime;
+        Photos = photos.Select(p => new PhotoBasicResponseDto(p));
         Authorization = authorizationResponseDto;
 
         if (product.Brand is not null)
@@ -32,6 +38,20 @@ public class ProductGetDetailResponseDto
         {
             Category = new(product.Category);
         }
+    }
+
+    internal ProductGetDetailResponseDto(
+        Product product,
+        User? createdUser,
+        User? lastUpdatedUser,
+        IEnumerable<Photo> photos,
+        ProductExistingAuthorizationResponseDto authorizationResponseDto) : this(
+            product,
+            createdUser,
+            photos,
+            authorizationResponseDto)
+    {
+        LastUpdatedUser = new(lastUpdatedUser);
     }
     #endregion
     
@@ -45,9 +65,12 @@ public class ProductGetDetailResponseDto
     public bool IsForRetail { get; }
     public bool IsDiscontinued { get; }
     public DateTime CreatedDateTime { get; }
+    public UserBasicResponseDto CreatedUser { get;  }
     public DateTime? LastUpdatedDateTime { get; }
+    public UserBasicResponseDto? LastUpdatedUser { get; }
     public ProductCategoryBasicResponseDto? Category { get; }
     public BrandBasicResponseDto? Brand { get; }
+    public IEnumerable<PhotoBasicResponseDto> Photos { get; }
     public ProductExistingAuthorizationResponseDto Authorization { get; }
     #endregion
 }

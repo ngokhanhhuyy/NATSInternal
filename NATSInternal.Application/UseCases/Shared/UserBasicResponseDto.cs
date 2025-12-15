@@ -1,4 +1,3 @@
-using NATSInternal.Application.Authorization;
 using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.UseCases.Shared;

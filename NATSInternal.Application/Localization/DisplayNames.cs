@@ -71,7 +71,7 @@ public static class DisplayNames
     public const string Description = "Mô tả";
     public const string Unit = "Đơn vị";
     public const string DefaultAmountBeforeVatPerUnit = "Giá niêm yết";
-    public const string DefaultVatPercentage = "Thuế VAT mặc định";
+    public const string DefaultVatPercentagePerUnit = "Thuế VAT mặc định";
     public const string IsForRetail = "Sản phẩm bán lẻ";
     public const string IsDiscontinued = "Ngừng kinh doanh";
     public const string SuppliedQuatity = "Số lượng nhập hàng";

@@ -35,11 +35,11 @@ export default function Block(props: BlockProps): React.ReactNode {
     >
       {/* Header */}
       <div className={joinClassName(
-        "block-header bg-blue-500/15 border border-blue-500/50",
+        "block-header bg-black/10 dark:bg-white/10 border border-black/15 dark:border-white/15",
         "flex justify-between gap-3 items-center min-h-10",
         "ps-3 pe-1.5 py-1.5 col-span-2 rounded-t-lg",
       )}>
-        <span className="text-blue-900/75 dark:text-blue-200/75 font-bold text-sm">
+        <span className="font-bold text-sm">
           {title.toUpperCase()}
         </span>
         {props.headerChildren}
@@ -47,7 +47,7 @@ export default function Block(props: BlockProps): React.ReactNode {
 
       {/* Body */}
       <div className={joinClassName(
-        "block-body border-x border-blue-800/25 flex-1",
+        "block-body border-x border-black/15 dark:border-white/15 flex-1",
         !props.footerChildren && "border-b rounded-b-lg",
         props.bodyClassName,
       )}>

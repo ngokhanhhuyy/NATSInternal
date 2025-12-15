@@ -12,13 +12,13 @@ const httpClient = useHttpClient();
 
 const productApi: ProductApi = {
   async getListAsync(requestDto?: ProductGetListRequestDto): Promise<ProductGetListResponseDto> {
-    return httpClient.getAsync("/products", requestDto);
+    return await httpClient.getAsync("/products", requestDto);
   },
   async getDetailAsync(id: string): Promise<ProductGetDetailResponseDto> {
-    return httpClient.getAsync(`/products/${id}`);
+    return await httpClient.getAsync(`/products/${id}`);
   },
   async createAsync(requestDto: ProductCreateRequestDto): Promise<string> {
-    return httpClient.postAsync("/products",requestDto);
+    return await httpClient.postAsync("/products",requestDto);
   },
   async updateAsync(id: string, requestDto: ProductUpdateRequestDto): Promise<void> {
     await httpClient.putAndIgnoreAsync(`/products/${id}`, requestDto);

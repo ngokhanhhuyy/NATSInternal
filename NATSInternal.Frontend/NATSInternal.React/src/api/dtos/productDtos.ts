@@ -47,9 +47,9 @@ declare global {
     isForRetail: boolean;
     isDiscontinued: boolean;
     createdDateTime: string;
+    createdUser: UserBasicResponseDto;
     lastUpdatedDateTime: string | null;
-    createdUserId: string;
-    lastUpdatedUserId: string | null;
+    lastUpdatedUser: UserBasicResponseDto | null;
     category: ProductCategoryBasicResponseDto | null;
     brand: BrandBasicResponseDto | null;
     photos: PhotoBasicResponseDto[];

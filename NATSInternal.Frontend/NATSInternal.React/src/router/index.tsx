@@ -13,6 +13,7 @@ const CustomerDetailPage = lazy(() => import("@/pages/customer/customerDetail/Cu
 const CustomerCreatePage = lazy(() => import("@/pages/customer/customerUpsert/CustomerCreatePage"));
 const CustomerUpdatePage = lazy(() => import("@/pages/customer/customerUpsert/CustomerUpdatePage"));
 const ProductListPage = lazy(() => import("@/pages/product/productList/ProductListPage"));
+const ProductDetailPage = lazy(() => import("@/pages/product/productDetail/ProductDetailPage"));
 import TestingPage from "@/pages/TestingPage";
 import { AuthenticationError } from "@/api";
 
@@ -28,6 +29,8 @@ function AuthenticationErrorBoundary(): React.ReactNode | null {
   if (error instanceof AuthenticationError) {
     return <Navigate to={getSignInRoutePath()} />;
   }
+
+  throw error;
 }
 
 // Router.
@@ -79,7 +82,6 @@ const router = createBrowserRouter([
                   pageTitle: "Tạo khách hàng mới"
                 }
               },
-
               {
                 path: ":id",
                 children: [
@@ -125,8 +127,26 @@ const router = createBrowserRouter([
                   breadcrumbTitle: "Danh sách",
                   pageTitle: "Danh sách sản phẩm"
                 }
-              }
-            ]
+              },
+              {
+                path: ":id",
+                children: [
+                  {
+                    index: true,
+                    Component: ProductDetailPage,
+                    loader: ({ params }) => import("@/pages/product/productDetail/ProductDetailPage")
+                      .then((module) => module.loadDataAsync(params.id as string)),
+                    handle: {
+                      breadcrumbTitle: "Chi tiết",
+                      pageTitle: "Chi tiết sản phẩm"
+                    }
+                  },
+                ]
+              },
+            ],
+            handle: {
+              breadcrumbTitle: "Sản phẩm",
+            }
           }
         ],
         handle: {

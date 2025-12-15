@@ -55,7 +55,7 @@ public class ProductGetListProductResponseDto
         if (stock is not null)
         {
             StockingQuantity = stock.StockingQuantity;
-            IsResupplyNeeded = stock.StockingQuantity <= stock.ResupplyThresholdQuantity;
+            IsResupplyNeeded = !product.IsDiscontinued && stock.StockingQuantity <= stock.ResupplyThresholdQuantity;
         }
 
         if (thumbnail is not null)
