@@ -1,5 +1,5 @@
 import React from "react";
-import { useLoaderData } from "react-router";
+import { Link, useLoaderData } from "react-router";
 import { useApi } from "@/api";
 import { createProductDetailModel } from "@/models";
 
@@ -8,6 +8,7 @@ import { MainContainer } from "@/components/layouts";
 import DetailBlock from "./DetailBlock.tsx";
 import ManagementBlock from "./ManagementBlock";
 import TransactionBlock from "./TransactionBlock";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 // Api.
 const api = useApi();
@@ -26,13 +27,22 @@ export default function ProductDetailPage(): React.ReactNode {
   // Templates.
   return (
     <MainContainer description={description}>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
-        <div className="flex flex-col gap-y-5">
-          <DetailBlock model={model} />
-          <ManagementBlock model={model} />
+      <div className="flex flex-col gap-3 w-full">
+        <div className="flex justify-start">
+          <Link className="button gap-1.5" to={model.updateRoutePath}>
+            <PencilSquareIcon className="size-4" />
+            <span>Chỉnh sửa</span>
+          </Link>
         </div>
 
-        <TransactionBlock />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
+          <div className="flex flex-col gap-y-3">
+            <DetailBlock model={model} />
+            <ManagementBlock model={model} />
+          </div>
+
+          <TransactionBlock />
+        </div>
       </div>
     </MainContainer>
   );

@@ -1,5 +1,5 @@
 import { createCustomerBasicModelFromResponseDto } from "../shared/customerBasicModel";
-import { createUserBasicModel } from "../shared/userBasicModel";
+import { createUserBasicModel } from "@/models/shared/userBasicModel";
 import { useAvatarHelper, useCurrencyHelper, useDateTimeHelper } from "@/helpers";
 import { useRouteHelper, usePhoneNumberHelper } from "@/helpers";
 
@@ -28,7 +28,7 @@ declare global {
     authorization: CustomerExistingAuthorizationResponseDto;
     get avatarUrl(): string;
     get displayDebtRemainingAmountText(): string;
-    get updateRoute(): string;
+    get updateRoutePath(): string;
   }>;
 }
 
@@ -55,7 +55,7 @@ export function createCustomerDetailModel(responseDto: CustomerGetDetailResponse
     get displayDebtRemainingAmountText(): string{
       return getAmountDisplayText(this.debtRemainingAmount);
     },
-    get updateRoute(): string {
+    get updateRoutePath(): string {
       return getCustomerUpdateRoutePath(this.id);
     }
   };

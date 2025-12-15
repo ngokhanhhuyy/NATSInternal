@@ -11,7 +11,7 @@ export default function TransactionBlock(): React.ReactNode {
     <Block title="Giao dịch">
       <table className="table-fixed w-full m-0 p-0">
         <thead>
-          <tr className="bg-black/8 dark:bg-white/8 border-b border-black/15 dark:border-white/15 text-sm">
+          <tr className="border-b border-black/15 dark:border-white/15 text-black/50 dark:text-white/50 text-sm">
             <th className="border-r border-black/15 dark:border-white/15 px-3 py-0.5">Loại</th>
             <th className="border-r border-black/15 dark:border-white/15 px-3 py-0.5 w-25">Số lượng</th>
             <th className="px-3 py-0.5">Thời gian</th>
@@ -20,7 +20,7 @@ export default function TransactionBlock(): React.ReactNode {
         <tbody>
           {model.map((transaction, index) => (
             <tr
-              className="even:bg-black/3 even:dark:bg-white/3 not-last:border-b border-black/15 dark:border-white/15"
+              className="odd:bg-black/3 odd:dark:bg-white/3 not-last:border-b border-black/15 dark:border-white/15"
               key={index}
             >
               <td className="border-r border-black/15 dark:border-white/15 px-3 py-1.5">
