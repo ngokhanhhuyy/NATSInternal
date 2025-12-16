@@ -14,7 +14,7 @@ declare global {
   
   type ProductCreateRequestDto = AbstractProductUpsertRequestDto;
   
-  type ProductUpdateRequestDto = AbstractProductUpsertRequestDto & { id: string; };
+  type ProductUpdateRequestDto = AbstractProductUpsertRequestDto & { id: string; isDiscontinued: boolean; };
   
   type ProductGetListProductResponseDto = {
     id: string;
@@ -64,7 +64,6 @@ type AbstractProductUpsertRequestDto = {
   defaultAmountBeforeVatPerUnit: number;
   defaultVatPercentagePerUnit: number;
   isForRetail: boolean;
-  isDiscontinued: boolean;
   brandId: string | null;
   categoryName: string | null;
   photos: PhotoCreateOrUpdateRequestDto[];

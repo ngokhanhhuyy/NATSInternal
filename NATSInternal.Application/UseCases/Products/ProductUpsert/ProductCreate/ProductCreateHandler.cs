@@ -69,7 +69,7 @@ internal class ProductCreateHandler : IRequestHandler<ProductCreateRequestDto, G
             requestDto.DefaultAmountBeforeVatPerUnit,
             requestDto.DefaultVatPercentage,
             requestDto.IsForRetail,
-            requestDto.IsDiscontinued,
+            false,
             _callerDetailProvider.GetId(),
             _clock.Now,
             brand,

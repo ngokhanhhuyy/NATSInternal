@@ -6,5 +6,6 @@ public class ProductUpdateRequestDto : AbstractProductUpsertRequestDto, IRequest
 {
     #region Properties
     public Guid Id { get; set; }
+    public bool IsDiscontinued { get; set; }
     #endregion
 }

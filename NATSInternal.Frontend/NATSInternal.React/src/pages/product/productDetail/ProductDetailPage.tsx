@@ -7,6 +7,7 @@ import { createProductDetailModel } from "@/models";
 import { MainContainer } from "@/components/layouts";
 import DetailBlock from "./DetailBlock.tsx";
 import ManagementBlock from "./ManagementBlock";
+import PhotoBlock from "./PhotoBlock";
 import TransactionBlock from "./TransactionBlock";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
@@ -39,6 +40,7 @@ export default function ProductDetailPage(): React.ReactNode {
           <div className="flex flex-col gap-y-3">
             <DetailBlock model={model} />
             <ManagementBlock model={model} />
+            <PhotoBlock model={model} />
           </div>
 
           <TransactionBlock />
