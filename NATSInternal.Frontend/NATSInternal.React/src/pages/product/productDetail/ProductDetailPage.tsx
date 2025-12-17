@@ -36,14 +36,23 @@ export default function ProductDetailPage(): React.ReactNode {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch">
           <div className="flex flex-col gap-y-3">
             <DetailBlock model={model} />
             <ManagementBlock model={model} />
-            <PhotoBlock model={model} />
           </div>
 
-          <TransactionBlock />
+          <div className="flex flex-col gap-y-3">
+            <PhotoBlock model={model} />
+            <TransactionBlock />
+          </div>
+        </div>
+
+        <div className="flex justify-end">
+          <Link className="button gap-1.5" to={model.updateRoutePath}>
+            <PencilSquareIcon className="size-4" />
+            <span>Chỉnh sửa</span>
+          </Link>
         </div>
       </div>
     </MainContainer>
