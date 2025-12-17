@@ -24,7 +24,7 @@ export default function PhotoBlock(props: Props): React.ReactNode {
           ))}
         </div>
       ) : (
-        <div className="flex justify-center items-center px-3 py-5 opacity-25">
+        <div className="flex justify-center items-center px-3 py-5 opacity-25 h-full">
           Không có ảnh
         </div>
       )}

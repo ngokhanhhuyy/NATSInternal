@@ -8,7 +8,7 @@ import { MainContainer } from "@/components/layouts";
 import DetailBlock from "./DetailBlock.tsx";
 import ManagementBlock from "./ManagementBlock";
 import PhotoBlock from "./PhotoBlock";
-import TransactionBlock from "./TransactionBlock";
+import LatestTransactionBlock from "./LatestTransactionBlock.tsx";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 // Api.
@@ -36,14 +36,22 @@ export default function ProductDetailPage(): React.ReactNode {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch">
           <div className="flex flex-col gap-y-3">
             <DetailBlock model={model} />
             <ManagementBlock model={model} />
-            <PhotoBlock model={model} />
           </div>
 
-          <TransactionBlock />
+          <PhotoBlock model={model} />
+        </div>
+
+        <LatestTransactionBlock />
+
+        <div className="flex justify-end">
+          <Link className="button gap-1.5" to={model.updateRoutePath}>
+            <PencilSquareIcon className="size-4" />
+            <span>Chỉnh sửa</span>
+          </Link>
         </div>
       </div>
     </MainContainer>
