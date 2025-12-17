@@ -1,15 +1,32 @@
-import React from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import { useDirtyModelChecker } from "@/hooks/dirtyModelCheckerHook";
+
+// Child components.
+import { FormContainer } from "@/components/layouts";
 
 // Props.
-type Props = {
-  
+type Model = ProductCreateModel | ProductUpdateModel;
+type Props<TModel extends Model> = {
+  description: string;
+  isForCreating: boolean;
+  model: TModel;
+  onModelChanged(changedData: Partial<TModel>): any;
+    onModelChanged(changedData: Partial<TModel>): any;
+    upsertAction(): Promise<TModel>;
+    onUpsertingSucceeded(result: TModel): any;
+    deleteAction?(): Promise<void>;
+    onDeletionSucceeded?(): any;
+    renderButtons?(): React.ReactNode;
 };
-ツールと環境準備　→　完了 (0.5h) 
 
-ローデータ作成　→　完了 (3h)　 
+// Components.
+export default function ProductUpsertPage<TModel extends Model>(props: Props<TModel>): React.ReactNode {
+  // States.
+  const isModelDirty = useDirtyModelChecker(props.model.toRequestDto(), props.model);
+  // Template.
+  return (
+    <FormContainer>
 
-テストデータ作成　→　完了 (1h) 
-
-SoapUIプロジェクト作成　→　完了 (1h) 
-
-リクエスト実施　➝　完了 (1.5h) 
+    </FormContainer>
+  );
+}

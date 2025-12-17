@@ -11,6 +11,18 @@ declare global {
     categoryId: string;
     searchContent: string;
   }>;
+
+  type AbstractProductUpsertRequestDto = {
+    name: string;
+    description: string | null;
+    unit: string;
+    defaultAmountBeforeVatPerUnit: number;
+    defaultVatPercentagePerUnit: number;
+    isForRetail: boolean;
+    brandId: string | null;
+    categoryName: string | null;
+    photos: PhotoCreateOrUpdateRequestDto[];
+  };
   
   type ProductCreateRequestDto = AbstractProductUpsertRequestDto;
   
@@ -56,15 +68,3 @@ declare global {
     authorization: ProductExistingAuthorizationResponseDto;
   };
 }
-
-type AbstractProductUpsertRequestDto = {
-  name: string;
-  description: string | null;
-  unit: string;
-  defaultAmountBeforeVatPerUnit: number;
-  defaultVatPercentagePerUnit: number;
-  isForRetail: boolean;
-  brandId: string | null;
-  categoryName: string | null;
-  photos: PhotoCreateOrUpdateRequestDto[];
-};

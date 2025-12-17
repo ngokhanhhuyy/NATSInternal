@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router";
+import { useDateTimeHelper } from "@/helpers";
 
 // Child components.
 import { Block } from "@/components/ui";
@@ -13,7 +14,7 @@ export default function LatestTransactionBlock(): React.ReactNode {
         <thead>
           <tr>
             <th>Loại</th>
-            <th className="w-25">Số lượng</th>
+            <th>Số lượng</th>
             <th>Thời gian</th>
           </tr>
         </thead>
@@ -35,6 +36,7 @@ export default function LatestTransactionBlock(): React.ReactNode {
   );
 }
 
+const { getDeltaTextRelativeToNow } = useDateTimeHelper();
 const model = Array.from({ length: 10 }).map((_, index) => ({
   type: getTransactionType(),
   quantity: Math.round(Math.random() * 100) + 20,
@@ -57,5 +59,6 @@ function getTransactionType(): string {
 function getDateTime(index: number): string {
   const dateTime = new Date();
   dateTime.setDate(new Date().getDate() - index);
-  return dateTime.toLocaleString("vi-VN");
+  dateTime.setHours(dateTime.getHours() + 6);
+  return getDeltaTextRelativeToNow(dateTime.toISOString());
 }
