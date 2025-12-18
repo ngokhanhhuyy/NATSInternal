@@ -1,16 +1,25 @@
 import React from "react";
 import { Link } from "react-router";
-import { useDateTimeHelper } from "@/helpers";
+import { useDateTimeHelper, useTsxHelper } from "@/helpers";
+import styles from "./LastestTransactionBlock.module.css";
 
 // Child components.
 import { Block } from "@/components/ui";
 
 // Components.
 export default function LatestTransactionBlock(): React.ReactNode {
+  // Computed.
+  const { compute, joinClassName } = useTsxHelper();
+
+  // Computed.
+  const computedModel = compute<(Model | null)[]>(() => {
+    return Array.from({ length: 30 }).map((_, index) => index < model.length ? model[index] : null);
+  });
+
   // Template.
   return (
-    <Block title="Giao dịch gần nhất">
-      <table className="table">
+    <Block title="Giao dịch gần nhất" bodyClassName="relative">
+      <table className="table relative lg:absolute top-0">
         <thead>
           <tr>
             <th>Loại</th>
@@ -18,16 +27,16 @@ export default function LatestTransactionBlock(): React.ReactNode {
             <th>Thời gian</th>
           </tr>
         </thead>
-        <tbody>
-          {model.map((transaction, index) => (
-            <tr key={index}>
-              <td>
+        <tbody className={joinClassName(styles.tableBody)}>
+          {computedModel.map((transaction, index) => (
+            <tr className="h-10 bg-transparent" key={index}>
+              <td height={undefined}>
                 <Link to="#" className="font-bold">
-                  {transaction.type}
+                  {transaction?.type}
                 </Link>
               </td>
-              <td className="text-center">{transaction.quantity}</td>
-              <td className="text-end">{transaction.dateTime}</td>
+              <td className="text-center">{transaction?.quantity}</td>
+              <td className="text-end">{transaction?.dateTime}</td>
             </tr>
           ))}
         </tbody>
@@ -36,8 +45,14 @@ export default function LatestTransactionBlock(): React.ReactNode {
   );
 }
 
+type Model = {
+  type: string,
+  quantity: number,
+  dateTime: string
+};
+
 const { getDeltaTextRelativeToNow } = useDateTimeHelper();
-const model = Array.from({ length: 10 }).map((_, index) => ({
+const model = Array.from({ length: 2 }).map((_, index) => ({
   type: getTransactionType(),
   quantity: Math.round(Math.random() * 100) + 20,
   dateTime: getDateTime(index)

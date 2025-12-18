@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+.tableBody {
+    --row-height: calc(var(--spacing) * 10);
+    background-image:  repeating-linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 15%) 0,
+        rgba(255, 255, 255, 15%) 0.5px,
+        rgba(255, 255, 255, 5%) 0.5px,
+        rgba(255, 255, 255, 5%) calc(var(--row-height) - 0.5px),
+        rgba(255, 255, 255, 15%) calc(var(--row-height) - 0.5px),
+        rgba(255, 255, 255, 15%) calc(var(--row-height) + 0.5px),
+        transparent calc(var(--row-height) + 0.5px),
+        transparent calc(var(--row-height) + (var(--row-height) - 0.5px)),
+        rgba(255, 255, 255, 15%) calc(var(--row-height) + (var(--row-height) - 0.5px)),
+        rgba(255, 255, 255, 15%) calc(var(--row-height) + var(--row-height))
+    ) !important;
+}

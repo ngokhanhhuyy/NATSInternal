@@ -40,12 +40,11 @@ export default function ProductDetailPage(): React.ReactNode {
           <div className="flex flex-col gap-y-3">
             <DetailBlock model={model} />
             <ManagementBlock model={model} />
+            <PhotoBlock model={model} />
           </div>
 
-          <PhotoBlock model={model} />
+          <LatestTransactionBlock />
         </div>
-
-        <LatestTransactionBlock />
 
         <div className="flex justify-end">
           <Link className="button gap-1.5" to={model.updateRoutePath}>

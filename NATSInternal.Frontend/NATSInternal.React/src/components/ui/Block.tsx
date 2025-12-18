@@ -47,7 +47,7 @@ export default function Block(props: BlockProps): React.ReactNode {
 
       {/* Body */}
       <div className={joinClassName(
-        "block-body border-x border-black/15 dark:border-white/15 flex-1",
+        "block-body border-x border-black/15 dark:border-white/15 flex-1 overflow-hidden",
         !props.footerChildren && "border-b rounded-b-lg",
         props.bodyClassName,
       )}>

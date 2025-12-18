@@ -1,0 +1,42 @@
+table.table {
+    --border-color: rgba(0, 0, 0, 15%);
+    --odd-background-color: rgba(0, 0, 0, 3%);
+    table-layout: fixed;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border-collapse: collapse;
+
+    html.dark & {
+        --border-color: rgba(255, 0, 0, 15%);
+        --odd-background-color: rgba(255, 255, 255, 3%);
+    }
+
+    & > thead > tr,
+    & > tbody > tr:not(:last-child) {
+        border-bottom: 5px solid var(--border-color);
+    }
+
+    & > thead > tr > th,
+    & > tbody > tr > td {
+        padding-inline: calc(var(--spacing) * 3);
+    }
+
+    & > thead > tr > th {
+        font-size: var(--text-sm);
+        padding-block: calc(Var(--spacing) * 0.5);
+    }
+
+    & > tbody > tr > td {
+        padding-block: calc(Var(--spacing) * 1.5);
+    }
+
+    & > tbody > tr:nth-child(odd) {
+        background-color: var(--odd-background-color);
+    }
+
+    & > thead > tr > th:not(:last-child),
+    & > tbody > tr > td:not(:last-child) {
+        border-right: 5px solid var(--border-color);
+    }
+}
