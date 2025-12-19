@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router";
 import { useDateTimeHelper, useTsxHelper } from "@/helpers";
-import styles from "./LastestTransactionBlock.module.css";
 
 // Child components.
 import { Block } from "@/components/ui";
@@ -9,7 +8,7 @@ import { Block } from "@/components/ui";
 // Components.
 export default function LatestTransactionBlock(): React.ReactNode {
   // Computed.
-  const { compute, joinClassName } = useTsxHelper();
+  const { compute } = useTsxHelper();
 
   // Computed.
   const computedModel = compute<(Model | null)[]>(() => {
@@ -19,7 +18,7 @@ export default function LatestTransactionBlock(): React.ReactNode {
   // Template.
   return (
     <Block title="Giao dịch gần nhất" bodyClassName="relative">
-      <table className="table relative lg:absolute top-0">
+      <table className="table grid-color-from-background relative lg:absolute top-0 h-full">
         <thead>
           <tr>
             <th>Loại</th>
@@ -27,10 +26,10 @@ export default function LatestTransactionBlock(): React.ReactNode {
             <th>Thời gian</th>
           </tr>
         </thead>
-        <tbody className={joinClassName(styles.tableBody)}>
-          {computedModel.map((transaction, index) => (
-            <tr className="h-10 bg-transparent" key={index}>
-              <td height={undefined}>
+        <tbody>
+          {model.map((transaction, index) => (
+            <tr key={index}>
+              <td className="h-10">
                 <Link to="#" className="font-bold">
                   {transaction?.type}
                 </Link>

@@ -44,8 +44,12 @@ public static class Program
 
         // Cookie.
         builder.Services
-            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "ApiCookie";
+                options.DefaultChallengeScheme = "ApiCookie";
+            })
+            .AddCookie("ApiCookie", options =>
             {
                 options.ExpireTimeSpan = TimeSpan.FromDays(30);
                 options.SlidingExpiration = false;
@@ -54,23 +58,6 @@ public static class Program
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.LoginPath = "/SignIn";
                 options.LogoutPath = "/Logout";
-
-                // options.Events.OnSignedIn = context =>
-                // {
-                //     CallerDetailProvider callerDetailProvider = context.HttpContext.RequestServices
-                //         .GetRequiredService<CallerDetailProvider>();
-                //     try
-                //     {
-                //         callerDetailProvider.SetCallerDetail(context.Principal!);
-                //     }
-                //     catch (AuthenticationException exception)
-                //     {
-                //         context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                //         return context.Fail(exception);
-                //     }
-                //
-                //     return Task.CompletedTask;
-                // };
                 
                 options.Events.OnRedirectToLogin = options.Events.OnRedirectToAccessDenied = (context) =>
                 {
@@ -83,13 +70,23 @@ public static class Program
                     context.Response.StatusCode = StatusCodes.Status200OK;
                     return Task.CompletedTask;
                 };
+            })
+            .AddCookie("MvcCookie", options =>
+            {
+                options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                options.SlidingExpiration = false;
+                options.Cookie.Name = "NATSInternalAuthenticationCookie";
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.LoginPath = "/dang-nhap";
+                options.LogoutPath = "/dang-xuat";
             });
 
         builder.Services.AddAuthorization();
         
         // Add controllers with json serialization policy.
         builder.Services
-            .AddControllers(options =>
+            .AddControllersWithViews(options =>
             {
                 options.Conventions.Add(new RouteTokenTransformerConvention(new PluralParameterTransformer()));
                 options.Conventions.Add(new RouteTokenTransformerConvention(new KebabParameterTransformer()));
@@ -148,7 +145,7 @@ public static class Program
         app.UseAuthorization();
         app.UseMiddleware<CallerDetailExtractingMiddleware>();
         app.MapControllers();
-        // app.MapHub<ApplicationHub>("/Api/Hub");
+        app.MapControllerRoute(name: "default", pattern: "{controller=DashboardWeb}/{action=Index}");
         app.UseStaticFiles();
         await app.RunAsync();
     }
