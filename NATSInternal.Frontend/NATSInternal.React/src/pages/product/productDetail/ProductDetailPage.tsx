@@ -30,7 +30,7 @@ export default function ProductDetailPage(): React.ReactNode {
     <MainContainer description={description}>
       <div className="flex flex-col gap-3 w-full">
         <div className="flex justify-start">
-          <Link className="button gap-1.5" to={model.updateRoutePath}>
+          <Link className="btn gap-1.5" to={model.updateRoutePath}>
             <PencilSquareIcon className="size-4" />
             <span>Chỉnh sửa</span>
           </Link>
@@ -47,7 +47,7 @@ export default function ProductDetailPage(): React.ReactNode {
         </div>
 
         <div className="flex justify-end">
-          <Link className="button gap-1.5" to={model.updateRoutePath}>
+          <Link className="btn gap-1.5" to={model.updateRoutePath}>
             <PencilSquareIcon className="size-4" />
             <span>Chỉnh sửa</span>
           </Link>

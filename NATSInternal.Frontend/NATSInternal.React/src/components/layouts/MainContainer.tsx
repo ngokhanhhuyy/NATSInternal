@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useMatches } from "react-router";
 import { useTsxHelper } from "@/helpers";
 
@@ -38,6 +38,11 @@ export default function MainContainer(props: MainContainerProps): React.ReactNod
 
     return matchedRouteHandle.pageTitle ?? null;
   });
+
+  // Effect.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   // Template.
   return (

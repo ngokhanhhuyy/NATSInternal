@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "lib": ["ES2020", "DOM"],
+    "outDir": "./wwwroot/output/js",
+    "rootDir": "./wwwroot/src/ts",
+    "strict": true,
+    "sourceMap": true,
+    "noEmitOnError": true
+  },
+  "include": ["./wwwroot/src/ts/**/*.ts"]
+}

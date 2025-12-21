@@ -1,0 +1,21 @@
+@layer components {
+    .list-group {
+        --border-color: rgba(0, 0, 0, 10%);
+        --border-width: 1px;
+        list-style: none;
+        border: var(--border-width) solid var(--border-color);
+        border-radius: var(--radius-lg);
+
+        html.dark & {
+            --border-color: rgba(255, 255, 255, 10%);
+        }
+
+        &.list-group-flush {
+            --border-width: 0;
+        }
+
+        & li:not(:last-child) {
+            border-bottom: 1px solid var(--border-color);
+        }
+    }
+}

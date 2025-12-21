@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import "tailwindcss" important;
+@import "./button.css";
+@import "./form.css";
+@import "./input.css";
+@import "./list.css";
+@import "./svg.css";
+@import "./table.css";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --html-background: rgba(0, 0, 0, 0.02);
+    --color-primary: var(--color-black);
+    --color-primary-foreground: var(--color-white);
+    --color-secondary: var(--color-white);
+    --color-danger: var(--color-red-600);
+    --color-success: var(--color-emerald-500);
+    --color-hinting: var(--color-blue-600);
+}
+
+html {
+    --topbar-height: 60px;
+    --border-color: rgba(0, 0, 0, 0.1);
+    background: var(--html-background);
+    font-family: Roboto, Helvetica, Roboto, Arial, sans-serif;
+    font-size: 14px;
+    overscroll-behavior: none;
+
+    &.dark {
+        --html-background: black;
+        --color-primary: var(--color-white);
+        --color-primary-foreground: var(--color-black);
+        --color-secondary: var(--color-black);
+        color: white;
+        color-scheme: dark;
+    }
+}
+
+a:not(.hover\:underline):not(.hover\:overline):not(.hover\:line-through):not(.hover\:no-underline):hover {
+    text-decoration: underline;
+}
+
+img {
+    &.img-thumbnail {
+        background-color: white;
+        border: 1px solid rgba(0, 0, 0, 15%);
+        border-radius: var(--radius-md);
+        padding: calc(var(--spacing) * 2);
+
+        html.dark & {
+            background-color: var(--color-neutral-800);
+            border-color: rgba(255, 255, 255, 15%);
+        }
+    }
+}

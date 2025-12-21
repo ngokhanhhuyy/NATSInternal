@@ -22,7 +22,7 @@ export default function PickedIntroducerInfo(props: PickedIntroducerInfoProps): 
         <span className="opacity-50 text-sm">{props.model.nickName}</span>
       </div>
 
-      <Button className="danger outline-only small aspect-square shrink-0 grow-0" onClick={props.onUnpicked}>
+      <Button className="btn-danger outline-only btn-sm aspect-square shrink-0 grow-0" onClick={props.onUnpicked}>
         <XMarkIcon className="size-4.5" />
       </Button>
     </div>

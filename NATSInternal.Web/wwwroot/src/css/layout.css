@@ -39,7 +39,7 @@
     padding: calc(var(--spacing) * 3);
     padding-left:  calc(var(--spacing) * 4);
     
-    @media (max-width: var(--breakpoint-md)) {
+    @media (min-width: var(--breakpoint-md)) {
         padding-left:  calc(var(--spacing) * 5);
     }
 }

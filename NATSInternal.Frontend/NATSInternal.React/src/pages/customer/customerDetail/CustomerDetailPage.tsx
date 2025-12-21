@@ -40,7 +40,7 @@ export default function CustomerDetailPage(): React.ReactNode {
         </div>
 
         <div className="flex justify-end">
-          <Link className="button gap-1.5" to={model.updateRoutePath}>
+          <Link className="btn gap-1.5" to={model.updateRoutePath}>
             <PencilSquareIcon className="size-4" />
             <span>Chỉnh sửa</span>
           </Link>

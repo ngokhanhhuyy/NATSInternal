@@ -1,0 +1,35 @@
+@layer components {
+    .form-field {
+        & label, & .validation-message {
+            font-size: var(--text-sm);
+        }
+
+        & label {
+            opacity: 75%;
+        }
+
+        &.valid, &.invalid label {
+            opacity: 75%;
+        }
+
+        /* &.valid {
+            & .validation-message::after {
+                content: "Hợp lệ";
+            }
+
+            & label, & .validation-message {
+                color: var(--color-emerald-700);
+            }
+
+            html.dark & label, html.dark & .validation-message {
+                color: var(--color-emerald-300);
+            }
+        } */
+
+        &.invalid {
+            & label, & .validation-message {
+                color: var(--color-red-500);
+            }
+        }
+    }
+}

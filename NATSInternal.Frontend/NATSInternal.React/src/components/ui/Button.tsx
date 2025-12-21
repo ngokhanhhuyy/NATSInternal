@@ -16,7 +16,7 @@ export default function Button(props: ButtonProps) {
 
   // Template.
   return (
-    <button {...domProps} type={type} className={joinClassName("button", domProps.className)}>
+    <button {...domProps} type={type} className={joinClassName("btn", domProps.className)}>
       {showSpinner && <Spinner size="sm" />}
       {props.children}
     </button>

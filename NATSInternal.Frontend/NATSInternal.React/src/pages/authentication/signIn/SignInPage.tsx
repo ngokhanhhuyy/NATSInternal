@@ -110,7 +110,10 @@ export default function SignInPage(): React.ReactNode {
   return (
     <RootLayout>
       <div
-        className="bg-white sm:bg-black/2 flex flex-col justify-center items-center w-screen h-screen"
+        className={joinClassName(
+          "bg-white dark:bg-neutral-900 sm:bg-black/2 dark:sm:bg-black",
+          "flex flex-col justify-center items-center w-screen h-screen"
+        )}
         onKeyUp={(event) => event.key === "Enter" && handleEnterKeyPressedAsync()}>
         <Form
           className={joinClassName(

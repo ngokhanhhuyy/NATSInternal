@@ -61,7 +61,7 @@ export default function SearchablePageableListPageTableBlock<
             onValueChanged={resultsPerPageAsString => props.onResultsPerPageChanged(parseInt(resultsPerPageAsString))}
           />
 
-          <Link className="button block-header-button small gap-1 shrink-0" to={props.model.createRoutePath}>
+          <Link className="btn btn-block-header btn-sm gap-1 shrink-0" to={props.model.createRoutePath}>
             <PlusIcon className="size-4.5" />
             <span>Tạo mới</span>
           </Link>

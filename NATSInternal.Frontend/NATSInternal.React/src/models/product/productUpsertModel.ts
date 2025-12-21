@@ -23,8 +23,8 @@ function createProductUpsertModel<TRequestDto extends AbstractProductUpsertReque
     photos: responseDto?.photos.map(dto => createPhotoCreateOrUpdateModel(dto)) ?? [],
     toRequestDto(): TRequestDto {
       return {
-        
-      }
+
+      };
     }
   };
 }

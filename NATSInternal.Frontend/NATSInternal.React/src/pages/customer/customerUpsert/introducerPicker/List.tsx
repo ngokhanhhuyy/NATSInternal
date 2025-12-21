@@ -88,7 +88,7 @@ export default function List(props: ListProps): React.ReactNode {
                 {customer.nickName}
               </span>
             </div>
-            <Button className="small aspect-square" onClick={() => onPicked(customer)}>
+            <Button className="btn-sm aspect-square" onClick={() => onPicked(customer)}>
               <CheckIcon className="size-4.5" />
             </Button>
           </li>

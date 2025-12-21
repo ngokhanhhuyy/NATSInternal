@@ -41,7 +41,7 @@ export default function SecondaryListBlock<
     
   // Template.
   const headerChildren = (
-    <Link to={props.listRoutePath} className="button block-header-button small gap-1">
+    <Link to={props.listRoutePath} className="btn btn-block-header btn-sm gap-1">
       <Bars4Icon className="size-4"/>
       <span>Danh sách đầy đủ</span>
     </Link>

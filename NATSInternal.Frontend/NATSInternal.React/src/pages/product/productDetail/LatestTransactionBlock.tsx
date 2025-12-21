@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router";
-import { useDateTimeHelper, useTsxHelper } from "@/helpers";
+import { useDateTimeHelper } from "@/helpers";
 
 // Child components.
 import { Block } from "@/components/ui";
@@ -8,17 +8,17 @@ import { Block } from "@/components/ui";
 // Components.
 export default function LatestTransactionBlock(): React.ReactNode {
   // Computed.
-  const { compute } = useTsxHelper();
+  // const { compute } = useTsxHelper();
 
   // Computed.
-  const computedModel = compute<(Model | null)[]>(() => {
-    return Array.from({ length: 30 }).map((_, index) => index < model.length ? model[index] : null);
-  });
+  // const computedModel = compute<(Model | null)[]>(() => {
+  //   return Array.from({ length: 30 }).map((_, index) => index < model.length ? model[index] : null);
+  // });
 
   // Template.
   return (
     <Block title="Giao dịch gần nhất" bodyClassName="relative">
-      <table className="table grid-color-from-background relative lg:absolute top-0 h-full">
+      <table className="table table-row-height-30 table-extra-empty-rows-as-background relative lg:absolute top-0">
         <thead>
           <tr>
             <th>Loại</th>
@@ -29,7 +29,7 @@ export default function LatestTransactionBlock(): React.ReactNode {
         <tbody>
           {model.map((transaction, index) => (
             <tr key={index}>
-              <td className="h-10">
+              <td>
                 <Link to="#" className="font-bold">
                   {transaction?.type}
                 </Link>
@@ -51,7 +51,7 @@ type Model = {
 };
 
 const { getDeltaTextRelativeToNow } = useDateTimeHelper();
-const model = Array.from({ length: 2 }).map((_, index) => ({
+const model: Model[] = Array.from({ length: 2 }).map((_, index) => ({
   type: getTransactionType(),
   quantity: Math.round(Math.random() * 100) + 20,
   dateTime: getDateTime(index)

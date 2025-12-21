@@ -1,0 +1,75 @@
+@import "tailwindcss" important;
+@import "./layout.css";
+@import "./table.css";
+@import "./button.css";
+@import "./input.css";
+@import "./form.css";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --html-background: rgba(0, 0, 0, 0.02);
+    --color-primary: var(--color-black);
+    --color-primary-foreground: var(--color-white);
+    --color-secondary: var(--color-white);
+    --color-danger: var(--color-red-600);
+    --color-success: var(--color-emerald-500);
+    --color-hinting: var(--color-blue-600);
+}
+
+html {
+    --topbar-height: 60px;
+    --border-color: rgba(0, 0, 0, 0.1);
+    background: var(--html-background);
+    font-family: Roboto, Helvetica, Roboto, Arial, sans-serif;
+    font-size: 14px;
+    overscroll-behavior: none;
+
+    &.dark {
+        --html-background: black;
+        --color-primary: var(--color-white);
+        --color-primary-foreground: var(--color-black);
+        --color-secondary: var(--color-black);
+        color: white;
+        color-scheme: dark;
+    }
+}
+
+a:not(.hover\:underline):not(.hover\:overline):not(.hover\:line-through):not(.hover\:no-underline):hover {
+    text-decoration: underline;
+}
+
+
+
+ul.list-group {
+    --border-color: rgba(0, 0, 0, 10%);
+    --border-width: 1px;
+    list-style: none;
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--radius-lg);
+
+    html.dark & {
+        --border-color: rgba(255, 255, 255, 10%);
+    }
+
+    &.list-group-flush {
+        --border-width: 0;
+    }
+
+    & li:not(:last-child) {
+        border-bottom: 1px solid var(--border-color);
+    }
+}
+
+img {
+    &.img-thumbnail {
+        background-color: white;
+        border: 1px solid rgba(0, 0, 0, 15%);
+        border-radius: var(--radius-md);
+        padding: calc(var(--spacing) * 2);
+
+        html.dark & {
+            background-color: var(--color-neutral-800);
+            border-color: rgba(255, 255, 255, 15%);
+        }
+    }
+}

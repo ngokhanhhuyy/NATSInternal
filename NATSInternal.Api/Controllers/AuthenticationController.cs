@@ -65,7 +65,7 @@ public class AuthenticationController : ControllerBase
         ClaimsPrincipal claimsPrincipal = new(claimsIdentity);
 
         await HttpContext.SignInAsync(
-            NATSInternal.Api.Constants.AuthenticationScheme.Api,
+            CookieAuthenticationDefaults.AuthenticationScheme,
             claimsPrincipal,
             new()
             {

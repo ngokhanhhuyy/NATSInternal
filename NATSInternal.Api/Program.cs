@@ -1,6 +1,5 @@
 using System.Reflection;
 using System.Text.Json;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using NATSInternal.Api.Configurations;
@@ -12,6 +11,7 @@ using NATSInternal.Application.Notification;
 using NATSInternal.Application.Security;
 using NATSInternal.Infrastructure.Configuration;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace NATSInternal.Api;
 
@@ -44,12 +44,8 @@ public static class Program
 
         // Cookie.
         builder.Services
-            .AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = "ApiCookie";
-                options.DefaultChallengeScheme = "ApiCookie";
-            })
-            .AddCookie("ApiCookie", options =>
+            .AddAuthentication()
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             {
                 options.ExpireTimeSpan = TimeSpan.FromDays(30);
                 options.SlidingExpiration = false;
@@ -70,21 +66,11 @@ public static class Program
                     context.Response.StatusCode = StatusCodes.Status200OK;
                     return Task.CompletedTask;
                 };
-            })
-            .AddCookie("MvcCookie", options =>
-            {
-                options.ExpireTimeSpan = TimeSpan.FromDays(30);
-                options.SlidingExpiration = false;
-                options.Cookie.Name = "NATSInternalAuthenticationCookie";
-                options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.LoginPath = "/dang-nhap";
-                options.LogoutPath = "/dang-xuat";
             });
 
         builder.Services.AddAuthorization();
         
-        // Add controllers with json serialization policy.
+        // Add controllers with JSON serialization policy.
         builder.Services
             .AddControllersWithViews(options =>
             {
@@ -145,7 +131,6 @@ public static class Program
         app.UseAuthorization();
         app.UseMiddleware<CallerDetailExtractingMiddleware>();
         app.MapControllers();
-        app.MapControllerRoute(name: "default", pattern: "{controller=DashboardWeb}/{action=Index}");
         app.UseStaticFiles();
         await app.RunAsync();
     }

@@ -1,0 +1,49 @@
+@model SignInModel
+@{
+  Layout = "Layouts/_RootLayout";
+}
+
+<div id="sign-in-page">
+  <form asp-controller="Authentication" asp-action="SignIn" method="post" id="sign-in-form">
+    <div class="flex flex-col mb-5">
+      <span class="text-4xl font-bold">Đăng nhập</span>
+      <span class="text-lg">
+        Chào mừng bạn đã quay trở lại.
+      </span>
+    </div>
+
+    <!-- UserName -->
+    <div class="form-field mb-3">
+      <label asp-for="UserName"></label>
+      <input
+        asp-for="UserName"
+        type="text"
+        placeholder="@Html.DisplayNameFor(m => m.UserName)"
+        autocapitalize="off"
+      />
+      <span asp-validation-for="UserName"></span>
+    </div>
+          
+    <!-- Password -->
+    <div class="form-field mb-3">
+      <label asp-for="Password"></label>
+      <input asp-for="Password" type="password" placeholder="@Html.DisplayNameFor(m => m.Password)" />
+      <span asp-validation-for="Password"></span>
+    </div>
+
+    <!-- Button -->
+    <button type="submit" class="btn btn-primary">
+      Đăng nhập
+    </button>
+  </form>
+</div>
+
+@section PageTitle
+{
+  Đăng nhập
+}
+
+@section Styles
+{
+  <link href="~/css/pages/sign-in-page.css" type="text/css" rel="stylesheet" asp-append-version="true"/>
+}

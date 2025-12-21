@@ -92,7 +92,7 @@ export default function Paginator(props: PaginatorProps): React.ReactNode {
           "flex gap-2",
           !isPageExceedingXsScreenRange(1) && "hidden"
         )}>
-          <Button className="button min-w-8.5" onClick={() => handlePageButtonClick(1)}>{1}</Button>
+          <Button className="btn min-w-8.5" onClick={() => handlePageButtonClick(1)}>{1}</Button>
           <span>...</span>
         </div>
       )}
@@ -103,7 +103,7 @@ export default function Paginator(props: PaginatorProps): React.ReactNode {
           !isPageExceedingXsScreenRange(pageCount) && "hidden"
         )}>
           <span>...</span>
-          <Button className="button min-w-8.5" onClick={() => handlePageButtonClick(pageCount)}>
+          <Button className="btn min-w-8.5" onClick={() => handlePageButtonClick(pageCount)}>
             {pageCount}
           </Button>
         </div>
