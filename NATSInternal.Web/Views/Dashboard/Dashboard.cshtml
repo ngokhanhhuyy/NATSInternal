@@ -1,10 +1,26 @@
 @{
-  Layout = "Layouts/_RootLayout";
+    Layout = "Layouts/_MainContainer";
+    ViewBag.PageTitle = "Bảng điều khiển";
 }
 
-<h1>Dashboard</h1>
+<div>
+    <form asp-controller="Authentication" asp-action="SignOut" method="post">
+        <button type="submit" class="btn">Đăng xuất</button>
+    </form>
+    <div class="flex flex-wrap gap-3 my-3">
+        <button type="button" class="btn btn-primary">Primary</button>
+        <button type="button" class="btn btn-danger">Danger</button>
+    </div>
+    <div className="flex flex-col flex-wrap gap-3 my-3">
+        <div class="form-field">
+            <input type="text" placeholder="Some value" />
+        </div>
+    </div>
 
-@section PageTitle
+    @string.Join(" ", Enumerable.Range(1, 1000).Select((_, index) => index + "_abcxyz"))
+</div>
+
+@section PageDescription
 {
-  Bảng điều khiển
+    Trang kiểm tra dành để kiểm tra các component.
 }

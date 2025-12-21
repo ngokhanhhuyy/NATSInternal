@@ -25,7 +25,7 @@
             color: var(--color-emerald-700);
         }
 
-        html.dark & label, html.dark & .validation-message {
+        @variant dark label, @variant dark .validation-message {
             color: var(--color-emerald-300);
         }
     } */

@@ -1,2 +1,22 @@
-@model TModel
+@{
+    Layout = "Layouts/_MainPageLayout";
+}
 
+<div id="main-container">
+    <div class="flex flex-col">
+        <span class="text-2xl">@ViewBag.PageTitle</span>
+        <span class="text-md opacity-50">@await RenderSectionAsync("PageDescription", required: true)</span>
+    </div>
+    
+    @RenderBody()
+</div>
+
+@section Styles
+{
+    @await RenderSectionAsync("Styles", required: false)
+}
+
+@section Scripts
+{
+    @await RenderSectionAsync("Scripts", required: false)
+}

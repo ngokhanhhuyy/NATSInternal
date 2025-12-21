@@ -42,10 +42,10 @@ public class CustomerGetListCustomerResponseDto
     #endregion
 
     #region Properties
-    public Guid Id { get; } = Guid.Empty;
-    public string FullName { get; } = string.Empty;
+    public Guid Id { get; }
+    public string FullName { get; }
     public string? NickName { get; }
-    public Gender? Gender { get; } = Domain.Features.Customers.Gender.Male;
+    public Gender Gender { get; }
     public DateOnly? Birthday { get; }
     public string? PhoneNumber { get; }
     public long DebtRemainingAmount { get; }

@@ -1,13 +1,13 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
-using NATSInternal.Api.Middlewares;
-using NATSInternal.Api.Providers;
+using NATSInternal.Web.Middlewares;
+using NATSInternal.Web.Providers;
 using NATSInternal.Application.Configuration;
 using NATSInternal.Application.Security;
 using NATSInternal.Infrastructure.Configuration;
 
-namespace NATSInternal.Api;
+namespace NATSInternal.Web;
 
 public static class Program
 {

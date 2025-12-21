@@ -28,7 +28,7 @@ export default function TestingPage() {
   // Template.
   return (
     <MainContainer description="Trang kiểm tra dành để kiểm tra các component.">
-      {id}
+      {id}  
       <Button onClick={signOut}>Đăng xuất</Button>
       <div className="flex gap-3 my-3 flex-wrap">
         {variants.map((variant, index) => (

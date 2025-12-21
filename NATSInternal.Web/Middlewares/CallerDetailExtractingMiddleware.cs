@@ -1,9 +1,9 @@
 using System.Security.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using NATSInternal.Api.Providers;
+using NATSInternal.Web.Providers;
 
-namespace NATSInternal.Api.Middlewares;
+namespace NATSInternal.Web.Middlewares;
 
 public class CallerDetailExtractingMiddleware
 {

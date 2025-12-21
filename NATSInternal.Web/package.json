@@ -1,11 +1,11 @@
 {
-  "name": "natsinternal.api",
+  "name": "natsinternal.web",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "dotnet": "DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLOR_REDIRECTION=1 DOTNET_WATCH_SUPPRESS_BROWSER_REFRESH=1 dotnet watch run",
-    "tw:watch": "tailwindcss -i ./wwwroot/src/css/style.css -o ./wwwroot/output/css/style.css --minify --watch",
+    "tw:watch": "tailwindcss -i ./wwwroot/src/css/style.css -o ./wwwroot/output/css/style.css --watch",
     "ts:watch": "tsc --watch",
     "watch": "concurrently --raw -k \"npm:tw:watch\" \"npm:ts:watch\"",
     "dev": "concurrently --raw -k -s first \"npm:dotnet\" \"npm:tw:watch\"",

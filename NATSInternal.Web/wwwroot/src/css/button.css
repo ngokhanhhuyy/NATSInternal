@@ -19,7 +19,7 @@
     &.block-header-button {
         border-color: rgba(0, 0, 0, 20%);
 
-        html.dark & {
+        @variant dark {
             border-color: rgba(255, 255, 255, 20%);
         }
     }
@@ -32,7 +32,7 @@
         }
     }
 
-    html.dark & {
+    @variant dark {
         background: oklch(from var(--color-neutral-800) l c h / 100%);
         color: var(--color-white);
         border-color: rgba(255, 255, 255, 15%);
@@ -52,7 +52,7 @@
         color: white;
         border-color: black;
 
-        html.dark & {
+        @variant dark {
             background: var(--color-neutral-200);
             color: black;
             border-color: white;
@@ -87,7 +87,7 @@
             }
         }
 
-        html.dark & {
+        @variant dark {
             background: var(--color-red-700);
             color: white;
             border-color: var(--color-red-600);

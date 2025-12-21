@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using NATSInternal.Application.Localization;
 using NATSInternal.Application.UseCases.Authentication;
 
-namespace NATSInternal.Api.Models;
+namespace NATSInternal.Web.Models;
 
 public class SignInModel
 {

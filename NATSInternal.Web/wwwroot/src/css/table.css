@@ -1,6 +1,6 @@
 @layer components {
     .table {
-        --row-height: calc(var(--spacing) * 10);
+        --row-height: --spacing(10);
         --border-width: 1px;
         --border-color: rgba(0, 0, 0, 15%);
         --odd-background-color: rgba(0, 0, 0, 5%);
@@ -42,7 +42,7 @@
             }
         }
 
-        html.dark & {
+        @variant dark {
             --border-color: rgba(255, 0, 0, 15%);
             --odd-background-color: rgba(255, 255, 255, 3%);
         }
@@ -54,16 +54,16 @@
 
         & > thead > tr > th,
         & > tbody > tr > td {
-            padding-inline: calc(var(--spacing) * 3);
+            padding-inline: --spacing(3);
         }
 
         & > thead > tr > th {
             font-size: var(--text-sm);
-            padding-block: calc(var(--spacing) * 0.5);
+            padding-block: --spacing(0.5);
         }
 
         & > tbody > tr > td {
-            padding-block: calc(var(--spacing) * 1.5);
+            padding-block: --spacing(1.5);
         }
 
         & > tbody > tr:nth-child(odd) {

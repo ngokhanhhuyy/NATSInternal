@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NATSInternal.Application.Exceptions;
 using System.Text;
 
-namespace NATSInternal.Api.Extensions;
+namespace NATSInternal.Web.Extensions;
 
 public static class ModelStateDictionaryExtensions
 {

@@ -9,10 +9,10 @@ dotnet publish -c Release -r osx-arm64 \
   
 # Docker build
 cd ../
-docker build -t natsinternal-api -f NATSInternal.Api/Dockerfile .
+docker build -t natsinternal-web -f NATSInternal.Web/Dockerfile .
 
 # Docker container run (MacOS)
-docker run -p 5000:5000 --name natsinternal natsinternal-api
+docker run -p 5000:5000 --name natsinternal natsinternal-web
 
 # Rocker container run (Linux)
-docker run -p 5000:5000 --add-host=host.docker.internal:host-gateway --name natsinternal-api natsinternal-api
+docker run -p 5000:5000 --add-host=host.docker.internal:host-gateway --name natsinternal-web natsinternal-web

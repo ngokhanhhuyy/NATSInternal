@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace NATSInternal.Api.Controllers;
+namespace NATSInternal.Web.Controllers;
 
 [Route("/")]
 [Authorize]

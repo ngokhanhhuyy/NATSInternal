@@ -13,10 +13,29 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="wwwroot\css\pages\sign-in-page.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\output\css\style.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\output\images\chevron-down-black.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\output\images\chevron-down-white.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\output\images\vite.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\output\js\class-name-processor.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\output\js\class-name-processor.js.map" />
   </ItemGroup>
 
   <ItemGroup>
     <TypeScriptCompile Include="wwwroot\src\ts\class-name-processor.ts" />
+    <TypeScriptCompile Include="wwwroot\src\ts\theme-toggle-button-handler.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="wwwroot\output\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="wwwroot\output\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Customer\" />
   </ItemGroup>
 
   <PropertyGroup>

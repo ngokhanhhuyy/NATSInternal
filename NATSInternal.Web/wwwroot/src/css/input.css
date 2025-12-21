@@ -1,12 +1,12 @@
 input {
-    html.dark & {
+    @variant dark {
         color-scheme: dark;
     }
 }
 
 input:not([type="checkbox"]), select, textarea {
-    --padding-inline: calc(var(--spacing) * 2);
-    --padding-block: calc(var(--spacing) * 1);
+    --padding-inline: --spacing(2);
+    --padding-block: --spacing(1);
     --min-height-coeffecient: 9;
     background-color: rgba(0, 0, 0, 2.5%);
     border: 1px solid rgba(0, 0, 0, 15%);
@@ -39,7 +39,7 @@ input:not([type="checkbox"]), select, textarea {
         }
     }
 
-    html.dark & {
+    @variant dark {
         background-color: rgba(255, 255, 255, 2.5%);
         border-color: rgba(255, 255, 255, 0.15);
         outline-width: 0.25rem;
@@ -97,7 +97,7 @@ input:not([type="checkbox"]), select, textarea {
 }
 
 textarea {
-    min-height: calc(var(--spacing) * 30);
+    min-height: --spacing(30);
 }
 
 select {
@@ -107,9 +107,9 @@ select {
     background-size: .9em auto;
     appearance: none;
     -webkit-appearance: none !important;
-    min-width: calc(var(--spacing) * 18);
+    min-width: --spacing(18);
 
-    html.dark & {
+    @variant dark {
         background-image: url("../images/chevron-down-white.svg");
     }
 }

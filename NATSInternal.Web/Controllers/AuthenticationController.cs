@@ -3,14 +3,14 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NATSInternal.Api.Extensions;
-using NATSInternal.Api.Models;
+using NATSInternal.Web.Extensions;
+using NATSInternal.Web.Models;
 using NATSInternal.Application.Exceptions;
 using NATSInternal.Application.UseCases.Users;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
-namespace NATSInternal.Api.Controllers;
+namespace NATSInternal.Web.Controllers;
 
 public class AuthenticationController : Controller
 {
@@ -80,22 +80,28 @@ public class AuthenticationController : Controller
         }
         catch (Exception exception)
         {
-            if (exception is ValidationException validationException)
+            switch (exception)
             {
-                ModelState.AddModelErrors(validationException);
-                Console.WriteLine(ModelState["UserName"]?.Errors.FirstOrDefault()?.ErrorMessage);
-            }
-            else if (exception is OperationException operationException)
-            {
-                ModelState.AddModelErrors(operationException);
-            }
-            else
-            {
-                throw;
+                case ValidationException validationException:
+                    ModelState.AddModelErrors(validationException);
+                    break;
+                case OperationException operationException:
+                    ModelState.AddModelErrors(operationException);
+                    break;
+                default:
+                    throw;
             }
 
             return View(model);
         }
+    }
+
+    [Authorize]
+    [HttpPost("dang-xuat")]
+    public new async Task<IActionResult> SignOut()
+    {
+        await HttpContext.SignOutAsync();
+        return RedirectToAction("SignIn");
     }
     #endregion
 }

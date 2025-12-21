@@ -2,7 +2,7 @@ using System.Security.Authentication;
 using System.Security.Claims;
 using NATSInternal.Application.Security;
 
-namespace NATSInternal.Api.Providers;
+namespace NATSInternal.Web.Providers;
 
 public class CallerDetailProvider : ICallerDetailProvider
 {

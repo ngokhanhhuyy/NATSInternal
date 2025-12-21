@@ -1,4 +1,4 @@
-namespace NATSInternal.Api.Constants;
+namespace NATSInternal.Web.Constants;
 
 public static class AuthenticationScheme
 {

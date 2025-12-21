@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace NATSInternal.Api.Middlewares;
+namespace NATSInternal.Web.Middlewares;
 
 public class RequestLoggingMiddleware
 {

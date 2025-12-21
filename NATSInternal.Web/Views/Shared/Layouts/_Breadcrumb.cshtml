@@ -1,2 +1,48 @@
-@model TModel
+@model List<BreadcrumbItemModel>?
+@{
+    string? ComputeItemClassName(bool isLast)
+    {
+        List<string> classNames = new();
+        if (!isLast)
+        {
+            classNames.Add("hidden sm:inline");
+        }
+        else
+        {
+            classNames.Add("text-lg sm:text-base pointer-events-none");
+        }
 
+        return classNames.Count > 0 ? string.Join(" ", classNames) : null;
+    }
+}
+
+
+<div className="flex flex-wrap gap-3 items-center ms-2 lg:ms-3 translate-y-[7.5%] h-8">
+    <i class="bi bi-house"></i>
+    <a asp-controller="Dashboard" asp-action="Index" class="text-lg sm:text-base">
+        <span className="text-lg inline sm:hidden">Trang chủ</span>
+    </a>
+    
+    @if (Model is not null)
+    {
+        @for (int index = 0; index < Model.Count; index++)
+        {
+            BreadcrumbItemModel itemModel = Model[index];
+            bool isLast = index == Model.Count - 1;
+            <i class="bi bi-chevron-right"></i>
+            <a href="@itemModel.Url" class="@ComputeItemClassName(isLast)">
+                @if (!isLast)
+                {
+                    <i class="bi bi-chevron-right"></i>
+                }
+
+                <span className="hidden sm:inline">@itemModel.Name</span>
+
+                @if (isLast)
+                {
+                    <span className="text-lg inline sm:hidden">@ViewBag.PageTitle</span>
+                }
+            </a>
+        }
+    }
+</div>

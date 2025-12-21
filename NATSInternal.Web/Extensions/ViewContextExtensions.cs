@@ -1,43 +1,43 @@
-using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace NATSInternal.Api.Extensions;
+namespace NATSInternal.Web.Extensions;
 
-public static class RazorPageBaseExtensions
+public static class ViewContextExtensions
 {
     #region ExtensionMethods
-    public static string? GetCurrentControllerName(this RazorPageBase page)
+    public static string? GetCurrentControllerName(this ViewContext viewContext)
     {
-        return page.ViewContext.RouteData.Values["controller"]?.ToString();
+        return viewContext.RouteData.Values["controller"]?.ToString();
     }
     
-    public static string? GetCurrentActionName(this RazorPageBase page)
+    public static string? GetCurrentActionName(this ViewContext viewContext)
     {
-        return page.ViewContext.RouteData.Values["action"]?.ToString();
+        return viewContext.RouteData.Values["action"]?.ToString();
     }
 
-    public static bool IsCurrentControllerName(this RazorPageBase page, string nameToCheck)
+    public static bool IsCurrentControllerName(this ViewContext viewContext, string nameToCheck)
     {
-        if (page.GetCurrentControllerName() is null)
+        if (viewContext.GetCurrentControllerName() is null)
         {
             return false;
         }
         
         if (nameToCheck.EndsWith("Controller"))
         {
-            return page.GetCurrentControllerName() + "Controller" == nameToCheck;
+            return viewContext.GetCurrentControllerName() + "Controller" == nameToCheck;
         }
         
-        return page.GetCurrentControllerName() == nameToCheck;
+        return viewContext.GetCurrentControllerName() == nameToCheck;
     }
 
-    public static bool IsCurrentActionName(this RazorPageBase page, string nameToCheck)
+    public static bool IsCurrentActionName(this ViewContext viewContext, string nameToCheck)
     {
-        if (page.GetCurrentActionName() is null)
+        if (viewContext.GetCurrentActionName() is null)
         {
             return false;
         }
         
-        return page.GetCurrentActionName() == nameToCheck;
+        return viewContext.GetCurrentActionName() == nameToCheck;
     }
     #endregion
 }

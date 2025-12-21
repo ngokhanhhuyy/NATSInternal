@@ -1,9 +1,9 @@
-namespace NATSInternal.Api.Models;
+namespace NATSInternal.Web.Models;
 
 public class BreadcrumbItemModel
 {
     #region Properties
-    public required string DisplayName { get; init; }
-    public required string Url { get; init; }
+    public required string Name { get; init; }
+    public string? Url { get; init; }
     #endregion
 }
