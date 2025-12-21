@@ -1,0 +1,89 @@
+#root-layout {
+    --topbar-height: 60px;
+    width: 100vw;
+    height: auto;
+    min-height: 100vh;
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+}
+
+#topbar {
+    background-color: white;
+    border-bottom: 1px solid rgba(0, 0, 0, 15%);
+    width: 100%;
+    height: var(--topbar-height);
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+    position: fixed;
+    top: 0;
+    z-index: 999;
+    backdrop-filter: blur(var(--blur-xs));
+    transition-property: color, background-color, border-color;
+    
+    html.dark & {
+        background-color: var(--color-neutral-800);
+        backdrop-filter: blur(var(--blur-md));
+    }
+}
+
+#topbar-container {
+    width: 100%;
+    max-width: calc(var(--spacing) * 384);
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: stretch;
+    gap: calc(var(--spacing) * 3);
+    margin-inline: auto;
+    padding: calc(var(--spacing) * 3);
+    padding-left:  calc(var(--spacing) * 4);
+    
+    @media (max-width: var(--breakpoint-md)) {
+        padding-left:  calc(var(--spacing) * 5);
+    }
+}
+
+#main-logo {
+    --foreground-and-border-color: 1px solid var(--color-emerald-500);
+    --size: calc(var(--spacing) * 10);
+    --gap: calc(var(--spacing) * 1.5);
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: var(--gap);
+    
+    &:hover {
+        text-decoration: none;
+    }
+    
+    i {
+        --background-color: oklch(from var(--color-emerald-500) l c h / 10%);
+        background-color: var(--background-color);
+        color: var(--foreground-and-border-color);
+        border: 1px solid var(--foreground-and-border-color);
+        border-radius: 50%  ;
+        width: var(--size);
+        height: var(--size);
+        padding: calc(var(--spacing) * 1.5);
+    }
+    
+    span {
+        font-size: var(--text-2xl);
+        font-weight: lighter;
+        display: block;
+    }
+
+
+    html.dark & {
+        --foreground-and-border-color: 1px solid var(--color-emerald-400);
+        
+        i {
+            --background-color: oklch(from var(--color-emerald-500) l c h / 20%);
+        }
+    }
+    
+    @media (min-width: var(--breakpoint-md)) {
+        --gap: calc(var(--spacing) * 2.5);
+    }
+}

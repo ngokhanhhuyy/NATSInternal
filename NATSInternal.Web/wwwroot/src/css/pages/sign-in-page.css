@@ -1,0 +1,30 @@
+#sign-in-page {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    form {
+        --background-color: white;
+        --border-color: transparent;
+        background-color: var(--background-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-xl);
+        padding: calc(var(--spacing) * 8);
+        display: flex;
+        flex-direction: column;
+        justify-items: stretch;
+        width: 350px;
+        position: relative;
+
+        @media (min-width: 40rem) {
+            --border-color: rgba(0, 0, 0, 10%);
+            box-shadow: var(--shadow-xs);
+
+            html.dark & {
+                --border-color: rgba(255, 255, 255, 10%);
+            }
+        }
+    }
+}

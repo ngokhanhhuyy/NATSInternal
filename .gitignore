@@ -22,6 +22,7 @@ NATSInternal.sln.DotSettings.user
 /NATSInternal.Blazor
 /NATSInternal.MVC
 /NATSInternal.Svelte
+/NATSInternal.Web/wwwroot/output/**/*
 
 # =========================================
 # Frontend (TypeScript / Node.js) ignores
