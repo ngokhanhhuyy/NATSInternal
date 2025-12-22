@@ -1,3 +1,4 @@
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,16 @@ public class CustomerController : Controller
     public async Task<IActionResult> List([FromQuery] CustomerListModel model, CancellationToken cancellationToken)
     {
         CustomerGetListRequestDto requestDto = model.ToRequestDto();
-        CustomerGetListResponseDto responseDto = await _mediator.Send(requestDto, cancellationToken);
+        CustomerGetListResponseDto responseDto;
+        try
+        {
+            responseDto = await _mediator.Send(requestDto, cancellationToken);
+        }
+        catch (ValidationException)
+        {
+            return RedirectToAction("List");
+        }
+        
         model.MapFromResponseDto(responseDto);
         return View(model);
     }

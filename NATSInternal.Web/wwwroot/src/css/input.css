@@ -41,12 +41,12 @@ input:not([type="checkbox"]), select, textarea {
 
     @variant dark {
         background-color: rgba(255, 255, 255, 2.5%);
-        border-color: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 15%);
         outline-width: 0.25rem;
 
         &:focus {
-            border-color: rgba(255, 255, 255);
-            outline-color: rgba(255, 255, 255, 30%);
+            border-color: rgba(255, 255, 255, 70%) !important;
+            outline-color: rgba(255, 255, 255, 30%) !important;;
         }
 
         /* .form-field.valid:not(:disabled) & {
@@ -108,9 +108,12 @@ select {
     appearance: none;
     -webkit-appearance: none !important;
     min-width: --spacing(18);
+    cursor: pointer;
 
     @variant dark {
-        background-image: url("../images/chevron-down-white.svg");
+        & {
+            background-image: url("../images/chevron-down-white.svg");
+        }
     }
 }
 

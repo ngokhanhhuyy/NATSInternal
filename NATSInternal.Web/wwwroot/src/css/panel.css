@@ -20,8 +20,10 @@
             border-top-right-radius: var(--radius-lg);
             
             @variant dark {
-                background-color: --alpha(var(--color-white) / 10%);
-                border-color: --alpha(var(--color-white) / 15%);
+                & {
+                    background-color: --alpha(var(--color-white) / 10%);
+                    border-color: --alpha(var(--color-white) / 15%);
+                }
             }
             
             & > .panel-header-title {
@@ -46,13 +48,16 @@
             }
             
             @variant dark {
-                border-inline-color: --alpha(var(--color-white) / 15%);
+                & {
+                    border-color: --alpha(var(--color-white) / 15%);
+                }
             }
         }
         
         & > .panel-footer {
             border: 1px solid --alpha(var(--color-black) / 10%);
-            border-bottom-radius: var(--radius-lg);
+            border-bottom-left-radius: var(--radius-lg);
+            border-bottom-right-radius: var(--radius-lg);
             display: flex;
             justify-content: stretch;
             padding: --spacing(3);

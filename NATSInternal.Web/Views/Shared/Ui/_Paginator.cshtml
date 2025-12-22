@@ -1,2 +1,57 @@
-@model TModel
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@model AbstractListModel
+@{
+    bool IsPageExceedingXsScreenRange(int page)
+    {
+        return page < Model.SmallScreenStartingPage || page > Model.SmallScreenEndingPage;
+    }
+    
+    bool IsPageExceedingSmScreenRange(int page)
+    {
+        return page < Model.LargeScreenStartingPage || page > Model.LargeScreenEndingPage;
+    }
+
+    string ComputePageButtonClassName(int page)
+    {
+        Console.WriteLine($"page: {page}, Model.Page: {Model.Page}");
+        List<string> classNames = new() { "btn min-w-8.5" };
+        if (IsPageExceedingXsScreenRange(page))
+        {
+            classNames.Add("hidden sm:flex");
+        }
+
+        if (page == Model.Page)
+        {
+            classNames.Add("btn-primary");
+        }
+
+        return string.Join(" ", classNames);
+    }
+}
+
+@if (Model.PageCount > 1)
+{
+    <div class="flex flex-row justify-center gap-2">
+        @if (IsPageExceedingSmScreenRange(1))
+        {
+            <div class="flex gap-2 @(IsPageExceedingXsScreenRange(1) ? "hidden" : null)">
+                <input type="submit" asp-for="Page" className="btn min-w-8.5" />
+                <span>...</span>
+            </div>
+        }
+        
+        @for (int page = Model.LargeScreenStartingPage; page <= Model.LargeScreenEndingPage; page++)
+        {
+            <input type="submit" asp-for="Page" value="@(page)" class="@ComputePageButtonClassName(page)" />
+        }
+        
+        @if (IsPageExceedingSmScreenRange(Model.PageCount))
+        {
+            <div class="flex gap-2 @(IsPageExceedingXsScreenRange(Model.PageCount) ? "hidden" : null)">
+                <input type="submit" asp-for="Page" className="btn min-w-8.5" />
+                <span>...</span>
+            </div>
+        }
+    </div>
+}
 

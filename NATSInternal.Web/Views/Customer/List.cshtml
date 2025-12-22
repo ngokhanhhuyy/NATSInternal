@@ -1,8 +1,68 @@
-﻿@model CustomerListModel
+﻿@using NATSInternal.Domain.Features.Customers
+@model CustomerListModel
 @{
-    Layout = "Pages/_SearchableListPageLayout";
+    Layout = "Pages/_ListPageLayout";
     ViewBag.PageTitle = "Danh sách khách hàng";
     ViewBag.CreateRoutePath = Url.Action("List", "Customer");
+}
+
+@if (Model.Items.Count > 0)
+{
+    <div class="overscroll-x-none h-fit overflow-x-auto">
+        <table id="customer-list-page-table" class="data-table">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.Items[0].FullName)</th>
+                    <th>@Html.DisplayNameFor(m => m.Items[0].NickName)</th>
+                    <th>@Html.DisplayNameFor(m => m.Items[0].Gender)</th>
+                    <th>@Html.DisplayNameFor(m => m.Items[0].PhoneNumber)</th>
+                    <th>@Html.DisplayNameFor(m => m.Items[0].Birthday)</th>
+                    <th>@Html.DisplayNameFor(m => m.Items[0].DebtRemainingAmount)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (CustomerListCustomerModel customer in Model.Items)
+                {
+                    <tr>
+                        <!-- FullName -->
+                        <td>
+                            <a asp-controller="Customer" asp-action="Detail" class="font-bold">
+                                @customer.FullName
+                            </a>
+                        </td>
+
+                        <!-- NickName -->
+                        <td>
+                            @if (customer.NickName is not null)
+                            {
+                                <span class="opacity-50">@customer.NickName</span>
+                            }
+                        </td>
+
+                        <!-- Gender -->
+                        <td class="@(customer.Gender == Gender.Male ? "gender-male" : "gender-female")">
+                            @(customer.Gender == Gender.Male ? "Nam" : "Nữ")
+                        </td>
+                        
+                        <!-- PhoneNumber -->
+                        <td>
+                            @Html.DisplayPhoneNumber(customer.PhoneNumber)
+                        </td>
+                        
+                        <!-- FormattedBirthday -->
+                        <td>
+                            @Html.DisplayDateOnly(customer.Birthday)
+                        </td>
+                        
+                        <!-- DebtRemainingAmount -->
+                        <td class="@(customer.DebtRemainingAmount == 0 ? "opacity-25" : null)">
+                            @Html.DisplayCurrency(customer.DebtRemainingAmount)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
 @section PageDescription

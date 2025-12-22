@@ -6,6 +6,7 @@
 @import "./form.css";
 @import "./panel.css";
 @import "./pages/sign-in-page.css";
+@import "./pages/customer-list-page.css";
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
@@ -58,7 +59,9 @@ ul.list-group {
     border-radius: var(--radius-lg);
 
     @variant dark {
-        --border-color: rgba(255, 255, 255, 10%);
+        & {
+            --border-color: rgba(255, 255, 255, 10%);
+        }
     }
 
     &.list-group-flush {
@@ -78,8 +81,10 @@ img {
         padding: --spacing(2);
 
         @variant dark {
-            background-color: var(--color-neutral-800);
-            border-color: rgba(255, 255, 255, 15%);
+            & {
+                background-color: var(--color-neutral-800);
+                border-color: rgba(255, 255, 255, 15%);
+            }
         }
     }
 }

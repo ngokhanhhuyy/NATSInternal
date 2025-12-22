@@ -1,0 +1,21 @@
+#customer-list-page-table {
+    .gender-male {
+        color: var(--color-blue-700);
+        
+        @variant dark {
+            & {
+                color: var(--color-blue-400);
+            }
+        }
+    }
+
+    .gender-female {
+        color: var(--color-red-700);
+
+        @variant dark {
+            & {
+                color: var(--color-red-400);
+            }
+        }
+    }
+}

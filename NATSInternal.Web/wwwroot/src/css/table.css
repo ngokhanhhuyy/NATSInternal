@@ -1,5 +1,5 @@
 @layer components {
-    .table {
+    .data-table {
         --row-height: --spacing(10);
         --border-width: 1px;
         --border-color: rgba(0, 0, 0, 15%);
@@ -8,7 +8,6 @@
         --border-color-from-background: transparent;
         --row-background-color-from-actual-row-background: var(--odd-background-color);
         --row-background-color-from-background: transparent;
-        table-layout: fixed;
         width: 100%;
         margin: 0;
         padding: 0;
@@ -32,7 +31,7 @@
                     var(--border-color-from-background) var(--border-width),
                     var(--row-background-color-from-background) var(--border-width),
                     var(--row-background-color-from-background) calc(var(--row-height) - var(--border-width)),
-                    var(--border-color-from-background) calc(var(--row-height) - var(--border-width)x),
+                    var(--border-color-from-background) calc(var(--row-height) - var(--border-width)),
                     var(--border-color-from-background) calc(var(--row-height) + var(--border-width)),
                     transparent calc(var(--row-height) + var(--border-width)),
                     transparent calc(var(--row-height) + (var(--row-height) - var(--border-width))),
@@ -43,8 +42,10 @@
         }
 
         @variant dark {
-            --border-color: rgba(255, 0, 0, 15%);
-            --odd-background-color: rgba(255, 255, 255, 3%);
+            & {
+                --border-color: rgba(255, 255, 255, 15%);
+                --odd-background-color: rgba(255, 255, 255, 3%);
+            }
         }
 
         & > thead > tr,
