@@ -27,7 +27,8 @@ public class CustomerController : Controller
     {
         CustomerGetListRequestDto requestDto = model.ToRequestDto();
         CustomerGetListResponseDto responseDto = await _mediator.Send(requestDto, cancellationToken);
-        return View("", model);
+        model.MapFromResponseDto(responseDto);
+        return View(model);
     }
     #endregion
 }

@@ -1,0 +1,11 @@
+﻿@model CustomerListModel
+@{
+    Layout = "Pages/_SearchableListPageLayout";
+    ViewBag.PageTitle = "Danh sách khách hàng";
+    ViewBag.CreateRoutePath = Url.Action("List", "Customer");
+}
+
+@section PageDescription
+{
+    Danh sách các khách hàng đã và đang giao dịch với cửa hàng.
+}

@@ -3,17 +3,20 @@
     width: 100vw;
     height: auto;
     min-height: 100vh;
-    display: grid;
-    grid-template-columns: 1fr;
-    justify-content: stretch;
+    display: flex;
+    justify-content: center;
     align-items: stretch;
+    margin-inline: auto;
     
     body:has(#topbar) & {
+        display: grid;
+        grid-template-columns: 1fr auto;
         padding-top: var(--topbar-height);
-    }
-    
-    @media (min-width: theme(screens.md)) {
-        grid-template-columns: auto 1fr;
+
+        @media (min-width: theme(screens.md)) {
+            grid-template-columns: auto 1fr;
+            max-width: --spacing(384);
+        }
     }
 }
 

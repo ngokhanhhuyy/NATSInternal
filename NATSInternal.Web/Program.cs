@@ -52,10 +52,9 @@ public static class Program
         builder.Services.AddAuthorization();
         
         // Add controllers.
-        builder.Services.AddControllersWithViews(options =>
-        {
-            options.ModelValidatorProviders.Clear();
-        });
+        builder.Services
+            .AddControllersWithViews(options => options.ModelValidatorProviders.Clear())
+            .AddRazorRuntimeCompilation();
         
         // Swagger + OpenAPI.
         builder.Services.AddEndpointsApiExplorer();

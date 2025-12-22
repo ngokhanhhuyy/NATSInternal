@@ -17,7 +17,7 @@
         align-items: center;
         /* box-shadow: var(--shadow-xs); */
 
-        &.btn-block-header {
+        &.btn-panel-header {
             border-color: rgba(0, 0, 0, 20%);
 
             html.dark & {

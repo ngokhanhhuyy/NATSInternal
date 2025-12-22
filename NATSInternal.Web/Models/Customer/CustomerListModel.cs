@@ -1,93 +1,23 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NATSInternal.Application.Authorization;
-using NATSInternal.Application.Localization;
 using NATSInternal.Application.UseCases.Customers;
 using NATSInternal.Domain.Features.Customers;
-using System.ComponentModel;
 
 namespace NATSInternal.Web.Models;
 
-public class CustomerListModel : ISearchableListModel<CustomerListCustomerModel>
+public class CustomerListModel : AbstractListModel<
+    CustomerListCustomerModel,
+    CustomerGetListRequestDto,
+    CustomerGetListResponseDto,
+    CustomerGetListCustomerResponseDto,
+    CustomerGetListRequestDto.FieldToSort>
 {
-    #region Fields
-    private static readonly IReadOnlyList<string> _sortByFieldNameOptions;
-    #endregion
-    
-    #region Constructors
-    static CustomerListModel()
+    #region ProtectedMethods
+    protected override void MapItemsFromResponseDtos(IEnumerable<CustomerGetListCustomerResponseDto> responseDtos)
     {
-        _sortByFieldNameOptions = Enum.GetNames<CustomerGetListRequestDto.FieldToSort>().ToList().AsReadOnly();
-    }
-    #endregion
-    
-    #region Properties
-    [DisplayName(DisplayNames.SortByAscending)]
-    public bool? SortByAscending { get; set; }
-    
-    [DisplayName(DisplayNames.SortByFieldName)]
-    public string? SortByFieldName { get; set; }
-    
-    [DisplayName(DisplayNames.Page)]
-    public int? Page { get; set; }
-    
-    [DisplayName(DisplayNames.ResultsPerPage)]
-    public int? ResultsPerPage { get; set; }
-    
-    [DisplayName(DisplayNames.SearchContent)]
-    public string? SearchContent { get; set; }
-
-    [BindNever]
-    [DisplayName(DisplayNames.Results)]
-    public IReadOnlyList<CustomerListCustomerModel> Items { get; private set; } = new List<CustomerListCustomerModel>();
-    
-    [BindNever]
-    [DisplayName(DisplayNames.PageCount)]
-    public int PageCount { get; private set; }
-    
-    [BindNever]
-    [DisplayName(DisplayNames.ResultsCount)]
-    public int ItemsCount { get; private set; }
-    #endregion
-
-    public IReadOnlyList<string> SortByFieldNameOptions => _sortByFieldNameOptions;
-    
-    #region Methods
-    public CustomerGetListRequestDto ToRequestDto()
-    {
-        CustomerGetListRequestDto requestDto = new();
-        if (SortByAscending.HasValue)
-        {
-            requestDto.SortByAscending = SortByAscending.Value;
-        }
-
-        if (SortByFieldName is not null)
-        {
-            requestDto.SortByFieldName = SortByFieldName;
-        }
-
-        if (Page.HasValue)
-        {
-            requestDto.Page = Page.Value;
-        }
-
-        if (ResultsPerPage.HasValue)
-        {
-            requestDto.ResultsPerPage = ResultsPerPage.Value;
-        }
-
-        requestDto.SearchContent = SearchContent;
-
-        return requestDto;
-    }
-
-    public void MapFromResponseDto(CustomerGetListResponseDto responseDto)
-    {
-        Items = responseDto.Items
+        Items = responseDtos
             .Select(dto => new CustomerListCustomerModel(dto))
             .ToList()
             .AsReadOnly();
-        PageCount = responseDto.PageCount;
-        ItemsCount = responseDto.ItemCount;
     }
     #endregion
 }
@@ -107,7 +37,7 @@ public class CustomerListCustomerModel
         Authorization = responseDto.Authorization;
     }
     #endregion
-    
+
     #region Properties
     public Guid Id { get; }
     public string FullName { get; }

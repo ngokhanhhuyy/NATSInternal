@@ -4,6 +4,7 @@
 @import "./button.css";
 @import "./input.css";
 @import "./form.css";
+@import "./panel.css";
 @import "./pages/sign-in-page.css";
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -33,6 +34,14 @@ html {
         color: white;
         color-scheme: dark;
     }
+}
+
+body {
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
 }
 
 a:not(.hover\:underline):not(.hover\:overline):not(.hover\:line-through):not(.hover\:no-underline):hover {

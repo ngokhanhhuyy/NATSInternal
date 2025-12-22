@@ -3,7 +3,7 @@ using NATSInternal.Domain.Features.Customers;
 
 namespace NATSInternal.Application.UseCases.Customers;
 
-public class CustomerGetListResponseDto : IPageableListResponseDto<CustomerGetListCustomerResponseDto>
+public class CustomerGetListResponseDto : IListResponseDto<CustomerGetListCustomerResponseDto>
 {
     #region Constructors
     public CustomerGetListResponseDto(

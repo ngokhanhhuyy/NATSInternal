@@ -4,6 +4,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-inline: auto;
 
     form {
         --background-color: white;

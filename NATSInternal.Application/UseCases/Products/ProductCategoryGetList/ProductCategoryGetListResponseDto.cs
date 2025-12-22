@@ -3,7 +3,7 @@ using NATSInternal.Domain.Features.Products;
 namespace NATSInternal.Application.UseCases.Products;
 
 public class ProductCategoryGetListResponseDto
-    : IPageableListResponseDto<ProductCategoryGetListProductCategoryResponseDto>
+    : IListResponseDto<ProductCategoryGetListProductCategoryResponseDto>
 {
     #region Constructors
     public ProductCategoryGetListResponseDto(

@@ -2,7 +2,7 @@ using NATSInternal.Domain.Features.Products;
 
 namespace NATSInternal.Application.UseCases.Products;
 
-public class BrandGetListResponseDto : IPageableListResponseDto<BrandGetListBrandResponseDto>
+public class BrandGetListResponseDto : IListResponseDto<BrandGetListBrandResponseDto>
 {
     #region Constructors
     public BrandGetListResponseDto(

@@ -8,9 +8,8 @@ namespace NATSInternal.Web.Models;
 public class SignInModel
 {
     #region Properties
-    [DisplayName(DisplayNames.UserName)]
-    public string UserName { get; set; } = string.Empty;
-    
+    [DisplayName(DisplayNames.UserName)] public string UserName { get; set; } = string.Empty;
+
     [DisplayName(DisplayNames.Password)]
     [DataType(DataType.Password)]
     public string Password { get; set; } = string.Empty;

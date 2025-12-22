@@ -5,11 +5,7 @@ using NATSInternal.Application.Extensions;
 namespace NATSInternal.Application.UseCases.Products;
 
 [UsedImplicitly]
-public class ProductCategoryGetListRequestDto
-    :
-        IRequest<ProductCategoryGetListResponseDto>,
-        ISortableListRequestDto,
-        IPageableListRequestDto
+public class ProductCategoryGetListRequestDto : IRequest<ProductCategoryGetListResponseDto>, IListRequestDto
 {
     #region Properties
     public bool SortByAscending { get; set; } = true;

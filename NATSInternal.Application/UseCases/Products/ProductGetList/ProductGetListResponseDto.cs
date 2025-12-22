@@ -6,7 +6,7 @@ using NATSInternal.Domain.Features.Stocks;
 
 namespace NATSInternal.Application.UseCases.Products;
 
-public class ProductGetListResponseDto : IPageableListResponseDto<ProductGetListProductResponseDto>
+public class ProductGetListResponseDto : IListResponseDto<ProductGetListProductResponseDto>
 {
     #region Constructors
     public ProductGetListResponseDto(

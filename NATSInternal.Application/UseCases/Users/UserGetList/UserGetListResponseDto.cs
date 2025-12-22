@@ -4,7 +4,7 @@ using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.UseCases.Users;
 
-public class UserGetListResponseDto : IPageableListResponseDto<UserGetListUserResponseDto>
+public class UserGetListResponseDto : IListResponseDto<UserGetListUserResponseDto>
 {
     #region Constructors
     internal UserGetListResponseDto(

@@ -5,7 +5,7 @@
   Dictionary<string, NavigationBarItemModel> itemsData = new()
   {
     { "Trang chủ", new(nameof(DashboardController), nameof(DashboardController.Index), "bi-house") },
-    { DisplayNames.Customer, new("CustomerController", nameof(DashboardController.Index), "bi-person-circle") },
+    { DisplayNames.Customer, new(nameof(CustomerController), nameof(CustomerController.List), "bi-person-circle") },
     { DisplayNames.Product, new("ProductController", nameof(DashboardController.Index), "bi-box-seam") },
     { DisplayNames.Supply, new("SupplyController", nameof(DashboardController.Index), "bi-truck") },
     { DisplayNames.Order, new("OrderController", nameof(DashboardController.Index), "bi-cart4") },
@@ -20,14 +20,13 @@
   <nav id="navbar">
     <div id="navbar-container">
       <div id="navbar-item-list" class="flex flex-col items-stretch">
-        @foreach (KeyValuePair<string, NavigationBarItemModel> pair in itemsData)
+        @foreach (var (key, itemModel) in itemsData)
         {
-          NavigationBarItemModel itemModel = pair.Value;
-          bool isActive = itemModel.Controller == currentController && currentAction == pair.Value.Action;
+          bool isActive = itemModel.Controller == currentController && currentAction == itemModel.Action;
           <a asp-controller="@itemModel.Controller" asp-action="@itemModel.Action" class="@(isActive ? "active" : "")">
             <i class="bi @itemModel.IconClassName"></i>
             <span class="inline-block md:hidden lg:inline-block">
-              @pair.Key
+              @key
             </span>
           </a>
         }
