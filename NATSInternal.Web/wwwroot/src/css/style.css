@@ -1,12 +1,14 @@
 @import "tailwindcss" important;
-@import "./layout.css";
-@import "./table.css";
 @import "./button.css";
-@import "./input.css";
 @import "./form.css";
+@import "./image.css";
+@import "./input.css";
+@import "./layout.css";
 @import "./panel.css";
+@import "./table.css";
 @import "./pages/sign-in-page.css";
 @import "./pages/customer-list-page.css";
+@import "./pages/customer-detail-page.css";
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {

@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 using NATSInternal.Application.Authorization;
 using NATSInternal.Application.Localization;
 using NATSInternal.Application.UseCases.Customers;
@@ -37,7 +38,7 @@ public class CustomerListCustomerModel
         Birthday = responseDto.Birthday;
         PhoneNumber = responseDto.PhoneNumber;
         DebtRemainingAmount = responseDto.DebtRemainingAmount;
-        Authorization = responseDto.Authorization;
+        Authorization = new(responseDto.Authorization);
     }
     #endregion
 
@@ -65,6 +66,13 @@ public class CustomerListCustomerModel
     [DisplayFormat(DataFormatString = "{0:N0} ₫")]
     public long DebtRemainingAmount { get; }
     
-    public CustomerExistingAuthorizationResponseDto Authorization { get; }
+    public CustomerExistingAuthorizationModel Authorization { get; }
+    #endregion
+    
+    #region Methods
+    public string GetDetailRoutePath(IUrlHelper urlHelper)
+    {
+        return urlHelper.Action("Detail", "Customer", new { id = Id }) ?? "#";
+    }
     #endregion
 }

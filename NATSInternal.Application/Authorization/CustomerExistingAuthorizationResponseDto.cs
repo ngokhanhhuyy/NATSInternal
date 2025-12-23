@@ -3,7 +3,7 @@ namespace NATSInternal.Application.Authorization;
 public class CustomerExistingAuthorizationResponseDto
 {
     #region Properties
-    public bool CanEdit { get; set; }
-    public bool CanDelete { get; set; }
+    public bool CanEdit { get; internal set; }
+    public bool CanDelete { get; internal set; }
     #endregion
 }

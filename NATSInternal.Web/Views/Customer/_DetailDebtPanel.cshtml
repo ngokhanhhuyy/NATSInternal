@@ -1,0 +1,14 @@
+@model CustomerDetailModel
+
+<div class="panel">
+    <div class="panel-header">
+        <div class="panel-header-title">Thông tin nợ</div>
+    </div>
+    
+    <div class="panel-body p-3">
+        <div class="field-container">
+            <div class="field-label">@Html.DisplayNameFor(m => m.DebtRemainingAmount)</div>
+            <div class="field-content mb-0">@Html.DisplayCurrency(Model.DebtRemainingAmount)</div>
+        </div>
+    </div>
+</div>

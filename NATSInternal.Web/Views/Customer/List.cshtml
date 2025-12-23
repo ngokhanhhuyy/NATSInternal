@@ -9,7 +9,7 @@
 @if (Model.Items.Count > 0)
 {
     <div class="overscroll-x-none h-fit overflow-x-auto">
-        <table id="customer-list-page-table" class="data-table">
+        <table id="customer-list-page-table" class="data-table data-table-cell-content-nowrap">
             <thead>
                 <tr>
                     <th>@Html.DisplayNameFor(m => m.Items[0].FullName)</th>
@@ -26,7 +26,7 @@
                     <tr>
                         <!-- FullName -->
                         <td>
-                            <a asp-controller="Customer" asp-action="Detail" class="font-bold">
+                            <a href="@customer.GetDetailRoutePath(Url)" class="font-bold">
                                 @customer.FullName
                             </a>
                         </td>
@@ -41,7 +41,7 @@
 
                         <!-- Gender -->
                         <td class="@(customer.Gender == Gender.Male ? "gender-male" : "gender-female")">
-                            @(customer.Gender == Gender.Male ? "Nam" : "Nữ")
+                            @Html.DisplayGender(customer.Gender)
                         </td>
                         
                         <!-- PhoneNumber -->

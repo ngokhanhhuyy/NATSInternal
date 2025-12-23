@@ -40,5 +40,26 @@ public class CustomerController : Controller
         model.MapFromResponseDto(responseDto);
         return View(model);
     }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> Detail([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    {
+        CustomerGetDetailRequestDto requestDto = new() { Id = id };
+        CustomerGetDetailResponseDto responseDto = await _mediator.Send(requestDto, cancellationToken);
+        CustomerDetailModel model = new(responseDto);
+        return View(model);
+    }
+
+    [HttpGet("tao-moi")]
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpGet("{id:guid}/chinh-sua")]
+    public IActionResult Update([FromRoute] Guid id)
+    {
+        return View();
+    }
     #endregion
 }

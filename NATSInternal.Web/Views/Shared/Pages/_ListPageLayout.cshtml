@@ -27,7 +27,10 @@
         <div class="panel-body">
             <div class="flex flex-col items-stretch gap-3 p-3">
                 <div class="grid grid-cols-[1fr_auto_auto] gap-3">
-                    <input asp-for="SearchContent" type="text" placeholder="Tìm kiếm"/>
+                    <input asp-for="SearchContent"
+                            type="text"
+                            placeholder="Tìm kiếm"
+                            class="form-control"/>
                     <button type="submit" class="btn gap-1">
                         <i class="bi bi-search"></i>
                         <span class="hidden sm:inline">Tìm kiếm</span>
@@ -37,38 +40,67 @@
                         <span class="hidden sm:inline">Sắp xếp</span>
                     </button>
                 </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <!-- SortByFieldName -->
+                    <div class="form-field">
+                        <label asp-for="SortByFieldName"></label>
+                        <select asp-for="SortByFieldName" class="form-control">
+                            @foreach ((string fieldName, string fieldDisplayName) in Model.SortByFieldNameOptions)
+                            {
+                                <option value="@fieldName">
+                                    @fieldDisplayName
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- SortByAscending -->
+                    <div class="form-field">
+                        <label asp-for="SortByAscending"></label>
+                        <select asp-for="SortByAscending" class="form-control">
+                            <option value="@true">Từ nhỏ đến lớn</option>
+                            <option value="@false">Từ lớn đến nhỏ</option>
+                        </select>
+                    </div>
+
+                    <!-- ResultsPerPage -->
+                    <div class="form-field">
+                        <label asp-for="ResultsPerPage"></label>
+                        <select asp-for="ResultsPerPage" class="form-control">
+                            @foreach (int option in resultsPerPageOptions)
+                            {
+                                <option value="@option">@option</option>
+                            }
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    
+
     <!-- Pagination -->
-    <partial name="Ui/_Paginator" />
+    <partial name="Ui/_Paginator"/>
 
     <!-- Results Table -->
     <div class="panel">
         <div class="panel-header">
             <span class="panel-header-title">Danh sách kết quả</span>
             <div class="flex gap-3 items-center">
-                <select asp-for="ResultsPerPage" class="small">
-                    @foreach (int option in resultsPerPageOptions)
-                    {
-                        <option value="@option">@option</option>
-                    }
-                </select>
                 <a href="@ViewBag.CreateRoutePath" class="btn btn-sm btn-panel-header gap-1">
                     <i class="bi bi-plus-lg"></i>
                     <span class="hidden sm:inline">Tạo mới</span>
                 </a>
             </div>
         </div>
-        
+
         <div class="panel-body">
             @RenderBody()
         </div>
     </div>
-    
+
     <!-- Pagination -->
-    <partial name="Ui/_Paginator" />
+    <partial name="Ui/_Paginator"/>
 </form>
 
 @section Styles

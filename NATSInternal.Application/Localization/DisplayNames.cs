@@ -63,8 +63,9 @@ public static class DisplayNames
     public const string JoiningDate = "Ngày gia nhập";
     public const string Status = "Trạng thái";
     public const string CreatedDateTime = "Ngày tạo";
-    public const string UpdatedDateTime = "Ngày cập nhật";
+    public const string LastUpdatedDateTime = "Ngày cập nhật";
     public const string CreatedUser = "Nhân viên tạo";
+    public const string LastUpdatedUser = "Nhân viên cập nhật";
     public const string Therapist = "Nhân viên đảm nhận";
     public const string Note = "Ghi chú";
     public const string Introducer = "Người giới thiệu";
@@ -94,8 +95,8 @@ public static class DisplayNames
     public const string Content = "Nội dung";
     public const string IsPinned = "Được đánh dấu";
     public const string OrderedDateTime = "Ngày giờ đặt hàng";
-    public const string SortingByField = "Trường sắp xếp";
-    public const string SortingByAscending = "Thứ tự sắp xếp";
+    public const string SortByFieldName = "Trường sắp xếp";
+    public const string SortByAscending = "Thứ tự sắp xếp";
     public const string SearchByField = "Trường tìm kiếm";
     public const string SearchContent = "Nội dung tìm kiếm";
     public const string Page = "Trang";
@@ -143,8 +144,6 @@ public static class DisplayNames
     public const string PurchasedAmount = "Số tiền đã mua";
     public const string PurchasedTransactionCount = "Số lượng giao dịch mua";
     public const string Quantity = "Số lượng";
-    public const string SortByAscending = "Sắp xếp từ nhỏ đến lớn";
-    public const string SortByFieldName = "Trường sắp xếp";
     #endregion
 
     #region StaticConstructors

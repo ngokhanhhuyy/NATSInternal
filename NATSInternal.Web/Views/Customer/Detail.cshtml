@@ -1,0 +1,44 @@
+@model CustomerDetailModel
+@{
+    Layout = "Layouts/_MainContainer";
+    ViewBag.PageTitle = "Chi tiết khách hàng";
+}
+
+@functions {
+    private string? RenderUpdateLink()
+    {
+        <a href="@Model.GetUpdateRoutePath(Url)" class="btn gap-1.5">
+            <i class="bi bi-pencil-square"></i>
+            <span>Chỉnh sửa</span>
+        </a>
+
+        return null;
+    }
+}
+
+<div id="customer-detail-page" class="flex flex-col gap-3">
+    <div class="flex justify-start">
+        @RenderUpdateLink()
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="flex flex-col gap-3">
+            <partial name="_DetailPersonalInformationPanel" />
+            <partial name="_DetailDebtPanel" />
+            <!-- Debt Panel -->
+            <partial name="_DetailManagementPanel" />
+        </div>
+        
+        <div></div>
+    </div>
+    
+    <div class="flex justify-end">
+        @RenderUpdateLink()
+    </div>
+</div>
+
+@section PageDescription
+{
+    Thông tin chi tiết về khách hàng, bao gồm thông tin cá nhân
+    và thông tin về nợ các giao dịch gần nhất
+}

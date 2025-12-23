@@ -1,38 +1,26 @@
-.form-field {
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: stretch;
+@layer components {
+    .form-field {
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: stretch;
 
-    & label, & .field-validation-valid, & .field-validation-error {
-        font-size: var(--text-sm);
-    }
-
-    & label {
-        opacity: 75%;
-    }
-
-    &:has(.field-validation-valid) label, &:has(.field-validation-valid) label {
-        opacity: 75%;
-    }
-
-    /* &.valid {
-        & .validation-message::after {
-            content: "Hợp lệ";
+        & label, & .field-validation-valid, & .field-validation-error {
+            font-size: var(--text-sm);
         }
 
-        & label, & .validation-message {
-            color: var(--color-emerald-700);
+        & label {
+            opacity: 75%;
         }
 
-        @variant dark label, @variant dark .validation-message {
-            color: var(--color-emerald-300);
+        &:has(.field-validation-valid) label, &:has(.field-validation-valid) label {
+            opacity: 75%;
         }
-    } */
 
-    &:has(.field-validation-error) {
-        & label, & .field-validation-error {
-            color: var(--color-red-500);
+        &:has(.field-validation-error) {
+            & label, & .field-validation-error {
+                color: var(--color-red-500);
+            }
         }
     }
-}
+} 

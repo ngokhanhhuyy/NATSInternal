@@ -59,9 +59,6 @@ export default function NavigationBar(): React.ReactNode {
   }, []);
 
   useEffect(() => {
-  }, []);
-
-  useEffect(() => {
     const handleClicked = (event: PointerEvent) => {
       if (!navigationBarStore.isExpanded) {
         return;

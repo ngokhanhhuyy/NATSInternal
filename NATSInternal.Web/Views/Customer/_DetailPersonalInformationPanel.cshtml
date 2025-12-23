@@ -1,0 +1,88 @@
+@model CustomerDetailModel
+
+<div class="panel">
+    <div class="panel-header">
+        <span class="panel-header-title">
+            Thông tin cá nhân
+        </span>
+    </div>
+    <div class="panel-body flex flex-col gap-3 p-3">
+        <div class="grid grid-cols-[auto_1fr] gap-3">
+            <!-- Avatar -->
+            <img class="img-thumbnail" src="@Model.AvatarUrl" alt="@Model.FullName" />
+            
+            <!-- Names -->
+            <div class="flex flex-col justify-start pt-1">
+                <span class="text-2xl">@Model.FullName</span>
+                <span class="text-lg opacity-50">@Model.NickName</span>
+            </div>
+        </div>
+            
+        <div class="field-container">
+            <!-- Gender -->
+            @if (Model.Birthday is not null)
+            {
+                <div class="field-label">@Html.DisplayNameFor(m => m.Gender)</div>
+                <div class="field-content">@Html.DisplayGender(Model.Gender)</div>
+            }
+            
+            <!-- Birthday -->
+            @if (Model.Birthday is not null)
+            {
+                <div class="field-label">@Html.DisplayNameFor(m => m.Birthday)</div>
+                <div class="field-content">@Html.DisplayDateOnly(Model.Birthday)</div>
+            }
+            
+            <!-- PhoneNumber -->
+            @if (Model.PhoneNumber is not null)
+            {
+                <div class="field-label">@Html.DisplayNameFor(m => m.PhoneNumber)</div>
+                <div class="field-content">
+                    <a href="@($"tel:{Model.PhoneNumber}")" target="_blank" rel="noopener noreferrer">
+                        @Html.DisplayPhoneNumber(Model.PhoneNumber)
+                    </a>
+                </div>
+            }
+            
+            <!-- ZaloNumber -->
+            @if (Model.ZaloNumber is not null)
+            {
+                <div class="field-label">@Html.DisplayNameFor(m => m.ZaloNumber)</div>
+                <div class="field-content">
+                    <a href="@($"https://zalo.me/{Model.ZaloNumber}")" target="_blank" rel="noopener noreferrer">
+                        @Html.DisplayPhoneNumber(Model.ZaloNumber)
+                    </a>
+                </div>
+            }
+            
+            <!-- FacebookUrl -->
+            @if (Model.FacebookUrl is not null)
+            {
+                <div class="field-label">@Html.DisplayNameFor(m => m.FacebookUrl)</div>
+                <div class="field-content">
+                    <a href="@Model.FacebookUrl" target="_blank" rel="noopener noreferrer">
+                        @Html.DisplayFor(m => m.FacebookUrl)
+                    </a>
+                </div>
+            }
+            
+            <!-- Email -->
+            @if (Model.Email is not null)
+            {
+                <div class="field-label">@Html.DisplayNameFor(m => m.Email)</div>
+                <div class="field-content">
+                    <a href="@($"mailto:{Model.Email}")" target="_blank" rel="noopener noreferrer">
+                        @Model.Email.ToLowerInvariant()
+                    </a>
+                </div>
+            }
+            
+            <!-- Address -->
+            @if (Model.Address is not null)
+            {
+                <div class="field-label">@Html.DisplayNameFor(m => m.Address)</div>
+                <div class="field-content mb-0">@Html.DisplayFor(m => m.Address)</div>
+            }
+        </div>
+    </div>
+</div>

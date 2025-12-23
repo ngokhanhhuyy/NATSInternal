@@ -6,7 +6,7 @@
   "scripts": {
     "dotnet": "DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLOR_REDIRECTION=1 DOTNET_WATCH_SUPPRESS_BROWSER_REFRESH=1 dotnet watch run",
     "tw:watch": "tailwindcss -i ./wwwroot/src/css/style.css -o ./wwwroot/output/css/style.css --watch",
-    "ts:watch": "tsc --watch",
+    "ts:watch": "esbuild wwwroot/src/ts/index.ts --bundle --minify --sourcemap --outfile=wwwroot/output/js/index.js --watch",
     "watch": "concurrently --raw -k \"npm:tw:watch\" \"npm:ts:watch\"",
     "dev": "concurrently --raw -k -s first \"npm:dotnet\" \"npm:tw:watch\"",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -17,6 +17,7 @@
   "type": "commonjs",
   "devDependencies": {
     "concurrently": "^9.2.1",
+    "esbuild": "^0.27.2",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3"
   },

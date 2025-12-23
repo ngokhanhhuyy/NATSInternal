@@ -1,0 +1,67 @@
+@model CustomerDetailModel
+@functions {
+    private string? CreatedDateTimeMarginClassName =>
+        Model.LastUpdatedUser is not null || Model.LastUpdatedDateTime.HasValue ? "mb-3" : null;
+    
+    private string? LastUpdatedUserMarginClassName => Model.LastUpdatedDateTime.HasValue ? "mb-3" : null;
+    
+    private object? RenderUser(UserBasicModel user)
+    {
+        @if (!user.IsDeleted)
+        {
+            <a href="@Model.CreatedUser.GetDetailRoute(Url)">
+                @@@Html.DisplayFor(m => m.CreatedUser.UserName)
+            </a>
+        }
+        else
+        {
+            <span class="line-through">
+                Tài khoản đã bị xoá
+            </span>
+        }
+
+        return null;
+    }
+}
+
+<div class="panel">
+    <div class="panel-header">
+        <div class="panel-header-title">
+            Quản lý
+        </div>
+    </div>
+    
+    <div class="panel-body p-3">
+        <div class="field-container">
+            <!-- CreatedUser -->
+            <div class="field-label">@Html.DisplayNameFor(m => m.CreatedUser)</div>
+            <div class="field-content">
+                @RenderUser(Model.CreatedUser)
+            </div>
+        
+            <!-- CreatedDateTime -->
+            <div class="field-label">@Html.DisplayNameFor(m => m.CreatedDateTime)</div>
+            <div class="field-content @CreatedDateTimeMarginClassName">
+                @Html.DisplayDateTime(Model.CreatedDateTime)
+            </div>
+            
+            <!-- LastUpdatedUser -->
+            @if (Model.LastUpdatedUser is not null)
+            {
+                <div class="field-label">@Html.DisplayNameFor(m => m.LastUpdatedUser)</div>
+                <div class="field-content @LastUpdatedUserMarginClassName">
+                    @RenderUser(Model.LastUpdatedUser)
+                </div>
+            }
+        
+            <!-- LastUpdatedDateTime -->
+            @if (Model.LastUpdatedDateTime.HasValue)
+            {
+                <div class="field-label">@Html.DisplayNameFor(m => m.LastUpdatedDateTime)</div>
+                <div class="field-content">
+                    @Html.DisplayDateTime(Model.LastUpdatedDateTime)
+                </div>
+            }
+        </div>
+    </div>
+</div>

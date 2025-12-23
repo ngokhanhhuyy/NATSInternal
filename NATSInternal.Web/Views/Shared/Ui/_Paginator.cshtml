@@ -1,4 +1,3 @@
-@using Microsoft.AspNetCore.Mvc.RazorPages
 @model AbstractListModel
 @{
     bool IsPageExceedingXsScreenRange(int page)
@@ -34,8 +33,8 @@
     <div class="flex flex-row justify-center gap-2">
         @if (IsPageExceedingSmScreenRange(1))
         {
-            <div class="flex gap-2 @(IsPageExceedingXsScreenRange(1) ? "hidden" : null)">
-                <input type="submit" asp-for="Page" className="btn min-w-8.5" />
+            <div class="flex gap-2 @(!IsPageExceedingXsScreenRange(1) ? "hidden" : null)">
+                <input type="submit" asp-for="Page" value="1" class="btn min-w-8.5" />
                 <span>...</span>
             </div>
         }
@@ -47,9 +46,9 @@
         
         @if (IsPageExceedingSmScreenRange(Model.PageCount))
         {
-            <div class="flex gap-2 @(IsPageExceedingXsScreenRange(Model.PageCount) ? "hidden" : null)">
-                <input type="submit" asp-for="Page" className="btn min-w-8.5" />
+            <div class="flex gap-2 @(!IsPageExceedingXsScreenRange(Model.PageCount) ? "hidden" : null)">
                 <span>...</span>
+                <input type="submit" asp-for="Page" value="@Model.PageCount" class="btn min-w-8.5" />
             </div>
         }
     </div>

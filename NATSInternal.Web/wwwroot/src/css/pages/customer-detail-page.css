@@ -1,0 +1,58 @@
+#customer-detail-page {
+    @layer components {
+        .field-container {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            column-gap: --spacing(5);
+
+            @media (min-width: theme(screens.sm)) {
+                grid-template-columns: min-content 1fr;
+            }
+
+            @media (min-width: theme(screens.md)) {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+            }
+
+            @media (min-width: theme(screens.xl)) {
+                grid-template-columns: min-content 1fr;
+            }
+        }
+
+        .field-label {
+            font-size: var(--text-sm);
+            min-width: --spacing(35);
+            opacity: 50%;
+            white-space: nowrap;
+
+            @media (min-width: theme(screens.sm)) {
+                font-size: var(--text-base);
+            }
+
+            @media (min-width: theme(screens.md)) {
+                font-size: var(--text-sm);
+                min-width: --spacing(40);
+            }
+
+            @media (min-width: theme(screens.xl)) {
+                font-size: var(--text-base);
+            }
+        }
+
+        .field-content {
+            margin-bottom: --spacing(3);
+
+            @media (min-width: theme(screens.sm)) {
+                margin-bottom: --spacing(1.5);
+            }
+
+            @media (min-width: theme(screens.md)) {
+                margin-bottom: --spacing(3);
+            }
+
+            @media (min-width: theme(screens.xl)) {
+                margin-bottom: --spacing(1.5);
+            }
+        }
+    }
+}

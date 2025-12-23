@@ -25,7 +25,7 @@ public abstract class AbstractListModel
 
     [BindNever]
     [DisplayName(DisplayNames.PageCount)]
-    public int PageCount { get; protected set; }    
+    public int PageCount { get; protected set; }
 
     [BindNever]
     [DisplayName(DisplayNames.ResultsCount)]
@@ -43,8 +43,8 @@ public abstract class AbstractListModel
     [BindNever]
     public int SmallScreenEndingPage { get; protected set; }
 
-    public static IReadOnlyDictionary<string, string> SortByFieldNameOptions { get; protected set; } =
-        new Dictionary<string, string>();
+    [BindNever]
+    public abstract IReadOnlyDictionary<string, string> SortByFieldNameOptions { get; }
     #endregion
 }
 
@@ -59,10 +59,13 @@ public abstract class AbstractListModel<
     where TListResponseDto : IListResponseDto<TItemResponseDto>
     where TFieldToSort : struct, Enum
 {
+    #region Fields
+    private static readonly Dictionary<string, string> _sortByFieldNameOptions;
+    #endregion
     #region Constructors
     static AbstractListModel()
     {
-        SortByFieldNameOptions = Enum
+        _sortByFieldNameOptions = Enum
             .GetNames<TFieldToSort>()
             .ToDictionary(name => name, DisplayNames.Get);
     }
@@ -72,6 +75,8 @@ public abstract class AbstractListModel<
     [BindNever]
     [DisplayName(DisplayNames.Results)]
     public IReadOnlyList<TItemModel> Items { get; protected set; } = new List<TItemModel>();
+
+    public override IReadOnlyDictionary<string, string> SortByFieldNameOptions => _sortByFieldNameOptions;
     #endregion
 
     #region Methods
