@@ -1,9 +1,9 @@
 @model CustomerDetailModel
 @functions {
     private string? CreatedDateTimeMarginClassName =>
-        Model.LastUpdatedUser is not null || Model.LastUpdatedDateTime.HasValue ? "mb-3" : null;
+        Model.LastUpdatedUser is not null || Model.LastUpdatedDateTime.HasValue ? null : "mb-0";
     
-    private string? LastUpdatedUserMarginClassName => Model.LastUpdatedDateTime.HasValue ? "mb-3" : null;
+    private string? LastUpdatedUserMarginClassName => Model.LastUpdatedDateTime.HasValue ? null : "mb-0";
     
     private object? RenderUser(UserBasicModel user)
     {
@@ -24,7 +24,7 @@
     }
 }
 
-<div class="panel">
+<div class="panel flex-1">
     <div class="panel-header">
         <div class="panel-header-title">
             Quản lý
@@ -58,7 +58,7 @@
             @if (Model.LastUpdatedDateTime.HasValue)
             {
                 <div class="field-label">@Html.DisplayNameFor(m => m.LastUpdatedDateTime)</div>
-                <div class="field-content">
+                <div class="field-content mb-0">
                     @Html.DisplayDateTime(Model.LastUpdatedDateTime)
                 </div>
             }

@@ -2,6 +2,11 @@
 @{
     Layout = "Layouts/_MainContainer";
     ViewBag.PageTitle = "Chi tiết khách hàng";
+    ViewBag.BreadcrumbItems = new List<BreadcrumbItemModel>
+    {
+        new("Khách hàng", Url.Action("List", "Customer")),
+        new("Chi tiết", Url.Action("Detail", "Customer", new { id = Model.Id }))
+    };
 }
 
 @functions {
@@ -22,15 +27,14 @@
     </div>
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <partial name="_DetailPersonalInformationPanel" />
         <div class="flex flex-col gap-3">
-            <partial name="_DetailPersonalInformationPanel" />
             <partial name="_DetailDebtPanel" />
-            <!-- Debt Panel -->
             <partial name="_DetailManagementPanel" />
         </div>
-        
-        <div></div>
     </div>
+    
+    <partial name="_DetailRecentTransactionsPanel" />
     
     <div class="flex justify-end">
         @RenderUpdateLink()

@@ -12,8 +12,8 @@
 <div class="flex flex-wrap gap-3 items-center ms-2 lg:ms-3 translate-y-[7.5%] h-8">
     <div class="flex gap-2 items-center">
         <i class="bi bi-house"></i>
-        <a asp-controller="Dashboard" asp-action="Index" class="text-lg sm:text-base">
-            <span class="font-bold text-lg hidden sm:inline">Trang chủ</span>
+        <a asp-controller="Dashboard" asp-action="Index" class="text-lg sm:text-base hidden sm:inline">
+            <span>Trang chủ</span>
         </a>
     </div>
 
@@ -23,14 +23,9 @@
         {
             BreadcrumbItemModel itemModel = Model[index];
             bool isLast = index == Model.Count - 1;
-            <div class="flex gap-2 items-center">
+            <div class="flex gap-2 items-center @(!isLast ? "hidden sm:inline" : null)">
                 <i class="bi bi-chevron-right"></i>
                 <a href="@itemModel.Url" class="@ComputeItemClassName(isLast)">
-                    @if (!isLast)
-                    {
-                        <i class="bi bi-chevron-right"></i>
-                    }
-
                     <span class="hidden sm:inline">@itemModel.Name</span>
 
                     @if (isLast)

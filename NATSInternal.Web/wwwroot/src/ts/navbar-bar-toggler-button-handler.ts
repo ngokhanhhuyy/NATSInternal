@@ -5,37 +5,42 @@ document.addEventListener("DOMContentLoaded", () => {
     return
   }
   
+  const expand = (): void => {
+    navBarElement.classList.add("expanded");
+    document.documentElement.style.maxHeight = "100vh";
+    document.documentElement.style.overflow = "hidden";
+  };
+  
+  const collapse = (): void => {
+    navBarElement.classList.remove("expanded");
+    document.documentElement.removeAttribute("style");
+  };
+  
   document.addEventListener("pointerdown", (event: PointerEvent) => {
     if (!navBarElement.classList.contains("expanded")) {
       return;
     }
 
     if (navBarElement === (event.target as HTMLElement)) {
-      navBarElement.classList.remove("expanded");
-    }
-    
-    if (navBarElement.classList.contains("expanded")) {
-      document.documentElement.style.maxHeight = "100vh";
-      document.documentElement.style.overflow = "hidden";
-    } else {
-      document.documentElement.removeAttribute("style");
+      collapse();
     }
   });
   
   const mdScreenMediaQuery = window.matchMedia("(min-width: 48rem)");
   const handleMdScreenQueryMatchChanged = () => {
     if (mdScreenMediaQuery.matches) {
-      navBarElement.classList.remove("expanded");
+      collapse();
     }
   };
+  
   handleMdScreenQueryMatchChanged();
   mdScreenMediaQuery.addEventListener("change", handleMdScreenQueryMatchChanged);
   
   togglerButtonElement.addEventListener("click", () => {
     if (navBarElement.classList.contains("expanded")) {
-      navBarElement.classList.remove("expanded");
+      collapse();
     } else {
-      navBarElement.classList.add("expanded");
+      expand();
     }
   });
 });

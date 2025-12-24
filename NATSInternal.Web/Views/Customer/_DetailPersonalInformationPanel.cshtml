@@ -1,3 +1,4 @@
+@using NATSInternal.Domain.Features.Customers
 @model CustomerDetailModel
 
 <div class="panel">
@@ -23,7 +24,9 @@
             @if (Model.Birthday is not null)
             {
                 <div class="field-label">@Html.DisplayNameFor(m => m.Gender)</div>
-                <div class="field-content">@Html.DisplayGender(Model.Gender)</div>
+                <div class="field-content @(Model.Gender == Gender.Male ? "gender-male" : "gender-female")">
+                    @Html.DisplayGender(Model.Gender)
+                </div>
             }
             
             <!-- Birthday -->
