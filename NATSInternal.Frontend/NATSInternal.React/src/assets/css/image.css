@@ -1,0 +1,15 @@
+@layer components {
+    .img-thumbnail {
+        background-color: rgba(0, 0, 0, 5%);
+        border: 1px solid rgba(0, 0, 0, 15%);
+        padding: --spacing(1);
+        border-radius: var(--radius-lg);
+        
+        @variant dark {
+            & {
+                background-color: rgba(255, 255, 255, 5%);
+                border: rgba(255, 255, 255, 15%);
+            }
+        }
+    }
+}

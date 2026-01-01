@@ -1,0 +1,9 @@
+@layer components {
+    .collapsible {
+        display: none;
+    }
+}
+
+@utility collapsible-expanded {
+    display: unset;
+}

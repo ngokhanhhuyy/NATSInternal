@@ -1,0 +1,136 @@
+using System.ComponentModel;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using NATSInternal.Application.Localization;
+using NATSInternal.Application.UseCases.Customers;
+using NATSInternal.Application.UseCases.Shared;
+using NATSInternal.Domain.Features.Customers;
+
+namespace NATSInternal.Web.Models;
+
+public class CustomerUpsertModel
+{
+    #region Constructors
+    public CustomerUpsertModel() { }
+
+    public CustomerUpsertModel(CustomerGetDetailResponseDto responseDto)
+    {
+        FirstName = responseDto.FirstName;
+        MiddleName = responseDto.MiddleName;
+        LastName = responseDto.LastName;
+        NickName = responseDto.NickName;
+        Gender = responseDto.Gender;
+        Birthday = responseDto.Birthday;
+        PhoneNumber = responseDto.PhoneNumber;
+        ZaloNumber = responseDto.ZaloNumber;
+        FacebookUrl = responseDto.FacebookUrl;
+        Email = responseDto.Email;
+        Address = responseDto.Address;
+        Note = responseDto.Note;
+        IntroducerId = responseDto.Introducer?.Id;
+
+        if (responseDto.Introducer is not null)
+        {
+            Introducer = new(responseDto.Introducer);
+        }
+    }
+    #endregion
+
+    #region Properties
+    [BindRequired]
+    [DisplayName(DisplayNames.Id)]
+    public string FirstName { get; init; } = string.Empty;
+
+    [BindRequired]
+    [DisplayName(DisplayNames.MiddleName)]
+    public string? MiddleName { get; init; }
+
+    [BindRequired]
+    [DisplayName(DisplayNames.LastName)]
+    public string LastName { get; init; } = string.Empty;
+
+    [BindRequired]
+    [DisplayName(DisplayNames.NickName)]
+    public string? NickName { get; init; }
+
+    [BindRequired]
+    [DisplayName(DisplayNames.Birthday)]
+    public Gender Gender { get; init; }
+    public DateOnly? Birthday { get; init; }
+
+    [BindRequired]
+    [DisplayName(DisplayNames.PhoneNumber)]
+    public string? PhoneNumber { get; init; }
+
+    [BindRequired]
+    [DisplayName(DisplayNames.ZaloNumber)]
+    public string? ZaloNumber { get; init; }
+
+    [BindRequired]
+    [DisplayName(DisplayNames.FacebookUrl)]
+    public string? FacebookUrl { get; init; }
+
+    [BindRequired]
+    [DisplayName(DisplayNames.Email)]
+    public string? Email { get; init; }
+
+    [BindRequired]
+    [DisplayName(DisplayNames.Address)]
+    public string? Address { get; init; }
+
+    [BindRequired]
+    [DisplayName(DisplayNames.Note)]
+    public string? Note { get; init; }
+
+    [BindRequired]
+    [DisplayName(DisplayNames.Introducer)]
+    public Guid? IntroducerId { get; init; }
+
+    [BindNever]
+    [DisplayName(DisplayNames.Introducer)]
+    public CustomerBasicModel? Introducer { get; set; }
+    #endregion
+
+    #region Methods
+    public CustomerCreateRequestDto ToCreateRequestDto()
+    {
+        CustomerCreateRequestDto requestDto = new();
+        MapToRequestDto(requestDto);
+        return requestDto;
+    }
+
+    public CustomerUpdateRequestDto ToUpdateRequestDto()
+    {
+        CustomerUpdateRequestDto requestDto = new();
+        MapToRequestDto(requestDto);
+        return requestDto;
+    }
+
+    public void MapFromIntroducerResponseDto(CustomerBasicResponseDto? responseDto)
+    {
+        if (responseDto is not null)
+        {
+            Introducer = new(responseDto);
+        }
+    }
+    #endregion
+
+    #region PrivateMethods
+    protected void MapToRequestDto(CustomerUpsertRequestDto requestDto)
+    {
+        requestDto.FirstName = FirstName;
+        requestDto.MiddleName = MiddleName;
+        requestDto.LastName = LastName;
+        requestDto.NickName = NickName;
+        requestDto.Gender = Gender;
+        requestDto.Birthday = Birthday;
+        requestDto.PhoneNumber = PhoneNumber;
+        requestDto.ZaloNumber = ZaloNumber;
+        requestDto.FacebookUrl = FacebookUrl;
+        requestDto.Email = Email;
+        requestDto.Address = Address;
+        requestDto.Note = Note;
+        requestDto.IntroducerId = IntroducerId;
+    }
+    #endregion
+}
