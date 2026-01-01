@@ -48,7 +48,7 @@ export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>)
               onValueChanged={(firstName) => props.onModelChanged({ firstName })}
             />
           </FormField>
-
+          
           {/* MiddleName */}
           <FormField path="middleName" className="sm:col-span-2">
             <TextInput

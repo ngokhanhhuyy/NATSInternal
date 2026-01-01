@@ -1,9 +1,11 @@
 @import "tailwindcss" important;
 @import "./button.css";
+@import "./collapsible.css";
 @import "./form.css";
 @import "./image.css";
 @import "./input.css";
 @import "./layout.css";
+@import "./modal.css";
 @import "./panel.css";
 @import "./table.css";
 @import "./pages/sign-in-page.css";
@@ -51,8 +53,6 @@ a:not(.hover\:underline):not(.hover\:overline):not(.hover\:line-through):not(.ho
     text-decoration: underline;
 }
 
-
-
 ul.list-group {
     --border-color: rgba(0, 0, 0, 10%);
     --border-width: 1px;
@@ -72,21 +72,5 @@ ul.list-group {
 
     & li:not(:last-child) {
         border-bottom: 1px solid var(--border-color);
-    }
-}
-
-img {
-    &.img-thumbnail {
-        background-color: white;
-        border: 1px solid rgba(0, 0, 0, 15%);
-        border-radius: var(--radius-md);
-        padding: --spacing(2);
-
-        @variant dark {
-            & {
-                background-color: var(--color-neutral-800);
-                border-color: rgba(255, 255, 255, 15%);
-            }
-        }
     }
 }

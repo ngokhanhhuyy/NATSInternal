@@ -17,29 +17,23 @@
         align-items: center;
         /* box-shadow: var(--shadow-xs); */
 
-        &.btn-panel-header {
-            border-color: rgba(0, 0, 0, 20%);
-
-            html.dark & {
-                border-color: rgba(255, 255, 255, 20%);
-            }
-        }
-
         &:hover {
-            background: var(--color-neutral-100);
+            background-color: var(--color-neutral-100);
 
             &:is(a) {
                 text-decoration: none !important;
             }
         }
 
-        html.dark & {
-            background: oklch(from var(--color-neutral-800) l c h / 100%);
-            color: var(--color-white);
-            border-color: rgba(255, 255, 255, 15%);
+        @variant dark {
+            & {
+                background: oklch(from var(--color-neutral-800) l c h / 100%);
+                color: var(--color-white);
+                border-color: rgba(255, 255, 255, 15%);
 
-            &:hover {
-                background: rgba(255, 255, 255, 10%);
+                &:hover {
+                    background: rgba(255, 255, 255, 10%);
+                }
             }
         }
 
@@ -48,67 +42,13 @@
             pointer-events: none;
         }
 
-        &.btn-primary {
-            background: black;
-            color: white;
-            border-color: black;
-
-            html.dark & {
-                background: var(--color-neutral-200);
-                color: black;
-                border-color: white;
-
-                &:hover {
-                    background: var(--color-neutral-300);
-                    border-color: var(--color-neutral-100);
-                }
-            }
-
-            &:hover {
-                background: rgba(0, 0, 0, 70%);
-                border-color: rgba(0, 0, 0, 70%);
-            }
+        & > svg {
+            --size-coeffecient: 4.5;
+            width: calc(var(--spacing) * var(--size-coeffecient));
+            height: calc(var(--spacing) * var(--size-coeffecient));
         }
 
-        &.btn-danger {
-            background: var(--color-red-500);
-            color: white;
-            border-color: var(--color-red-500);
-
-            &.outline-only {
-                background: white;
-                color: var(--color-red-500);
-            }
-
-            &:hover {
-                background: var(--color-red-600);
-                
-                &.outline-only {
-                    color: white;
-                }
-            }
-
-            html.dark & {
-                background: var(--color-red-700);
-                color: white;
-                border-color: var(--color-red-600);
-
-                &.outline-only {
-                    background: var(--color-neutral-800);
-                    color: var(--color-red-500);
-                }
-
-                &:hover {
-                    background: var(--color-red-800);
-
-                    &.outline-only {
-                        color: white;
-                    }
-                }
-            }
-        }
-
-        &.btn-sm {
+        &.btn-small {
             --padding-inline-coeffecient: 1.5;
             --padding-block-coeffecient: 0.85;
             --min-height-coeffecient: 7;
@@ -134,6 +74,80 @@
                     background: rgba(255, 255, 255, 15%);
                 }
             }
+        }
+    }
+}
+
+@utility btn-primary {
+    background-color: black;
+    color: white;
+    border-color: black;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 70%);
+        border-color: rgba(0, 0, 0, 70%);
+    }
+
+    @variant dark {
+        & {
+            background-color: var(--color-neutral-200);
+            color: black;
+            border-color: white;
+
+            &:hover {
+                background-color: var(--color-neutral-300);
+                border-color: var(--color-neutral-100);
+            }
+        }
+    }
+}
+
+@utility btn-danger {
+    background: var(--color-red-500);
+    color: white;
+    border-color: var(--color-red-500);
+
+    &.outline-only {
+        background: white;
+        color: var(--color-red-500);
+    }
+
+    &:hover {
+        background: var(--color-red-600);
+
+        &.outline-only {
+            color: white;
+        }
+    }
+
+    @variant dark {
+        & {
+            background: var(--color-red-700);
+            color: white;
+            border-color: var(--color-red-600);
+
+            &.outline-only {
+                background: var(--color-neutral-800);
+                color: var(--color-red-500);
+            }
+
+            &:hover {
+                background: var(--color-red-800);
+
+                &.outline-only {
+                    color: white;
+                }
+            }
+        }
+    }
+}
+
+@utility btn-panel-header {
+    border-color: rgba(0, 0, 0, 20%);
+
+    @variant dark {
+        & {
+            border-color: rgba(255, 255, 255, 20%);
         }
     }
 }

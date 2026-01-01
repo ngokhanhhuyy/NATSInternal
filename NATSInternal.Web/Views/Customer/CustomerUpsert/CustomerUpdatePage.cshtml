@@ -1,0 +1,8 @@
+@{
+    Layout = "Layouts/_MainContainer";
+    ViewBag.PageTitle = "Chỉnh sửa khách hàng";
+}
+
+<form asp-controller="Customer" asp-action="Update" asp-route-id="@Model.Id">
+    <partial name="_Inputs" />
+</form>

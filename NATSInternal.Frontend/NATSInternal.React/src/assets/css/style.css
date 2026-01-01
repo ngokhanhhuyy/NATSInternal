@@ -1,11 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 @import "tailwindcss" important;
 @import "./button.css";
+@import "./collapsible.css";
 @import "./form.css";
+@import "./image.css";
 @import "./input.css";
-@import "./list.css";
-@import "./svg.css";
+@import "./layout.css";
+@import "./modal.css";
+@import "./panel.css";
 @import "./table.css";
+@import "./pages/sign-in-page.css";
+@import "./pages/customer-list-page.css";
+@import "./pages/customer-detail-page.css";
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
@@ -36,20 +41,36 @@ html {
     }
 }
 
+body {
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+}
+
 a:not(.hover\:underline):not(.hover\:overline):not(.hover\:line-through):not(.hover\:no-underline):hover {
     text-decoration: underline;
 }
 
-img {
-    &.img-thumbnail {
-        background-color: white;
-        border: 1px solid rgba(0, 0, 0, 15%);
-        border-radius: var(--radius-md);
-        padding: calc(var(--spacing) * 2);
+ul.list-group {
+    --border-color: rgba(0, 0, 0, 10%);
+    --border-width: 1px;
+    list-style: none;
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--radius-lg);
 
-        html.dark & {
-            background-color: var(--color-neutral-800);
-            border-color: rgba(255, 255, 255, 15%);
+    @variant dark {
+        & {
+            --border-color: rgba(255, 255, 255, 10%);
         }
+    }
+
+    &.list-group-flush {
+        --border-width: 0;
+    }
+
+    & li:not(:last-child) {
+        border-bottom: 1px solid var(--border-color);
     }
 }

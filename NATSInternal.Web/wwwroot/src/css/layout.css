@@ -8,7 +8,7 @@
     align-items: stretch;
     margin-inline: auto;
     
-    body:has(#topbar) & {
+    body:has(#navbar) & {
         display: grid;
         grid-template-columns: 1fr auto;
         padding-top: var(--topbar-height);

@@ -12,7 +12,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Content Include="wwwroot\src\css\modal.css" />
         <TypeScriptCompile Include="wwwroot\src\ts\class-name-processor.ts"/>
+        <TypeScriptCompile Include="wwwroot\src\ts\collapsible.ts" />
         <TypeScriptCompile Include="wwwroot\src\ts\index.ts" />
         <TypeScriptCompile Include="wwwroot\src\ts\navbar-bar-toggler-button-handler.ts" />
         <TypeScriptCompile Include="wwwroot\src\ts\theme-toggle-button-handler.ts"/>

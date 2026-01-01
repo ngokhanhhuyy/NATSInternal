@@ -18,13 +18,17 @@
         justify-items: stretch;
         width: 350px;
         position: relative;
+        
+        @variant dark {
+            --background-color: var(--color-neutral-900);
+        }
 
         @media (min-width: theme(screens.sm)) {
             --border-color: rgba(0, 0, 0, 10%);
             box-shadow: var(--shadow-xs);
 
             @variant dark {
-                --border-color: rgba(255, 255, 255, 10%);
+                --border-color: rgba(255, 255, 255, 15%);
             }
         }
     }

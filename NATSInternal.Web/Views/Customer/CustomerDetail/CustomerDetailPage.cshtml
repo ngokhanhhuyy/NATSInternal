@@ -27,14 +27,14 @@
     </div>
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <partial name="_DetailPersonalInformationPanel" />
+        <partial name="~/Views/Customer/CustomerDetail/_PersonalInformationPanel.cshtml" />
         <div class="flex flex-col gap-3">
-            <partial name="_DetailDebtPanel" />
-            <partial name="_DetailManagementPanel" />
+            <partial name="~/Views/Customer/CustomerDetail/_DebtPanel.cshtml" />
+            <partial name="~/Views/Customer/CustomerDetail/_ManagementPanel.cshtml" />
         </div>
     </div>
     
-    <partial name="_DetailRecentTransactionsPanel" />
+    <partial name="~/Views/Customer/CustomerDetail/_RecentTransactionsPanel.cshtml" />
     
     <div class="flex justify-end">
         @RenderUpdateLink()

@@ -14,16 +14,16 @@
         method="get"
         id="searchable-list-filter-form"
         class="flex flex-col items-strech gap-3">
-    <!-- Filter -->
+    <!-- FilterPanel -->
     <div class="panel">
-        <!-- Header -->
+        <!-- FilterPanelHeader -->
         <div class="panel-header">
             <div class="panel-header-title">
                 Tìm kiếm và sắp xếp
             </div>
         </div>
 
-        <!-- Body -->
+        <!-- FilterPanelBody -->
         <div class="panel-body">
             <div class="flex flex-col items-stretch gap-3 p-3">
                 <div class="grid grid-cols-[1fr_auto_auto] gap-3">
@@ -35,44 +35,46 @@
                         <i class="bi bi-search"></i>
                         <span class="hidden sm:inline">Tìm kiếm</span>
                     </button>
-                    <button type="button" class="btn gap-1">
+                    <button type="button" class="collapsible-toggler btn gap-1" target-id="advanced-options-container">
                         <i class="bi bi-filter-left"></i>
                         <span class="hidden sm:inline">Sắp xếp</span>
                     </button>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <!-- SortByFieldName -->
-                    <div class="form-field">
-                        <label asp-for="SortByFieldName"></label>
-                        <select asp-for="SortByFieldName" class="form-control">
-                            @foreach ((string fieldName, string fieldDisplayName) in Model.SortByFieldNameOptions)
-                            {
-                                <option value="@fieldName">
-                                    @fieldDisplayName
-                                </option>
-                            }
-                        </select>
-                    </div>
+                <div id="advanced-options-container" class="collapsible">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <!-- SortByFieldName -->
+                        <div class="form-field">
+                            <label asp-for="SortByFieldName"></label>
+                            <select asp-for="SortByFieldName" class="form-control">
+                                @foreach ((string fieldName, string fieldDisplayName) in Model.SortByFieldNameOptions)
+                                {
+                                    <option value="@fieldName">
+                                        @fieldDisplayName
+                                    </option>
+                                }
+                            </select>
+                        </div>
 
-                    <!-- SortByAscending -->
-                    <div class="form-field">
-                        <label asp-for="SortByAscending"></label>
-                        <select asp-for="SortByAscending" class="form-control">
-                            <option value="@true">Từ nhỏ đến lớn</option>
-                            <option value="@false">Từ lớn đến nhỏ</option>
-                        </select>
-                    </div>
+                        <!-- SortByAscending -->
+                        <div class="form-field">
+                            <label asp-for="SortByAscending"></label>
+                            <select asp-for="SortByAscending" class="form-control">
+                                <option value="@true">Từ nhỏ đến lớn</option>
+                                <option value="@false">Từ lớn đến nhỏ</option>
+                            </select>
+                        </div>
 
-                    <!-- ResultsPerPage -->
-                    <div class="form-field">
-                        <label asp-for="ResultsPerPage"></label>
-                        <select asp-for="ResultsPerPage" class="form-control">
-                            @foreach (int option in resultsPerPageOptions)
-                            {
-                                <option value="@option">@option</option>
-                            }
-                        </select>
+                        <!-- ResultsPerPage -->
+                        <div class="form-field">
+                            <label asp-for="ResultsPerPage"></label>
+                            <select asp-for="ResultsPerPage" class="form-control">
+                                @foreach (int option in resultsPerPageOptions)
+                                {
+                                    <option value="@option">@option</option>
+                                }
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>

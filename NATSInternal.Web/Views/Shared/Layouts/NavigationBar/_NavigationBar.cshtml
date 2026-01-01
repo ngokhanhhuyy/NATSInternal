@@ -1,6 +1,5 @@
 @{
   string? currentController = ViewContext.RouteData.Values["controller"]?.ToString();
-  string? currentAction = ViewContext.RouteData.Values["action"]?.ToString();
   
   Dictionary<string, NavigationBarItemModel> itemsData = new()
   {
@@ -22,7 +21,7 @@
       <div id="navbar-item-list" class="flex flex-col items-stretch">
         @foreach ((string key, NavigationBarItemModel itemModel) in itemsData)
         {
-          bool isActive = itemModel.Controller == currentController && currentAction == itemModel.Action;
+          bool isActive = itemModel.Controller == currentController;
           <a asp-controller="@itemModel.Controller" asp-action="@itemModel.Action" class="@(isActive ? "active" : "")">
             <i class="bi @itemModel.IconClassName"></i>
             <span class="inline-block md:hidden lg:inline-block">

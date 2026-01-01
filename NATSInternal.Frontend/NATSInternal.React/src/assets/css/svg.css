@@ -1,9 +1,0 @@
-.btn > svg {
-    --size-coeffecient: 4.5;
-    width: calc(var(--spacing) * var(--size-coeffecient));
-    height: calc(var(--spacing) * var(--size-coeffecient));
-
-    .btn-sm > & {
-        --size-coeffecient: 3.5;
-    }
-}
