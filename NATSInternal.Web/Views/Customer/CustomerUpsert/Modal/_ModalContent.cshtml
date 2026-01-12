@@ -1,0 +1,20 @@
+@model CustomerUpsertIntroducerModel
+
+<!-- Header -->
+<div class="modal-dialog-header">
+    <div class="modal-dialog-header-title">
+        Chọn người giới thiệu
+    </div>
+</div>
+
+<!-- Body -->
+<div class="modal-dialog-body p-3">
+    @if (Model.PickedIntroducer is not null)
+    {
+        <partial name="_ModalPickedIntroducerContent.cshtml" model="@Model.PickedIntroducer" />
+    }
+    else
+    {
+        <partial name="_ModalListContent.cshtml" model="@Model.CustomerList" />
+    }
+</div>

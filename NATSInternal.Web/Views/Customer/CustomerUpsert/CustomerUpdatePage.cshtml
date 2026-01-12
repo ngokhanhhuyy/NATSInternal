@@ -1,8 +1,29 @@
+@model CustomerUpsertModel
 @{
     Layout = "Layouts/_MainContainer";
     ViewBag.PageTitle = "Chỉnh sửa khách hàng";
+    const string formId = "customer-upsert-form";
 }
 
-<form asp-controller="Customer" asp-action="Update" asp-route-id="@Model.Id">
-    <partial name="_Inputs" />
-</form>
+<div class="flex flex-col gap-3">
+    <div class="flex justify-start gap-3">
+        <partial name="~/Views/Shared/Form/SubmitButton.cshtml" model="@formId" />
+    </div>
+
+    <form asp-controller="Customer" asp-action="Update" asp-route-id="@Model.Id" id="@formId">
+        <partial name="_InputsPanel.cshtml" />
+    </form>
+
+    <div class="flex justify-end gap-3">
+        <partial name="~/Views/Shared/Form/SubmitButton.cshtml" model="@formId" />
+    </div>
+</div>
+
+@section PageDescription {
+    Chỉnh sửa một bản ghi dữ liệu của một khách hàng đang tồn tại,
+    bao gồm thông tin cá nhân và người giới thiệu (nếu có).
+}
+
+@section Modals {
+    <partial name="~/Views/Customer/CustomerUpsert/Modal/_Modal.cshtml" model="@Model.Introducer" />
+}

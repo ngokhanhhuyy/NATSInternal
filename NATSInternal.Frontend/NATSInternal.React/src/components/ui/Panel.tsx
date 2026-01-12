@@ -2,7 +2,7 @@ import React from "react";
 import { useTsxHelper } from "@/helpers";
 
 // Props.
-export type BlockProps = {
+export type PanelProps = {
   title: string;
   headerChildren?: React.ReactNode;
   bodyClassName?: string;
@@ -11,7 +11,7 @@ export type BlockProps = {
 } & React.ComponentPropsWithoutRef<"div">;
 
 // Component.
-export default function Block(props: BlockProps): React.ReactNode {
+export default function Panel(props: PanelProps): React.ReactNode {
   // Props.
   const {
     title,
@@ -31,14 +31,10 @@ export default function Block(props: BlockProps): React.ReactNode {
   return (
     <div
       {...domProps}
-      className={joinClassName("block-container", "flex flex-col overflow-hidden box-border", className)}
+      className={joinClassName("panel", className)}
     >
       {/* Header */}
-      <div className={joinClassName(
-        "block-header bg-black/10 dark:bg-white/10 border border-black/15 dark:border-white/15",
-        "flex justify-between gap-3 items-center min-h-10",
-        "ps-3 pe-1.5 py-1.5 col-span-2 rounded-t-lg",
-      )}>
+      <div className="panel-header">
         <span className="font-bold text-sm">
           {title.toUpperCase()}
         </span>
@@ -47,7 +43,7 @@ export default function Block(props: BlockProps): React.ReactNode {
 
       {/* Body */}
       <div className={joinClassName(
-        "block-body border-x border-black/15 dark:border-white/15 flex-1 overflow-hidden",
+        "panel-body",
         !props.footerChildren && "border-b rounded-b-lg",
         props.bodyClassName,
       )}>
@@ -57,7 +53,7 @@ export default function Block(props: BlockProps): React.ReactNode {
       {/* Footer */}
       {props.footerChildren && (
         <div className={joinClassName(
-          "block-footer",
+          "panel-footer",
           "border border-black/10 dark:border-white/15",
           "rounded-b-lg flex justify-stretch p-3",
           props.footerClassName)}

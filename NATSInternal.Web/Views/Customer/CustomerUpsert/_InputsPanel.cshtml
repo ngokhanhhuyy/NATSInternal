@@ -1,0 +1,101 @@
+@using NATSInternal.Domain.Features.Customers
+@model CustomerUpsertModel
+
+<div class="panel">
+    <div class="panel-header">
+        <span class="panel-header-title">
+            Thông tin cá nhân khách hàng
+        </span>
+    </div>
+    
+    <div class="panel-body flex flex-col gap-3 px-4 pt-2.5 pb-4">
+        <!-- 1stRow -->
+        <div class="grid grid-cols-1 sm:grid-cols-6 gap-3">
+            <!-- FirstName -->
+            <div class="form-field sm:col-span-2">
+                <label asp-for="FirstName"></label>
+                <input asp-for="FirstName" type="text" class="form-control" placeholder="Nguyễn" />
+                <span asp-validation-for="FirstName"></span>
+            </div>
+
+            <!-- MiddleName -->
+            <div class="form-field sm:col-span-2">
+                <label asp-for="MiddleName"></label>
+                <input asp-for="MiddleName" type="text" class="form-control" placeholder="Văn" />
+                <span asp-validation-for="MiddleName"></span>
+            </div>
+
+            <!-- LastName -->
+            <div class="form-field sm:col-span-2">
+                <label asp-for="LastName"></label>
+                <input asp-for="LastName" type="text" class="form-control" placeholder="An" />
+                <span asp-validation-for="LastName"></span>
+            </div>
+        </div>
+
+        <!-- 2ndRow -->
+        <div class="grid grid-cols-1 sm:grid-cols-6 gap-3">
+            <!-- NickName -->
+            <div class="form-field sm:col-span-2">
+                <label asp-for="NickName"></label>
+                <input asp-for="NickName" type="text" class="form-control" placeholder="Anh An" />
+                <span asp-validation-for="NickName"></span>
+            </div>
+
+            <!-- Gender -->
+            <div class="form-field sm:col-span-2">
+                <label asp-for="Gender"></label>
+                <select asp-for="Gender" class="form-control" placeholder="Anh An">
+                    <option value="@Gender.Male">@Html.DisplayGender(Gender.Male)</option>
+                    <option value="@Gender.Female">@Html.DisplayGender(Gender.Female)</option>
+                </select>
+                <span asp-validation-for="Gender"></span>
+            </div>
+            
+            <!-- Birthday -->
+            <div class="form-field sm:col-span-2">
+                <label asp-for="Birthday"></label>
+                <input asp-for="Birthday" type="date" class="form-control" />
+                <span asp-validation-for="Birthday"></span>
+            </div>
+            
+            <!-- PhoneNumber -->
+            <div class="form-field sm:col-span-2">
+                <label asp-for="PhoneNumber"></label>
+                <input asp-for="PhoneNumber" type="text" class="form-control" placeholder="0123 456 789" />
+                <span asp-validation-for="PhoneNumber"></span>
+            </div>
+            
+            <!-- ZaloNumber -->
+            <div class="form-field sm:col-span-2">
+                <label asp-for="ZaloNumber"></label>
+                <input asp-for="ZaloNumber" type="text" class="form-control" placeholder="0123 456 789" />
+                <span asp-validation-for="ZaloNumber"></span>
+            </div>
+            
+            <!-- Email -->
+            <div class="form-field sm:col-span-2">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" type="text" class="form-control" placeholder="nguyenvanan@gmail.com" />
+                <span asp-validation-for="Email"></span>
+            </div>
+            
+            <!-- Address -->
+            <div class="form-field sm:col-span-3">
+                <label asp-for="Address"></label>
+                <input asp-for="Address" type="text" class="form-control" placeholder="123 Nguyễn Tất Thành" />
+                <span asp-validation-for="Address"></span>
+            </div>
+            
+            <!-- Introducer -->
+            <div class="form-field sm:col-span-3">
+                <label asp-for="IntroducerId"></label>
+                <input asp-for="IntroducerId" type="hidden" />
+                <button type="button" id="introducer-modal-toggling-button" class="btn">
+                    @(Model.Introducer.PickedIntroducer?.FullName ?? "Chưa chọn người giới thiệu")
+                </button>
+                <span asp-validation-for="Introducer"></span>
+            </div>
+        </div>
+    </div>
+</div>

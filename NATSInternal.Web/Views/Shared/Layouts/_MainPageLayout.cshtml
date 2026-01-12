@@ -5,19 +5,21 @@
 <div id="main-page-layout">
     <div id="breadcrumb">
         <div className="flex flex-wrap gap-3 items-center ms-2 lg:ms-3 translate-y-[7.5%] h-8">
-            <partial name="Layouts/_Breadcrumb" model="ViewBag.BreadcrumbItems" />
+            <partial name="Layouts/_Breadcrumb" model="ViewBag.BreadcrumbItems"/>
         </div>
     </div>
-    
+
     @RenderBody()
 </div>
 
-@section Styles
-{
+@section Styles {
     @await RenderSectionAsync("Styles", required: false)
 }
 
-@section Scripts
-{
+@section Scripts {
     @await RenderSectionAsync("Scripts", required: false)
+}
+
+@section Modals {
+    @await RenderSectionAsync("Modals", required: false)
 }

@@ -53,9 +53,15 @@ public class CustomerController : Controller
     }
 
     [HttpGet("tao-moi")]
-    public IActionResult Create()
+    public async Task<IActionResult> Create(CancellationToken cancellationToken = default)
     {
-        return View("~/Views/Customer/CustomerUpsert/CustomerCreatePage.cshtml");
+        CustomerUpsertModel model = new();
+        model.Introducer.CustomerList.ResultsPerPage = 8;
+        CustomerGetListRequestDto listRequestDto = model.Introducer.CustomerList.ToRequestDto();
+        CustomerGetListResponseDto listResponseDto = await _mediator.Send(listRequestDto, cancellationToken);
+        model.Introducer.CustomerList.MapFromResponseDto(listResponseDto);
+        
+        return View("~/Views/Customer/CustomerUpsert/CustomerCreatePage.cshtml", model);
     }
 
     [HttpPost("tao-moi")]
@@ -94,7 +100,13 @@ public class CustomerController : Controller
         CustomerGetDetailRequestDto requestDto = new() { Id = id };
         CustomerGetDetailResponseDto responseDto = await _mediator.Send(requestDto, cancellationToken);
         CustomerUpsertModel model = new(responseDto);
-        return View("~/Views/Customer/CustomerUpsert/CustomerCreatePage.cshtml", model);
+        model.Id = id;
+        model.Introducer.CustomerList.ResultsPerPage = 8;
+        CustomerGetListRequestDto listRequestDto = model.Introducer.CustomerList.ToRequestDto();
+        CustomerGetListResponseDto listResponseDto = await _mediator.Send(listRequestDto, cancellationToken);
+        model.Introducer.CustomerList.MapFromResponseDto(listResponseDto);
+        
+        return View("~/Views/Customer/CustomerUpsert/CustomerUpdatePage.cshtml", model);
     }
 
     [HttpPost("{id:guid}/chinh-sua")]
@@ -112,7 +124,8 @@ public class CustomerController : Controller
         {
             CustomerGetDetailRequestDto requestDto = new() { Id = id };
             CustomerGetDetailResponseDto responseDto = await _mediator.Send(requestDto, cancellationToken);
-            model.MapFromIntroducerResponseDto(responseDto.Introducer);
+            model.Id = id;
+            model.MapFromPickedIntroducerResponseDto(responseDto.Introducer);
             switch (exception)
             {
                 case ValidationException validationException:
@@ -125,8 +138,34 @@ public class CustomerController : Controller
                     throw;
             }
 
-            return View("~/Views/Customer/CustomerUpsert/CustomerCreatePage.cshtml", model);
+            return View("~/Views/Customer/CustomerUpsert/CustomerUpdatePage.cshtml", model);
         }
+    }
+
+    [HttpGet("chinh-sua/danh-sach-khach-hang")]
+    public async Task<IActionResult> UpsertCustomerListPartial(
+        [FromRoute] Guid id,
+        [FromQuery] CustomerListModel model,
+        CancellationToken cancellationToken = default)
+    {
+        model.ResultsPerPage = 8;
+        CustomerGetListRequestDto requestDto = model.ToRequestDto();
+        CustomerGetListResponseDto responseDto = await _mediator.Send(requestDto, cancellationToken);
+        model.MapFromResponseDto(responseDto);
+
+        return PartialView("~/Views/Customer/CustomerUpsert/Modal/_ModalListContentResults.cshtml", model);
+    }
+
+    [HttpGet("chinh-sua/nguoi-gioi-thieu/{introducerId:guid}")]
+    public async Task<IActionResult> UpsertIntroducerPartial(
+        [FromRoute] Guid introducerId,
+        CancellationToken cancellationToken = default)
+    {
+        CustomerGetDetailRequestDto requestDto = new() { Id = introducerId };
+        CustomerGetDetailResponseDto responseDto = await _mediator.Send(requestDto, cancellationToken);
+        CustomerBasicModel model = new(responseDto);
+
+        return PartialView("~/Views/Customer/CustomerUpsert/Modal/_ModalPickedIntroducerContent.cshtml", model);
     }
     #endregion
 }

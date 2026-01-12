@@ -1,4 +1,4 @@
-#root-layout {
+¥#root {
     --topbar-height: 60px;
     width: 100vw;
     height: auto;
@@ -30,6 +30,7 @@
     align-items: stretch;
     position: fixed;
     top: 0;
+    left: 0;
     z-index: 999;
     backdrop-filter: blur(var(--blur-sm));
     transition-property: color, background-color, border-color;

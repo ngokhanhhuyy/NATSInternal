@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NATSInternal.Application.Localization;
 using NATSInternal.Application.UseCases;
@@ -45,6 +46,10 @@ public abstract class AbstractListModel
 
     [BindNever]
     public abstract IReadOnlyDictionary<string, string> SortByFieldNameOptions { get; }
+    #endregion
+    
+    #region AbstractMethods
+    public abstract string GetCreateRoutePath(IUrlHelper urlHelper);
     #endregion
 }
 

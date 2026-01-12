@@ -10,9 +10,11 @@
         align-items: center;
         z-index: 1000;
         position: fixed;
+        opacity: var(--opacity);
         top: 0;
         left: 0;
         backdrop-filter: blur(var(--blur-md));
+        pointer-events: none;
         transition-property: opacity;
         transition-duration: .2s;
     }
@@ -57,6 +59,7 @@
 
 @utility modal-open {
     --opacity: 100%;
+    pointer-events: auto;
     
     :where(.modal-dialog) {
         --dialog-scale: 100%;

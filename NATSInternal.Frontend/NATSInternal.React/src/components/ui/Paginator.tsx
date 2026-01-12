@@ -68,7 +68,7 @@ export default function Paginator(props: PaginatorProps): React.ReactNode {
         className={joinClassName(
           "min-w-8.5",
           isPageExceedingXsScreenRange(page) && "hidden sm:flex",
-          currentPage === page ? "primary" : undefined
+          currentPage === page ? "btn-primary" : undefined
         )}
         onClick={() => handlePageButtonClick(page)}
         key={page}

@@ -4,63 +4,75 @@
         flex-direction: column;
         overflow: hidden;
         box-sizing: border-box;
+    }
         
-        & > .panel-header {
-            background-color: --alpha(var(--color-black) / 10%);
-            border: 1px solid --alpha(var(--color-black) / 15%);
-            display: flex;
-            justify-content: space-between;
-            gap: --spacing(3);
-            align-items: center;
-            min-height: --spacing(10);
-            padding-left: --spacing(3);
-            padding-right: --spacing(1.5);
-            padding-block: --spacing(1.5);
-            border-top-left-radius: var(--radius-lg);
-            border-top-right-radius: var(--radius-lg);
-            
-            @variant dark {
-                & {
-                    background-color: --alpha(var(--color-white) / 10%);
-                    border-color: --alpha(var(--color-white) / 15%);
-                }
-            }
-            
-            & > .panel-header-title {
-                font-size: var(--text-sm);
-                font-weight: bold;
-                text-transform: uppercase;
+    .panel-header {
+        background-color: --alpha(var(--color-black) / 10%);
+        border: 1px solid --alpha(var(--color-black) / 15%);
+        display: flex;
+        justify-content: space-between;
+        gap: --spacing(3);
+        align-items: center;
+        min-height: --spacing(10);
+        padding-left: --spacing(3);
+        padding-right: --spacing(1.5);
+        padding-block: --spacing(1.5);
+        border-top-left-radius: var(--radius-lg);
+        border-top-right-radius: var(--radius-lg);
+        
+        @variant dark {
+            & {
+                background-color: --alpha(var(--color-white) / 10%);
+                border-color: --alpha(var(--color-white) / 15%);
             }
         }
+    }
+
+    .panel-header-title {
+        font-size: var(--text-sm);
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    
+    .panel-body {
+        border-color: --alpha(var(--color-black) / 15%);
+        border-left-width: 1px;
+        border-left-style: solid;
+        border-right-width: 1px;
+        border-right-style: solid;
+        flex: 1;
+        overflow: hidden;
         
-        & > .panel-body {
-            border-color: --alpha(var(--color-black) / 15%);
-            border-inline-width: 1px;
-            border-inline-style: solid;
-            flex: 1;
-            overflow: hidden;
-            
-            .panel:not(:has(.panel-footer)) > & {
-                border-bottom-width: 1px;
-                border-bottom-style: solid;
-                border-bottom-left-radius: var(--radius-lg);
-                border-bottom-right-radius: var(--radius-lg);
-            }
-            
-            @variant dark {
-                & {
-                    border-color: --alpha(var(--color-white) / 15%);
-                }
-            }
-        }
-        
-        & > .panel-footer {
-            border: 1px solid --alpha(var(--color-black) / 10%);
+        .panel:not(:has(.panel-footer)) > & {
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
             border-bottom-left-radius: var(--radius-lg);
             border-bottom-right-radius: var(--radius-lg);
-            display: flex;
-            justify-content: stretch;
-            padding: --spacing(3);
+        }
+        
+        @variant dark {
+            & {
+                border-color: --alpha(var(--color-white) / 15%);
+            }
+        }
+    }
+    
+    .panel-footer {
+        --background-color: --alpha(var(--color-black) / 10%);
+        --border-color: --alpha(var(--color-black) / 15%);
+        background-color: var(--background-color);
+        border: 1px solid var(--border-color);
+        border-bottom-left-radius: var(--radius-lg);
+        border-bottom-right-radius: var(--radius-lg);
+        display: flex;
+        justify-content: stretch;
+        padding: --spacing(3);
+
+        @variant dark {
+            & {
+                --background-color: --alpha(var(--color-white) / 10%);
+                --border-color: --alpha(var(--color-white) / 15%);
+            }
         }
     }
 }

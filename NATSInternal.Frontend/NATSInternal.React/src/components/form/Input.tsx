@@ -10,5 +10,5 @@ export default function Input(props: InputProps) {
   const context = useContext(FormFieldContext);
 
   // Template.
-  return props.render(undefined, context?.path, context?.displayName);
+  return props.render("form-control", context?.path, context?.displayName);
 }

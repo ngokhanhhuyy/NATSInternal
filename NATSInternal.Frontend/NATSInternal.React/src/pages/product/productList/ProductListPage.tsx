@@ -5,7 +5,7 @@ import { createProductListModel } from "@/models";
 
 // Child components.
 import SearchablePageableListPage from "@/pages/shared/searchablePageableList/SearchablePageableListPage";
-import { BrandListBlock, ProductCategoryListBlock } from "./SecondaryBlocks";
+import { BrandListBlock, ProductCategoryListBlock } from "./SecondaryPanels";
 
 // Api.
 const api = useApi();

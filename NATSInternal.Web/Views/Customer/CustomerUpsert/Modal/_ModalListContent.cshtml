@@ -1,0 +1,24 @@
+@model CustomerListModel
+
+<form asp-controller="Customer"
+        asp-action="UpsertCustomerListPartial"
+        method="get"
+        id="customer-upsert-customer-list-form"
+        class="flex flex-col justify-start items-stretch transition-opacity gap-3">
+    <!-- Search -->
+    <div class="flex justify-between gap-3">
+        <input asp-for="SearchContent"
+                type="text"
+                class="form-control justify-self-stretch w-full"
+                placeholder="Tìm kiếm" />
+        <input asp-for="ResultsPerPage" type="hidden" />
+        <button type="submit" class="btn shrink-0 grow-0">
+            Tìm kiếm
+        </button>
+    </div>
+
+    <!-- List -->
+    <div class="results-list-container flex flex-col gap-3">
+        <partial name="~/Views/Customer/CustomerUpsert/Modal/_ModalListContentResults.cshtml" />
+    </div>
+</form>

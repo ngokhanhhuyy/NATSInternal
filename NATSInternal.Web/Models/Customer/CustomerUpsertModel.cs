@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NATSInternal.Application.Localization;
 using NATSInternal.Application.UseCases.Customers;
@@ -31,14 +30,18 @@ public class CustomerUpsertModel
 
         if (responseDto.Introducer is not null)
         {
-            Introducer = new(responseDto.Introducer);
+            Introducer.PickedIntroducer = new(responseDto.Introducer);
         }
     }
     #endregion
 
     #region Properties
-    [BindRequired]
+    [BindNever]
     [DisplayName(DisplayNames.Id)]
+    public Guid Id { get; set; } = Guid.Empty;
+    
+    [BindRequired]
+    [DisplayName(DisplayNames.FirstName)]
     public string FirstName { get; init; } = string.Empty;
 
     [BindRequired]
@@ -87,8 +90,7 @@ public class CustomerUpsertModel
     public Guid? IntroducerId { get; init; }
 
     [BindNever]
-    [DisplayName(DisplayNames.Introducer)]
-    public CustomerBasicModel? Introducer { get; set; }
+    public CustomerUpsertIntroducerModel Introducer { get; init; } = new();
     #endregion
 
     #region Methods
@@ -106,11 +108,11 @@ public class CustomerUpsertModel
         return requestDto;
     }
 
-    public void MapFromIntroducerResponseDto(CustomerBasicResponseDto? responseDto)
+    public void MapFromPickedIntroducerResponseDto(CustomerBasicResponseDto? responseDto)
     {
         if (responseDto is not null)
         {
-            Introducer = new(responseDto);
+            Introducer.PickedIntroducer = new(responseDto);
         }
     }
     #endregion

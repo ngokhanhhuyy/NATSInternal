@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using NATSInternal.Application.UseCases.Customers;
 using NATSInternal.Application.UseCases.Shared;
 
 namespace NATSInternal.Web.Models;
@@ -12,6 +13,13 @@ public class CustomerBasicModel
         FullName = responseDto.FullName;
         NickName = responseDto.NickName;
         IsDeleted = responseDto.IsDeleted;
+    }
+    
+    public CustomerBasicModel(CustomerGetDetailResponseDto responseDto)
+    {
+        Id = responseDto.Id;
+        FullName = responseDto.FullName;
+        NickName = responseDto.NickName;
     }
     #endregion
     

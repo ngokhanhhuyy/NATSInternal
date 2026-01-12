@@ -11,12 +11,14 @@
     @RenderBody()
 </div>
 
-@section Styles
-{
+@section Styles {
     @await RenderSectionAsync("Styles", required: false)
 }
 
-@section Scripts
-{
+@section Scripts {
     @await RenderSectionAsync("Scripts", required: false)
+}
+
+@section Modals {
+    @await RenderSectionAsync("Modals", required: false)
 }

@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
-using NATSInternal.Application.Authorization;
 using NATSInternal.Application.Localization;
 using NATSInternal.Application.UseCases.Customers;
 using NATSInternal.Domain.Features.Customers;
@@ -15,6 +14,13 @@ public class CustomerListModel : AbstractListModel<
     CustomerGetListCustomerResponseDto,
     CustomerGetListRequestDto.FieldToSort>
 {
+    #region Methods
+    public override string GetCreateRoutePath(IUrlHelper urlHelper)
+    {
+        return urlHelper.Action("Create", "Customer") ?? "#";
+    }
+    #endregion
+    
     #region ProtectedMethods
     protected override void MapItemsFromResponseDtos(IEnumerable<CustomerGetListCustomerResponseDto> responseDtos)
     {

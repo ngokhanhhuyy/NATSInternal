@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useTransition } from "react";
+import { Link } from "react-router";
 
 // Child components.
 import { MainContainer } from "@/components/layouts";
-import SearchablePageableListPageFilterBlock from "./SearchablePageableListPageFilterBlock";
-import SearchablePageableListPageTableBlock from "./SearchablePageableListPageTableBlock";
+import SearchablePageableListPageFilterBlock from "./SearchablePageableListPageFilterPanel";
+import SearchablePageableListPageTableBlock from "./SearchablePageableListPageTablePanel";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 // Props.
 type Props<
@@ -56,11 +58,23 @@ export default function SearchablePageableListPage<
   }, [model.sortByAscending, model.sortByFieldName, model.page, model.resultsPerPage]);
 
   // Template.
+  const CreateLink = () => (
+    <Link className="btn btn-panel-header btn-sm gap-1 shrink-0" to={model.createRoutePath}>
+      <PlusIcon className="size-4.5" />
+      <span>Tạo mới</span>
+    </Link>
+  );
+
   return (
     <MainContainer
       description={props.description}
+      className="gap-3"
       isLoading={isReloading}
     >
+      <div className="flex justify-start">
+        <CreateLink />
+      </div>
+
       <div className="flex flex-col items-stretch gap-3">
         <SearchablePageableListPageFilterBlock
           model={model}
@@ -79,6 +93,10 @@ export default function SearchablePageableListPage<
         />
 
         {props.children}
+      </div>
+
+      <div className="flex justify-end">
+        <CreateLink />
       </div>
     </MainContainer>
   );

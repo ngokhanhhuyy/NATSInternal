@@ -51,7 +51,6 @@ export default function MainContainer(props: MainContainerProps): React.ReactNod
       id="main-container"
       className={joinClassName(
         props.className,
-        "flex flex-col justify-stretch gap-5 m-5 transition-opacity",
         isLoading && "opacity-50 cursor-wait"
       )}
     >

@@ -30,7 +30,7 @@ internal class CustomerUpsertValidator<TRequestDto> : Validator<TRequestDto>
         RuleFor(dto => dto.NickName)
             .MinimumLength(1)
             .MaximumLength(CustomerContracts.NickNameMaxLength)
-            .Matches(@"^\p{L}+$")
+            .Matches(@"^\p{L}+(?:[\s-]\p{L}+)*$")
             .WithName(DisplayNames.NickName);
         RuleFor(dto => dto.Gender)
             .IsInEnum()
