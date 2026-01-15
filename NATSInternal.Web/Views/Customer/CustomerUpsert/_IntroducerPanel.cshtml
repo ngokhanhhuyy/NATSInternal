@@ -1,0 +1,47 @@
+@model CustomerUpsertModel
+
+<div class="panel">
+    <div class="panel-header">
+        <span class="panel-header-title">
+            Bước 2/3: Chọn người giới thiệu
+        </span>
+    </div>
+    
+    <div class="panel-body flex items-center gap-3 p-3">
+        @if (Model.Introducer.PickedIntroducer is not null)
+        {
+            <div class="flex-1">
+                <a asp-new-tab="@true"
+                        asp-action="Detail"
+                        asp-controller="Customer"
+                        asp-route-id="@Model.Introducer.PickedIntroducer.Id"
+                        class="font-bold">
+                    @Model.Introducer.PickedIntroducer.FullName
+                </a>
+                
+                <span class="text-sm">
+                    @Model.Introducer.PickedIntroducer.NickName
+                </span>
+            </div>
+            
+            <button class="btn"
+                    type="submit"
+                    id="@Html.Id(nameof(Model.Introducer.PickedIntroducerId))"
+                    value="@null">
+                <i class="bi bi-x-lg"></i>
+            </button>
+            
+            <input asp-for="FirstName" type="hidden" />
+            <input asp-for="MiddleName" type="hidden" />
+            <input asp-for="LastName" type="hidden" />
+            <input asp-for="NickName" type="hidden" />
+            <input asp-for="Birthday" type="hidden" />
+            <input asp-for="PhoneNumber" type="hidden" />
+            <input asp-for="ZaloNumber" type="hidden" />
+            <input asp-for="FacebookUrl" type="hidden" />
+            <input asp-for="Email" type="hidden" />
+            <input asp-for="Address" type="hidden" />
+            <input asp-for="Note" type="hidden" />
+        }
+    </div>
+</div>

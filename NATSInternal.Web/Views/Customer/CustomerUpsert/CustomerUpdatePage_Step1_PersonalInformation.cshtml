@@ -6,16 +6,16 @@
 }
 
 <div class="flex flex-col gap-3">
-    <div class="flex justify-start gap-3">
-        <partial name="~/Views/Shared/Form/SubmitButton.cshtml" model="@formId" />
-    </div>
-
-    <form asp-controller="Customer" asp-action="Update" asp-route-id="@Model.Id" id="@formId">
+    <form id="@formId"
+            asp-controller="Customer"
+            asp-action="Update_Step1_PersonalInformation"
+            asp-route-id="@Model.Id"
+            method="post">
         <partial name="_PersonalInformationPanel.cshtml" />
     </form>
 
     <div class="flex justify-end gap-3">
-        <button type="button" class="btn gap-1">
+        <button type="submit" class="btn gap-1">
             <span>Bước tiếp theo: Chọn người giới thiệu</span>
             <i class="bi bi-chevron-right"></i>
         </button>

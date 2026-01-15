@@ -7,7 +7,7 @@ using NATSInternal.Domain.Features.Customers;
 
 namespace NATSInternal.Web.Models;
 
-public class CustomerUpsertModel
+public class CustomerUpsertModel : AbstractUpsertModel
 {
     #region Constructors
     public CustomerUpsertModel() { }
@@ -26,10 +26,10 @@ public class CustomerUpsertModel
         Email = responseDto.Email;
         Address = responseDto.Address;
         Note = responseDto.Note;
-        IntroducerId = responseDto.Introducer?.Id;
 
         if (responseDto.Introducer is not null)
         {
+            Introducer.PickedIntroducerId = responseDto.Introducer.Id;
             Introducer.PickedIntroducer = new(responseDto.Introducer);
         }
     }
@@ -87,9 +87,6 @@ public class CustomerUpsertModel
 
     [BindRequired]
     [DisplayName(DisplayNames.Introducer)]
-    public Guid? IntroducerId { get; init; }
-
-    [BindNever]
     public CustomerUpsertIntroducerModel Introducer { get; init; } = new();
     #endregion
 
@@ -143,7 +140,7 @@ public class CustomerUpsertModel
         requestDto.Email = Email;
         requestDto.Address = Address;
         requestDto.Note = Note;
-        requestDto.IntroducerId = IntroducerId;
+        requestDto.IntroducerId = Introducer.PickedIntroducerId;
     }
     #endregion
 }
