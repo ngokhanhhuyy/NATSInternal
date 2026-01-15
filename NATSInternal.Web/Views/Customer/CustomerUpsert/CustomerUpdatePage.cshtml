@@ -11,11 +11,14 @@
     </div>
 
     <form asp-controller="Customer" asp-action="Update" asp-route-id="@Model.Id" id="@formId">
-        <partial name="_InputsPanel.cshtml" />
+        <partial name="_PersonalInformationPanel.cshtml" />
     </form>
 
     <div class="flex justify-end gap-3">
-        <partial name="~/Views/Shared/Form/SubmitButton.cshtml" model="@formId" />
+        <button type="button" class="btn gap-1">
+            <span>Bước tiếp theo: Chọn người giới thiệu</span>
+            <i class="bi bi-chevron-right"></i>
+        </button>
     </div>
 </div>
 

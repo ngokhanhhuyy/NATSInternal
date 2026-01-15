@@ -142,6 +142,24 @@ public class CustomerController : Controller
         }
     }
 
+    [HttpPost("{id:guid}/chinh-sua/buoc-1-thong-tin-ca-nhan")]
+    public async Task<IActionResult> Update_Step1_PersonalInformation(
+        [FromRoute] Guid id,
+        [FromForm] CustomerUpsertModel model,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            CustomerValidateRequestDto requestDto = model.ToValidateRequestDto();
+            await _mediator.Send(requestDto, cancellationToken);
+        }
+        catch (ValidationException exception)
+        {
+            ModelState.AddModelErrors(exception);
+            return 
+        }
+    }
+
     [HttpGet("chinh-sua/danh-sach-khach-hang")]
     public async Task<IActionResult> UpsertCustomerListPartial(
         [FromRoute] Guid id,

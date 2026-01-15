@@ -108,6 +108,17 @@ public class CustomerUpsertModel
         return requestDto;
     }
 
+    public CustomerValidateRequestDto ToValidateRequestDto()
+    {
+        CustomerValidateRequestDto requestDto = new()
+        {
+            Data = new()
+        };
+        
+        MapToRequestDto(requestDto.Data);
+        return requestDto;
+    }
+
     public void MapFromPickedIntroducerResponseDto(CustomerBasicResponseDto? responseDto)
     {
         if (responseDto is not null)

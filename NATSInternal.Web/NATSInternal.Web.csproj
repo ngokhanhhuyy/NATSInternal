@@ -28,6 +28,10 @@
         <EmbeddedResource Remove="wwwroot\output\**" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Views\Customer\CustomerUpsert\CustomerUpdate\" />
+    </ItemGroup>
+
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
