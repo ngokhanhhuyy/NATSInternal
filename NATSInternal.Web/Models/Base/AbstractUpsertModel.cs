@@ -3,6 +3,7 @@ namespace NATSInternal.Web.Models;
 public abstract class AbstractUpsertModel
 {
     #region Properties
-    public abstract bool IsFinalSubmission { get; set; }
+    public int CurrentStep { get; set; }
+    public int NextStep { get; set; }
     #endregion
 }

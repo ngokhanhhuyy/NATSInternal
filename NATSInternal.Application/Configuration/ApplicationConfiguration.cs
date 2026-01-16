@@ -25,7 +25,7 @@ public static class ApplicationConfiguration
         ValidatorOptions.Global.LanguageManager.Enabled = true;
         ValidatorOptions.Global.LanguageManager = new ValidatorLanguageManager
         {
-            Culture = new System.Globalization.CultureInfo("vi")
+            Culture = new("vi")
         };
 
         // UseCases.
@@ -56,6 +56,7 @@ public static class ApplicationConfiguration
         services.AddTransient<IRequestHandler<CustomerCreateRequestDto, Guid>, CustomerCreateHandler>();
         services.AddTransient<IRequestHandler<CustomerUpdateRequestDto>, CustomerUpdateHandler>();
         services.AddTransient<IRequestHandler<CustomerDeleteRequestDto>, CustomerDeleteHandler>();
+        services.AddTransient<IRequestHandler<CustomerValidateRequestDto>, CustomerValidateHandler>();
 
         // Product UseCases.
         services.AddTransient<

@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NATSInternal.Application.Localization;
 using NATSInternal.Application.UseCases.Customers;
@@ -7,7 +8,7 @@ using NATSInternal.Domain.Features.Customers;
 
 namespace NATSInternal.Web.Models;
 
-public class CustomerUpsertModel : AbstractUpsertModel
+public class CustomerUpsertModel
 {
     #region Constructors
     public CustomerUpsertModel() { }
@@ -29,8 +30,8 @@ public class CustomerUpsertModel : AbstractUpsertModel
 
         if (responseDto.Introducer is not null)
         {
-            Introducer.PickedIntroducerId = responseDto.Introducer.Id;
-            Introducer.PickedIntroducer = new(responseDto.Introducer);
+            PickedIntroducerId = responseDto.Introducer.Id;
+            PickedIntroducer = new(responseDto.Introducer);
         }
     }
     #endregion
@@ -41,53 +42,74 @@ public class CustomerUpsertModel : AbstractUpsertModel
     public Guid Id { get; set; } = Guid.Empty;
     
     [BindRequired]
+    [FromForm]
     [DisplayName(DisplayNames.FirstName)]
     public string FirstName { get; init; } = string.Empty;
 
     [BindRequired]
+    [FromForm]
     [DisplayName(DisplayNames.MiddleName)]
     public string? MiddleName { get; init; }
 
     [BindRequired]
+    [FromForm]
     [DisplayName(DisplayNames.LastName)]
     public string LastName { get; init; } = string.Empty;
 
     [BindRequired]
+    [FromForm]
     [DisplayName(DisplayNames.NickName)]
     public string? NickName { get; init; }
 
     [BindRequired]
+    [FromForm]
     [DisplayName(DisplayNames.Birthday)]
     public Gender Gender { get; init; }
     public DateOnly? Birthday { get; init; }
 
     [BindRequired]
+    [FromForm]
     [DisplayName(DisplayNames.PhoneNumber)]
     public string? PhoneNumber { get; init; }
 
     [BindRequired]
+    [FromForm]
     [DisplayName(DisplayNames.ZaloNumber)]
     public string? ZaloNumber { get; init; }
 
     [BindRequired]
+    [FromForm]
     [DisplayName(DisplayNames.FacebookUrl)]
     public string? FacebookUrl { get; init; }
 
     [BindRequired]
+    [FromForm]
     [DisplayName(DisplayNames.Email)]
     public string? Email { get; init; }
 
     [BindRequired]
+    [FromForm]
     [DisplayName(DisplayNames.Address)]
     public string? Address { get; init; }
 
     [BindRequired]
+    [FromForm]
     [DisplayName(DisplayNames.Note)]
     public string? Note { get; init; }
 
     [BindRequired]
     [DisplayName(DisplayNames.Introducer)]
-    public CustomerUpsertIntroducerModel Introducer { get; init; } = new();
+    public Guid? PickedIntroducerId { get; set; }
+    
+    [BindNever]
+    [DisplayName(DisplayNames.Introducer)]
+    public CustomerBasicModel? PickedIntroducer { get; set; }
+
+    [FromQuery]
+    public CustomerListModel CustomerList { get; set; } = new();
+
+    [BindRequired]
+    public SubmitAction Action { get; set; } = SubmitAction.RedirectionToIntroducerPicker;
     #endregion
 
     #region Methods
@@ -120,8 +142,13 @@ public class CustomerUpsertModel : AbstractUpsertModel
     {
         if (responseDto is not null)
         {
-            Introducer.PickedIntroducer = new(responseDto);
+            PickedIntroducer = new(responseDto);
         }
+    }
+
+    public void MapFromPickedIntroducerResponseDto(CustomerGetDetailResponseDto responseDto)
+    {
+        PickedIntroducer = new(responseDto);
     }
     #endregion
 
@@ -140,7 +167,17 @@ public class CustomerUpsertModel : AbstractUpsertModel
         requestDto.Email = Email;
         requestDto.Address = Address;
         requestDto.Note = Note;
-        requestDto.IntroducerId = Introducer.PickedIntroducerId;
+        requestDto.IntroducerId = PickedIntroducerId;
+    }
+    #endregion
+
+    #region Enums
+    public enum SubmitAction
+    {
+        RedirectionToIntroducerPicker,
+        IntroducerPickingOrUnpicking,
+        Confirmation,
+        FinalSubmit
     }
     #endregion
 }

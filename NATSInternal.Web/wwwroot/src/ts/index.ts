@@ -4,3 +4,4 @@ import "./input";
 import "./navbar-bar-toggler-button-handler"
 import "./theme-toggle-button-handler";
 import "./pages/customer-upsert-page";
+import "./pages/error-page";

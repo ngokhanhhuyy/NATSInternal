@@ -77,3 +77,5 @@ internal class CustomerUpsertValidator<TRequestDto> : Validator<TRequestDto>
     }
     #endregion
 }
+
+internal class CustomerUpsertValidator : CustomerUpsertValidator<CustomerUpsertRequestDto>;
