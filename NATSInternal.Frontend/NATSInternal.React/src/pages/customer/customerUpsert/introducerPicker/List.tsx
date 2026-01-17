@@ -59,8 +59,8 @@ export default function List(props: ListProps): React.ReactNode {
     <div
       {...domProps}
       className={joinClassName(
-        "flex flex-col justify-start items-stretch transition-opacity gap-3",
-        isLoading && "opacity-50 cursor-wait pointer-events-none"
+        "flex flex-col justify-start items-stretch transition-opacity gap-3 p-3",
+        isLoading && "opacity-50 cursor-wait"
       )}
     >
       {/* Search */}
@@ -77,7 +77,7 @@ export default function List(props: ListProps): React.ReactNode {
       </div>
 
       {/* List */}
-      <ul className="list-group">
+      <ul className={joinClassName("list-group", isLoading && "pointer-events-none")}>
         {model.items.length ? model.items.map((customer, index) => (
           <li className="list-group-item flex justify-between items-center px-3 py-2" key={index}>
             <div className="flex flex-col">

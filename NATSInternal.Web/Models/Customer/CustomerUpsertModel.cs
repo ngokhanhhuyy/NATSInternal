@@ -105,11 +105,8 @@ public class CustomerUpsertModel
     [DisplayName(DisplayNames.Introducer)]
     public CustomerBasicModel? PickedIntroducer { get; set; }
 
-    [FromQuery]
-    public CustomerListModel CustomerList { get; set; } = new();
-
     [BindRequired]
-    public SubmitAction Action { get; set; } = SubmitAction.RedirectionToIntroducerPicker;
+    public SubmitAction Action { get; set; } = SubmitAction.Reload;
     #endregion
 
     #region Methods
@@ -124,17 +121,6 @@ public class CustomerUpsertModel
     {
         CustomerUpdateRequestDto requestDto = new();
         MapToRequestDto(requestDto);
-        return requestDto;
-    }
-
-    public CustomerValidateRequestDto ToValidateRequestDto()
-    {
-        CustomerValidateRequestDto requestDto = new()
-        {
-            Data = new()
-        };
-        
-        MapToRequestDto(requestDto.Data);
         return requestDto;
     }
 
@@ -174,10 +160,8 @@ public class CustomerUpsertModel
     #region Enums
     public enum SubmitAction
     {
-        RedirectionToIntroducerPicker,
-        IntroducerPickingOrUnpicking,
-        Confirmation,
-        FinalSubmit
+        Reload,
+        Submit
     }
     #endregion
 }

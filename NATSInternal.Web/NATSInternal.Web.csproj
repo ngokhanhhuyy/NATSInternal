@@ -32,6 +32,14 @@
       <Folder Include="Views\Customer\CustomerUpsert\CustomerUpdate\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Customer\CustomerUpsert\Modal\_Modal.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Customer\CustomerUpsert\Modal\_ModalContent.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Customer\CustomerUpsert\Modal\_ModalListContent.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Customer\CustomerUpsert\Modal\_ModalListContentResults.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Customer\CustomerUpsert\Modal\_ModalPickedIntroducerContent.cshtml" />
+    </ItemGroup>
+
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>

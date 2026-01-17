@@ -1,0 +1,28 @@
+@model CustomerUpsertModel
+@{
+    Layout = "Layouts/_MainContainer";
+    ViewBag.PageTitle = "Chỉnh sửa khách hàng";
+    ViewBag.FormId = "customer-update-form";
+    ViewBag.FormAction = Url.Action("Update", "Customer", new
+    {
+        id = Model.Id,
+        customerListModel = ViewBag.CustomerListModel
+    });
+}
+
+<div id="@ViewBag.FormId" class="flex flex-col gap-3" method="post">
+    <form id="@ViewBag.FormId" action="@ViewBag.FormAction" method="post">
+        <partial name="~/Views/Customer/CustomerUpsert/_PersonalInformationPanel.cshtml"/>
+    </form>
+
+    <partial name="~/Views/Customer/CustomerUpsert/_IntroducerPanel.cshtml"/>
+
+    <div class="flex justify-end gap-3">
+        <partial name="~/Views/Shared/Form/SubmitButton.cshtml" model="@ViewBag.FormId"/>
+    </div>
+</div>
+
+@section PageDescription {
+    Chỉnh sửa một bản ghi dữ liệu của một khách hàng đang tồn tại,
+    bao gồm thông tin cá nhân và người giới thiệu (nếu có).
+}

@@ -64,22 +64,18 @@ export default function SignInPage(): React.ReactNode {
 
     try {
       await api.authentication.getAccessCookieAsync(model.toRequestDto());
-      setState(state => ({ ...state, isSubmitting: false, isSignedIn: true }));
     } finally {
         setModel(model => ({ ...model, password: "" }));
-        setState(state => ({
-          ...state,
-          isSubmitting: false,
-          isSignedIn: false
-        }));
+        setState(state => ({ ...state, isSubmitting: false }));
     }
   }
 
   function handleLoginSucceeded(): void {
+    setState(state => ({ ...state, isSignedIn: true }));
     authenticationStore.setIsAuthenticated(true);
     setTimeout(() => {
       navigate(getHomeRoutePath());
-    }, 1000);
+    }, 0);
   }
 
   function handleLoginFailed(error: Error, errorHandled: boolean): void {
@@ -97,16 +93,83 @@ export default function SignInPage(): React.ReactNode {
       commonError = "Đã xảy ra lỗi không xác định.";
     }
 
-    setState(state => ({ ...state, commonError }));
+    setState(state => ({
+      ...state,
+      commonError,
+      isSignedIn: false
+    }));
   }
 
   async function handleEnterKeyPressedAsync(): Promise<void> {
-    if (areRequiredFieldsFilled) {
+    if (!state.isSignedIn && areRequiredFieldsFilled) {
       await loginAsync();
     }
   }
 
   // Template.
+  const renderSignInContent = () => (
+    <Form
+      className={joinClassName(
+        "bg-white dark:bg-neutral-900",
+        "border border-transparent sm:border-black/10 dark:sm:border-white/10",
+        "shadow-none sm:shadow-xs",
+        "flex flex-col rounded-xl p-8 items-stretch w-[350px] relative"
+      )}
+      upsertAction={loginAsync}
+      onUpsertingSucceeded={handleLoginSucceeded}
+      onUpsertingFailed={handleLoginFailed}
+    >
+      {/* Introduction */}
+      <div className="flex flex-col mb-5">
+        <span className="text-4xl font-bold">Đăng nhập</span>
+        <span className="text-lg">
+            Chào mừng bạn đã quay trở lại.
+          </span>
+      </div>
+
+      {/* Username */}
+      <FormField className="mb-3" path="userName">
+        <TextInput
+          autoCapitalize="off"
+          value={model.userName}
+          onValueChanged={(userName) => setModel(model => ({ ...model, userName: userName.toLowerCase() }))}
+        />
+      </FormField>
+
+      {/* Password */}
+      <FormField className="mb-5" path="password">
+        <TextInput
+          type="password"
+          value={model.password}
+          onValueChanged={(password) => setModel(model => ({ ...model, password }))}
+        />
+      </FormField>
+
+      {/* Button */}
+      <Button type="submit" className={buttonVariant} showSpinner={state.isSubmitting}>
+        {buttonText}
+      </Button>
+
+      {/* CommonError */}
+      {state.commonError && (
+        <span className="alert alert-danger d-flex justify-content-center mt-3 w-100">
+            <i className="bi bi-exclamation-triangle-fill me-1" />
+          {state.commonError}
+          </span>
+      )}
+    </Form>
+  );
+
+  const renderSignedSuccessfullyContent = () => (
+    <div className={joinClassName(
+      "bg-emerald-500/10 border border-emerald-500/50",
+      "flex justify-center items-center w-[350px] relative rounded-xl p-8 shadow-none sm:shadow-xs",
+      "text-emerald-700 dark:text-emerald-400 uppercase font-bold")}
+    >
+      Đăng nhập thành công
+    </div>
+  );
+
   return (
     <RootLayout>
       <div
@@ -114,57 +177,9 @@ export default function SignInPage(): React.ReactNode {
           "bg-white dark:bg-neutral-900 sm:bg-black/2 dark:sm:bg-black",
           "flex flex-col justify-center items-center w-screen h-screen"
         )}
-        onKeyUp={(event) => event.key === "Enter" && handleEnterKeyPressedAsync()}>
-        <Form
-          className={joinClassName(
-            "bg-white dark:bg-neutral-900",
-            "border border-transparent sm:border-black/10 dark:sm:border-white/10",
-            "shadow-none sm:shadow-xs",
-            "flex flex-col rounded-xl p-8 items-stretch w-[350px] relative"
-          )}
-          upsertAction={loginAsync}
-          onUpsertingSucceeded={handleLoginSucceeded}
-          onUpsertingFailed={handleLoginFailed}
-        >
-          {/* Introduction */}
-          <div className="flex flex-col mb-5">
-            <span className="text-4xl font-bold">Đăng nhập</span>
-            <span className="text-lg">
-              Chào mừng bạn đã quay trở lại.
-            </span>
-          </div>
-
-          {/* Username */}
-          <FormField className="mb-3" path="userName">
-            <TextInput
-              autoCapitalize="off"
-              value={model.userName}
-              onValueChanged={(userName) => setModel(model => ({ ...model, userName: userName.toLowerCase() }))}
-            />
-          </FormField>
-
-          {/* Password */}
-          <FormField className="mb-5" path="password">
-            <TextInput
-              type="password"
-              value={model.password}
-              onValueChanged={(password) => setModel(model => ({ ...model, password }))}
-            />
-          </FormField>
-
-          {/* Button */}
-          <Button type="submit" className={buttonVariant} showSpinner={state.isSubmitting}>
-            {buttonText}
-          </Button>
-
-          {/* CommonError */}
-          {state.commonError && (
-            <span className="alert alert-danger d-flex justify-content-center mt-3 w-100">
-              <i className="bi bi-exclamation-triangle-fill me-1" />
-              {state.commonError}
-            </span>
-          )}
-        </Form>
+        onKeyUp={(event) => event.key === "Enter" && handleEnterKeyPressedAsync()}
+      >
+        {!state.isSignedIn ? renderSignInContent() : renderSignedSuccessfullyContent()}
 
         <div className={joinClassName(
           "text-primary/50 absolute bottom-1 sm:relative sm:bottom-unset",

@@ -37,14 +37,9 @@ export default function MainPageLayout(): React.ReactNode {
 
   return (
     <RootLayout>
-      <div id="main-page-layout" className={joinClassName(
-        "bg-white dark:bg-white/10 justify-self flex-1 border border-b-0 border-primary/10",
-        "flex flex-col justify-start items-stretch rounded-t-2xl mx-3 mt-3 overflow-x-hidden",
-        "shadow-lg transition-opacity",
-        isNavigating && "opacity-50 dark:opacity-70 pointer-events-none"
-      )}>
+      <div id="main-page-layout" className={joinClassName(isNavigating && "navigating")}>
         {/* The bar on top the current page, containing breadcrumb */}
-        <div id="breadcrumb" className="border-b border-primary/10 p-3 gap-3 flex">
+        <div id="breadcrumb">
           <Breadcrumb />
         </div>
 

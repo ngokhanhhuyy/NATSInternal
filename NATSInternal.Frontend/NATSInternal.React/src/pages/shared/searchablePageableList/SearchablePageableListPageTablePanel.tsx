@@ -63,12 +63,13 @@ export default function SearchablePageableListPageTableBlock<
 
       {/* Footer */}
       {props.model.pageCount > 1 && (
-        <div className="panel-footer flex justify-center p-3">
+        <div className="panel-footer flex justify-center px-3 py-2">
           <Paginator
             page={props.model.page}
             pageCount={props.model.pageCount}
             onPageChanged={props.onPageChanged}
             isReloading={props.isReloading}
+            getPageButtonClassName={() => "btn-panel-footer"}
           />
         </div>
       )}

@@ -5,10 +5,10 @@ import { createProductDetailModel } from "@/models";
 
 // Child components.
 import { MainContainer } from "@/components/layouts";
-import DetailBlock from "./DetailBlock.tsx";
-import ManagementBlock from "./ManagementBlock";
-import PhotoBlock from "./PhotoBlock";
-import LatestTransactionBlock from "./LatestTransactionBlock.tsx";
+import DetailPanel from "./DetailPanel.tsx";
+import ManagementPanel from "./ManagementPanel.tsx";
+import PhotoPanel from "./PhotoPanel.tsx";
+import LatestTransactionPanel from "./LatestTransactionPanel.tsx";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 // Api.
@@ -37,14 +37,15 @@ export default function ProductDetailPage(): React.ReactNode {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch">
-          <div className="flex flex-col gap-y-3">
-            <DetailBlock model={model} />
-            <ManagementBlock model={model} />
-            <PhotoBlock model={model} />
-          </div>
+          <DetailPanel model={model} />
 
-          <LatestTransactionBlock />
+          <div className="flex flex-col gap-y-3">
+            <ManagementPanel model={model} />
+            <PhotoPanel model={model} />
+          </div>
         </div>
+
+        <LatestTransactionPanel />
 
         <div className="flex justify-end">
           <Link className="btn gap-1.5" to={model.updateRoutePath}>

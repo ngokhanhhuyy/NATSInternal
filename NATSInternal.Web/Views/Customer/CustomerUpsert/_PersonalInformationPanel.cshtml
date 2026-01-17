@@ -86,6 +86,13 @@
                 <input asp-for="Address" type="text" class="form-control" placeholder="123 Nguyễn Tất Thành" />
                 <span asp-validation-for="Address"></span>
             </div>
+            
+            <!-- Note -->
+            <div class="form-field sm:col-span-6">
+                <label asp-for="Note"></label>
+                <textarea asp-for="Note" class="form-control" placeholder="Ghi chú"></textarea>
+                <span asp-validation-for="Note"></span>
+            </div>
         </div>
     </div>
 </div>

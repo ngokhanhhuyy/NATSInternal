@@ -72,17 +72,17 @@ function SearchablePageableListPageFilterBlock<
             onValueChanged={(searchContent) => props.onModelChanged({ searchContent } as Partial<TListModel>)}
           />
 
-          <Button className="shrink-0 gap-1" onClick={props.onSearchButtonClicked}>
+          <Button className="shrink-0 gap-2" onClick={props.onSearchButtonClicked}>
             <MagnifyingGlassIcon />
             <span className="hidden md:inline">Tìm kiếm</span>
           </Button>
 
           <Button
-            className={joinClassName("shrink-0 gap-1", !isAdvancedFilterCollapsed && "primary")}
+            className={joinClassName("shrink-0 gap-2", !isAdvancedFilterCollapsed && "primary")}
             onClick={() => setIsAdvancedFilterCollapsed(isVisible => !isVisible)}
           >
             <Bars3BottomLeftIcon />
-            <span className="hidden md:inline">Sắp xếp</span>
+            <span className="hidden md:inline">Tuỳ chọn</span>
           </Button>
         </div>
 

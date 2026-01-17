@@ -7,5 +7,5 @@ export * from "./paginationHelper";
 export * from "./phoneNumberHelper";
 export * from "./roleHelper";
 export * from "./routeHelper";
-export * from "./tsxHelper";
+export * from "./tsxHelper.tsx";
 export * from "./validationHelper";

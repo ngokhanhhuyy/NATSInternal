@@ -5,7 +5,7 @@ import { createProductListModel } from "@/models";
 
 // Child components.
 import SearchablePageableListPage from "@/pages/shared/searchablePageableList/SearchablePageableListPage";
-import { BrandListBlock, ProductCategoryListBlock } from "./SecondaryPanels";
+import { BrandListPanel, ProductCategoryListPanel } from "./SecondaryPanels";
 
 // Api.
 const api = useApi();
@@ -59,8 +59,8 @@ export default function ProductListPage(): React.ReactNode {
       )}
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
-        <BrandListBlock />
-        <ProductCategoryListBlock />
+        <BrandListPanel />
+        <ProductCategoryListPanel />
       </div>
     </SearchablePageableListPage>
   );

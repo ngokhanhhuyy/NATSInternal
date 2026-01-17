@@ -33,6 +33,7 @@
         & :where(th) {
             font-size: var(--text-sm);
             padding-block: --spacing(0.5);
+            opacity: 50%;
         }
 
         & :where(td) {

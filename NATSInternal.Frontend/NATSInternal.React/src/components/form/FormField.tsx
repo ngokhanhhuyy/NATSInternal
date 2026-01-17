@@ -26,7 +26,7 @@ export type FormFieldProps = {
 export default function FormField(props: FormFieldProps) {
   // Dependencies.
   const formContext = useContext(FormContext);
-  const { joinClassName } = useTsxHelper();
+  const { joinClassName, compute } = useTsxHelper();
 
   // Computed.
   const errorMessage = useMemo(() => {
@@ -63,6 +63,16 @@ export default function FormField(props: FormFieldProps) {
     return getDisplayName(lastIndexerOmittedPathElement);
   }, []);
 
+  const validationMessageClassName = compute<string | undefined>(() => {
+    if (formContext?.errorCollection.isValidated) {
+      if (errorMessage) {
+        return "field-validation-error";
+      }
+
+      return "field-validation-valid";
+    }
+  });
+
   const contextPayload = useMemo<FormFieldContextPayload>(() => {
     return {
       isValidated: !!formContext?.errorCollection.isValidated,
@@ -77,7 +87,6 @@ export default function FormField(props: FormFieldProps) {
     <div className={joinClassName(
       props.className,
       "form-field flex flex-col justify-stretched",
-      formContext?.errorCollection.isValidated && (errorMessage ? "invalid" : "valid")
     )}>
       {/* Label */}
       {displayName && (
@@ -92,7 +101,9 @@ export default function FormField(props: FormFieldProps) {
       </FormFieldContext.Provider>
 
       {/* Message */}
-      <span className="validation-message">{errorMessage}</span>
+      <span className={validationMessageClassName}>
+        {errorMessage}
+      </span>
     </div>
   );
 }

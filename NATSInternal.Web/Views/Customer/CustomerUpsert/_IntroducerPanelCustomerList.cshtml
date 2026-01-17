@@ -1,0 +1,49 @@
+@model CustomerListModel
+
+<form id="customer-list-form"
+        class="flex flex-col flex-1 transition-opacity gap-3"
+        action="@ViewBag.FormAction"
+        method="post">
+    <!-- Search -->
+    <div class="flex justify-between gap-3">
+        <input asp-for="SearchContent"
+                type="text"
+                class="form-control justify-self-stretch w-full"
+                placeholder="Tìm kiếm" />
+        <input asp-for="ResultsPerPage" type="hidden" />
+        <button type="submit" class="btn shrink-0 grow-0">
+            Tìm kiếm
+        </button>
+    </div>
+
+    <!-- List -->
+    <div class="results-list-container flex flex-col justify-stretch gap-3">
+        <ul class="list-group">
+            @if (Model.Items.Count > 0)
+            {
+                foreach (CustomerListCustomerModel customer in Model.Items)
+                {
+                    <li class="list-group-item flex justify-between items-center px-3 py-2">
+                        <div class="flex flex-col">
+                            <a asp-new-tab class="font-bold" href="@customer.GetDetailRoutePath(Url)">
+                                @customer.FullName
+                            </a>
+                    
+                            <span class="text-sm opacity-75">
+                                @customer.NickName
+                            </span>
+                        </div>
+        
+                        <button type="submit"
+                                class="btn btn-sm aspect-square introducer-pick-button"
+                                data-introducer-id="@customer.Id">
+                            <i class="bi bi-check-lg"></i>
+                        </button>
+                    </li>
+                }
+            }
+        </ul>
+
+        <partial name="~/Views/Shared/Ui/_Paginator.cshtml" />
+    </div>
+</form>

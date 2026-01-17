@@ -15,7 +15,7 @@ export default function RootLayout(props: RootLayoutProps): React.ReactNode {
   const location = useLocation();
   const matchedRoutes = useMatches();
   const { getSignInRoutePath } = useRouteHelper();
-  const { joinClassName, compute } = useTsxHelper();
+  const { compute } = useTsxHelper();
 
   // Computed.
   const shouldRenderNavigationBar = compute<boolean>(() => !location.pathname.startsWith(getSignInRoutePath()));
@@ -34,20 +34,11 @@ export default function RootLayout(props: RootLayoutProps): React.ReactNode {
 
   // Template.
   return (
-    <div
-      id="root-layout"
-      className={joinClassName(
-        "w-screen h-auto min-h-screen grid-cols-[auto_1fr] justify-stretch items-stretch",
-        shouldRenderNavigationBar && "pt-(--topbar-height)"
-      )}
-    >
+    <div id="root-layout">
       {shouldRenderNavigationBar && <TopBar />}
-      <main className={joinClassName(
-        "max-w-384 flex justify-stretch items-stretch mx-auto",
-        "transition-opacity min-h-[calc(100vh-var(--topbar-height))]"
-      )}>
-        {shouldRenderNavigationBar && <NavigationBar />}
+      <main>
         {props.children}
+        {shouldRenderNavigationBar && <NavigationBar />}
       </main>
     </div>
   );

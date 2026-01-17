@@ -45,6 +45,7 @@ export default function SearchablePageableListPage<
     });
 
     await Promise.resolve();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   // Effect.
@@ -54,7 +55,7 @@ export default function SearchablePageableListPage<
       return;
     }
 
-    reloadAsync();
+    reloadAsync().then(() => { });
   }, [model.sortByAscending, model.sortByFieldName, model.page, model.resultsPerPage]);
 
   // Template.
@@ -91,13 +92,13 @@ export default function SearchablePageableListPage<
           renderHeaderRowChildren={props.renderTableHeaderRowChildren}
           renderBodyRowChildren={props.renderTableBodyRowChildren}
         />
-
-        {props.children}
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end mb-3">
         <CreateLink />
       </div>
+
+      {props.children}
     </MainContainer>
   );
 }

@@ -5,20 +5,20 @@
         justify-content: start;
         align-items: stretch;
 
-        & label, & .field-validation-valid, & .field-validation-error {
+        &:where(label), &:where(.field-validation-valid), &:where(.field-validation-error) {
             font-size: var(--text-sm);
         }
 
-        & label {
+        &:where(label) {
             opacity: 75%;
         }
 
-        &:has(.field-validation-valid) label, &:has(.field-validation-valid) label {
+        &:has(.field-validation-valid):where(label), &:has(.field-validation-valid):where(label) {
             opacity: 75%;
         }
 
         &:has(.field-validation-error) {
-            & label, & .field-validation-error {
+            :where(label), :where(.field-validation-error) {
                 color: var(--color-red-500);
             }
         }

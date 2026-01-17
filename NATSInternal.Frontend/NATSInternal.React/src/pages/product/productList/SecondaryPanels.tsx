@@ -25,7 +25,7 @@ type Props<
 };
 
 // Component.
-export default function SecondaryListBlock<
+function SecondaryListPanel<
       TListModel extends
         ISearchableListModel<TItemModel> &
         ISortableListModel<TItemModel> &
@@ -72,7 +72,9 @@ export default function SecondaryListBlock<
 
         {props.model.items.length < props.model.itemCount && (
           <li className="px-3 py-2 text-center opacity-50">
-            {`...và ${props.model.itemCount - props.model.items.length} ${displayName.toLowerCase()} khác`}
+            <Link to={props.listRoutePath}>
+              {`...và ${props.model.itemCount - props.model.items.length} ${displayName.toLowerCase()} khác`}
+            </Link>
           </li>
         )}
       </ul>
@@ -90,7 +92,7 @@ export default function SecondaryListBlock<
   );
 }
 
-export function BrandListBlock(): React.ReactNode {
+export function BrandListPanel(): React.ReactNode {
   // Dependencies.
   const api = useApi();
   const { getBrandListRoutePath } = useRouteHelper();
@@ -115,7 +117,7 @@ export function BrandListBlock(): React.ReactNode {
 
   // Template.
   return (
-    <SecondaryListBlock
+    <SecondaryListPanel
       model={model}
       resourceName="brand"
       isInitialLoading={isInitialLoading}
@@ -129,7 +131,7 @@ export function BrandListBlock(): React.ReactNode {
   );
 }
 
-export function ProductCategoryListBlock(): React.ReactNode {
+export function ProductCategoryListPanel(): React.ReactNode {
   // Dependencies.
   const api = useApi();
   const { getProductCategoryListRoutePath } = useRouteHelper();
@@ -154,7 +156,7 @@ export function ProductCategoryListBlock(): React.ReactNode {
 
   // Template.
   return (
-    <SecondaryListBlock
+    <SecondaryListPanel
       model={model}
       resourceName="productCategory"
       isInitialLoading={isInitialLoading}

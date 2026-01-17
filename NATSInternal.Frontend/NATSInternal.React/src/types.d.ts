@@ -11,6 +11,7 @@ declare global {
   type AwaitedReturn<T> = T extends Promise<infer U> ? U : T;
   type ColorVariant = "primary" | "secondary" | "danger" | "success" | "hinting";
   type ComponentProps<TComponent> = TComponent extends (props: infer TProps) => React.ReactNode ? TProps : never;
+  type Truthy<T> = Exclude<T, false | 0 | "" | null | undefined>;
 
   declare module "react-router" {
     interface RouteHandle {

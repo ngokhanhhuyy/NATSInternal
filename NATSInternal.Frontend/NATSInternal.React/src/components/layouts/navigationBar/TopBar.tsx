@@ -31,21 +31,12 @@ export default function TopBar(): React.ReactNode {
 
   // Template.
   return (
-    <div
-      id="topbar"
-      className={joinClassName(
-        "bg-white/75 dark:bg-neutral-800/70 border-b border-primary/15 w-full h-(--topbar-height)",
-        "flex justify-stretch items-stretch fixed top-0 z-999",
-        "backdrop-blur-sm dark:backdrop-blur-md transition-colors",
-        isScrolled && "shadow-xs",
-      )}
-    >
-      <div
-        id="topbar-container"
-        className="max-w-384 w-full grid grid-cols-[1fr_auto_auto] items-stretch gap-3 mx-auto p-3 ps-4 md:ps-5"
-      >
+    <div id="topbar" className={joinClassName(isScrolled && "shadow-xs")}>
+      <div id="topbar-container">
         {/* Main logo */}
         <MainLogo />
+
+        <div />
 
         {/* Theme toggle button */}
         <ThemeToggleButton />

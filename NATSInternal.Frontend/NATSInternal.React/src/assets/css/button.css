@@ -47,34 +47,6 @@
             width: calc(var(--spacing) * var(--size-coeffecient));
             height: calc(var(--spacing) * var(--size-coeffecient));
         }
-
-        &.btn-small {
-            --padding-inline-coeffecient: 1.5;
-            --padding-block-coeffecient: 0.85;
-            --min-height-coeffecient: 7;
-            font-size: var(--text-sm);
-            border-radius: var(--radius-md);
-
-            & > svg {
-                --size-coeffecient: 3.5;
-            }
-        }
-
-        &.btn-as-input {
-            background: rgba(0, 0, 0, 2.5%);
-
-            &:hover {
-                background: rgba(0, 0, 0, 10%);
-            }
-
-            html.dark {
-                background: rgba(255, 255, 255, 2.5%);
-
-                &:hover {
-                    background: rgba(255, 255, 255, 15%);
-                }
-            }
-        }
     }
 }
 
@@ -148,6 +120,38 @@
     @variant dark {
         & {
             border-color: rgba(255, 255, 255, 20%);
+        }
+    }
+}
+
+@utility btn-panel-footer {
+    @apply btn-panel-header;
+}
+
+@utility btn-sm {
+    --padding-inline-coeffecient: 1.5;
+    --padding-block-coeffecient: 0.85;
+    --min-height-coeffecient: 7;
+    font-size: var(--text-sm);
+    border-radius: var(--radius-md);
+
+    & > svg {
+        --size-coeffecient: 3.5;
+    }
+}
+
+@utility btn-as-input {
+    background: rgba(0, 0, 0, 2.5%);
+
+    &:hover {
+        background: rgba(0, 0, 0, 10%);
+    }
+
+    html.dark {
+        background: rgba(255, 255, 255, 2.5%);
+
+        &:hover {
+            background: rgba(255, 255, 255, 15%);
         }
     }
 }
