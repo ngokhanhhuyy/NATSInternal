@@ -14,6 +14,8 @@ const CustomerCreatePage = lazy(() => import("@/pages/customer/customerUpsert/Cu
 const CustomerUpdatePage = lazy(() => import("@/pages/customer/customerUpsert/CustomerUpdatePage"));
 const ProductListPage = lazy(() => import("@/pages/product/productList/ProductListPage"));
 const ProductDetailPage = lazy(() => import("@/pages/product/productDetail/ProductDetailPage"));
+const ProductCreatePage = lazy(() => import("@/pages/product/productUpsert/ProductCreatePage"));
+const ProductUpdatePage = lazy(() => import("@/pages/product/productUpsert/ProductUpdatePage"));
 import TestingPage from "@/pages/TestingPage";
 import { AuthenticationError } from "@/api";
 
@@ -129,6 +131,14 @@ const router = createBrowserRouter([
                 }
               },
               {
+                path: "tao-moi",
+                Component: ProductCreatePage,
+                handle: {
+                  breadcrumbTitle: "Tạo mới",
+                  pageTitle: "Tạo sản phẩm mới"
+                }
+              },
+              {
                 path: ":id",
                 children: [
                   {
@@ -139,6 +149,18 @@ const router = createBrowserRouter([
                     handle: {
                       breadcrumbTitle: "Chi tiết",
                       pageTitle: "Chi tiết sản phẩm"
+                    }
+                  },
+                  {
+                    path: "chinh-sua",
+                    Component: ProductUpdatePage,
+                    loader: async ({ params }) => {
+                      const module = await import("@/pages/product/productUpsert/ProductUpdatePage");
+                      return module.loadDataAsync(params.id as string);
+                    },
+                    handle: {
+                      breadcrumbTitle: "Chỉnh sửa",
+                      pageTitle: "Chỉnh sửa sản phẩm"
                     }
                   },
                 ]

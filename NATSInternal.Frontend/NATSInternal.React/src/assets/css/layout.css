@@ -116,7 +116,7 @@ main {
             --foreground-and-border-color: var(--color-emerald-400);
             
             svg {
-                --background-color: oklch(from var(--color-emerald-500) l c h / 20%);
+                --background-color: --alpha(var(--color-emerald-500) / 20%);
             }
         }
     }

@@ -27,7 +27,7 @@
 
         @variant dark {
             & {
-                background: oklch(from var(--color-neutral-800) l c h / 100%);
+                background: --alpha(var(--color-neutral-800) / 100%);
                 color: var(--color-white);
                 border-color: rgba(255, 255, 255, 15%);
 
