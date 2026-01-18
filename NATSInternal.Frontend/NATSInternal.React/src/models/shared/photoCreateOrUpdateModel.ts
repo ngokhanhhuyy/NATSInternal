@@ -6,6 +6,7 @@ declare global {
     isThumbnail: boolean;
     isChanged: boolean;
     isDeleted: boolean;
+    toRequestDto(): PhotoCreateOrUpdateRequestDto;
   };
 }
 
@@ -16,7 +17,16 @@ export function createPhotoCreateOrUpdateModel(args: string | PhotoBasicResponse
     file: null,
     isThumbnail: false,
     isChanged: false,
-    isDeleted: false
+    isDeleted: false,
+    toRequestDto(): PhotoCreateOrUpdateRequestDto {
+      return {
+        id: this.id,
+        file: this.file ?? "",
+        isThumbnail: this.isThumbnail,
+        isChanged: this.isChanged,
+        isDeleted: this.isDeleted
+      };
+    }
   };
 
   if (typeof args === "string") {
@@ -24,12 +34,8 @@ export function createPhotoCreateOrUpdateModel(args: string | PhotoBasicResponse
     return model;
   }
 
-  return {
-    id: args.id,
-    url: args.url,
-    file: null,
-    isThumbnail: args.isThumbnail,
-    isChanged: false,
-    isDeleted: false
-  };
+  model.id = args.id;
+  model.url = args.url;
+  model.isThumbnail = args.isThumbnail;
+  return model;
 }

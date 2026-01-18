@@ -2,9 +2,10 @@ import { useRef } from "react";
 
 // Utility for model serialization.
 const serializeModel = <TModel extends object, TKey extends keyof TModel>
-(model: TModel, excludedKeys?: TKey[]): string => {
+    (model: TModel | (() => TModel), excludedKeys?: TKey[]): string => {
+  const computedModel = typeof model === "function" ? model() : model;
   if (excludedKeys && excludedKeys.length) {
-    return JSON.stringify(model, (key, value) => {
+    return JSON.stringify(computedModel, (key, value) => {
       if (!excludedKeys.includes(key as TKey)) {
         return value;
       }
@@ -16,15 +17,13 @@ const serializeModel = <TModel extends object, TKey extends keyof TModel>
 
 // Hook.
 export function useDirtyModelChecker<TModel extends object, TKey extends keyof TModel>(
-    originalModel: TModel,
-    currentModel: TModel | undefined,
+    model: TModel | (() => TModel),
     excludedKeys?: TKey[]): boolean {
   // States.
-  const originalModelJson = useRef(serializeModel(originalModel));
+
+  const originalModelJson = useRef(serializeModel(model));
   return (() => {
-    const currentModelJson = currentModel
-      ? serializeModel(currentModel, excludedKeys)
-      : "";
+    const currentModelJson = serializeModel(model, excludedKeys);
     return originalModelJson.current !== currentModelJson;
   })();
 }

@@ -5,5 +5,7 @@ export { default as SelectInput } from "./SelectInput";
 export { default as BooleanSelectInput } from "./BooleanSelectInput";
 export { default as TextInput, type TextInputProps } from "./TextInput";
 export { default as TextAreaInput, type TextAreaInputProps } from "./TextAreaInput";
+export { default as NumberInput, type NumberInputProps } from "./NumberInput";
+export { default as ButtonGroupInput, type ButtonGroupInputProps, type ButtonGroupInputOption } from "./ButtonGroupInput";
 export { default as SubmitButton } from "./SubmitButton";
 export { default as DeleteButton } from "./DeleteButton";

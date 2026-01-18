@@ -1,6 +1,6 @@
 @layer components {
     .form-control {
-        --padding-inline: --spacing(2);
+        --padding-inline: --spacing(3);
         --padding-block: --spacing(1);
         --min-height-coeffecient: 9;
         background-color: rgba(0, 0, 0, 2.5%);
@@ -11,6 +11,7 @@
         transition: .2s linear, outline .1s linear;
         outline: 1px solid transparent;
         min-height: calc(var(--spacing) * var(--min-height-coeffecient));
+        flex: 1;
 
         &:focus {
             border-color: var(--color-blue-500);
@@ -24,34 +25,36 @@
         }
 
         @variant dark {
-            background-color: rgba(255, 255, 255, 2.5%);
-            border-color: rgba(255, 255, 255, 15%);
-            color-scheme: dark;
-
-            &:focus {
-                border-color: var(--color-blue-500);
-                outline-color: var(--color-blue-500);
-            }
-
-            .form-field.invalid:not(:disabled) & {
-                background: oklch(from var(--color-red-600) l c h / 10%);
-                color: var(--color-red-600);
-                border-color: oklch(from var(--color-red-600) l c h / 70%);
+            & {
+                background-color: rgba(255, 255, 255, 2.5%);
+                border-color: rgba(255, 255, 255, 15%);
+                color-scheme: dark;
 
                 &:focus {
-                    border-color: var(--color-red-600);
-                    outline-color: oklch(from var(--color-red-500) l c h / 15%);
+                    border-color: var(--color-blue-500);
+                    outline-color: var(--color-blue-500);
+                }
+
+                .form-field.invalid:not(:disabled) & {
+                    background: --alpha(var(--color-red-600) / 10%);
+                    color: var(--color-red-600);
+                    border-color: --alpha(var(--color-red-600) / 70%);
+
+                    &:focus {
+                        border-color: var(--color-red-600);
+                        outline-color: --alpha(var(--color-red-500) / 15%);
+                    }
                 }
             }
         }
 
         .form-field:has(.field-validation-error) &:not(:disabled) {
-            background: oklch(from var(--color-red-500) l c h / 5%);
+            background: --alpha(var(--color-red-500) / 5%);
             color: var(--color-red-500);
-            border-color: oklch(from var(--color-red-500) l c h / 70%);
+            border-color: --alpha(var(--color-red-500) / 70%);
 
             &:focus {
-                outline-color: oklch(from var(--color-red-500) l c h / 15%);
+                outline-color: --alpha(var(--color-red-500) / 15%);
             }
         }
 

@@ -4,7 +4,13 @@ import React from "react";
 import SelectInput, { type SelectInputProps } from "./SelectInput";
 
 // Props.
-type BooleanSelectInputProps = Omit<SelectInputProps, "value" | "onValueChanged"> & {
+type BooleanSelectInputOption = {
+  value: boolean;
+  displayName?: string;
+};
+
+type BooleanSelectInputProps = Omit<SelectInputProps, "options" | "value" | "onValueChanged"> & {
+  options: BooleanSelectInputOption[];
   value: boolean;
   onValueChanged: (changedValue: boolean) => any;
 };
@@ -12,11 +18,15 @@ type BooleanSelectInputProps = Omit<SelectInputProps, "value" | "onValueChanged"
 // Component.
 export default function BooleanSelectInput(props: BooleanSelectInputProps): React.ReactNode {
   // Props.
-  const { value, onValueChanged, ...domProps } = props;
+  const { options, value, onValueChanged, ...domProps } = props;
   // Template.
   return (
     <SelectInput
       {...domProps}
+      options={options.map(option => ({
+        value: option.value.toString(),
+        displayName: option.displayName
+      }))}
       value={value.toString()}
       onValueChanged={(changedValue) => onValueChanged(JSON.parse(changedValue) as boolean)}
     />
