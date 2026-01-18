@@ -11,6 +11,7 @@
 @import "./pages/sign-in-page.css";
 @import "./pages/customer-list-page.css";
 @import "./pages/customer-detail-page.css";
+@import "./pages/customer-upsert-page.css";
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {

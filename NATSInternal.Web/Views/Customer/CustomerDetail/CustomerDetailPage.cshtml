@@ -29,6 +29,11 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <partial name="~/Views/Customer/CustomerDetail/_PersonalInformationPanel.cshtml" />
         <div class="flex flex-col gap-3">
+            @if (Model.Introducer is not null)
+            {
+                <partial name="~/Views/Customer/CustomerDetail/_IntroducerPanel.cshtml" model="Model.Introducer" />
+            }
+            
             <partial name="~/Views/Customer/CustomerDetail/_DebtPanel.cshtml" />
             <partial name="~/Views/Customer/CustomerDetail/_ManagementPanel.cshtml" />
         </div>

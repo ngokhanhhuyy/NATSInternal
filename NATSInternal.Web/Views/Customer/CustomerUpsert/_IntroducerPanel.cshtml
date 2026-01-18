@@ -1,42 +1,105 @@
+@using static NATSInternal.Web.Models.CustomerUpsertModel;
 @model CustomerUpsertModel
-@functions {
-    CustomerListModel CustomerListModel => ViewBag.CustomerListModel;
+@{
+    bool shouldFocus = Model.Action is SubmitAction.ReloadCustomerList or SubmitAction.UnpickIntroducer;
 }
 
-<div class="panel">
+<div id="customer-upsert-introducer-panel" class="panel" @(shouldFocus ? "data-should-focus" : "")>
     <div class="panel-header">
         <span class="panel-header-title">
             Người giới thiệu
         </span>
     </div>
-    
+
     <div class="panel-body flex justify-stretch items-center gap-3 p-3">
         @if (Model.PickedIntroducer is not null)
         {
-            <div class="flex-1">
-                <a asp-new-tab="@true"
-                        asp-action="Detail"
-                        asp-controller="Customer"
-                        asp-route-id="@Model.PickedIntroducer.Id"
-                        class="font-bold">
-                    @Model.PickedIntroducer.FullName
-                </a>
-                
-                <span class="text-sm">
-                    @Model.PickedIntroducer.NickName
-                </span>
+            <div class="flex items-center gap-3 flex-1">
+                <img src="@Model.PickedIntroducer.AvatarUrl"
+                        class="img-thumbnail size-14"
+                        alt="@Model.PickedIntroducer.FullName"/>
+
+                <div class="flex-1">
+                    <a asp-new-tab="@true"
+                            asp-action="Detail"
+                            asp-controller="Customer"
+                            asp-route-id="@Model.PickedIntroducer.Id"
+                            class="text-lg font-bold">
+                        @Model.PickedIntroducer.FullName
+                    </a>
+                    <br/>
+                    <span class="text-sm opacity-50">
+                        @Model.PickedIntroducer.NickName
+                    </span>
+
+                    <input asp-for="PickedIntroducerId" type="hidden"/>
+                </div>
+
+                <button asp-for="Action"
+                        value="@CustomerUpsertModel.SubmitAction.UnpickIntroducer"
+                        class="btn gap-1"
+                        type="submit">
+                    <i class="bi bi-x-lg"></i>
+                    <span class="hidden md:inline">Bỏ chọn</span>
+                </button>
             </div>
-            
-            <button id="introducer-unpick-submit-button" class="btn" type="submit">
-                <i class="bi bi-x-lg"></i>
-            </button>
-            
-            <input asp-for="PickedIntroducerId" type="hidden" form="@ViewBag.FormId" />
         }
         else
         {
-            <partial name="~/Views/Customer/CustomerUpsert/_IntroducerPanelCustomerList.cshtml"
-                    model="@CustomerListModel" />
+            <div class="flex flex-col flex-1 transition-opacity gap-3">
+                <!-- Search -->
+                <div class="flex justify-between gap-3">
+                    <input asp-for="CustomerList.SearchContent"
+                            type="text"
+                            class="form-control justify-self-stretch w-full"
+                            placeholder="Tìm kiếm"/>
+                    <input asp-for="CustomerList.ResultsPerPage" type="hidden"/>
+                    <button type="submit" class="btn gap-1 shrink-0 grow-0 aspect-square md:aspect-auto">
+                        <i class="bi bi-search"></i>
+                        <span class="hidden md:inline">Tìm kiếm</span>
+                    </button>
+                </div>
+
+                <!-- List -->
+                <div class="results-list-container flex flex-col justify-stretch gap-3">
+                    <ul class="list-group">
+                        @if (Model.CustomerList.Items.Count > 0)
+                        {
+                            foreach (CustomerListCustomerModel customer in Model.CustomerList.Items)
+                            {
+                                <li class="list-group-item flex justify-between items-center px-3 py-2">
+                                    <div class="flex flex-col">
+                                        <a asp-new-tab class="font-bold" href="@customer.GetDetailRoutePath(Url)">
+                                            @customer.FullName
+                                        </a>
+
+                                        <span class="text-sm opacity-75">
+                                            @customer.NickName
+                                        </span>
+                                    </div>
+
+                                    <button id="@Html.IdFor(m => m.PickedIntroducerId)"
+                                            name="@Html.NameFor(m => m.PickedIntroducerId)"
+                                            value="@customer.Id"
+                                            type="submit"
+                                            class="btn gap-1">
+                                        <i class="bi bi-check-lg"></i>
+                                        <span class="hidden md:inline">Chọn</span>
+                                    </button>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="flex justify-center items-center px-3 py-5 opacity-50">
+                                Không có kết quả
+                            </li>
+                        }
+                    </ul>
+
+                    <partial name="~/Views/Shared/Ui/_Paginator.cshtml" for="CustomerList"/>
+                </div>
+            </div>
         }
     </div>
 </div>

@@ -56,6 +56,9 @@ public static class Program
             .AddControllersWithViews(options => options.ModelValidatorProviders.Clear())
             .AddRazorRuntimeCompilation();
         
+        // Anti-forgery.
+        builder.Services.AddAntiforgery();
+        
         // Swagger + OpenAPI.
         builder.Services.AddEndpointsApiExplorer();
 

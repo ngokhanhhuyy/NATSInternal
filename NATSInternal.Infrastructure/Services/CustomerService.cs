@@ -48,6 +48,11 @@ internal class CustomerService : ICustomerService
             );
         }
 
+        if (requestDto.ExcludedIds.Count > 0)
+        {
+            query = query.Where(c => !requestDto.ExcludedIds.Contains(c.Id));
+        }
+
         switch (requestDto.SortByFieldName)
         {
             case nameof(CustomerGetListRequestDto.FieldToSort.LastName):

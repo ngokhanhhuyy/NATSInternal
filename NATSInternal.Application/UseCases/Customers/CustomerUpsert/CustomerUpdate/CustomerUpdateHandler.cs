@@ -42,7 +42,7 @@ internal class CustomerUpdateHandler : IRequestHandler<CustomerUpdateRequestDto>
         _validator.ValidateAndThrow(requestDto);
 
         OperationException introducerNotFoundException = OperationException.NotFound(
-            new[] { nameof(requestDto.IntroducerId) },
+            new object[] { nameof(requestDto.IntroducerId) },
             DisplayNames.Introducer
         );
 

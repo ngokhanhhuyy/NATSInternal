@@ -1,20 +1,24 @@
 @model AbstractListModel
 @{
-    bool IsPageExceedingXsScreenRange(int page)
+    Console.WriteLine($"SmallScreenStartingPage {Model.SmallScreenStartingPage}");
+    Console.WriteLine($"SmallScreenEndingPage {Model.SmallScreenEndingPage}");
+    Console.WriteLine($"LargeScreenStartingPage {Model.LargeScreenStartingPage}");
+    Console.WriteLine($"LargeScreenEndingPage {Model.LargeScreenEndingPage}");
+    
+    bool IsPageExceedingSmallScreenRange(int page)
     {
         return page < Model.SmallScreenStartingPage || page > Model.SmallScreenEndingPage;
     }
     
-    bool IsPageExceedingSmScreenRange(int page)
+    bool IsPageExceedingLargeScreenRange(int page)
     {
         return page < Model.LargeScreenStartingPage || page > Model.LargeScreenEndingPage;
     }
 
     string ComputePageButtonClassName(int page)
     {
-        Console.WriteLine($"page: {page}, Model.Page: {Model.Page}");
         List<string> classNames = new() { "btn min-w-8.5" };
-        if (IsPageExceedingXsScreenRange(page))
+        if (IsPageExceedingSmallScreenRange(page))
         {
             classNames.Add("hidden sm:flex");
         }
@@ -31,9 +35,9 @@
 @if (Model.PageCount > 1)
 {
     <div class="flex flex-row justify-center gap-2">
-        @if (IsPageExceedingSmScreenRange(1))
+        @if (IsPageExceedingSmallScreenRange(1))
         {
-            <div class="flex gap-2 @(!IsPageExceedingXsScreenRange(1) ? "hidden" : null)">
+            <div class="flex gap-2 @(IsPageExceedingLargeScreenRange(1) ? null : "sm:hidden")">
                 <input type="submit" asp-for="Page" value="1" class="btn min-w-8.5" />
                 <span>...</span>
             </div>
@@ -44,9 +48,9 @@
             <input type="submit" asp-for="Page" value="@(page)" class="@ComputePageButtonClassName(page)" />
         }
         
-        @if (IsPageExceedingSmScreenRange(Model.PageCount))
+        @if (IsPageExceedingSmallScreenRange(Model.PageCount))
         {
-            <div class="flex gap-2 @(!IsPageExceedingXsScreenRange(Model.PageCount) ? "hidden" : null)">
+            <div class="flex gap-2 @(IsPageExceedingLargeScreenRange(Model.PageCount) ? null : "sm:hidden")">
                 <span>...</span>
                 <input type="submit" asp-for="Page" value="@Model.PageCount" class="btn min-w-8.5" />
             </div>

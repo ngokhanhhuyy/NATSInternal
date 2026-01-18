@@ -10,6 +10,7 @@ declare global {
     page: number;
     resultsPerPage: number;
     searchContent: string;
+    excludedIds: string[];
   }>;
 
   type CustomerGetListResponseDto = Implements<IPageableListResponseDto<CustomerGetListCustomerResponseDto>, {

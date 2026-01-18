@@ -13,6 +13,7 @@ public class CustomerGetListRequestDto : IRequest<CustomerGetListResponseDto>, I
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 30;
     public string? SearchContent { get; set; } = string.Empty;
+    public List<Guid> ExcludedIds { get; set; } = new();
     #endregion
 
     #region Methods
