@@ -2,23 +2,23 @@
 @{
     Layout = "Layouts/_MainContainer";
     ViewBag.PageTitle = "Chỉnh sửa khách hàng";
-    ViewBag.FormId = "customer-update-form";
     ViewBag.FormAction = Url.Action("Update", "Customer", new { id = Model.Id });
+    ViewBag.FormId = "customer-update-form";
+    ViewBag.CustomerListExcludedId = Model.Id;
 }
 
-<form id="@ViewBag.FormId" action="@ViewBag.FormAction" method="post" class="flex flex-col gap-3">
-    @Html.AntiForgeryToken()
+<div class="flex flex-col gap-3">
     <partial name="~/Views/Customer/CustomerUpsert/_PersonalInformationPanel.cshtml"/>
 
     <partial name="~/Views/Customer/CustomerUpsert/_IntroducerPanel.cshtml"/>
 
     <div class="flex justify-end gap-3">
-        <button asp-for="Action" value="@CustomerUpsertModel.SubmitAction.Submit" type="submit" class="btn gap-2">
+        <button form="@ViewBag.FormId" type="submit" class="btn gap-2">
             <i class="bi bi-floppy"></i>
             <span>Lưu dữ liệu</span>
         </button>
     </div>
-</form>
+</div>
 
 @section PageDescription {
     Chỉnh sửa một bản ghi dữ liệu của một khách hàng đang tồn tại,

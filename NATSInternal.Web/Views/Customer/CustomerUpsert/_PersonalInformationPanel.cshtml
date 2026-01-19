@@ -4,95 +4,97 @@
 <div class="panel">
     <div class="panel-header">
         <span class="panel-header-title">
-            Bước 1/3: Nhập thông tin cá nhân
+            Thông tin cá nhân
         </span>
     </div>
     
-    <div class="panel-body flex flex-col gap-3 px-4 pt-2.5 pb-4">
-        <!-- 1stRow -->
-        <div class="grid grid-cols-1 sm:grid-cols-6 gap-3">
-            <!-- FirstName -->
-            <div class="form-field sm:col-span-2">
-                <label asp-for="FirstName"></label>
-                <input asp-for="FirstName" type="text" class="form-control" placeholder="Nguyễn" />
-                <span asp-validation-for="FirstName"></span>
+    <div class="panel-body px-4 pt-2.5 pb-4">
+        <form id="@ViewBag.FormId" action="@ViewBag.FormAction" method="post" class="flex flex-col gap-3 ">
+            <!-- 1stRow -->
+            <div class="grid grid-cols-1 sm:grid-cols-6 gap-3">
+                <!-- FirstName -->
+                <div class="form-field sm:col-span-2">
+                    <label asp-for="FirstName"></label>
+                    <input asp-for="FirstName" type="text" class="form-control" placeholder="Nguyễn"/>
+                    <span asp-validation-for="FirstName"></span>
+                </div>
+
+                <!-- MiddleName -->
+                <div class="form-field sm:col-span-2">
+                    <label asp-for="MiddleName"></label>
+                    <input asp-for="MiddleName" type="text" class="form-control" placeholder="Văn"/>
+                    <span asp-validation-for="MiddleName"></span>
+                </div>
+
+                <!-- LastName -->
+                <div class="form-field sm:col-span-2">
+                    <label asp-for="LastName"></label>
+                    <input asp-for="LastName" type="text" class="form-control" placeholder="An"/>
+                    <span asp-validation-for="LastName"></span>
+                </div>
             </div>
 
-            <!-- MiddleName -->
-            <div class="form-field sm:col-span-2">
-                <label asp-for="MiddleName"></label>
-                <input asp-for="MiddleName" type="text" class="form-control" placeholder="Văn" />
-                <span asp-validation-for="MiddleName"></span>
-            </div>
+            <!-- 2ndRow -->
+            <div class="grid grid-cols-1 sm:grid-cols-6 gap-3">
+                <!-- NickName -->
+                <div class="form-field sm:col-span-2">
+                    <label asp-for="NickName"></label>
+                    <input asp-for="NickName" type="text" class="form-control" placeholder="Anh An"/>
+                    <span asp-validation-for="NickName"></span>
+                </div>
 
-            <!-- LastName -->
-            <div class="form-field sm:col-span-2">
-                <label asp-for="LastName"></label>
-                <input asp-for="LastName" type="text" class="form-control" placeholder="An" />
-                <span asp-validation-for="LastName"></span>
-            </div>
-        </div>
+                <!-- Gender -->
+                <div class="form-field sm:col-span-2">
+                    <label asp-for="Gender"></label>
+                    <select asp-for="Gender" class="form-control" placeholder="Anh An">
+                        <option value="@Gender.Male">@Html.DisplayGender(Gender.Male)</option>
+                        <option value="@Gender.Female">@Html.DisplayGender(Gender.Female)</option>
+                    </select>
+                    <span asp-validation-for="Gender"></span>
+                </div>
 
-        <!-- 2ndRow -->
-        <div class="grid grid-cols-1 sm:grid-cols-6 gap-3">
-            <!-- NickName -->
-            <div class="form-field sm:col-span-2">
-                <label asp-for="NickName"></label>
-                <input asp-for="NickName" type="text" class="form-control" placeholder="Anh An" />
-                <span asp-validation-for="NickName"></span>
-            </div>
+                <!-- Birthday -->
+                <div class="form-field sm:col-span-2">
+                    <label asp-for="Birthday"></label>
+                    <input asp-for="Birthday" type="date" class="form-control"/>
+                    <span asp-validation-for="Birthday"></span>
+                </div>
 
-            <!-- Gender -->
-            <div class="form-field sm:col-span-2">
-                <label asp-for="Gender"></label>
-                <select asp-for="Gender" class="form-control" placeholder="Anh An">
-                    <option value="@Gender.Male">@Html.DisplayGender(Gender.Male)</option>
-                    <option value="@Gender.Female">@Html.DisplayGender(Gender.Female)</option>
-                </select>
-                <span asp-validation-for="Gender"></span>
+                <!-- PhoneNumber -->
+                <div class="form-field sm:col-span-2">
+                    <label asp-for="PhoneNumber"></label>
+                    <input asp-for="PhoneNumber" type="text" class="form-control" placeholder="0123 456 789"/>
+                    <span asp-validation-for="PhoneNumber"></span>
+                </div>
+
+                <!-- ZaloNumber -->
+                <div class="form-field sm:col-span-2">
+                    <label asp-for="ZaloNumber"></label>
+                    <input asp-for="ZaloNumber" type="text" class="form-control" placeholder="0123 456 789"/>
+                    <span asp-validation-for="ZaloNumber"></span>
+                </div>
+
+                <!-- Email -->
+                <div class="form-field sm:col-span-2">
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" type="text" class="form-control" placeholder="nguyenvanan@gmail.com"/>
+                    <span asp-validation-for="Email"></span>
+                </div>
+
+                <!-- Address -->
+                <div class="form-field sm:col-span-6">
+                    <label asp-for="Address"></label>
+                    <input asp-for="Address" type="text" class="form-control" placeholder="123 Nguyễn Tất Thành"/>
+                    <span asp-validation-for="Address"></span>
+                </div>
+
+                <!-- Note -->
+                <div class="form-field sm:col-span-6">
+                    <label asp-for="Note"></label>
+                    <textarea asp-for="Note" class="form-control" placeholder="Ghi chú"></textarea>
+                    <span asp-validation-for="Note"></span>
+                </div>
             </div>
-            
-            <!-- Birthday -->
-            <div class="form-field sm:col-span-2">
-                <label asp-for="Birthday"></label>
-                <input asp-for="Birthday" type="date" class="form-control" />
-                <span asp-validation-for="Birthday"></span>
-            </div>
-            
-            <!-- PhoneNumber -->
-            <div class="form-field sm:col-span-2">
-                <label asp-for="PhoneNumber"></label>
-                <input asp-for="PhoneNumber" type="text" class="form-control" placeholder="0123 456 789" />
-                <span asp-validation-for="PhoneNumber"></span>
-            </div>
-            
-            <!-- ZaloNumber -->
-            <div class="form-field sm:col-span-2">
-                <label asp-for="ZaloNumber"></label>
-                <input asp-for="ZaloNumber" type="text" class="form-control" placeholder="0123 456 789" />
-                <span asp-validation-for="ZaloNumber"></span>
-            </div>
-            
-            <!-- Email -->
-            <div class="form-field sm:col-span-2">
-                <label asp-for="Email"></label>
-                <input asp-for="Email" type="text" class="form-control" placeholder="nguyenvanan@gmail.com" />
-                <span asp-validation-for="Email"></span>
-            </div>
-            
-            <!-- Address -->
-            <div class="form-field sm:col-span-6">
-                <label asp-for="Address"></label>
-                <input asp-for="Address" type="text" class="form-control" placeholder="123 Nguyễn Tất Thành" />
-                <span asp-validation-for="Address"></span>
-            </div>
-            
-            <!-- Note -->
-            <div class="form-field sm:col-span-6">
-                <label asp-for="Note"></label>
-                <textarea asp-for="Note" class="form-control" placeholder="Ghi chú"></textarea>
-                <span asp-validation-for="Note"></span>
-            </div>
-        </div>
+        </form>
     </div>
 </div>

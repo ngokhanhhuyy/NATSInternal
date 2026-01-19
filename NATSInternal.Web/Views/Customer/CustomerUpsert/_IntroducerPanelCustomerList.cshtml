@@ -1,0 +1,78 @@
+@model CustomerListModel
+@{
+    Guid? excludedId = null;
+    if (ViewBag.CustomerListExcludedId is not null)
+    {
+        excludedId = ViewBag.CustomerListExcludedId;
+    }
+}
+
+<div class="flex flex-col flex-1 transition-opacity gap-3">
+    <!-- PickedIntroducerPartialForm -->
+    <form id="customer-upsert-customer-list-reload-form"
+            class="flex flex-col gap-3"
+            asp-action="UpsertCustomerListPartial"
+            asp-controller="Customer"
+            method="post">
+        <div class="flex justify-between gap-3">
+            <!-- Search -->
+            <input asp-for="SearchContent"
+                    type="text"
+                    class="form-control justify-self-stretch w-full"
+                    placeholder="Tìm kiếm"/>
+            <input asp-for="ResultsPerPage" type="hidden"/>
+            
+            @if (excludedId.HasValue)
+            {
+                <input name="excludedId" value="@excludedId" type="hidden" />
+            }
+            <button type="submit" class="btn gap-1 shrink-0 grow-0 aspect-square md:aspect-auto">
+                <i class="bi bi-search"></i>
+                <span class="hidden md:inline">Tìm kiếm</span>
+            </button>
+        </div>
+
+        <!-- Pagination -->
+        <partial name="~/Views/Shared/Ui/_Paginator.cshtml"/>
+    </form>
+
+    <!-- List -->
+    <form id="customer-upsert-pick-introducer-form"
+            class="results-list-container flex flex-col justify-stretch gap-3"
+            asp-action="UpsertPickedIntroducerPartial"
+            asp-controller="Customer">
+        <ul class="list-group">
+            @if (Model.Items.Count > 0)
+            {
+                foreach (CustomerListCustomerModel customer in Model.Items)
+                {
+                    <li class="list-group-item flex justify-between items-center px-3 py-2">
+                        <div class="flex flex-col">
+                            <a asp-new-tab class="font-bold" href="@customer.GetDetailRoutePath(Url)">
+                                @customer.FullName
+                            </a>
+
+                            <span class="text-sm opacity-75">
+                                @customer.NickName
+                            </span>
+                        </div>
+
+                        <button name="PickedIntroducer"
+                                value="@customer.Id"
+                                type="submit"
+                                class="btn gap-1 introducer-pick-button">
+                            <i class="bi bi-check-lg"></i>
+                            <span class="hidden md:inline">Chọn</span>
+                        </button>
+                    </li>
+                }
+            }
+            else
+            {
+                <li class="flex justify-center items-center px-3 py-5 opacity-50">
+                    Không có kết quả
+                </li>
+            }
+        </ul>
+    </form>
+</div>

@@ -10,7 +10,9 @@ namespace NATSInternal.Web.Models;
 public class CustomerUpsertModel : AbstractUpsertModel
 {
     #region Constructors
-    public CustomerUpsertModel() { }
+    public CustomerUpsertModel()
+    {
+    }
 
     public CustomerUpsertModel(CustomerGetDetailResponseDto responseDto)
     {
@@ -39,7 +41,7 @@ public class CustomerUpsertModel : AbstractUpsertModel
     [BindNever]
     [DisplayName(DisplayNames.Id)]
     public Guid Id { get; set; } = Guid.Empty;
-    
+
     [BindRequired]
     [DisplayName(DisplayNames.FirstName)]
     public string FirstName { get; init; } = string.Empty;
@@ -59,6 +61,7 @@ public class CustomerUpsertModel : AbstractUpsertModel
     [BindRequired]
     [DisplayName(DisplayNames.Birthday)]
     public Gender Gender { get; init; }
+
     public DateOnly? Birthday { get; init; }
 
     [BindRequired]
@@ -88,18 +91,13 @@ public class CustomerUpsertModel : AbstractUpsertModel
     [BindRequired]
     [DisplayName(DisplayNames.Introducer)]
     public Guid? PickedIntroducerId { get; set; }
-    
+
     [BindNever]
     [DisplayName(DisplayNames.Introducer)]
     public CustomerBasicModel? PickedIntroducer { get; set; }
 
-    public CustomerListModel CustomerList { get; set; } = new();
-    
     [BindNever]
-    public bool AutoFocusOnIntroducerPanel { get; set; }
-
-    [BindRequired]
-    public SubmitAction Action { get; set; } = SubmitAction.ReloadCustomerList;
+    public CustomerListModel CustomerList { get; set; } = new();
     #endregion
 
     #region Methods
@@ -147,15 +145,6 @@ public class CustomerUpsertModel : AbstractUpsertModel
         requestDto.Address = Address;
         requestDto.Note = Note;
         requestDto.IntroducerId = PickedIntroducerId;
-    }
-    #endregion
-
-    #region Enums
-    public enum SubmitAction
-    {
-        ReloadCustomerList,
-        UnpickIntroducer,
-        Submit
     }
     #endregion
 }

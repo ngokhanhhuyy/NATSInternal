@@ -64,3 +64,20 @@
         }
     }
 }
+
+@utility panel-focus-animation {
+    border-radius: var(--radius-lg);
+    animation-name: panel-focus-animation;
+    animation-duration: 2s;
+    animation-iteration-count: 1;
+}
+
+@keyframes panel-focus-animation {
+    0% {
+        box-shadow: 0 0 15px var(--color-emerald-500);
+    }
+
+    100% {
+        box-shadow: 0 0 15px transparent;
+    }
+}

@@ -73,49 +73,64 @@ public class CustomerController : Controller
     public async Task<IActionResult> Update(Guid id, [FromForm] CustomerUpsertModel model, CancellationToken cancellationToken)
     {
         model.Id = id;
-        switch (model.Action)
+        try
         {
-            case CustomerUpsertModel.SubmitAction.ReloadCustomerList:
-                await LoadUpsertModelIntroducerOrCustomerListAsync(model, cancellationToken);
-                model.AutoFocusOnIntroducerPanel = true;
-                return View("~/Views/Customer/CustomerUpsert/CustomerUpdatePage.cshtml", model);
-            case CustomerUpsertModel.SubmitAction.UnpickIntroducer:
-                model.PickedIntroducerId = null;
-                model.AutoFocusOnIntroducerPanel = true;
-                await LoadUpsertModelIntroducerOrCustomerListAsync(model, cancellationToken);
-                return View("~/Views/Customer/CustomerUpsert/CustomerUpdatePage.cshtml", model);
-            case CustomerUpsertModel.SubmitAction.Submit:
-                try
-                {
-                    CustomerUpdateRequestDto updateRequestDto = model.ToUpdateRequestDto();
-                    await _mediator.Send(updateRequestDto, cancellationToken);
-                    return RedirectToAction("Detail", "Customer", new { id, fragment = "" });
-                }
-                catch (Exception exception)
-                {
-                    switch (exception)
-                    {
-                        case ValidationException validationException:
-                            await LoadUpsertModelIntroducerOrCustomerListAsync(model, cancellationToken);
-                            ModelState.AddModelErrors(validationException);
-                            return View("~/Views/Customer/CustomerUpsert/CustomerUpdatePage.cshtml", model);
-                        case OperationException operationException:
-                            await LoadUpsertModelIntroducerOrCustomerListAsync(model, cancellationToken);
-                            ModelState.AddModelErrors(operationException);
-                            return View("~/Views/Customer/CustomerUpsert/CustomerUpdatePage.cshtml", model);
-                        default:
-                            throw;
-                    }
-                }
-            default:
-                ErrorModel errorModel = new()
-                {
-                    ReturningPageUrl = Url.Action("Update", new { id }),
-                    ReturningPageName = "Chỉnh sửa khách hàng"
-                };
-
-                return RedirectToAction("Index", "Error", new { model = errorModel });
+            CustomerUpdateRequestDto updateRequestDto = model.ToUpdateRequestDto();
+            await _mediator.Send(updateRequestDto, cancellationToken);
+            return RedirectToAction("Detail", "Customer", new { id, fragment = "" });
         }
+        catch (Exception exception)
+        {
+            switch (exception)
+            {
+                case ValidationException validationException:
+                    await LoadUpsertModelIntroducerOrCustomerListAsync(model, cancellationToken);
+                    ModelState.AddModelErrors(validationException);
+                    return View("~/Views/Customer/CustomerUpsert/CustomerUpdatePage.cshtml", model);
+                case OperationException operationException:
+                    await LoadUpsertModelIntroducerOrCustomerListAsync(model, cancellationToken);
+                    ModelState.AddModelErrors(operationException);
+                    return View("~/Views/Customer/CustomerUpsert/CustomerUpdatePage.cshtml", model);
+                default:
+                    throw;
+            }
+        }
+    }
+
+    [HttpPost("upsert-customer-list-partial")]
+    public async Task<PartialViewResult> UpsertCustomerListPartial(
+        [FromForm] Guid? excludeId,
+        [FromForm] string? searchContent,
+        [FromForm] int? page,
+        CancellationToken token)
+    {
+        CustomerListModel model = new()
+        {
+            SearchContent = searchContent,
+            Page = page,
+            ResultsPerPage = 8,
+        };
+        
+        CustomerGetListRequestDto requestDto = model.ToRequestDto();
+        if (excludeId.HasValue)
+        {
+            requestDto.ExcludedIds.Add(excludeId.Value);
+        }
+        
+        CustomerGetListResponseDto responseDto = await _mediator.Send(requestDto, token);
+        model.MapFromResponseDto(responseDto);
+
+        return PartialView("~/Views/Customer/CustomerUpsert/_IntroducerPanelCustomerList.cshtml", model);
+    }
+
+    [HttpGet("upsert-picked-introducer-partial")]
+    public async Task<PartialViewResult> UpsertPickedIntroducerPartial(Guid pickedIntroducerId, CancellationToken token)
+    {
+        CustomerGetDetailRequestDto requestDto = new() { Id = pickedIntroducerId };
+        CustomerGetDetailResponseDto responseDto = await _mediator.Send(requestDto, token);
+        CustomerBasicModel model = new(responseDto);
+
+        return PartialView("~/Views/Customer/CustomerUpsert/_IntroducerPanelPickedIntroducer.cshtml", model);
     }
     #endregion
 
@@ -134,9 +149,7 @@ public class CustomerController : Controller
             model.CustomerList.ResultsPerPage = 8;
             CustomerGetListRequestDto listRequestDto = model.CustomerList.ToRequestDto();
             listRequestDto.ExcludedIds.Add(model.Id);
-            CustomerGetListResponseDto listResponseDto = await _mediator.Send(
-                listRequestDto,
-                token);
+            CustomerGetListResponseDto listResponseDto = await _mediator.Send(listRequestDto, token);
             model.CustomerList.MapFromResponseDto(listResponseDto);
         }
     }

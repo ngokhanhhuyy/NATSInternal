@@ -1,10 +1,5 @@
 @model AbstractListModel
 @{
-    Console.WriteLine($"SmallScreenStartingPage {Model.SmallScreenStartingPage}");
-    Console.WriteLine($"SmallScreenEndingPage {Model.SmallScreenEndingPage}");
-    Console.WriteLine($"LargeScreenStartingPage {Model.LargeScreenStartingPage}");
-    Console.WriteLine($"LargeScreenEndingPage {Model.LargeScreenEndingPage}");
-    
     bool IsPageExceedingSmallScreenRange(int page)
     {
         return page < Model.SmallScreenStartingPage || page > Model.SmallScreenEndingPage;
@@ -17,7 +12,7 @@
 
     string ComputePageButtonClassName(int page)
     {
-        List<string> classNames = new() { "btn min-w-8.5" };
+        List<string> classNames = new() { "btn min-w-8.5 pagination-button" };
         if (IsPageExceedingSmallScreenRange(page))
         {
             classNames.Add("hidden sm:flex");
@@ -38,7 +33,7 @@
         @if (IsPageExceedingSmallScreenRange(1))
         {
             <div class="flex gap-2 @(IsPageExceedingLargeScreenRange(1) ? null : "sm:hidden")">
-                <input type="submit" asp-for="Page" value="1" class="btn min-w-8.5" />
+                <input type="submit" asp-for="Page" value="1" class="btn min-w-8.5 pagination-button" />
                 <span>...</span>
             </div>
         }
@@ -52,7 +47,7 @@
         {
             <div class="flex gap-2 @(IsPageExceedingLargeScreenRange(Model.PageCount) ? null : "sm:hidden")">
                 <span>...</span>
-                <input type="submit" asp-for="Page" value="@Model.PageCount" class="btn min-w-8.5" />
+                <input type="submit" asp-for="Page" value="@Model.PageCount" class="btn min-w-8.5 pagination-button" />
             </div>
         }
     </div>
