@@ -13,7 +13,7 @@
             class="flex flex-col gap-3"
             asp-action="UpsertCustomerListPartial"
             asp-controller="Customer"
-            method="post">
+            method="get">
         <div class="flex justify-between gap-3">
             <!-- Search -->
             <input asp-for="SearchContent"
@@ -22,10 +22,11 @@
                     placeholder="Tìm kiếm"/>
             <input asp-for="ResultsPerPage" type="hidden"/>
             
-            @if (excludedId.HasValue)
+            @if (ViewBag.CustomerListExcludedId != null)
             {
-                <input name="excludedId" value="@excludedId" type="hidden" />
+                <input name="excludedId" value="@ViewBag.CustomerListExcludedId" type="hidden" />
             }
+            
             <button type="submit" class="btn gap-1 shrink-0 grow-0 aspect-square md:aspect-auto">
                 <i class="bi bi-search"></i>
                 <span class="hidden md:inline">Tìm kiếm</span>
@@ -37,10 +38,7 @@
     </form>
 
     <!-- List -->
-    <form id="customer-upsert-pick-introducer-form"
-            class="results-list-container flex flex-col justify-stretch gap-3"
-            asp-action="UpsertPickedIntroducerPartial"
-            asp-controller="Customer">
+    <div class="results-list-container flex flex-col justify-stretch gap-3">
         <ul class="list-group">
             @if (Model.Items.Count > 0)
             {
@@ -57,13 +55,16 @@
                             </span>
                         </div>
 
-                        <button name="PickedIntroducer"
-                                value="@customer.Id"
-                                type="submit"
-                                class="btn gap-1 introducer-pick-button">
-                            <i class="bi bi-check-lg"></i>
-                            <span class="hidden md:inline">Chọn</span>
-                        </button>
+                        <form class="customer-upsert-pick-introducer-form"
+                                asp-action="UpsertPickedIntroducerPartial"
+                                asp-controller="Customer"
+                                method="get">
+                            <input name="PickedIntroducerId" value="@customer.Id" type="hidden" />
+                            <button type="submit" class="btn gap-1 introducer-pick-button">
+                                <i class="bi bi-check-lg"></i>
+                                <span class="hidden md:inline">Chọn</span>
+                            </button>
+                        </form>
                     </li>
                 }
             }
@@ -74,5 +75,5 @@
                 </li>
             }
         </ul>
-    </form>
+    </div>
 </div>

@@ -3,10 +3,9 @@
 <form id="customer-upsert-unpick-introducer-form"
         class="flex items-center gap-3 flex-1"
         asp-action="UpsertCustomerListPartial"
-        asp-controller="Customer">
-    <img src="@Model.AvatarUrl"
-            class="img-thumbnail size-14"
-            alt="@Model.FullName"/>
+        asp-controller="Customer"
+        method="get">
+    <img src="@Model.AvatarUrl" class="img-thumbnail size-14" alt="@Model.FullName"/>
 
     <div class="flex-1">
         <a asp-new-tab="@true"
@@ -26,4 +25,9 @@
         <i class="bi bi-x-lg"></i>
         <span class="hidden md:inline">Bỏ chọn</span>
     </button>
+    
+    @if (ViewBag.CustomerListExcludedId != null)
+    {
+        <input name="excludedId" value="@ViewBag.CustomerListExcludedId" type="hidden" />
+    }
 </form>

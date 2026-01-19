@@ -97,11 +97,11 @@ public class CustomerController : Controller
         }
     }
 
-    [HttpPost("upsert-customer-list-partial")]
+    [HttpGet("upsert-customer-list-partial")]
     public async Task<PartialViewResult> UpsertCustomerListPartial(
-        [FromForm] Guid? excludeId,
-        [FromForm] string? searchContent,
-        [FromForm] int? page,
+        [FromQuery] Guid? excludedId,
+        [FromQuery] string? searchContent,
+        [FromQuery] int? page,
         CancellationToken token)
     {
         CustomerListModel model = new()
@@ -112,9 +112,9 @@ public class CustomerController : Controller
         };
         
         CustomerGetListRequestDto requestDto = model.ToRequestDto();
-        if (excludeId.HasValue)
+        if (excludedId.HasValue)
         {
-            requestDto.ExcludedIds.Add(excludeId.Value);
+            requestDto.ExcludedIds.Add(excludedId.Value);
         }
         
         CustomerGetListResponseDto responseDto = await _mediator.Send(requestDto, token);
@@ -124,7 +124,9 @@ public class CustomerController : Controller
     }
 
     [HttpGet("upsert-picked-introducer-partial")]
-    public async Task<PartialViewResult> UpsertPickedIntroducerPartial(Guid pickedIntroducerId, CancellationToken token)
+    public async Task<PartialViewResult> UpsertPickedIntroducerPartial(
+        [FromQuery] Guid pickedIntroducerId,
+        CancellationToken token)
     {
         CustomerGetDetailRequestDto requestDto = new() { Id = pickedIntroducerId };
         CustomerGetDetailResponseDto responseDto = await _mediator.Send(requestDto, token);
