@@ -52,6 +52,45 @@ public class CustomerController : Controller
         return View("~/Views/Customer/CustomerDetail/CustomerDetailPage.cshtml", model);
     }
 
+    [HttpGet("tao-moi")]
+    public async Task<IActionResult> Create(CancellationToken cancellationToken)
+    {
+        CustomerUpsertModel model = new();
+        await LoadUpsertModelIntroducerOrCustomerListAsync(model, cancellationToken);
+
+        return View("~/Views/Customer/CustomerUpsert/CustomerCreatePage.cshtml", model);
+
+    }
+
+    [HttpPost("tao-moi")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(CustomerUpsertModel model, CancellationToken cancellationToken)
+    {
+        try
+        {
+            CustomerCreateRequestDto requestDto = model.ToCreateRequestDto();
+            Guid id = await _mediator.Send(requestDto, cancellationToken);
+
+            return RedirectToAction("Detail", new { id });
+        }
+        catch (Exception exception)
+        {
+            switch (exception)
+            {
+                case ValidationException validationException:
+                    await LoadUpsertModelIntroducerOrCustomerListAsync(model, cancellationToken);
+                    ModelState.AddModelErrors(validationException);
+                    return View("~/Views/Customer/CustomerUpsert/CustomerCreatePage.cshtml", model);
+                case OperationException operationException:
+                    await LoadUpsertModelIntroducerOrCustomerListAsync(model, cancellationToken);
+                    ModelState.AddModelErrors(operationException);
+                    return View("~/Views/Customer/CustomerUpsert/CustomerCreatePage.cshtml", model);
+                default:
+                    throw;
+            }
+        }
+    }
+
     [HttpGet("{id:guid}/chinh-sua")]
     public async Task<IActionResult> Update(Guid id, CancellationToken cancellationToken)
     {
@@ -62,7 +101,6 @@ public class CustomerController : Controller
             Id = id
         };
         
-        model.CustomerList.ResultsPerPage = 8;
         await LoadUpsertModelIntroducerOrCustomerListAsync(model, cancellationToken);
         
         return View("~/Views/Customer/CustomerUpsert/CustomerUpdatePage.cshtml", model);

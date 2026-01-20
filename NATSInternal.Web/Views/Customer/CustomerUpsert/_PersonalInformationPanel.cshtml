@@ -9,7 +9,11 @@
     </div>
     
     <div class="panel-body px-4 pt-2.5 pb-4">
-        <form id="@ViewBag.FormId" action="@ViewBag.FormAction" method="post" class="flex flex-col gap-3 ">
+        <form id="customer-upsert-form"
+                action="@ViewBag.FormAction"
+                method="post"
+                class="flex flex-col gap-3"
+                data-picked-introducer-id-input-id="@Html.IdFor(m => m.PickedIntroducerId)">
             <!-- 1stRow -->
             <div class="grid grid-cols-1 sm:grid-cols-6 gap-3">
                 <!-- FirstName -->
@@ -95,6 +99,12 @@
                     <span asp-validation-for="Note"></span>
                 </div>
             </div>
+
+            <!-- PickedIntroducer -->
+            <input asp-for="PickedIntroducerId" type="hidden"/>
+            
+            <!-- AntiForgeryToken -->
+            @Html.AntiForgeryToken()
         </form>
     </div>
 </div>

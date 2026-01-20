@@ -1,3 +1,20 @@
+@model CustomerUpsertModel
 @{
     Layout = "Layouts/_MainContainer";
+    ViewBag.PageTitle = "Taoj khách hàng";
+    ViewBag.FormAction = Url.Action("Create", "Customer");
+}
+
+<div id="customer-update-page" class="flex flex-col gap-3">
+    <partial name="~/Views/Customer/CustomerUpsert/_PersonalInformationPanel.cshtml"/>
+
+    <partial name="~/Views/Customer/CustomerUpsert/_IntroducerPanel.cshtml"/>
+
+    <div class="flex justify-end gap-3">
+        <partial name="~/Views/Shared/Form/SubmitButton.cshtml" model="@("customer-upsert-form")" />
+    </div>
+</div>
+
+@section PageDescription {
+    Tạo một khách hàng mới, bao gồm thông tin cá nhân và người giới thiệu.
 }
