@@ -135,6 +135,16 @@ public class CustomerController : Controller
         }
     }
 
+    [HttpPost("{id:guid}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    {
+        CustomerDeleteRequestDto requestDto = new() { Id = id };
+        await _mediator.Send(requestDto, cancellationToken);
+
+        return RedirectToAction("List");
+    }
+
     [HttpGet("upsert-customer-list-partial")]
     public async Task<PartialViewResult> UpsertCustomerListPartial(
         [FromQuery] Guid? excludedId,

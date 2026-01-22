@@ -275,6 +275,7 @@
     flex-direction: column;
     justify-content: start;
     align-items: stretch;
+    flex: 1;
     margin-inline: --spacing(3);
     margin-top: --spacing(3);
     overflow-inline: hidden;

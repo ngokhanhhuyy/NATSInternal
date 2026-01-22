@@ -1,0 +1,10 @@
+#confirmation-page {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+
+    .panel {
+        width: 100%;
+        max-width: --spacing(150);
+    }
+}

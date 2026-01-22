@@ -14,7 +14,7 @@
   };
 }
 
-@if (currentController + "Controller" != nameof(AuthenticationController))
+@if (currentController + "Controller" is not nameof(AuthenticationController))
 {
   <nav id="navbar">
     <div id="navbar-container">

@@ -1,7 +1,12 @@
 @model CustomerUpsertModel
 @{
     Layout = "Layouts/_MainContainer";
-    ViewBag.PageTitle = "Taoj khách hàng";
+    ViewBag.PageTitle = "Tạo khách hàng mới";
+    ViewBag.BreadcrumbItems = new List<BreadcrumbItemModel>
+    {
+        new("Khách hàng", Url.Action("List", "Customer")),
+        new("Tạo mới", Url.Action("Create", "Customer")),
+    };
     ViewBag.FormAction = Url.Action("Create", "Customer");
 }
 

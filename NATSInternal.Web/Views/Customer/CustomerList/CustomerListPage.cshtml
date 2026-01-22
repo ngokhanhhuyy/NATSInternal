@@ -3,6 +3,11 @@
 @{
     Layout = "Pages/_ListPageLayout";
     ViewBag.PageTitle = "Danh sách khách hàng";
+    ViewBag.BreadcrumbItems = new List<BreadcrumbItemModel>
+    {
+        new("Khách hàng", Url.Action("List", "Customer"))
+    };
+    
     ViewBag.CreateRoutePath = Url.Action("List", "Customer");
 }
 
@@ -62,6 +67,12 @@
                 }
             </tbody>
         </table>
+    </div>
+}
+else
+{
+    <div class="flex justify-center items-center px-3 py-10 opacity-50">
+        Không tìm thấy kết quả
     </div>
 }
 

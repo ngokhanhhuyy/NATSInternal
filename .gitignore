@@ -87,3 +87,4 @@ test-results/
 # Editor / OS specific
 .DS_Store
 Thumbs.db
+/NATSInternal.Web/NATSInternal.Web.csproj.user

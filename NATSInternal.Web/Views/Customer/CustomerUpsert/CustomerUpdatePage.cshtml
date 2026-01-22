@@ -2,6 +2,12 @@
 @{
     Layout = "Layouts/_MainContainer";
     ViewBag.PageTitle = "Chỉnh sửa khách hàng";
+    ViewBag.BreadcrumbItems = new List<BreadcrumbItemModel>
+    {
+        new("Khách hàng", Url.Action("List", "Customer")),
+        new("Chi tiết", Url.Action("Detail", "Customer", new { id = Model.Id })),
+        new("Chỉnh sửa", Url.Action("Update", "Customer", new { id = Model.Id }))
+    };
     ViewBag.FormAction = Url.Action("Update", "Customer", new { id = Model.Id });
     ViewBag.CustomerListExcludedId = Model.Id;
 }

@@ -50,104 +50,99 @@
     }
 }
 
-@utility btn-primary {
-    background-color: black;
-    color: white;
-    border-color: black;
+@layer utilities {
+    .btn-primary {
+        background-color: black;
+        color: white;
+        border-color: black;
 
-    &:hover {
-        background-color: rgba(0, 0, 0, 70%);
-        border-color: rgba(0, 0, 0, 70%);
-    }
-
-    @variant dark {
-        & {
-            background-color: var(--color-neutral-200);
-            color: black;
-            border-color: white;
-
-            &:hover {
-                background-color: var(--color-neutral-300);
-                border-color: var(--color-neutral-100);
-            }
+        &:hover {
+            background-color: rgba(0, 0, 0, 70%);
+            border-color: rgba(0, 0, 0, 70%);
         }
-    }
-}
 
-@utility btn-danger {
-    background: var(--color-red-500);
-    color: white;
-    border-color: var(--color-red-500);
+        @variant dark {
+            & {
+                background-color: var(--color-neutral-200);
+                color: black;
+                border-color: white;
 
-    &.outline-only {
-        background: white;
-        color: var(--color-red-500);
-    }
-
-    &:hover {
-        background: var(--color-red-600);
-
-        &.outline-only {
-            color: white;
-        }
-    }
-
-    @variant dark {
-        & {
-            background: var(--color-red-700);
-            color: white;
-            border-color: var(--color-red-600);
-
-            &.outline-only {
-                background: var(--color-neutral-800);
-                color: var(--color-red-500);
-            }
-
-            &:hover {
-                background: var(--color-red-800);
-
-                &.outline-only {
-                    color: white;
+                &:hover {
+                    background-color: var(--color-neutral-300);
+                    border-color: var(--color-neutral-100);
                 }
             }
         }
     }
-}
 
-@utility btn-panel-header {
-    border-color: rgba(0, 0, 0, 20%);
-
-    @variant dark {
-        & {
-            border-color: rgba(255, 255, 255, 20%);
-        }
-    }
-}
-
-@utility btn-sm {
-    --padding-inline-coeffecient: 1.5;
-    --padding-block-coeffecient: 0.85;
-    --min-height-coeffecient: 7;
-    font-size: var(--text-sm);
-    border-radius: var(--radius-md);
-
-    & > svg {
-        --size-coeffecient: 3.5;
-    }
-}
-
-@utility btn-as-input {
-    background: rgba(0, 0, 0, 2.5%);
-
-    &:hover {
-        background: rgba(0, 0, 0, 10%);
-    }
-
-    html.dark {
-        background: rgba(255, 255, 255, 2.5%);
+    .btn-danger {
+        background: var(--color-red-500);
+        color: white;
+        border-color: var(--color-red-500);
 
         &:hover {
-            background: rgba(255, 255, 255, 15%);
+            background: var(--color-red-600);
+        }
+
+        @variant dark {
+            & {
+                background: var(--color-red-700);
+                color: white;
+                border-color: var(--color-red-600);
+
+                &:hover {
+                    background: var(--color-red-800);
+                }
+            }
+        }
+    }
+
+    .btn-danger-outline {
+        background: transparent;
+        color: var(--color-red-500);
+        border-color: var(--color-red-500);
+
+        &:hover {
+            background: var(--color-red-600);
+            color: white;
+        }
+    }
+
+    .btn-panel-header, .btn-panel-footer {
+        border-color: rgba(0, 0, 0, 20%);
+
+        @variant dark {
+            & {
+                border-color: rgba(255, 255, 255, 20%);
+            }
+        }
+    }
+
+    .btn-sm {
+        --padding-inline-coeffecient: 1.5;
+        --padding-block-coeffecient: 0.85;
+        --min-height-coeffecient: 7;
+        font-size: var(--text-sm);
+        border-radius: var(--radius-md);
+
+        & > svg {
+            --size-coeffecient: 3.5;
+        }
+    }
+
+    .btn-as-input {
+        background: rgba(0, 0, 0, 2.5%);
+
+        &:hover {
+            background: rgba(0, 0, 0, 10%);
+        }
+
+        html.dark {
+            background: rgba(255, 255, 255, 2.5%);
+
+            &:hover {
+                background: rgba(255, 255, 255, 15%);
+            }
         }
     }
 }

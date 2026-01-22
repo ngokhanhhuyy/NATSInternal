@@ -1,6 +1,6 @@
 namespace NATSInternal.Web.Models;
 
-public class ErrorModel
+public class ConfirmationModel
 {
     #region Properties
     public string? ReturningPageUrl { get; set; }
