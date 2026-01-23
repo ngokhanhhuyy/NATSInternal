@@ -4,6 +4,7 @@
         flex-direction: column;
         overflow: hidden;
         box-sizing: border-box;
+        border-radius: var(--radius-lg);
     }
 
     .panel-header {

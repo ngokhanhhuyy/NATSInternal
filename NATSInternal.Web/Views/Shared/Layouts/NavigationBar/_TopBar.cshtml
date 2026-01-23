@@ -1,16 +1,26 @@
-<div id="topbar">
-  <div id="topbar-container">
-    <!-- Main Logo -->
-    <partial name="~/Views/Shared/Layouts/NavigationBar/_MainLogo.cshtml" />
-    
-    <!-- Theme Toggle Button -->
-    <button id="theme-toggle-button" class="btn h-full aspect-[1.2]" type="button">
-      <i></i>
-    </button>
+@{
+    string? currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+}
 
-    <!-- Navigation bar toggle button -->
-    <button id="navbar-toggle-button" class="btn h-full aspect-[1.2] md:hidden shrink-0">
-      <i class="bi bi-list"></i>
-    </button>
-  </div>
+<div id="topbar">
+    <div id="topbar-container">
+        <!-- Main Logo -->
+        <partial name="~/Views/Shared/Layouts/NavigationBar/_MainLogo.cshtml" />
+
+        <!-- Blank separator -->
+        <div class="flex-1"></div>
+
+        <!-- Theme Toggle Button -->
+        <button id="theme-toggle-button" class="btn h-full aspect-[1.2]" type="button">
+            <i></i>
+        </button>
+
+        <!-- Navigation bar toggle button -->
+        @if (currentController + "Controller" is not nameof(ConfirmationController))
+        {
+            <button id="navbar-toggle-button" class="btn h-full aspect-[1.2] md:hidden shrink-0">
+                <i class="bi bi-list"></i>
+            </button>
+        }
+    </div>
 </div>

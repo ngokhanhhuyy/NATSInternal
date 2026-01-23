@@ -1,5 +1,5 @@
 @{
-    Layout = "~/Views/COnfirmation/_ConfirmationPageLayout.cshtml";
+    Layout = "~/Views/Shared/Layouts/_RootLayout.cshtml";
     ViewBag.PageTitle = "Không tìm thấy trang";
     ViewBag.BreadcrumbItems = new List<BreadcrumbItemModel>
     {
@@ -7,25 +7,27 @@
     };
 }
 
-<div id="not-found-error-panel" class="panel">
-    <div class="panel-header">
-        <div class="panel-header-title">
-            Trang hoặc dữ liệu không tồn tại
+<div class="flex justify-center items-start p-5 pt-[33vh]">
+    <div id="not-found-error-panel" class="panel bg-white dark:bg-neutral-800 shadow-sm md:-translate-y-[50%]">
+        <div class="panel-header bg-transparent">
+            <div class="panel-header-title text-red-600 dark:text-red-400">
+                Trang hoặc dữ liệu không tồn tại
+            </div>
         </div>
-    </div>
 
-    <div class="panel-body flex items-center gap-5 p-6">
-        <i class="bi bi-exclamation-circle-fill text-red-500/80 text-3xl"></i>
-        <div>
-            <span>Trang hoặc dữ liệu bạn yêu cầu không tồn tại hoặc đã bị xoá.</span><br/>
-            <span>Nếu đây là một lỗi bất thường, xin hãy thông báo cho nhà phát triển.</span>
+        <div class="panel-body flex items-center gap-5 p-6">
+            <i class="bi bi-exclamation-circle-fill text-red-600 dark:text-red-400 text-4xl"></i>
+            <div>
+                <span>Trang hoặc dữ liệu bạn yêu cầu không tồn tại hoặc đã bị xoá.</span><br/>
+                <span>Nếu đây là một lỗi bất thường, xin hãy thông báo cho nhà phát triển.</span>
+            </div>
         </div>
-    </div>
 
-    <div class="panel-footer flex justify-end gap-3">
-        <a asp-action="Index" asp-controller="Dashboard" class="btn btn-panel-footer gap-2">
-            <i class="bi bi-house"></i>
-            <span>Quay lại trang chủ</span>
-        </a>
+        <div class="panel-footer bg-transparent flex justify-end gap-3">
+            <a asp-action="Index" asp-controller="Dashboard" class="btn gap-2">
+                <i class="bi bi-house"></i>
+                <span>Quay lại trang chủ</span>
+            </a>
+        </div>
     </div>
 </div>

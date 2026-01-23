@@ -46,8 +46,7 @@
 #topbar-container {
     width: 100%;
     max-width: --spacing(384);
-    display: grid;
-    grid-template-columns: 1fr auto auto;
+    display: flex;
     align-items: stretch;
     gap: --spacing(3);
     margin-inline: auto;

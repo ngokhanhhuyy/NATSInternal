@@ -1,35 +1,36 @@
 @{
-  string? currentController = ViewContext.RouteData.Values["controller"]?.ToString();
-  
-  Dictionary<string, NavigationBarItemModel> itemsData = new()
-  {
-    { "Trang chủ", new(nameof(DashboardController), nameof(DashboardController.Index), "bi-house") },
-    { DisplayNames.Customer, new(nameof(CustomerController), nameof(CustomerController.List), "bi-person-circle") },
-    { DisplayNames.Product, new("ProductController", nameof(DashboardController.Index), "bi-box-seam") },
-    { DisplayNames.Supply, new("SupplyController", nameof(DashboardController.Index), "bi-truck") },
-    { DisplayNames.Order, new("OrderController", nameof(DashboardController.Index), "bi-cart4") },
-    { DisplayNames.Debt, new("DebtController", nameof(DashboardController.Index), "bi-hourglass-bottom") },
-    { "Báo cáo", new("ReportController", nameof(DashboardController.Index), "bi-graph-up-arrow") },
-    { DisplayNames.User, new("UserController", nameof(DashboardController.Index), "bi-person-badge") },
-  };
+    string? currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+
+    Dictionary<string, NavigationBarItemModel> itemsData = new()
+    {
+        { "Trang chủ", new(nameof(DashboardController), nameof(DashboardController.Index), "bi-house") },
+        { DisplayNames.Customer, new(nameof(CustomerController), nameof(CustomerController.List), "bi-person-circle") },
+        { DisplayNames.Product, new("ProductController", nameof(DashboardController.Index), "bi-box-seam") },
+        { DisplayNames.Supply, new("SupplyController", nameof(DashboardController.Index), "bi-truck") },
+        { DisplayNames.Order, new("OrderController", nameof(DashboardController.Index), "bi-cart4") },
+        { DisplayNames.Debt, new("DebtController", nameof(DashboardController.Index), "bi-hourglass-bottom") },
+        { "Báo cáo", new("ReportController", nameof(DashboardController.Index), "bi-graph-up-arrow") },
+        { DisplayNames.User, new("UserController", nameof(DashboardController.Index), "bi-person-badge") },
+    };
 }
 
-@if (currentController + "Controller" is not nameof(AuthenticationController))
+@if (currentController + "Controller" is not nameof(AuthenticationController) and not nameof(ConfirmationController))
 {
-  <nav id="navbar">
-    <div id="navbar-container">
-      <div id="navbar-item-list" class="flex flex-col items-stretch">
-        @foreach ((string key, NavigationBarItemModel itemModel) in itemsData)
-        {
-          bool isActive = itemModel.Controller == currentController;
-          <a asp-controller="@itemModel.Controller" asp-action="@itemModel.Action" class="@(isActive ? "active" : "")">
-            <i class="bi @itemModel.IconClassName"></i>
-            <span class="inline-block md:hidden lg:inline-block">
-              @key
-            </span>
-          </a>
-        }
-      </div>
-    </div>
-  </nav>
+    <nav id="navbar">
+        <div id="navbar-container">
+            <div id="navbar-item-list" class="flex flex-col items-stretch">
+                @foreach ((string key, NavigationBarItemModel itemModel) in itemsData)
+                {
+                    bool isActive = itemModel.Controller == currentController;
+                    <a asp-controller="@itemModel.Controller" asp-action="@itemModel.Action"
+                        class="@(isActive ? "active" : "")">
+                        <i class="bi @itemModel.IconClassName"></i>
+                        <span class="inline-block md:hidden lg:inline-block">
+                            @key
+                        </span>
+                    </a>
+                }
+            </div>
+        </div>
+    </nav>
 }
