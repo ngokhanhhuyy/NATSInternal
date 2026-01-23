@@ -6,7 +6,7 @@
 }
 
 <div id="delete-confirmation-panel" class="panel">
-    <div class="panel-header bg-transparent">
+    <div class="panel-header bg-yellow-500/10 border-yellow-700/25">
         <div class="panel-header-title text-yellow-500 dark:text-yellow-400">
             Xác nhận xoá dữ liệu
         </div>
@@ -27,7 +27,7 @@
         </a>
 
         <form action="@Model.ActionUrl" method="post">
-            <button type="submit" class="btn btn-danger-outline gap-2">
+            <button type="submit" class="btn btn-danger-outline">
                 <i class="bi bi-trash3"></i>
                 <span>Xác nhận xoá</span>
             </button>
