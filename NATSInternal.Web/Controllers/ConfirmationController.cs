@@ -13,15 +13,21 @@ public class ConfirmationController : Controller
     }
 
     [HttpGet("/loi-du-lieu")]
-    public IActionResult ValidationError([FromQuery] ConfirmationModel model)
+    public IActionResult ValidationError()
     {
-        return View("~/Views/Confirmation/ValidationErrorPage.cshtml", model);
+        return View("~/Views/Confirmation/ValidationErrorPage.cshtml");
     }
 
     [HttpGet("/luu-thanh-cong")]
-    public IActionResult SuccessfulSubmissionPage([FromQuery] ConfirmationModel model)
+    public IActionResult SuccessfulSubmissionPage()
     {
-        return View("~/Views/Confirmation/ValidationErrorPage.cshtml", model);
+        return View("~/Views/Confirmation/ValidationErrorPage.cshtml");
+    }
+
+    [HttpGet("/xac-nhan-xoa")]
+    public IActionResult DeleteConfirmation([FromQuery] DeleteConfirmationModel model)
+    {
+        return View("~/Views/Confirmation/DeleteConfirmationPage.cshtml", model);
     }
     #endregion
 }

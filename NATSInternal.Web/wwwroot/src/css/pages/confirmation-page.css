@@ -2,9 +2,37 @@
     width: 100%;
     display: flex;
     justify-content: center;
+    align-items: start;
+    padding: 33vh --spacing(5) --spacing(5) --spacing(5);
 
-    .panel {
+    & .panel {
+        background-color: white;
         width: 100%;
         max-width: --spacing(150);
+        box-shadow: var(--shadow-lg);
+
+        @variant dark {
+            & {
+                background-color: --alpha(var(--color-white) / 10%);
+            }
+        }
+
+        & .panel-body {
+            display: flex;
+            align-items: center;
+            gap: --spacing(5);
+            padding: --spacing(6);
+        }
+
+        & .panel-footer {
+            background-color: transparent;
+            display: flex;
+            justify-content: end;
+            gap: --spacing(3);
+        }
+
+        @media (min-width: theme(screens.md)) {
+            transform: translateY(-50%);
+        }
     }
 }

@@ -12,9 +12,14 @@
         { "Báo cáo", new("ReportController", nameof(DashboardController.Index), "bi-graph-up-arrow") },
         { DisplayNames.User, new("UserController", nameof(DashboardController.Index), "bi-person-badge") },
     };
+
+    string currentControllerFullName = currentController + "Controller";
+    bool isAuthenticationController = currentControllerFullName is nameof(AuthenticationController);
+    bool isConfirmationController = currentControllerFullName is nameof(ConfirmationController);
+    bool hideNavigationBar = ViewBag.HideNavigationBar is not null and true;
 }
 
-@if (currentController + "Controller" is not nameof(AuthenticationController) and not nameof(ConfirmationController))
+@if (!isAuthenticationController && !isConfirmationController && !hideNavigationBar)
 {
     <nav id="navbar">
         <div id="navbar-container">

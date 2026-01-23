@@ -1,0 +1,32 @@
+@model SuccessfulSubmissionConfirmationModel
+
+@{
+    Layout = "~/Views/Confirmation/_ConfirmationPageLayout.cshtml";
+    ViewBag.PageTitle = "Dữ liệu được lưu thành công";
+}
+
+<div id="successful-submission-confirmation-panel" class="panel">
+    <div class="panel-header bg-transparent">
+        <div class="panel-header-title text-emerald-600 dark:text-emerald-400">
+            Dữ liệu được lưu thành công
+        </div>
+    </div>
+
+    <div class="panel-body">
+        <i class="bi bi-exclamation-triangle-fill text-emerald-600 dark:text-emerald-400 text-4xl"></i>
+        <div>
+            <span>Dữ liệu đã được lưu thành công.</span><br/>
+            <span>Bạn sẽ được tự động chuyển hướng đến trang tiếp theo trong</span>
+            <span id="remaining-seconds" class="text-emerald-600 dark:text-emerald-400 font-bold">3</span>
+            <span>giây.</span><br/>
+            <span>Hãy bấm vào nút <b>"Chuyển hướng"</b> nếu trang không tự động chuyển hướng.</span>
+        </div>
+    </div>
+
+    <div class="panel-footer">
+        <a id="returning-button" href="@Model.ReturningUrl" class="btn">
+            <span>Chuyển hướng</span>
+            <i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+</div>

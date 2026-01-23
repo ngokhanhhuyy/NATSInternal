@@ -1,33 +1,27 @@
 @{
-    Layout = "~/Views/Shared/Layouts/_RootLayout.cshtml";
+    Layout = "~/Views/Confirmation/_ConfirmationPageLayout.cshtml";
     ViewBag.PageTitle = "Dữ liệu không hợp lệ";
-    ViewBag.BreadcrumbItems = new List<BreadcrumbItemModel>
-    {
-        new("Lỗi", Url.Action("ValidationError", "Confirmation"))
-    };
 }
 
-<div class="flex justify-center items-start p-5 pt-[33vh]">
-    <div id="validation-error-error-panel" class="panel bg-white dark:bg-neutral-800 shadow-sm md:-translate-y-[50%]">
-        <div class="panel-header bg-transparent">
-            <div class="panel-header-title text-red-600 dark:text-red-400">
-                Dữ liệu không hợp lệ
-            </div>
+<div id="validation-error-panel" class="panel bg-white dark:bg-neutral-800 shadow-sm md:-translate-y-[50%]">
+    <div class="panel-header bg-transparent">
+        <div class="panel-header-title text-red-600 dark:text-red-400">
+            Dữ liệu không hợp lệ
         </div>
+    </div>
 
-        <div class="panel-body flex items-center gap-5 p-6">
-            <i class="bi bi-exclamation-circle-fill text-red-600 dark:text-red-400 text-4xl"></i>
-            <div>
-                <span>Dữ liệu bạn đã nhập không hợp lệ.</span><br/>
-                <span>Nếu đây là một lỗi bất thường, xin hãy thông báo cho nhà phát triển.</span>
-            </div>
+    <div class="panel-body flex items-center gap-5 p-6">
+        <i class="bi bi-exclamation-circle-fill text-red-600 dark:text-red-400 text-4xl"></i>
+        <div>
+            <span>Dữ liệu bạn đã nhập không hợp lệ.</span><br/>
+            <span>Nếu đây là một lỗi bất thường, xin hãy thông báo cho nhà phát triển.</span>
         </div>
+    </div>
 
-        <div class="panel-footer bg-transparent flex justify-end gap-3">
-            <a asp-action="Index" asp-controller="Dashboard" class="btn gap-2">
-                <i class="bi bi-house"></i>
-                <span>Quay lại trang chủ</span>
-            </a>
-        </div>
+    <div class="panel-footer bg-transparent flex justify-end gap-3">
+        <a asp-action="Index" asp-controller="Dashboard" class="btn gap-2">
+            <i class="bi bi-house"></i>
+            <span>Quay lại trang chủ</span>
+        </a>
     </div>
 </div>

@@ -58,7 +58,7 @@ public class CustomerController : Controller
         CustomerUpsertModel model = new();
         await LoadUpsertModelIntroducerOrCustomerListAsync(model, cancellationToken);
 
-        return View("~/Views/Customer/CustomerUpsert/CustomerCreatePage.cshtml", model);
+        return CreateView(model);
 
     }
 
@@ -80,11 +80,11 @@ public class CustomerController : Controller
                 case ValidationException validationException:
                     await LoadUpsertModelIntroducerOrCustomerListAsync(model, cancellationToken);
                     ModelState.AddModelErrors(validationException);
-                    return View("~/Views/Customer/CustomerUpsert/CustomerCreatePage.cshtml", model);
+                    return CreateView(model);
                 case OperationException operationException:
                     await LoadUpsertModelIntroducerOrCustomerListAsync(model, cancellationToken);
                     ModelState.AddModelErrors(operationException);
-                    return View("~/Views/Customer/CustomerUpsert/CustomerCreatePage.cshtml", model);
+                    return CreateView(model);
                 default:
                     throw;
             }
@@ -103,19 +103,23 @@ public class CustomerController : Controller
         
         await LoadUpsertModelIntroducerOrCustomerListAsync(model, cancellationToken);
         
-        return View("~/Views/Customer/CustomerUpsert/CustomerUpdatePage.cshtml", model);
+        return UpdateView(model);
     }
 
     [HttpPost("{id:guid}/chinh-sua")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Update(Guid id, [FromForm] CustomerUpsertModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(
+        Guid id,
+        [FromForm] CustomerUpsertModel model,
+        CancellationToken cancellationToken)
     {
         model.Id = id;
         try
         {
             CustomerUpdateRequestDto updateRequestDto = model.ToUpdateRequestDto();
             await _mediator.Send(updateRequestDto, cancellationToken);
-            return RedirectToAction("Detail", "Customer", new { id, fragment = "" });
+
+            return this.SuccessfulSubmissionConfirmationView(Url.Action("Detail", new { id }));
         }
         catch (Exception exception)
         {
@@ -124,18 +128,29 @@ public class CustomerController : Controller
                 case ValidationException validationException:
                     await LoadUpsertModelIntroducerOrCustomerListAsync(model, cancellationToken);
                     ModelState.AddModelErrors(validationException);
-                    return View("~/Views/Customer/CustomerUpsert/CustomerUpdatePage.cshtml", model);
+                    return UpdateView(model);
                 case OperationException operationException:
                     await LoadUpsertModelIntroducerOrCustomerListAsync(model, cancellationToken);
                     ModelState.AddModelErrors(operationException);
-                    return View("~/Views/Customer/CustomerUpsert/CustomerUpdatePage.cshtml", model);
+                    return UpdateView(model);
                 default:
                     throw;
             }
         }
     }
 
-    [HttpPost("{id:guid}")]
+    [HttpGet("{id:guid}/xoa-bo")]
+    public IActionResult Delete(Guid id)
+    {
+        DeleteConfirmationModel model = new()
+        {
+            CancelUrl = Url.Action("Detail", new { id })
+        };
+
+        return this.DeleteConfirmationView(model);
+    }
+
+    [HttpPost("{id:guid}/xoa-bo")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
@@ -202,6 +217,16 @@ public class CustomerController : Controller
             CustomerGetListResponseDto listResponseDto = await _mediator.Send(listRequestDto, token);
             model.CustomerList.MapFromResponseDto(listResponseDto);
         }
+    }
+
+    private ViewResult CreateView(CustomerUpsertModel model)
+    {
+        return View("~/Views/Customer/CustomerUpsert/CustomerCreatePage.cshtml", model);
+    }
+
+    private ViewResult UpdateView(CustomerUpsertModel model)
+    {
+        return View("~/Views/Customer/CustomerUpsert/CustomerUpdatePage.cshtml", model);
     }
     #endregion
 }

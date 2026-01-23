@@ -1,7 +1,8 @@
 @{
-    Layout = "~/Views/Shared/Layouts/_MainPageLayout.cshtml";
+    Layout = "~/Views/Shared/Layouts/_RootLayout.cshtml";
+    ViewBag.HideNavigationBar = true;
 }
 
-<div id="confirmation-page" class="p-6">
+<div id="confirmation-page" class="flex justify-center items-start p-5 pt-[33vh]">
     @RenderBody()
 </div>

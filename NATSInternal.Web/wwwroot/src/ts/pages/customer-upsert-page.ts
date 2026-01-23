@@ -4,6 +4,10 @@ let introducerPanelBodyElement: HTMLDivElement;
 const panelBodyLoadingClassList = ["opacity-50", "cursor-wait", "pointer-events-none"];
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (!document.getElementById("customer-create-page") && !document.getElementById("customer-update-page")) {
+    return;
+  }
+
   const upsertFormElement = document.getElementById("customer-upsert-form") as HTMLFormElement;
   const pickedIntroducerIdInputElementId = upsertFormElement
       .getAttribute("data-picked-introducer-id-input-id") as string;
