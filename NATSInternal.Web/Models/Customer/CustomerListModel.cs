@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
 using NATSInternal.Application.Localization;
 using NATSInternal.Application.UseCases.Customers;
 using NATSInternal.Domain.Features.Customers;
@@ -25,6 +24,7 @@ public class CustomerListModel : AbstractListModel<
     #endregion
 }
 
+[DisplayName(DisplayNames.Customer)]
 public class CustomerListCustomerModel
 {
     #region Constructors
