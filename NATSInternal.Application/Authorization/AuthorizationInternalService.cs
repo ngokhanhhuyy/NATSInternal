@@ -50,6 +50,15 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
         };
     }
 
+    public BrandExistingAuthorizationResponseDto GetBrandExistingAuthorization(Brand brand)
+    {
+        return new()
+        {
+            CanEdit = CallerHasPermission(PermissionNames.EditBrand),
+            CanDelete = CallerHasPermission(PermissionNames.DeleteBrand)
+        };
+    }
+
     public bool CanCreateUser()
     {
         return CallerHasPermission(PermissionNames.CreateUser);

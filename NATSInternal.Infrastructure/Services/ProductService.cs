@@ -153,7 +153,12 @@ internal class ProductService : IProductService
         );
 
         IEnumerable<BrandGetListBrandResponseDto> brandResponseDtos = queryResult.Items
-            .Select(b => new BrandGetListBrandResponseDto(b));
+            .Select(b =>
+            {
+                BrandExistingAuthorizationResponseDto authorizationResponseDto;
+                authorizationResponseDto = _authorizationInternalService.GetBrandExistingAuthorization(b);
+                return new BrandGetListBrandResponseDto(b, authorizationResponseDto);
+            });
 
         return new(brandResponseDtos, queryResult.PageCount, queryResult.ItemCount);
     }

@@ -10,7 +10,8 @@ internal interface IAuthorizationInternalService : IAuthorizationService
     UserExistingAuthorizationResponseDto GetUserExistingAuthorization(User targetUser);
     CustomerExistingAuthorizationResponseDto GetCustomerExistingAuthorization(Customer customer);
     ProductExistingAuthorizationResponseDto GetProductExistingAuthorization(Product product);
-    
+    BrandExistingAuthorizationResponseDto GetBrandExistingAuthorization(Brand brand);
+
     bool CanChangeUserPassword(User targetUser);
     bool CanResetUserPassword(User targetUser);
     bool CanDeleteUser(User targetUser);

@@ -1,3 +1,4 @@
+using NATSInternal.Application.Authorization;
 using NATSInternal.Domain.Features.Products;
 
 namespace NATSInternal.Application.UseCases.Products;
@@ -26,11 +27,12 @@ public class BrandGetListResponseDto : IListResponseDto<BrandGetListBrandRespons
 public class BrandGetListBrandResponseDto
 {
     #region Constructors
-    internal BrandGetListBrandResponseDto(Brand brand)
+    internal BrandGetListBrandResponseDto(Brand brand, BrandExistingAuthorizationResponseDto authorization)
     {
         Id = brand.Id;
         Name = brand.Name;
         CountryName = brand.Country?.Name;
+        Authorization = authorization;
     }
     #endregion
 
@@ -38,5 +40,6 @@ public class BrandGetListBrandResponseDto
     public Guid Id { get; }
     public string Name { get; }
     public string? CountryName { get; }
+    public BrandExistingAuthorizationResponseDto Authorization { get; }
     #endregion
 }
