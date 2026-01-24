@@ -1,0 +1,75 @@
+﻿@model ProductListModel
+@{
+    Layout = "Pages/_ListPageLayout";
+    ViewBag.PageTitle = "Danh sách sản phẩm";
+    ViewBag.BreadcrumbItems = new List<BreadcrumbItemModel>
+    {
+        new("Sản phẩm", Url.Action("List", "Product"))
+    };
+    
+    ViewBag.CreateRoutePath = Url.Action("Create", "Product");
+}
+
+@if (Model.Items.Count > 0)
+{
+    <div class="overscroll-x-none h-fit overflow-x-auto">
+        <table id="product-list-page-table" class="data-table data-table-cell-content-nowrap">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.Items[0].Name)</th>
+                    <th>@Html.DisplayNameFor(m => m.Items[0].DefaultAmountBeforeVatPerUnit)</th>
+                    <th>@Html.DisplayNameFor(m => m.Items[0].DefaultVatPercentagePerUnit)</th>
+                    <th>@Html.DisplayNameFor(m => m.Items[0].StockingQuantity)</th>
+                    <th>Lưu ý</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (ProductListProductModel product in Model.Items)
+                {
+                    <tr>
+                        <!-- Name -->
+                        <td>
+                            <a asp-action="Detail" asp-controller="Product" class="font-bold">
+                                @product.Name
+                            </a>
+                        </td>
+
+                        <!-- DefaultAmountBeforeVatPerUnit -->
+                        <td>
+                            @Html.DisplayCurrency(product.DefaultAmountBeforeVatPerUnit)
+                        </td>
+
+                        <!-- DefaultVatPercentagePerUnit -->
+                        <td>
+                            @($"{product.DefaultVatPercentagePerUnit}")%
+                        </td>
+                        
+                        <!-- StockingQuantity -->
+                        <td>
+                            @product.StockingQuantity @product.Unit
+                        </td>
+                        
+                        <!-- Note -->
+                        <td class="text-red-700 dark:text-red-400 align-middle">
+                            @if (product.IsResupplyNeeded)
+                            {
+                                <span>Cần nhập hàng</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="flex justify-center items-center px-3 py-10 opacity-50">
+        Không tìm thấy kết quả
+    </div>
+}
+
+@section PageDescription
+{
+    Danh sách các sản phẩm đang được giao dịch bởi cửa hàng.
+}

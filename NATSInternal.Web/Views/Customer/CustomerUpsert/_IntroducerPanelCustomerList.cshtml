@@ -46,7 +46,7 @@
                 {
                     <li class="list-group-item flex justify-between items-center px-3 py-2">
                         <div class="flex flex-col">
-                            <a asp-new-tab class="font-bold" href="@customer.GetDetailRoutePath(Url)">
+                            <a asp-new-tab asp-action="Detail" asp-route-id="@customer.Id" class="font-bold">
                                 @customer.FullName
                             </a>
 

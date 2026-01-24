@@ -75,6 +75,12 @@
                 }
             }
         }
+
+        @variant dark {
+            & option {
+                background-color: var(--color-neutral-800);
+            }
+        }
     }
 
     /*:is(input[type="checkbox"]) {*/

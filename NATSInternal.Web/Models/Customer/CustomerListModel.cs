@@ -14,13 +14,6 @@ public class CustomerListModel : AbstractListModel<
     CustomerGetListCustomerResponseDto,
     CustomerGetListRequestDto.FieldToSort>
 {
-    #region Methods
-    public override string GetCreateRoutePath(IUrlHelper urlHelper)
-    {
-        return urlHelper.Action("Create", "Customer") ?? "#";
-    }
-    #endregion
-    
     #region ProtectedMethods
     protected override void MapItemsFromResponseDtos(IEnumerable<CustomerGetListCustomerResponseDto> responseDtos)
     {
@@ -69,16 +62,9 @@ public class CustomerListCustomerModel
     public string? PhoneNumber { get; }
     
     [DisplayName(DisplayNames.DebtRemainingAmount)]
-    [DisplayFormat(DataFormatString = "{0:N0} ₫")]
+    [DisplayFormat(DataFormatString = "{0:N0}vnđ")]
     public long DebtRemainingAmount { get; }
     
     public CustomerExistingAuthorizationModel Authorization { get; }
-    #endregion
-    
-    #region Methods
-    public string GetDetailRoutePath(IUrlHelper urlHelper)
-    {
-        return urlHelper.Action("Detail", "Customer", new { id = Id }) ?? "#";
-    }
     #endregion
 }

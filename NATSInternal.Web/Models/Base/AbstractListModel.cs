@@ -47,10 +47,6 @@ public abstract class AbstractListModel
     [BindNever]
     public abstract IReadOnlyDictionary<string, string> SortByFieldNameOptions { get; }
     #endregion
-    
-    #region AbstractMethods
-    public abstract string GetCreateRoutePath(IUrlHelper urlHelper);
-    #endregion
 }
 
 public abstract class AbstractListModel<
