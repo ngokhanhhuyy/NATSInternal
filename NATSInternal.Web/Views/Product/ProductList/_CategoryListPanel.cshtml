@@ -1,0 +1,43 @@
+﻿@model ProductCategoryListModel
+
+<div class="panel">
+    <div class="panel-header">
+        <div class="panel-header-title">
+            Danh sách @DisplayNames.ProductCategory.ToLower()
+        </div>
+
+        <a asp-action="List" asp-controller="ProductCategory" class="btn btn-panel-header btn-sm gap-1">
+            <i class="bi bi-list"></i>
+            <span>Danh sách đầy đủ</span>
+        </a>
+    </div>
+    
+    <div class="panel-body">
+        @if (Model.Items.Count > 0)
+        {
+            <ul class="list-group list-group-flush">
+                @foreach (ProductCategoryListProductCategoryModel productCategory in Model.Items)
+                {
+                    <li class="font-bold px-3 py-2">
+                        @productCategory.Name
+                    </li>
+                }
+                
+                @if (Model.Items.Count < Model.ItemsCount)
+                {
+                    <li class="px-3 py-2 text-center opacity-50">
+                        <a asp-action="List" asp-controller="ProductCategory">
+                            ...và @(Model.ItemsCount - Model.Items.Count) @DisplayNames.ProductCategory.ToLower() khác
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <div class="flex justify-center items-center opacity-50 px-3 py-5">
+                Không tìm thấy kết quả
+            </div>
+        }
+    </div>
+</div>

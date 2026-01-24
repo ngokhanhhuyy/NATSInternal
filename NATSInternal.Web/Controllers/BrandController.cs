@@ -1,0 +1,36 @@
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using NATSInternal.Web.Models;
+
+namespace NATSInternal.Web.Controllers;
+
+[Route("/san-pham/thuong-hieu")]
+[Authorize]
+public class BrandController : Controller
+{
+    #region Fields
+    private readonly IMediator _mediator;
+    #endregion
+
+    #region Constructors
+    public BrandController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+    #endregion
+
+    #region Methods
+    [HttpGet]
+    public IActionResult List([FromQuery] BrandListModel model)
+    {
+        return Ok();
+    }
+
+    [HttpGet("{id:guid}")]
+    public IActionResult Detail([FromRoute] Guid id)
+    {
+        return Ok();
+    }
+    #endregion
+}

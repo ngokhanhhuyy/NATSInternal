@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using NATSInternal.Application.Localization;
 using NATSInternal.Application.UseCases.Products;
 

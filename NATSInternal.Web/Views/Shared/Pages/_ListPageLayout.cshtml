@@ -9,11 +9,7 @@
     int[] resultsPerPageOptions = new[] { 10, 15, 20, 30, 40, 50 };
 }
 
-<form asp-controller="Customer"
-        asp-action="List"
-        method="get"
-        id="searchable-list-filter-form"
-        class="flex flex-col items-strech gap-3">
+<form method="get" id="searchable-list-filter-form" class="flex flex-col items-strech gap-3">
     <!-- FilterPanel -->
     <div class="panel">
         <!-- FilterPanelHeader -->
@@ -104,6 +100,8 @@
     <!-- Pagination -->
     <partial name="Ui/_Paginator"/>
 </form>
+
+@await RenderSectionAsync("AdditionalPanels", required: false)
 
 @section Styles
 {

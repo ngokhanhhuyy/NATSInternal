@@ -31,12 +31,12 @@ public class ProductController : Controller
         // BrandList.
         BrandGetListRequestDto brandListRequestDto = new() { ResultsPerPage = 7 };
         BrandGetListResponseDto brandListResponseDto = await _mediator.Send(brandListRequestDto, token);
-        model.BrandList.MapFromBrandListResponseDto(brandListResponseDto);
+        model.BrandList.MapFromResponseDto(brandListResponseDto);
         
         // ProductCategoryList.
         ProductCategoryGetListRequestDto categoryListRequestDto = new() { ResultsPerPage = 7 };
         ProductCategoryGetListResponseDto categoryListResponseDto = await _mediator.Send(categoryListRequestDto, token);
-        model.CategoryList.MapFromProductCategoryListResponseDto(categoryListResponseDto);
+        model.CategoryList.MapFromResponseDto(categoryListResponseDto);
         
         // ProductList.
         ProductGetListRequestDto requestDto = model.ToRequestDto();

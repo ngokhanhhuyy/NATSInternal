@@ -23,6 +23,11 @@ internal class StockRepository : IStockRepository
         return await _context.Stocks.SingleOrDefaultAsync(s => s.Id == id, cancellationToken);
     }
 
+    public async Task<Stock?> GetSingleStockByProductIdAsync(Guid productId, CancellationToken cancellationToken)
+    {
+        return await _context.Stocks.SingleOrDefaultAsync(s => s.ProductId == productId, cancellationToken);
+    }
+
     public async Task<ICollection<Stock>> GetMultipleStocksByProductIdsAsync(
         IEnumerable<Guid> productIds,
         CancellationToken cancellationToken)

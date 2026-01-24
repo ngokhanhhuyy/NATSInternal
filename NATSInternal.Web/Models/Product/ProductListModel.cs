@@ -13,8 +13,8 @@ public class ProductListModel : AbstractListModel<
     ProductGetListRequestDto.FieldToSort>
 {
     #region Properties
-    public ProductListSecondaryList BrandList { get; set; } = new();
-    public ProductListSecondaryList CategoryList { get; set; } = new();
+    public BrandListModel BrandList { get; set; } = new();
+    public ProductCategoryListModel CategoryList { get; set; } = new();
     #endregion
     
     #region ProtectedMethods
@@ -88,49 +88,5 @@ public class ProductListProductModel
     public BrandBasicModel? Brand { get; set; }
 
     public ProductExistingAuthorizationModel Authorization { get; set; }
-    #endregion
-}
-
-public class ProductListSecondaryList
-{
-    #region Properties
-    public string DisplayName { get; private set; } = string.Empty;
-    public List<ProductListSecondaryListItemModel> Items { get; set; } = new();
-    #endregion
-    
-    #region Methods
-    public void MapFromBrandListResponseDto(BrandGetListResponseDto responseDto)
-    {
-        DisplayName = DisplayNames.Brand;
-        Items = responseDto.Items.Select(dto => new ProductListSecondaryListItemModel(dto)).ToList();
-    }
-    
-    public void MapFromProductCategoryListResponseDto(ProductCategoryGetListResponseDto responseDto)
-    {
-        DisplayName = DisplayNames.ProductCategory;
-        Items = responseDto.Items.Select(dto => new ProductListSecondaryListItemModel(dto)).ToList();
-    }
-    #endregion
-}
-
-public class ProductListSecondaryListItemModel
-{
-    #region Constructors
-    public ProductListSecondaryListItemModel(BrandGetListBrandResponseDto responseDto)
-    {
-        Id = responseDto.Id;
-        Name = responseDto.Name;
-    }
-    
-    public ProductListSecondaryListItemModel(ProductCategoryGetListProductCategoryResponseDto responseDto)
-    {
-        Id = responseDto.Id;
-        Name = responseDto.Name;
-    }
-    #endregion
-    
-    #region Properties
-    public Guid Id { get; set; }
-    public string Name { get; set; }
     #endregion
 }

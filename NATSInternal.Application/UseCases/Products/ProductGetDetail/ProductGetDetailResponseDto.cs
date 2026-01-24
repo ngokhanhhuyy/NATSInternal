@@ -11,6 +11,7 @@ public class ProductGetDetailResponseDto
     #region Constructors
     internal ProductGetDetailResponseDto(
         Product product,
+        int stockingQuantity,
         User? createdUser,
         IEnumerable<Photo> photos,
         ProductExistingAuthorizationResponseDto authorizationResponseDto)
@@ -21,6 +22,7 @@ public class ProductGetDetailResponseDto
         Unit = product.Unit;
         DefaultAmountBeforeVatPerUnit = product.DefaultAmountBeforeVatPerUnit;
         DefaultVatPercentagePerUnit = product.DefaultVatPercentagePerUnit;
+        StockingQuantity = stockingQuantity;
         IsForRetail = product.IsForRetail;
         IsDiscontinued = product.IsDiscontinued;
         CreatedDateTime = product.CreatedDateTime;
@@ -42,11 +44,13 @@ public class ProductGetDetailResponseDto
 
     internal ProductGetDetailResponseDto(
         Product product,
+        int stockingQuantity,
         User? createdUser,
         User? lastUpdatedUser,
         IEnumerable<Photo> photos,
         ProductExistingAuthorizationResponseDto authorizationResponseDto) : this(
             product,
+            stockingQuantity,
             createdUser,
             photos,
             authorizationResponseDto)
@@ -62,6 +66,7 @@ public class ProductGetDetailResponseDto
     public string Unit { get; }
     public long DefaultAmountBeforeVatPerUnit { get; }
     public int DefaultVatPercentagePerUnit { get; }
+    public int StockingQuantity { get; }
     public bool IsForRetail { get; }
     public bool IsDiscontinued { get; }
     public DateTime CreatedDateTime { get; }

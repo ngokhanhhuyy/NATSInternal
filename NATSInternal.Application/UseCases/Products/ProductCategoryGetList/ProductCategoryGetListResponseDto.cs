@@ -1,3 +1,4 @@
+using NATSInternal.Application.Authorization;
 using NATSInternal.Domain.Features.Products;
 
 namespace NATSInternal.Application.UseCases.Products;
@@ -30,15 +31,19 @@ public class ProductCategoryGetListResponseDto
 public class ProductCategoryGetListProductCategoryResponseDto
 {
     #region Constructors
-    internal ProductCategoryGetListProductCategoryResponseDto(ProductCategory category)
+    internal ProductCategoryGetListProductCategoryResponseDto(
+        ProductCategory category,
+        ProductCategoryExistingAuthorizationResponseDto authorization)
     {
         Id = category.Id;
         Name = category.Name;
+        Authorization = authorization;
     }
     #endregion
 
     #region Properties
     public Guid Id { get; }
     public string Name { get; }
+    public ProductCategoryExistingAuthorizationResponseDto Authorization { get; }
     #endregion
 }

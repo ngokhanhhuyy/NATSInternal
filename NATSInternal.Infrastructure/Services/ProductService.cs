@@ -160,7 +160,8 @@ internal class ProductService : IProductService
                 return new BrandGetListBrandResponseDto(b, authorizationResponseDto);
             });
 
-        return new(brandResponseDtos, queryResult.PageCount, queryResult.ItemCount);
+        bool canCreate = _authorizationInternalService.CanCreateBrand();
+        return new(brandResponseDtos, queryResult.PageCount, queryResult.ItemCount, canCreate);
     }
 
     public async Task<IEnumerable<ProductCategoryBasicResponseDto>> GetAllProductCategoriesAsync(
@@ -203,7 +204,12 @@ internal class ProductService : IProductService
         );
 
         IEnumerable<ProductCategoryGetListProductCategoryResponseDto> categoryResponseDtos = queryResult.Items
-            .Select(pc => new ProductCategoryGetListProductCategoryResponseDto(pc));
+            .Select(pc =>
+            {
+                ProductCategoryExistingAuthorizationResponseDto authorizationResponseDto;
+                authorizationResponseDto = _authorizationInternalService.GetProductCategoryExistingAuthorization(pc);
+                return new ProductCategoryGetListProductCategoryResponseDto(pc, authorizationResponseDto);
+            });
 
         bool canCreate = _authorizationInternalService.CanCreateProductCategory();
         return new(categoryResponseDtos, queryResult.PageCount, queryResult.ItemCount, canCreate);

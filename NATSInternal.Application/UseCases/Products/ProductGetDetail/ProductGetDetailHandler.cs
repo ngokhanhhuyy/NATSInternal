@@ -3,6 +3,7 @@ using NATSInternal.Application.Authorization;
 using NATSInternal.Application.Exceptions;
 using NATSInternal.Domain.Features.Photos;
 using NATSInternal.Domain.Features.Products;
+using NATSInternal.Domain.Features.Stocks;
 using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.UseCases.Products;
@@ -12,6 +13,7 @@ internal class ProductGetDetailHandler : IRequestHandler<ProductGetDetailRequest
     #region Fields
     private readonly IPhotoRepository _photoRepository;
     private readonly IProductRepository _productRepository;
+    private readonly IStockRepository _stockRepository;
     private readonly IUserRepository _userRepository;
     private readonly IAuthorizationInternalService _authorizationService;
     #endregion
@@ -20,11 +22,13 @@ internal class ProductGetDetailHandler : IRequestHandler<ProductGetDetailRequest
     public ProductGetDetailHandler(
         IPhotoRepository photoRepository,
         IProductRepository productRepository,
+        IStockRepository stockRepository,
         IUserRepository userRepository,
         IAuthorizationInternalService authorizationService)
     {
         _photoRepository = photoRepository;
         _productRepository = productRepository;
+        _stockRepository = stockRepository;
         _userRepository = userRepository;
         _authorizationService = authorizationService;
     }
@@ -38,6 +42,8 @@ internal class ProductGetDetailHandler : IRequestHandler<ProductGetDetailRequest
         Product product = await _productRepository
             .GetProductByIdIncludingBrandWithCountryAndCategoryAsync(requestDto.Id, cancellationToken)
             ?? throw new NotFoundException();
+
+        Stock? stock = await _stockRepository.GetSingleStockByProductIdAsync(product.Id, cancellationToken);
 
         ICollection<Photo> photos = await _photoRepository.GetMultiplePhotosByProductIdsAsync(
             [product.Id],

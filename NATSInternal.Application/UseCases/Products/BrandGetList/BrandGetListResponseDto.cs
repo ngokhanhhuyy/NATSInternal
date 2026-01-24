@@ -9,11 +9,13 @@ public class BrandGetListResponseDto : IListResponseDto<BrandGetListBrandRespons
     public BrandGetListResponseDto(
         IEnumerable<BrandGetListBrandResponseDto> productResponseDtos,
         int pageCount,
-        int itemCount)
+        int itemCount,
+        bool canCreate)
     {
         Items = productResponseDtos;
         PageCount = pageCount;
         ItemCount = itemCount;
+        CanCreate = canCreate;
     }
     #endregion
 
@@ -21,6 +23,7 @@ public class BrandGetListResponseDto : IListResponseDto<BrandGetListBrandRespons
     public IEnumerable<BrandGetListBrandResponseDto> Items { get; }
     public int PageCount { get; }
     public int ItemCount { get; }
+    public bool CanCreate { get; }
     #endregion
 }
 
