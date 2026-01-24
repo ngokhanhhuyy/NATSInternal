@@ -59,6 +59,16 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
         };
     }
 
+    public ProductCategoryExistingAuthorizationResponseDto GetProductCategoryExistingAuthorization(
+        ProductCategory category)
+    {
+        return new()
+        {
+            CanEdit = CallerHasPermission(PermissionNames.EditProductCategory),
+            CanDelete = CallerHasPermission(PermissionNames.DeleteProductCategory)
+        };
+    }
+
     public bool CanCreateUser()
     {
         return CallerHasPermission(PermissionNames.CreateUser);

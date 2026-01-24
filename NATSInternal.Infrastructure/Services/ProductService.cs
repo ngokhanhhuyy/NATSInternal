@@ -205,7 +205,8 @@ internal class ProductService : IProductService
         IEnumerable<ProductCategoryGetListProductCategoryResponseDto> categoryResponseDtos = queryResult.Items
             .Select(pc => new ProductCategoryGetListProductCategoryResponseDto(pc));
 
-        return new(categoryResponseDtos, queryResult.PageCount, queryResult.ItemCount);
+        bool canCreate = _authorizationInternalService.CanCreateProductCategory();
+        return new(categoryResponseDtos, queryResult.PageCount, queryResult.ItemCount, canCreate);
     }
     #endregion
 }

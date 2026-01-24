@@ -9,11 +9,13 @@ public class ProductCategoryGetListResponseDto
     public ProductCategoryGetListResponseDto(
         IEnumerable<ProductCategoryGetListProductCategoryResponseDto> productResponseDtos,
         int pageCount,
-        int itemCount)
+        int itemCount,
+        bool canCreate)
     {
         Items = productResponseDtos;
         PageCount = pageCount;
         ItemCount = itemCount;
+        CanCreate = canCreate;
     }
     #endregion
 
@@ -21,6 +23,7 @@ public class ProductCategoryGetListResponseDto
     public IEnumerable<ProductCategoryGetListProductCategoryResponseDto> Items { get; }
     public int PageCount { get; }
     public int ItemCount { get; }
+    public bool CanCreate { get; }
     #endregion
 }
 
