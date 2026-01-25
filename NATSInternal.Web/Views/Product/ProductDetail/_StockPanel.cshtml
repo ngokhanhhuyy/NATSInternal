@@ -1,0 +1,43 @@
+@model ProductDetailModel
+
+<div class="panel">
+    <div class="panel-header">
+        <span class="panel-header-title">
+            Thông tin kho hàng
+        </span>
+    </div>
+
+    <div class="panel-body flex flex-col gap-y-3 px-3 pt-3 pb-2">
+        @if (Model.Stock is not null)
+        {
+            <!-- StockingQuantity -->
+            <div class="field">
+                <div class="field-name">
+                    @Html.DisplayNameFor(m => m.Stock!.StockingQuantity)
+                </div>
+                
+                <div class="field-value flex gap-3">
+                    @Model.Stock.StockingQuantity @Model.Unit
+                    @if (Model.Stock.StockingQuantity <= Model.Stock.ResupplyThresholdQuantity)
+                    {
+                        <span class="need-resupply">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            Cần nhập hàng
+                        </span>
+                    }
+                </div>
+            </div>
+            
+            <!-- ResupplyThresholdQuantity -->
+            <div class="field">
+                <div class="field-name">
+                    @Html.DisplayNameFor(m => m.Stock!.ResupplyThresholdQuantity)
+                </div>
+                
+                <span class="field-value">
+                    @Model.Stock.ResupplyThresholdQuantity @Model.Unit
+                </span>
+            </div>
+        }
+    </div>
+</div>

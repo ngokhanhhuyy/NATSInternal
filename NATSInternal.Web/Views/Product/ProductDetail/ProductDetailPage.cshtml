@@ -1,0 +1,40 @@
+@model ProductDetailModel
+@{
+    Layout = "Layouts/_MainContainer";
+    ViewBag.PageTitle = "Chi tiết sản phẩm";
+    ViewBag.BreadcrumbItems = new List<BreadcrumbItemModel>
+    {
+        new("Khách hàng", Url.Action("List", "Product")),
+        new("Chi tiết", Url.Action("Detail", "Product", new { id = Model.Id }))
+    };
+}
+
+<div id="product-detail-page" class="flex flex-col gap-3 w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch">
+        <div class="flex flex-col gap-y-3">
+            <partial name="~/Views/Product/ProductDetail/_DetailPanel.cshtml" />
+            <partial name="~/Views/Product/ProductDetail/_StockPanel.cshtml" />
+            <partial name="~/Views/Product/ProductDetail/_ManagementPanel.cshtml" />
+        </div>
+        
+        <partial name="~/Views/Product/ProductDetail/_PhotoPanel.cshtml" />
+    </div>
+    
+    <partial name="~/Views/Product/ProductDetail/_LatestTransactionPanel.cshtml" />
+
+    <div class="flex flex-row-reverse justify-start gap-3">
+        <a asp-action="Update" asp-route-id="@Model.Id" class="btn">
+            <i class="bi bi-pencil-square"></i>
+            <span>Chỉnh sửa</span>
+        </a>
+
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger-outline">
+            <i class="bi bi-trash3"></i>
+            <span>Xóa dữ liệu</span>
+        </a>
+    </div>
+</div>
+
+@section PageDescription {
+    Thông tin chi tiết của sản phẩm, tình trạng lưu kho và các giao dịch liên quan gần nhất
+}

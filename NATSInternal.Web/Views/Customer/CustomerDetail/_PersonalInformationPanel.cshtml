@@ -24,8 +24,21 @@
             @if (Model.Birthday is not null)
             {
                 <div class="field-label">@Html.DisplayNameFor(m => m.Gender)</div>
-                <div class="field-content @(Model.Gender == Gender.Male ? "gender-male" : "gender-female")">
-                    @Html.DisplayGender(Model.Gender)
+                <div id="gender-field-content" class="field-content">
+                    @if (Model.Gender == Gender.Male)
+                    {
+                        <div class="flex gap-1 male">
+                            <i class="bi bi-gender-male"></i>
+                            @Html.DisplayGender(Model.Gender)
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="flex gap-1 female">
+                            <i class="bi bi-gender-female"></i>
+                            @Html.DisplayGender(Model.Gender)
+                        </div>
+                    }
                 </div>
             }
             

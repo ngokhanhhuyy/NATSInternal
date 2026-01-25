@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using NATSInternal.Application.Localization;
 using NATSInternal.Application.UseCases.Products;
 using NATSInternal.Web.Models.Shared;
 
@@ -14,7 +16,6 @@ public class ProductDetailModel
         Unit = responseDto.Unit;
         DefaultAmountBeforeVatPerUnit = responseDto.DefaultAmountBeforeVatPerUnit;
         DefaultVatPercentagePerUnit = responseDto.DefaultVatPercentagePerUnit;
-        StockingQuantity = responseDto.StockingQuantity;
         IsForRetail = responseDto.IsForRetail;
         IsDiscontinued = responseDto.IsDiscontinued;
         CreatedDateTime = responseDto.CreatedDateTime;
@@ -33,6 +34,11 @@ public class ProductDetailModel
             LastUpdatedUser = new(responseDto.LastUpdatedUser);
         }
 
+        if (responseDto.Stock is not null)
+        {
+            Stock = new(responseDto.Stock);
+        }
+
         if (responseDto.Brand is not null)
         {
             Brand = new(responseDto.Brand);
@@ -47,21 +53,55 @@ public class ProductDetailModel
 
     #region Properties
     public Guid Id { get; }
+
+    [DisplayName(DisplayNames.Name)]
     public string Name { get; }
+
+    [DisplayName(DisplayNames.Description)]
     public string? Description { get; }
+
+    [DisplayName(DisplayNames.Unit)]
     public string Unit { get; }
+
+    [DisplayName(DisplayNames.DefaultAmountBeforeVatPerUnit)]
     public long DefaultAmountBeforeVatPerUnit { get; }
+
+    [DisplayName(DisplayNames.DefaultVatPercentagePerUnit)]
     public int DefaultVatPercentagePerUnit { get; }
-    public int StockingQuantity { get; }
+
+    [DisplayName(DisplayNames.IsForRetail)]
     public bool IsForRetail { get; }
+
+    [DisplayName(DisplayNames.IsDiscontinued)]
     public bool IsDiscontinued { get; }
+
+    [DisplayName(DisplayNames.CreatedDateTime)]
     public DateTime CreatedDateTime { get; }
+
+    [DisplayName(DisplayNames.CreatedUser)]
     public UserBasicModel CreatedUser { get; }
+
+    [DisplayName(DisplayNames.LastUpdatedDateTime)]
     public DateTime? LastUpdatedDateTime { get; }
+
+    [DisplayName(DisplayNames.LastUpdatedUser)]
     public UserBasicModel? LastUpdatedUser { get; }
+
+    [DisplayName(DisplayNames.Stock)]
+    public StockBasicModel? Stock { get; }
+
+    [DisplayName(DisplayNames.Name)]
     public BrandBasicModel? Brand { get; }
+
+    [DisplayName(DisplayNames.Name)]
     public ProductCategoryBasicModel? Category { get; }
+
+    [DisplayName(DisplayNames.Name)]
     public IReadOnlyList<PhotoBasicModel> Photos { get; }
+
+    [DisplayName(DisplayNames.Thumbnail)]
+    public string? ThumbnailUrl => Photos.Where(p => p.IsThumbnail).Select(p => p.Url).FirstOrDefault();
+
     public ProductExistingAuthorizationModel Authorization { get; }
     #endregion
 }

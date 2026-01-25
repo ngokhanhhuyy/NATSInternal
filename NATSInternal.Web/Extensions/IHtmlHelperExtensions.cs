@@ -62,9 +62,9 @@ public static class IHtmlHelperExtensions
         return new HtmlString($"{amount:N0}đ");
     }
 
-    public static TValue Compute<TModel, TValue>(this IHtmlHelper<TModel> _, Func<TValue> computer)
+    public static string GetDefaultImageUrl(this IHtmlHelper _)
     {
-        return computer();
+        return "/output/images/default.jpg";
     }
     #endregion
 }

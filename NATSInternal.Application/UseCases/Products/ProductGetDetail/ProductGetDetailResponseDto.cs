@@ -2,6 +2,7 @@ using NATSInternal.Application.Authorization;
 using NATSInternal.Application.UseCases.Shared;
 using NATSInternal.Domain.Features.Photos;
 using NATSInternal.Domain.Features.Products;
+using NATSInternal.Domain.Features.Stocks;
 using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.UseCases.Products;
@@ -11,7 +12,7 @@ public class ProductGetDetailResponseDto
     #region Constructors
     internal ProductGetDetailResponseDto(
         Product product,
-        int stockingQuantity,
+        Stock? stock,
         User? createdUser,
         IEnumerable<Photo> photos,
         ProductExistingAuthorizationResponseDto authorizationResponseDto)
@@ -22,7 +23,6 @@ public class ProductGetDetailResponseDto
         Unit = product.Unit;
         DefaultAmountBeforeVatPerUnit = product.DefaultAmountBeforeVatPerUnit;
         DefaultVatPercentagePerUnit = product.DefaultVatPercentagePerUnit;
-        StockingQuantity = stockingQuantity;
         IsForRetail = product.IsForRetail;
         IsDiscontinued = product.IsDiscontinued;
         CreatedDateTime = product.CreatedDateTime;
@@ -30,6 +30,11 @@ public class ProductGetDetailResponseDto
         LastUpdatedDateTime = product.LastUpdatedDateTime;
         Photos = photos.Select(p => new PhotoBasicResponseDto(p));
         Authorization = authorizationResponseDto;
+
+        if (stock is not null)
+        {
+            Stock = new(stock);
+        }
 
         if (product.Brand is not null)
         {
@@ -44,13 +49,13 @@ public class ProductGetDetailResponseDto
 
     internal ProductGetDetailResponseDto(
         Product product,
-        int stockingQuantity,
+        Stock? stock,
         User? createdUser,
         User? lastUpdatedUser,
         IEnumerable<Photo> photos,
         ProductExistingAuthorizationResponseDto authorizationResponseDto) : this(
             product,
-            stockingQuantity,
+            stock,
             createdUser,
             photos,
             authorizationResponseDto)
@@ -66,13 +71,13 @@ public class ProductGetDetailResponseDto
     public string Unit { get; }
     public long DefaultAmountBeforeVatPerUnit { get; }
     public int DefaultVatPercentagePerUnit { get; }
-    public int StockingQuantity { get; }
     public bool IsForRetail { get; }
     public bool IsDiscontinued { get; }
     public DateTime CreatedDateTime { get; }
     public UserBasicResponseDto CreatedUser { get;  }
     public DateTime? LastUpdatedDateTime { get; }
     public UserBasicResponseDto? LastUpdatedUser { get; }
+    public StockBasicResponseDto? Stock { get; }
     public ProductCategoryBasicResponseDto? Category { get; }
     public BrandBasicResponseDto? Brand { get; }
     public IEnumerable<PhotoBasicResponseDto> Photos { get; }

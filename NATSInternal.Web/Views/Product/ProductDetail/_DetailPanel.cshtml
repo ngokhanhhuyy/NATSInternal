@@ -1,2 +1,54 @@
-@model NATSInternal.Web.Models.Product.ProductDetailModel
+@model ProductDetailModel
 
+<div class="panel">
+    <div class="panel-header">
+        <span class="panel-header-title">
+            Chi tiết sản phẩm
+        </span>
+    </div>
+
+    <div class="panel-body px-3 pt-3 pb-2">
+        <!-- Name -->
+        <div class="text-2xl mb-3">
+            @Model.Name
+        </div>
+
+        <div class="flex flex-col gap-y-3">
+            <!-- Description -->
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <div class="field">
+                    <span class="field-name">
+                        @Html.DisplayNameFor(m => m.Description)
+                    </span>
+
+                    <span class="field-value">
+                        @Html.DisplayFor(m => m.Description)
+                    </span>
+                </div>
+            }
+
+            <!-- DefaultAmountBeforeVatPerUnit -->
+            <div class="field">
+                <span class="field-name">
+                    @Html.DisplayNameFor(m => m.DefaultAmountBeforeVatPerUnit)
+                </span>
+
+                <span class="field-value">
+                    @Html.DisplayCurrency(Model.DefaultAmountBeforeVatPerUnit)
+                </span>
+            </div>
+
+            <!-- DefaultVatPercentagePerUnit -->
+            <div class="field">
+                <span class="field-name">
+                    @Html.DisplayNameFor(m => m.DefaultVatPercentagePerUnit)
+                </span>
+
+                <span class="field-value">
+                    @Html.DisplayFor(m => m.DefaultVatPercentagePerUnit)
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

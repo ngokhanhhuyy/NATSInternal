@@ -1,0 +1,19 @@
+@model ProductDetailModel
+
+<div class="panel">
+    <div class="panel-header">
+        <span class="panel-header-title">
+            Hình ảnh
+        </span>
+    </div>
+    
+    <div class="panel-body flex flex-col items-center gap-3 p-3">
+        <img class="img-thumbnail max-w-75" src="@Html.GetDefaultImageUrl()" alt="@Model.Name"/>
+        <div class="flex flex-wrap justify-center gap-3">
+            @for (int i = 0; i < 3; i++)
+            {
+                <img class="img-thumbnail max-w-30" src="@Html.GetDefaultImageUrl()" alt="@Model.Name"/>
+            }
+        </div>
+    </div>
+</div>

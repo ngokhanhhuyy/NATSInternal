@@ -45,5 +45,48 @@ public class ProductController : Controller
 
         return View("~/Views/Product/ProductList/ProductListPage.cshtml", model);
     }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> Detail([FromRoute] Guid id, CancellationToken token)
+    {
+        ProductGetDetailRequestDto requestDto = new() { Id = id };
+        ProductGetDetailResponseDto responseDto = await _mediator.Send(requestDto, token);
+        ProductDetailModel model = new(responseDto);
+
+        return View("~/Views/Product/ProductDetail/ProductDetailPage.cshtml", model);
+    }
+
+    [HttpGet("tao-moi")]
+    public IActionResult Create()
+    {
+        return Ok();
+    }
+
+    [HttpGet("{id:guid}/chinh-sua")]
+    public IActionResult Update([FromRoute] Guid id)
+    {
+        return Ok();
+    }
+
+    [HttpGet("{id:guid}/xoa-bo")]
+    public IActionResult Delete([FromRoute] Guid id)
+    {
+        DeleteConfirmationModel model = new()
+        {
+            CancelUrl = Url.Action("Detail", new { id })
+        };
+
+        return this.DeleteConfirmationView(model);
+    }
+
+    [HttpPost("{id:guid}/xoa-bo")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
+    {
+        ProductDeleteRequestDto requestDto = new() { Id = id };
+        await _mediator.Send(requestDto, token);
+
+        return RedirectToAction("List");
+    }
     #endregion
 }

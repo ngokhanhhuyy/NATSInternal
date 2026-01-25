@@ -1,0 +1,31 @@
+#product-detail-page {
+    .field {
+        display: flex;
+        flex-direction: column;
+
+        .field-name {
+            font-weight: bold;
+            opacity: 50%;
+        }
+
+        .field-value {
+            color: var(--color-blue-700);
+
+            @variant dark {
+                & {
+                    color: var(--color-blue-400);
+                }
+            }
+        }
+        
+        .need-resupply {
+            color: var(--color-red-700);
+
+            @variant dark {
+                & {
+                    color: var(--color-red-400);
+                }
+            }
+        }
+    }
+}

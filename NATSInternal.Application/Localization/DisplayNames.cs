@@ -76,7 +76,6 @@ public static class DisplayNames
     public const string IsForRetail = "Sản phẩm bán lẻ";
     public const string IsDiscontinued = "Ngừng kinh doanh";
     public const string SuppliedQuatity = "Số lượng nhập hàng";
-    public const string StockingQuantity = "Số lượng trong kho";
     public const string ShipmentFee = "Phí vận chuyển";
     public const string Amount = "Số tiền";
     public const string AmountBeforeVat = "Số tiền trước thuế";
@@ -144,6 +143,9 @@ public static class DisplayNames
     public const string PurchasedAmount = "Số tiền đã mua";
     public const string PurchasedTransactionCount = "Số lượng giao dịch mua";
     public const string Quantity = "Số lượng";
+    public const string Stock = "Kho hàng";
+    public const string StockingQuantity = "Số lượng trong kho";
+    public const string ResupplyThresholdQuantity = "Số lượng ngưỡng cảnh báo hết hàng";
     #endregion
 
     #region StaticConstructors

@@ -1,0 +1,83 @@
+@model ProductDetailModel
+
+<div class="panel flex-1">
+    <div class="panel-header">
+        <span class="panel-header-title">
+            Quản lý
+        </span>
+    </div>
+    
+    <div class="panel-body flex flex-col gap-y-3 px-3 pt-3 pb-2">
+        <!-- CreatedUser -->
+        <div class="field">
+            <div class="field-name">
+                @Html.DisplayNameFor(m => m.CreatedUser)
+            </div>
+            
+            <div class="field-value">
+                @if (Model.CreatedUser.IsDeleted)
+                {
+                    <span class="line-through">
+                        Đã xoá
+                    </span>
+                }
+                else
+                {
+                    <a asp-action="Detail" asp-route-id="@Model.CreatedUser.Id">
+                        @Html.DisplayFor(m => m.CreatedUser.UserName)
+                    </a>
+                }
+            </div>
+        </div>
+        
+        <!-- CreatedDateTime -->
+        <div class="field">
+            <div class="field-name">
+                @Html.DisplayNameFor(m => m.CreatedDateTime)
+            </div>
+            
+            <div class="field-value">
+                @Html.DisplayDateTime(Model.CreatedDateTime)
+            </div>
+        </div>
+        
+        <!-- LastUpdatedUser -->
+        @if (Model.LastUpdatedUser is not null)
+        {
+            <div class="field">
+                <div class="field-name">
+                    @Html.DisplayNameFor(m => m.LastUpdatedUser)
+                </div>
+            
+                <div class="field-value">
+                    @if (Model.LastUpdatedUser.IsDeleted)
+                    {
+                        <span class="line-through">
+                            Đã xoá
+                        </span>
+                    }
+                    else
+                    {
+                        <a asp-action="Detail" asp-route-id="@Model.LastUpdatedUser.Id">
+                            @Html.DisplayFor(m => m.LastUpdatedUser!.UserName)
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+        
+        <!-- LastUpdatedDateTime -->
+        @if (Model.LastUpdatedDateTime.HasValue)
+        {
+            <div class="field">
+                <div class="field-name">
+                    @Html.DisplayNameFor(m => m.LastUpdatedDateTime)
+                </div>
+            
+                <div class="field-value">
+                    @Html.DisplayDateTime(Model.LastUpdatedDateTime)
+                </div>
+            </div>
+        }
+    </div>
+</div>

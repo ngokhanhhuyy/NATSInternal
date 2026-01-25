@@ -12,6 +12,7 @@
 @import "./pages/customer-list-page.css";
 @import "./pages/customer-detail-page.css";
 @import "./pages/customer-upsert-page.css";
+@import "./pages/product-detail-page.css";
 @import "./pages/confirmation-page.css";
 @custom-variant dark (&:where(.dark, .dark *));
 

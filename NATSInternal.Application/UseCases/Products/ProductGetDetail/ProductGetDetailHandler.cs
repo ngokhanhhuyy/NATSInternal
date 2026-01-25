@@ -43,6 +43,9 @@ internal class ProductGetDetailHandler : IRequestHandler<ProductGetDetailRequest
             .GetProductByIdIncludingBrandWithCountryAndCategoryAsync(requestDto.Id, cancellationToken)
             ?? throw new NotFoundException();
 
+        ProductExistingAuthorizationResponseDto authorizationResponseDto = _authorizationService
+            .GetProductExistingAuthorization(product);
+
         Stock? stock = await _stockRepository.GetSingleStockByProductIdAsync(product.Id, cancellationToken);
 
         ICollection<Photo> photos = await _photoRepository.GetMultiplePhotosByProductIdsAsync(
@@ -53,7 +56,7 @@ internal class ProductGetDetailHandler : IRequestHandler<ProductGetDetailRequest
         User? createdUser = await _userRepository.GetUserByIdAsync(product.CreatedUserId, cancellationToken);
         if (product.LastUpdatedUserId is null)
         {
-            return new(product, createdUser, photos, _authorizationService.GetProductExistingAuthorization(product));
+            return new(product, stock, createdUser, photos, authorizationResponseDto);
         }
 
         User? lastUpdatedUser = await _userRepository.GetUserByIdAsync(
@@ -61,13 +64,7 @@ internal class ProductGetDetailHandler : IRequestHandler<ProductGetDetailRequest
             cancellationToken
         );
         
-        return new(
-            product,
-            createdUser,
-            lastUpdatedUser,
-            photos,
-            _authorizationService.GetProductExistingAuthorization(product)
-        );
+        return new(product, stock, createdUser, lastUpdatedUser, photos, authorizationResponseDto);
 
     }
     #endregion

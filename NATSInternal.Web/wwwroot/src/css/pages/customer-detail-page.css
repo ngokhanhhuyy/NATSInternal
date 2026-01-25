@@ -2,21 +2,8 @@
     @layer components {
         .field-container {
             width: 100%;
-            display: grid;
-            grid-template-columns: repeat(1, minmax(0, 1fr));
-            column-gap: --spacing(5);
-
-            @media (min-width: theme(screens.sm)) {
-                grid-template-columns: min-content 1fr;
-            }
-
-            @media (min-width: theme(screens.md)) {
-                grid-template-columns: repeat(1, minmax(0, 1fr));
-            }
-
-            @media (min-width: theme(screens.xl)) {
-                grid-template-columns: min-content 1fr;
-            }
+            display: flex;
+            flex-direction: column;
         }
 
         .field-label {
@@ -40,6 +27,7 @@
         }
 
         .field-content {
+            color: var(--color-blue-700);
             margin-bottom: --spacing(3);
 
             @media (min-width: theme(screens.sm)) {
@@ -53,26 +41,33 @@
             @media (min-width: theme(screens.xl)) {
                 margin-bottom: --spacing(1.5);
             }
-        }
-    }
-
-    .gender-male {
-        color: var(--color-blue-700);
-
-        @variant dark {
-            & {
-                color: var(--color-blue-400);
+            
+            @variant dark {
+                & {
+                    color: var(--color-blue-400);
+                }
             }
         }
     }
+}
 
-    .gender-female {
-        color: var(--color-red-700);
+@utility male {
+    color: var(--color-blue-700);
 
-        @variant dark {
-            & {
-                color: var(--color-red-400);
-            }
+    @variant dark {
+        & {
+            color: var(--color-blue-400);
+        }
+    }
+}
+
+
+@utility female {
+    color: var(--color-red-700);
+
+    @variant dark {
+        & {
+            color: var(--color-red-400);
         }
     }
 }

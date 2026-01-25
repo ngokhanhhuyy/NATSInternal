@@ -29,7 +29,7 @@
                     <tr>
                         <!-- Name -->
                         <td>
-                            <a asp-action="Detail" asp-controller="Product" class="font-bold">
+                            <a asp-action="Detail" asp-route-id="@product.Id" class="font-bold">
                                 @product.Name
                             </a>
                         </td>
