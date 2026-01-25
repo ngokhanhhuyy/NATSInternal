@@ -8,9 +8,51 @@
     </div>
 
     <div class="panel-body px-3 pt-3 pb-2">
-        <!-- Name -->
-        <div class="text-2xl mb-3">
-            @Model.Name
+        <div class="flex flex-col mb-3">
+            <!-- Name -->
+            <div class="text-2xl">
+                @Model.Name
+            </div>
+
+            <!-- TargetTransactionsAndStatus -->
+            <div class="flex gap-2">
+                @if (Model.IsForRetail)
+                {
+                    <div class="bg-emerald-500/25 border border-emerald-500 rounded-md px-1 py-0.5 text-xs">
+                        <span class="text-emerald-500">
+                            Cả liệu trình và bán lẻ
+                        </span>
+                    </div>
+                }
+                else
+                {
+                    <div class="bg-blue-500/25 border border-blue-500 rounded-md px-1 py-0.5 text-xs">
+                        <span class="text-blue-500">
+                            Chỉ liệu trình
+                        </span>
+                    </div>
+                }
+                
+                @if (Model.IsDiscontinued)
+                {
+                    <div class="bg-red-500/25 border border-red-500 rounded-md px-1 py-0.5 text-xs">
+                        <span class="text-red-500">
+                            Đã ngưng kinh doanh
+                        </span>
+                    </div>
+                }
+                else if (Model.Stock is not null)
+                {
+                    if (Model.Stock.StockingQuantity <= Model.Stock.ResupplyThresholdQuantity)
+                    {
+                        <div class="bg-yellow-600/25 border border-yellow-600 rounded-md px-1 py-0.5 text-xs">
+                            <span class="text-yellow-600">
+                                Cần nhập hàng
+                            </span>
+                        </div>
+                    }
+                }
+            </div>
         </div>
 
         <div class="flex flex-col gap-y-3">

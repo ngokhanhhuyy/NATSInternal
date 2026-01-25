@@ -236,23 +236,25 @@
         
         &:hover {
             background-color: rgba(0, 0, 0, 5%);
+            color: var(--color-blue-700);
             text-decoration: none;
 
             @variant dark {
                 & {
                     background-color: rgba(255, 255, 255, 20%);
+                    color: var(--color-blue-400);
                 }
             }
         }
         
         &.active {
-            background-color: black;
+            background-color: var(--color-blue-700);
             color: white;
             box-shadow: var(--shadow-sm);
             
             @variant dark {
                 & {
-                    background-color: white;
+                    background-color: var(--color-blue-400);
                     color: black;
                 }
             }

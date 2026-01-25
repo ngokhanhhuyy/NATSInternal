@@ -81,8 +81,8 @@ class ThemeHandler {
   }
 }
 
+const themeHandler = new ThemeHandler();
 document.addEventListener("DOMContentLoaded", () => {
-  const themeHandler = new ThemeHandler();
   const buttonElement = document.getElementById("theme-toggle-button");
   if (!buttonElement) {
     return;

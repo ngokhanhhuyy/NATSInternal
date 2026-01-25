@@ -50,9 +50,10 @@
                         </td>
                         
                         <!-- Note -->
-                        <td class="text-red-700 dark:text-red-400 align-middle">
+                        <td class="text-yellow-600 align-middle">
                             @if (product.IsResupplyNeeded)
                             {
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i>
                                 <span>Cần nhập hàng</span>
                             }
                         </td>

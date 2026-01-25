@@ -53,24 +53,22 @@
 
 @layer utilities {
     .btn-primary {
-        background-color: black;
+        background-color: var(--color-blue-700);
         color: white;
-        border-color: black;
+        border-color: --alpha(var(--color-black) / 5%);
 
         &:hover {
-            background-color: rgba(0, 0, 0, 70%);
-            border-color: rgba(0, 0, 0, 70%);
+            background-color: var(--color-blue-500);
         }
 
         @variant dark {
             & {
-                background-color: var(--color-neutral-200);
+                background-color: var(--color-blue-400);
                 color: black;
-                border-color: white;
+                border-color: --alpha(var(--color-white) / 10%);
 
                 &:hover {
-                    background-color: var(--color-neutral-300);
-                    border-color: var(--color-neutral-100);
+                    background-color: var(--color-blue-300);
                 }
             }
         }
@@ -122,12 +120,11 @@
     }
 
     .btn-panel-header, .btn-panel-footer {
-        border-color: rgba(0, 0, 0, 20%);
+        border-color: --alpha(var(--color-blue-500) / 50%);
+        
+        &:hover {
 
-        @variant dark {
-            & {
-                border-color: rgba(255, 255, 255, 20%);
-            }
+            border-color: --alpha(var(--color-blue-500) / 75%);
         }
     }
 

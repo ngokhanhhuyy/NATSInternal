@@ -8,12 +8,25 @@
     </div>
     
     <div class="panel-body flex flex-col items-center gap-3 p-3">
-        <img class="img-thumbnail max-w-75" src="@Html.GetDefaultImageUrl()" alt="@Model.Name"/>
-        <div class="flex flex-wrap justify-center gap-3">
-            @for (int i = 0; i < 3; i++)
+        @if (Model.Photos.Count > 0)
+        {
+            if (Model.ThumbnailUrl is not null)
             {
-                <img class="img-thumbnail max-w-30" src="@Html.GetDefaultImageUrl()" alt="@Model.Name"/>
+                <img class="img-thumbnail max-w-75" src="@Model.ThumbnailUrl" alt="@Model.Name"/>
             }
-        </div>
+
+            <div class="flex flex-wrap justify-center gap-3">
+                @foreach (string url in Model.Photos.Where(p => !p.IsThumbnail).Select(p => p.Url))
+                {
+                    <img class="img-thumbnail max-w-30" src="@url" alt="@Model.Name"/>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="flex flex-1 justify-center items-center px-1 py-7 opacity-50">
+                Không có ảnh
+            </div>
+        }
     </div>
 </div>

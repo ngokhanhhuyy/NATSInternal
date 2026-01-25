@@ -18,7 +18,7 @@
                 
                 <div class="field-value flex gap-3">
                     @Model.Stock.StockingQuantity @Model.Unit
-                    @if (Model.Stock.StockingQuantity <= Model.Stock.ResupplyThresholdQuantity)
+                    @if (!Model.IsDiscontinued && Model.Stock.StockingQuantity <= Model.Stock.ResupplyThresholdQuantity)
                     {
                         <span class="need-resupply">
                             <i class="bi bi-exclamation-triangle-fill"></i>
