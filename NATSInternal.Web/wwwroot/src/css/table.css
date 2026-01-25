@@ -2,7 +2,7 @@
     .data-table {
         --row-height: unset;
         --border-width: 1px;
-        --border-color: rgba(0, 0, 0, 15%);
+        --border-color: rgba(0, 0, 0, 10%);
         --odd-background-color: rgba(0, 0, 0, 5%);
         --border-color-from-actual-border: var(--border-color);
         --border-color-from-background: transparent;
@@ -15,7 +15,7 @@
 
         @variant dark {
             & {
-                --border-color: rgba(255, 255, 255, 15%);
+                --border-color: rgba(255, 255, 255, 10%);
                 --odd-background-color: rgba(255, 255, 255, 3%);
             }
         }
