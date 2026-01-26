@@ -1,4 +1,15 @@
 @model ProductUpsertModel
+@{
+    string brandText;
+    if (Model.Brand is not null)
+    {
+        brandText = Model.Brand.Name;
+    }
+    else
+    {
+        brandText = $"Chưa chọn {Html.DisplayNameFor(m => m.Brand).ToLower()}";
+    }
+}
 
 <div class="panel">
     <div class="panel-header">
@@ -25,9 +36,9 @@
 
             <!-- Description -->
             <div class="form-field sm:col-span-6">
-                <label asp-for="Unit"></label>
-                <textarea asp-for="Unit" class="form-control" placeholder="Mô tả sản phẩm ..."></textarea>
-                <span asp-validation-for="Unit"></span>
+                <label asp-for="Description"></label>
+                <textarea asp-for="Description" class="form-control" placeholder="Mô tả sản phẩm ..."></textarea>
+                <span asp-validation-for="Description"></span>
             </div>
         </div>
 
@@ -50,6 +61,36 @@
                     <div class="form-input-group-text border-l-0">%</div>
                 </div>
                 <span asp-validation-for="DefaultVatPercentagePerUnit"></span>
+            </div>
+            
+            <!-- Category -->
+            <div class="form-field">
+                <label asp-for="CategoryName"></label>
+                <input asp-for="CategoryName"
+                    type="text"
+                    list="category-option-list"
+                    placeholder="Nhập tên phân loại"
+                    class="form-control" />
+                <datalist id="category-option-list">
+                    @foreach (BrandBasicModel brand in Model.BrandOptions)
+                    {
+                        <option value="@brand.Name"></option>
+                    }
+                </datalist>
+                <span asp-validation-for="CategoryName"></span>
+            </div>
+            
+            <!-- Brand -->
+            <div class="form-field">
+                <label asp-for="BrandId"></label>
+                <select asp-for="BrandId" class="form-control">
+                    <option value="@null">Chưa chọn thương hiệu</option>
+                    @foreach (BrandBasicModel brand in Model.BrandOptions)
+                    {
+                        <option value="@brand.Id">@brand.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="Brand"></span>
             </div>
             
             <!-- IsForRetail -->

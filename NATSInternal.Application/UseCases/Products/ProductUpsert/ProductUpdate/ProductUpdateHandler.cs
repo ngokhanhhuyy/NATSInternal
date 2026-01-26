@@ -66,7 +66,7 @@ internal class ProductUpdateHandler : IRequestHandler<ProductUpdateRequestDto>
             requestDto.Description,
             requestDto.Unit,
             requestDto.DefaultAmountBeforeVatPerUnit,
-            requestDto.DefaultVatPercentage,
+            requestDto.DefaultVatPercentagePerUnit,
             requestDto.IsForRetail,
             requestDto.IsDiscontinued,
             _callerDetailProvider.GetId(),

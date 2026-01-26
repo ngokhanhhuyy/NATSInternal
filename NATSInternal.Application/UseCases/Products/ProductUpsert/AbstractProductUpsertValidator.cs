@@ -29,7 +29,7 @@ internal abstract class AbstractProductUpsertValidator<TRequestDto> : Validator<
         RuleFor(dto => dto.DefaultAmountBeforeVatPerUnit)
             .GreaterThanOrEqualTo(0)
             .WithName(DisplayNames.DefaultAmountBeforeVatPerUnit);
-        RuleFor(dto => dto.DefaultVatPercentage)
+        RuleFor(dto => dto.DefaultVatPercentagePerUnit)
             .GreaterThanOrEqualTo(0)
             .LessThanOrEqualTo(100)
             .WithName(DisplayNames.DefaultVatPercentagePerUnit);

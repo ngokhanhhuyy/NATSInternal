@@ -6,9 +6,17 @@
         align-items: stretch;
 
         &:has(input[data-val-required]), &:has(select[data-val-required]), &:has(textarea[data-val-required]) {
+            --color: var(--color-red-700);
+
+            @variant dark {
+                & {
+                    --color: var(--color-red-400);
+                }
+            }
+
             & > label::after {
                 content: "*";
-                color: var(--color-red-500);
+                color: var(--color);
                 margin-left: --spacing(1);
                 display: inline-block;
                 transform: scale(125%) translateY(5%);

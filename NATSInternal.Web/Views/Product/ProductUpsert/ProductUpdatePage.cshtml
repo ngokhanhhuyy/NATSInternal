@@ -1,18 +1,23 @@
 @model ProductUpsertModel
 @{
     Layout = "Layouts/_MainContainer";
-    ViewBag.PageTitle = "Tạo sản phẩm mới";
+    ViewBag.PageTitle = "Chỉnh sửa sản phẩm";
     ViewBag.BreadcrumbItems = new List<BreadcrumbItemModel>
     {
         new("Sản phẩm", Url.Action("List", "Product")),
-        new("Tạo mới", Url.Action("Create", "Product"))
+        new("Chi tiết", Url.Action("Detail", "Product")),
+        new("Chỉnh sửa", Url.Action("Create", "Product"))
     };
 
-    ViewBag.FormAction = Url.Action("Create", "Product");
+    ViewBag.FormAction = Url.Action("Update", "Product", new { Id = Model.Id });
 }
 
 <div id="product-update-page" class="flex flex-col gap-3">
-    <form asp-action="Create" method="post" id="product-upsert-form" class="flex flex-col gap-3">
+    <form asp-action="Update"
+            asp-route-id="@Model.Id"
+            method="post"
+            id="product-upsert-form"
+            class="flex flex-col gap-3">
         @Html.AntiForgeryToken()
         <partial name="~/Views/Product/ProductUpsert/_DetailPanel.cshtml" />
         <partial name="~/Views/Product/ProductUpsert/_StockPanel.cshtml" />
@@ -24,5 +29,5 @@
 </div>
 
 @section PageDescription {
-    Tạo mới sản phẩm mới, bao gồm thông tin về thương hiệu và phân loại (nếu có).
+    Chỉnh sửa một sản phẩm đang tồn tại, bao gồm thông tin về thương hiệu và phân loại (nếu có).
 }

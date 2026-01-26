@@ -18,7 +18,7 @@
                 <tr>
                     <th>@Html.DisplayNameFor(m => m.Items[0].Name)</th>
                     <th>@Html.DisplayNameFor(m => m.Items[0].DefaultAmountBeforeVatPerUnit)</th>
-                    <th>@Html.DisplayNameFor(m => m.Items[0].DefaultVatPercentagePerUnit)</th>
+                    <th>@Html.DisplayNameFor(m => m.Items[0].Category)</th>
                     <th>@Html.DisplayNameFor(m => m.Items[0].StockingQuantity)</th>
                     <th>Lưu ý</th>
                 </tr>
@@ -34,14 +34,20 @@
                             </a>
                         </td>
 
-                        <!-- DefaultAmountBeforeVatPerUnit -->
+                        <!-- DefaultAmountBeforeVatPerUnit + DefaultVatPercentagePerUnit-->
                         <td>
-                            @Html.DisplayCurrency(product.DefaultAmountBeforeVatPerUnit)
+                            <div class="flex justify-between">
+                                <span>@Html.DisplayCurrency(product.DefaultAmountBeforeVatPerUnit)</span>
+                                @if (product.DefaultVatPercentagePerUnit > 0)
+                                {
+                                    <span class="opacity-50">(+@product.DefaultVatPercentagePerUnit% VAT)</span>
+                                }
+                            </div>
                         </td>
 
-                        <!-- DefaultVatPercentagePerUnit -->
+                        <!-- Category -->
                         <td>
-                            @($"{product.DefaultVatPercentagePerUnit}")%
+                            @product.Category?.Name
                         </td>
                         
                         <!-- StockingQuantity -->

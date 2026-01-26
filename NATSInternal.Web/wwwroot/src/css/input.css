@@ -24,23 +24,25 @@
         }
 
         @variant dark {
-            background-color: rgba(255, 255, 255, 2.5%);
-            border-color: rgba(255, 255, 255, 15%);
-            color-scheme: dark;
-
-            &:focus {
-                border-color: var(--color-blue-500);
-                outline-color: var(--color-blue-500);
-            }
-
-            .form-field.invalid:not(:disabled) & {
-                background: oklch(from var(--color-red-600) l c h / 10%);
-                color: var(--color-red-600);
-                border-color: oklch(from var(--color-red-600) l c h / 70%);
+            & {
+                background-color: rgba(255, 255, 255, 2.5%);
+                border-color: rgba(255, 255, 255, 15%);
+                color-scheme: dark;
 
                 &:focus {
-                    border-color: var(--color-red-600);
-                    outline-color: oklch(from var(--color-red-500) l c h / 15%);
+                    border-color: var(--color-blue-500);
+                    outline-color: var(--color-blue-500);
+                }
+
+                .form-field.invalid:not(:disabled) & {
+                    background: oklch(from var(--color-red-600) l c h / 10%);
+                    color: var(--color-red-600);
+                    border-color: oklch(from var(--color-red-600) l c h / 70%);
+
+                    &:focus {
+                        border-color: var(--color-red-600);
+                        outline-color: oklch(from var(--color-red-500) l c h / 15%);
+                    }
                 }
             }
         }
@@ -59,21 +61,28 @@
             min-height: --spacing(30);
         }
 
-        &:is(select) {
+        &:is(input[list]), &:is(select) {
             background-image: url("../images/chevron-down-black.svg");
             background-repeat: no-repeat;
             background-position: right 0.75em center;
             background-size: .9em auto;
             appearance: none;
             -webkit-appearance: none !important;
-            min-width: --spacing(18);
-            cursor: pointer;
 
             @variant dark {
                 & {
                     background-image: url("../images/chevron-down-white.svg");
                 }
             }
+        }
+
+        &:is(select) {
+            min-width: --spacing(18);
+            cursor: pointer;
+        }
+
+        &:is(input[list])::-webkit-calendar-picker-indicator {
+            display: none !important;
         }
 
         @variant dark {

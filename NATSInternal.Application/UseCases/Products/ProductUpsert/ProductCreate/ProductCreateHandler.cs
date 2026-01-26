@@ -7,6 +7,7 @@ using NATSInternal.Application.Security;
 using NATSInternal.Application.Time;
 using NATSInternal.Application.UnitOfWork;
 using NATSInternal.Domain.Features.Products;
+using NATSInternal.Domain.Features.Stocks;
 
 namespace NATSInternal.Application.UseCases.Products;
 
@@ -14,7 +15,8 @@ namespace NATSInternal.Application.UseCases.Products;
 internal class ProductCreateHandler : IRequestHandler<ProductCreateRequestDto, Guid>
 {
     #region Fields
-    private readonly IProductRepository _repository;
+    private readonly IProductRepository _productRepository;
+    private readonly IStockRepository _stockRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidator<ProductCreateRequestDto> _validator;
     private readonly ICallerDetailProvider _callerDetailProvider;
@@ -23,13 +25,15 @@ internal class ProductCreateHandler : IRequestHandler<ProductCreateRequestDto, G
     
     #region Constructors
     public ProductCreateHandler(
-        IProductRepository repository,
+        IProductRepository productRepository,
+        IStockRepository stockRepository,
         IUnitOfWork unitOfWork,
         IValidator<ProductCreateRequestDto> validator,
         ICallerDetailProvider callerDetailProvider,
         IClock clock)
     {
-        _repository = repository;
+        _productRepository = productRepository;
+        _stockRepository = stockRepository;
         _unitOfWork = unitOfWork;
         _validator = validator;
         _callerDetailProvider = callerDetailProvider;
@@ -46,7 +50,7 @@ internal class ProductCreateHandler : IRequestHandler<ProductCreateRequestDto, G
         Brand? brand = null;
         if (requestDto.BrandId.HasValue)
         {
-            brand = await _repository
+            brand = await _productRepository
                 .GetBrandByIdIncludingCountryAsync(requestDto.BrandId.Value, cancellationToken)
                 ?? throw OperationException.NotFound(new object[] { nameof(requestDto.BrandId) }, DisplayNames.Brand);
         }
@@ -54,11 +58,11 @@ internal class ProductCreateHandler : IRequestHandler<ProductCreateRequestDto, G
         ProductCategory? category = null;
         if (requestDto.CategoryName is not null)
         {
-            category = await _repository.GetCategoryByIdAsync(requestDto.CategoryName, cancellationToken);
+            category = await _productRepository.GetCategoryByIdAsync(requestDto.CategoryName, cancellationToken);
             if (category is null)
             {
                 category = new(requestDto.CategoryName, _clock.Now);
-                _repository.AddCategory(category);
+                _productRepository.AddCategory(category);
             }
         }
         
@@ -67,7 +71,7 @@ internal class ProductCreateHandler : IRequestHandler<ProductCreateRequestDto, G
             requestDto.Description,
             requestDto.Unit,
             requestDto.DefaultAmountBeforeVatPerUnit,
-            requestDto.DefaultVatPercentage,
+            requestDto.DefaultVatPercentagePerUnit,
             requestDto.IsForRetail,
             false,
             _callerDetailProvider.GetId(),
@@ -76,7 +80,10 @@ internal class ProductCreateHandler : IRequestHandler<ProductCreateRequestDto, G
             category
         );
         
-        _repository.AddProduct(product);
+        _productRepository.AddProduct(product);
+
+        Stock stock = new(requestDto.Stock.StockingQuantity, requestDto.Stock.ResupplyThresholdQuantity, product.Id);
+        _stockRepository.AddStock(stock);
 
         try
         {

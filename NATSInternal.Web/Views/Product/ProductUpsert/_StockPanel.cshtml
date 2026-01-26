@@ -1,4 +1,15 @@
 @model ProductUpsertModel
+@{
+    string gridClassName;
+    if (Model.Id == Guid.Empty)
+    {
+        gridClassName = "grid-cols-1 sm:grid-cols-2 gap-3";
+    }
+    else
+    {
+        gridClassName = "gird-cols-1";
+    }
+}
 
 <div class="panel">
     <div class="panel-header">
@@ -7,14 +18,17 @@
         </span>
     </div>
 
-    <div class="panel-body flex flex-col gap-3 px-4 pt-2.5 pb-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div class="panel-body flex flex-col px-4 pt-2.5 pb-4">
+        <div class="grid @gridClassName">
             <!-- StockingQuantity -->
-            <div class="form-field">
-                <label asp-for="Stock.StockingQuantity"></label>
-                <input asp-for="Stock.StockingQuantity" type="text" class="form-control" />
-                <span asp-validation-for="Stock.StockingQuantity"></span>
-            </div>
+            @if (Model.Id == Guid.Empty)
+            {
+                <div class="form-field">
+                    <label asp-for="Stock.StockingQuantity"></label>
+                    <input asp-for="Stock.StockingQuantity" type="text" class="form-control" />
+                    <span asp-validation-for="Stock.StockingQuantity"></span>
+                </div>
+            }
             
             <!-- ResupplyThresholdQuantity -->
             <div class="form-field">

@@ -34,5 +34,15 @@ internal class StockRepository : IStockRepository
     {
         return await _context.Stocks.Where(s => productIds.Contains(s.Id)).ToListAsync(cancellationToken);
     }
+
+    public void AddStock(Stock stock)
+    {
+        _context.Stocks.Add(stock);
+    }
+
+    public void UpdateStock(Stock stock)
+    {
+        _context.Stocks.Update(stock);
+    }
     #endregion
 }

@@ -8,5 +8,7 @@ internal interface IStockRepository
     Task<ICollection<Stock>> GetMultipleStocksByProductIdsAsync(
         IEnumerable<Guid> productIds,
         CancellationToken cancellationToken);
+    void AddStock(Stock stock);
+    void UpdateStock(Stock stock);
     #endregion
 }

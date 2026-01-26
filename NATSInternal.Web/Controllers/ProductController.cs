@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NATSInternal.Application.Exceptions;
 using NATSInternal.Application.UseCases.Products;
+using NATSInternal.Application.UseCases.Shared;
 using NATSInternal.Web.Extensions;
 using NATSInternal.Web.Models;
 
@@ -57,16 +58,60 @@ public class ProductController : Controller
     }
 
     [HttpGet("tao-moi")]
-    public IActionResult Create()
+    public async Task<IActionResult> Create(CancellationToken token)
     {
-        ProductUpsertModel model = new();
-        return View("~/Views/Product/ProductUpsert/ProductCreatePage.cshtml", model);
+        IEnumerable<ProductCategoryBasicResponseDto> categoryOptions;
+        IEnumerable<BrandBasicResponseDto> brandOptions;
+        (categoryOptions, brandOptions) = await LoadCategoryAndBrandOptionsAsync(token);
+
+        ProductUpsertModel model = new(categoryOptions, brandOptions);
+        return CreateView(model);
+    }
+
+    [HttpPost("tao-moi")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create([FromForm] ProductUpsertModel model, CancellationToken token)
+    {
+        try
+        {
+            ProductCreateRequestDto requestDto = model.ToCreateRequestDto();
+            Guid id = await _mediator.Send(requestDto, token);
+
+            return this.SuccessfulSubmissionConfirmationView(Url.Action("Detail", new { id }));
+        }
+        catch (Exception exception) when (exception is ValidationException or OperationException)
+        {
+            IEnumerable<ProductCategoryBasicResponseDto> categoryOptions;
+            IEnumerable<BrandBasicResponseDto> brandOptions;
+            (categoryOptions, brandOptions) = await LoadCategoryAndBrandOptionsAsync(token);
+            model.MapFromCategoryOptionResponseDtos(categoryOptions);
+            model.MapFromBrandOptionResponseDtos(brandOptions);
+
+            if (exception is ValidationException validationException)
+            {
+                ModelState.AddModelErrors(validationException);
+            }
+            else if (exception is OperationException operationException)
+            {
+                ModelState.AddModelErrors(operationException);
+            }
+
+            return UpdateView(model);
+        }
     }
 
     [HttpGet("{id:guid}/chinh-sua")]
-    public IActionResult Update([FromRoute] Guid id)
+    public async Task<IActionResult> Update([FromRoute] Guid id, CancellationToken token)
     {
-        return Ok();
+        IEnumerable<ProductCategoryBasicResponseDto> categoryOptions;
+        IEnumerable<BrandBasicResponseDto> brandOptions;
+        (categoryOptions, brandOptions) = await LoadCategoryAndBrandOptionsAsync(token);
+
+        ProductGetDetailRequestDto productRequestDto = new() { Id = id };
+        ProductGetDetailResponseDto productResponseDto = await _mediator.Send(productRequestDto, token);
+
+        ProductUpsertModel model = new(productResponseDto, categoryOptions, brandOptions);
+        return UpdateView(model);
     }
 
     [HttpGet("{id:guid}/xoa-bo")]
@@ -88,6 +133,32 @@ public class ProductController : Controller
         await _mediator.Send(requestDto, token);
 
         return RedirectToAction("List");
+    }
+    #endregion
+
+    #region PrivateMethods
+    private ViewResult CreateView(ProductUpsertModel model)
+    {
+        return View("~/Views/Product/ProductUpsert/ProductCreatePage.cshtml", model);
+    }
+
+    private ViewResult UpdateView(ProductUpsertModel model)
+    {
+        return View("~/Views/Product/ProductUpsert/ProductUpdatePage.cshtml", model);
+    }
+
+    private async Task<(IEnumerable<ProductCategoryBasicResponseDto>, IEnumerable<BrandBasicResponseDto>)>
+        LoadCategoryAndBrandOptionsAsync(CancellationToken token)
+    {
+        ProductCategoryGetAllRequestDto categoryOptionsRequestDto = new();
+        IEnumerable<ProductCategoryBasicResponseDto> categoryOptions = await _mediator.Send(
+            categoryOptionsRequestDto,
+            token);
+
+        BrandGetAllRequestDto brandOptionsRequestDto = new();
+        IEnumerable<BrandBasicResponseDto> brandOptions = await _mediator.Send(brandOptionsRequestDto, token);
+
+        return (categoryOptions, brandOptions);
     }
     #endregion
 }

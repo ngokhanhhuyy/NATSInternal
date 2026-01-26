@@ -10,14 +10,22 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function handleNumberInputElement(element: HTMLInputElement, nullable: boolean): void {
-  let minValue: number | null = Number(element.getAttribute("data-val-range-min"));
-  if (isNaN(minValue)) {
-    minValue = null;
+  let minValue: number | null = null;
+  const minRange = element.getAttribute("data-val-range-min");
+  if (minRange) {
+    minValue = Number(minRange);
+    if (isNaN(minValue)) {
+      minValue = null;
+    }
   }
 
-  let maxValue: number | null = Number(element.getAttribute("data-val-range-max"));
-  if (isNaN(maxValue)) {
-    maxValue = null;
+  let maxValue: number | null = null;
+  const maxRange = element.getAttribute("data-val-range-max");
+  if (maxRange) {
+    maxValue = Number(maxRange);
+    if (isNaN(maxValue)) {
+      maxValue = null;
+    }
   }
 
   let previousValue = element.value;
@@ -33,6 +41,11 @@ function handleNumberInputElement(element: HTMLInputElement, nullable: boolean):
       return;
     }
 
+    console.log({
+      minValue,
+      maxValue,
+      intValue
+    });
     if (minValue != null && intValue < minValue) {
       element.value = formatNumber(minValue);
       previousValue = element.value;
