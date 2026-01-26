@@ -5,6 +5,16 @@
         justify-content: start;
         align-items: stretch;
 
+        &:has(input[data-val-required]), &:has(select[data-val-required]), &:has(textarea[data-val-required]) {
+            & > label::after {
+                content: "*";
+                color: var(--color-red-500);
+                margin-left: --spacing(1);
+                display: inline-block;
+                transform: scale(125%) translateY(5%);
+            }
+        }
+
         & label, & .field-validation-valid, & .field-validation-error {
             font-size: var(--text-sm);
         }
@@ -20,6 +30,36 @@
         &:has(.field-validation-error) {
             & label, & .field-validation-error {
                 color: var(--color-red-500);
+            }
+        }
+    }
+    
+    .form-input-group {
+        display: flex;
+        flex: 1;
+        align-items: stretch;
+
+        & :not(:first-child) {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        & :not(:last-child) {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+    }
+
+    .form-input-group-text {
+        background-color: --alpha(var(--color-yellow-950) / 5%);
+        border: 1px solid --alpha(var(--color-black) / 15%);
+        border-radius: var(--radius-lg);
+        padding: --spacing(1) --spacing(3);
+
+        @variant dark {
+            & {
+                background: --alpha(var(--color-white) / 5%);
+                border-color: --alpha(var(--color-white) / 15%);
             }
         }
     }

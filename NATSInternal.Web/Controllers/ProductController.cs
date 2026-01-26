@@ -59,7 +59,8 @@ public class ProductController : Controller
     [HttpGet("tao-moi")]
     public IActionResult Create()
     {
-        return Ok();
+        ProductUpsertModel model = new();
+        return View("~/Views/Product/ProductUpsert/ProductCreatePage.cshtml", model);
     }
 
     [HttpGet("{id:guid}/chinh-sua")]

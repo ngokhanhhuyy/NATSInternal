@@ -1,0 +1,24 @@
+@model CustomerUpsertModel
+
+<div id="customer-upsert-introducer-modal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-dialog-header">
+            <div class="modal-dialog-header-title">
+                Chọn người giới thiệu
+            </div>
+        </div>
+
+        <div class="modal-dialog-body flex justify-stretch items-center gap-3 p-3 transition-opacity">
+            @if (Model.PickedIntroducer is not null)
+            {
+                <partial name="~/Views/Customer/CustomerUpsert/_IntroducerPanelPickedIntroducer.cshtml"
+                        model="Model.PickedIntroducer" />
+            }
+            else
+            {
+                <partial name="~/Views/Customer/CustomerUpsert/_IntroducerPanelCustomerList.cshtml"
+                        model="Model.CustomerList" />
+            }
+        </div>
+    </div>
+</div>

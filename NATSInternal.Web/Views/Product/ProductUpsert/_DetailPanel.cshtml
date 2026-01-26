@@ -1,0 +1,76 @@
+@model ProductUpsertModel
+
+<div class="panel">
+    <div class="panel-header">
+        <span class="panel-header-title">
+            Thông tin sản phẩm
+        </span>
+    </div>
+
+    <div class="panel-body flex flex-col gap-3 px-4 pt-2.5 pb-4">
+        <div class="grid grid-cols-1 sm:grid-cols-6 gap-3">
+            <!-- Name -->
+            <div class="form-field sm:col-span-4">
+                <label asp-for="Name"></label>
+                <input asp-for="Name" type="text" class="form-control" placeholder="Tên sản phẩm" />
+                <span asp-validation-for="Name"></span>
+            </div>
+
+            <!-- Unit -->
+            <div class="form-field sm:col-span-2">
+                <label asp-for="Unit"></label>
+                <input asp-for="Unit" type="text" class="form-control" placeholder="Chai, lọ, vĩ, hộp, ..." />
+                <span asp-validation-for="Unit"></span>
+            </div>
+
+            <!-- Description -->
+            <div class="form-field sm:col-span-6">
+                <label asp-for="Unit"></label>
+                <textarea asp-for="Unit" class="form-control" placeholder="Mô tả sản phẩm ..."></textarea>
+                <span asp-validation-for="Unit"></span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- DefaultAmountBeforeVatPerUnit -->
+            <div class="form-field">
+                <label asp-for="DefaultAmountBeforeVatPerUnit"></label>
+                <div class="form-input-group">
+                    <input asp-for="DefaultAmountBeforeVatPerUnit" type="text" class="form-control flex-1" />
+                    <div class="form-input-group-text border-l-0">vnđ</div>
+                </div>
+                <span asp-validation-for="DefaultAmountBeforeVatPerUnit"></span>
+            </div>
+            
+            <!-- DefaultVatPercentagePerUnit -->
+            <div class="form-field">
+                <label asp-for="DefaultVatPercentagePerUnit"></label>
+                <div class="form-input-group">
+                    <input asp-for="DefaultVatPercentagePerUnit" type="text" class="form-control flex-1" />
+                    <div class="form-input-group-text border-l-0">%</div>
+                </div>
+                <span asp-validation-for="DefaultVatPercentagePerUnit"></span>
+            </div>
+            
+            <!-- IsForRetail -->
+            <div class="form-field">
+                <label asp-for="IsForRetail">Dành cho loại giao dịch</label>
+                <select asp-for="IsForRetail" class="form-control flex-1">
+                    <option value="@true">Cả liệu trình và bán lẻ</option>
+                    <option value="@false">Chỉ liệu trình</option>
+                </select>
+                <span asp-validation-for="IsForRetail"></span>
+            </div>
+            
+            <!-- IsDiscontinued -->
+            <div class="form-field">
+                <label for="@Html.NameFor(m => m.IsDiscontinued)">Tình trạng</label>
+                <select asp-for="IsDiscontinued" class="form-control flex-1">
+                    <option value="@true">Đã ngưng sử dụng trong giao dịch</option>
+                    <option value="@false">Có thể sử dụng trong giao dịch</option>
+                </select>
+                <span asp-validation-for="IsDiscontinued"></span>
+            </div>
+        </div>
+    </div>
+</div>

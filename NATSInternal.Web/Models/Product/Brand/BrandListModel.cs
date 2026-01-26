@@ -11,6 +11,17 @@ public class BrandListModel : AbstractListModel<
     BrandGetListBrandResponseDto,
     BrandGetListRequestDto.FieldToSort>
 {
+    #region Constructors
+    public BrandListModel()
+    {
+        BrandGetListRequestDto requestDto = new();
+        SortByAscending = requestDto.SortByAscending;
+        SortByFieldName = requestDto.SortByFieldName;
+        Page = requestDto.Page;
+        ResultsPerPage = requestDto.ResultsPerPage;
+    }
+    #endregion
+
     #region ProtectedMethods
     protected override void MapItemsFromResponseDtos(IEnumerable<BrandGetListBrandResponseDto> responseDtos)
     {

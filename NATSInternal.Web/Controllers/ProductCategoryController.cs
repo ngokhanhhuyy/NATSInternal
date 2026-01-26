@@ -5,7 +5,7 @@ using NATSInternal.Web.Models;
 
 namespace NATSInternal.Web.Controllers;
 
-[Route("/san-pham/thuong-hieu")]
+[Route("/san-pham/phan-loai")]
 [Authorize]
 public class ProductCategoryController : Controller
 {

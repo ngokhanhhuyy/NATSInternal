@@ -1,0 +1,25 @@
+@model ProductUpsertModel
+@{
+    Layout = "Layouts/_MainContainer";
+    ViewBag.PageTitle = "Tạo sản phẩm mới";
+    ViewBag.BreadcrumbItems = new List<BreadcrumbItemModel>
+    {
+        new("Sản phẩm", Url.Action("List", "Product")),
+        new("Tạo mới", Url.Action("Create", "Product"))
+    };
+
+    ViewBag.FormAction = Url.Action("Create", "Product");
+}
+
+<div id="product-create-page" class="flex flex-col gap-3">
+    <partial name="~/Views/Product/ProductUpsert/_DetailPanel.cshtml" />
+    <partial name="~/Views/Product/ProductUpsert/_StockPanel.cshtml" />
+    
+    <div class="flex justify-end gap-3">
+        <partial name="~/Views/Shared/Form/SubmitButton.cshtml" model="@("customer-upsert-form")" />
+    </div>
+</div>
+
+@section PageDescription {
+    Tạo mới sản phẩm mới, bao gồm thông tin về thương hiệu và phân loại (nếu có).
+}

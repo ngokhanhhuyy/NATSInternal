@@ -1,0 +1,27 @@
+@model ProductUpsertModel
+
+<div class="panel">
+    <div class="panel-header">
+        <span class="panel-header-title">
+            Kho hàng
+        </span>
+    </div>
+
+    <div class="panel-body flex flex-col gap-3 px-4 pt-2.5 pb-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- StockingQuantity -->
+            <div class="form-field">
+                <label asp-for="Stock.StockingQuantity"></label>
+                <input asp-for="Stock.StockingQuantity" type="text" class="form-control" />
+                <span asp-validation-for="Stock.StockingQuantity"></span>
+            </div>
+            
+            <!-- ResupplyThresholdQuantity -->
+            <div class="form-field">
+                <label asp-for="Stock.ResupplyThresholdQuantity"></label>
+                <input asp-for="Stock.ResupplyThresholdQuantity" type="text" class="form-control" />
+                <span asp-validation-for="Stock.ResupplyThresholdQuantity"></span>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+@model BrandListModel
+@{
+    Layout = "Pages/_ListPageLayout";
+    ViewBag.PageTitle = "Danh sách thương hiệu";
+    ViewBag.BreadcrumbItems = new List<BreadcrumbItemModel>
+    {
+        new("Thương hiệu", Url.Action("List", "Brand"))
+    };
+    
+    ViewBag.CreateRoutePath = Url.Action("Create", "Brand");
+}
+
+@if (Model.Items.Count > 0)
+{
+    <ul class="list-group list-group-flush">
+        @foreach (BrandListBrandModel brand in Model.Items)
+        {
+            <li class="list-group-item p-2">
+                <a asp-for="Detail" asp-route-id="@brand.Id" class="font-bold">
+                    @brand.Name
+                </a>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <div class="flex justify-center items-center px-3 py-10 opacity-50">
+        Không tìm thấy kết quả
+    </div>
+}
+
+@section PageDescription
+{
+    Danh sách các thương hiệu đang được giao dịch bởi cửa hàng.
+}

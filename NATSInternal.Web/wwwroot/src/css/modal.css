@@ -61,7 +61,7 @@
     --opacity: 100%;
     pointer-events: auto;
     
-    :where(.modal-dialog) {
+    & :where(.modal-dialog) {
         --dialog-scale: 100%;
     }
 }

@@ -1,20 +1,54 @@
-const regexpPatternAttributeName = "data-regexp-pattern";
-
 document.addEventListener("DOMContentLoaded", () => {
-  const regexpPatternInputElements = document
-    .querySelectorAll(`input[${regexpPatternAttributeName}]`) as NodeListOf<HTMLInputElement>;
-  regexpPatternInputElements.forEach(element => {
-    const regexpPatternAsString = element.getAttribute(regexpPatternAttributeName);
-    if (!regexpPatternAsString) {
-      return;
+  const intInputElements = document.querySelectorAll(`input[data-accept-type]`) as NodeListOf<HTMLInputElement>;
+  intInputElements.forEach(element => {
+    const numberTypes = ["int", "int?", "long", "long?"];
+    const acceptType = element.getAttribute("data-accept-type") ?? "";
+    if (numberTypes.includes(acceptType)) {
+      handleNumberInputElement(element, acceptType.endsWith("?"));
     }
-    
-    const regexpPattern = new RegExp(regexpPatternAsString);
-    element.addEventListener("input", (event: Event) => {
-      const value = (event.target as HTMLInputElement).value;
-      if (!regexpPattern.test("value")) {
-        
-      }
-    });
   });
 });
+
+function handleNumberInputElement(element: HTMLInputElement, nullable: boolean): void {
+  let minValue: number | null = Number(element.getAttribute("data-val-range-min"));
+  if (isNaN(minValue)) {
+    minValue = null;
+  }
+
+  let maxValue: number | null = Number(element.getAttribute("data-val-range-max"));
+  if (isNaN(maxValue)) {
+    maxValue = null;
+  }
+
+  let previousValue = element.value;
+  element.addEventListener("input", () => {
+    if (!element.value.length && !nullable) {
+      element.value = "0";
+      return;
+    }
+
+    const intValue = Number(element.value.replaceAll(" ", ""));
+    if (isNaN(intValue)) {
+      element.value = previousValue;
+      return;
+    }
+
+    if (minValue != null && intValue < minValue) {
+      element.value = formatNumber(minValue);
+      previousValue = element.value;
+      return;
+    } else if (maxValue != null && intValue > maxValue) {
+      element.value = formatNumber(maxValue);
+      previousValue = element.value;
+      return;
+    }
+
+    element.value = formatNumber(intValue);
+    previousValue = element.value;
+  });
+}
+
+function formatNumber(number: number): string {
+  return number.toString();
+  // return number.toLocaleString("vi-VN").replaceAll(".", " ");
+}
