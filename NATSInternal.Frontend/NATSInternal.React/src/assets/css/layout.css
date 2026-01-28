@@ -8,7 +8,7 @@
     align-items: stretch;
     margin-inline: auto;
     padding-top: var(--topbar-height);
-    
+
     /* body:has(#navbar) & {
         display: grid;
         grid-template-columns: 1fr auto;
@@ -340,6 +340,7 @@ main {
     align-items: stretch;
     margin-inline: --spacing(3);
     margin-top: --spacing(3);
+    min-width: 0;
 
     &.navigating {
         opacity: 50%;
@@ -376,6 +377,7 @@ main {
     justify-content: stretch;
     gap: --spacing(5);
     transition-property: opacity;
+    padding-bottom: --spacing(3);
 }
 
 #page-title-container {

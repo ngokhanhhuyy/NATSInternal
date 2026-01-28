@@ -35,7 +35,7 @@ export default function MainPageLayout(): React.ReactNode {
   }, []);
 
   useEffect(() => {
-    setTimeout(() => setShouldBlockPointerEvent(isNavigationBarExpanded), 100);
+    setTimeout(() => setShouldBlockPointerEvent(isNavigationBarExpanded), 200);
   }, [isNavigationBarExpanded]);
 
   // Template.

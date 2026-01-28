@@ -8,7 +8,6 @@
         --border-color-from-background: transparent;
         --row-background-color-from-actual-row-background: var(--odd-background-color);
         --row-background-color-from-background: transparent;
-        min-width: fit-content;
         margin: 0;
         padding: 0;
         border-collapse: collapse;
@@ -28,7 +27,6 @@
         & :where(th),
         & :where(td) {
             padding-inline: --spacing(3);
-            white-space: nowrap;
         }
 
         & :where(th) {
@@ -40,9 +38,9 @@
             padding-block: --spacing(1.5);
         }
 
-        & :not(thead) :where(tr:nth-child(odd)) {
+        /* & :not(thead) :where(tr:nth-child(odd)) {
             background-color: var(--row-background-color-from-actual-row-background);
-        }
+        } */
 
         & :where(th:not(:last-child)),
         & :where(td:not(:last-child)) {

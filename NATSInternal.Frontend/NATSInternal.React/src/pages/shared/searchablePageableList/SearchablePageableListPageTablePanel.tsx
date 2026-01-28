@@ -48,27 +48,29 @@ export default function SearchablePageableListPageTableBlock<
       </div>
 
       {/* Body */}
-      <div className="panel-body flex overflow-x-hidden w-full">
-        {props.model.items.length ? (
-          <table className="data-table relative flex-1">
-            <thead className="whitespace-nowrap">
-              <tr className="text-black/50 dark:text-white/50 font-bold">
-                {props.renderHeaderRowChildren?.()}
-              </tr>
-            </thead>
-            <tbody>
-              {props.model.items.map((customer, index) => (
-                <tr key={index}>
-                  {props.renderBodyRowChildren?.(customer)}
+      <div className="panel-body flex-1 min-w-0">
+        <div className="w-full overflow-x-auto">
+          {props.model.items.length ? (
+            <table className="data-table min-w-max w-full">
+              <thead className="whitespace-nowrap">
+                <tr className="text-black/50 dark:text-white/50 font-bold">
+                  {props.renderHeaderRowChildren?.()}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <div className="flex justify-center items-center w-full p-8 opacity-50">
-            Không có kết quả
-          </div>
-        )}
+              </thead>
+              <tbody>
+                {props.model.items.map((customer, index) => (
+                  <tr key={index} className="whitespace-nowrap">
+                    {props.renderBodyRowChildren?.(customer)}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="flex justify-center items-center w-full p-8 opacity-50">
+              Không có kết quả
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Footer */}

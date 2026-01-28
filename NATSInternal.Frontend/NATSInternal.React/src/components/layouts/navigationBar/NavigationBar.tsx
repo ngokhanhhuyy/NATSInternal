@@ -41,7 +41,7 @@ export default function NavigationBar(): React.ReactNode {
   const navigationBarElementRef = useRef<HTMLElement>(null!);
   const navigationBarContainerElementRef = useRef<HTMLDivElement>(null!);
   const [activeItemName, setActiveItemName] = useState<string | null>(null);
-  const [shouldBlockPointerEvent, setShouldBlockPointerEvent] = useState<boolean>(() => false);
+  const [shouldBlockPointerEvent, setShouldBlockPointerEvent] = useState<boolean>(false);
 
   // Effect.
   useEffect(() => {
@@ -91,7 +91,10 @@ export default function NavigationBar(): React.ReactNode {
   }, [location.pathname]);
   
   useEffect(() => {
-    setTimeout(() => setShouldBlockPointerEvent(navigationBarStore.isExpanded), 100);
+    if (navigationBarStore.isExpanded) {
+      setShouldBlockPointerEvent(true);
+      setTimeout(() => setShouldBlockPointerEvent(false), 200);
+    }
   }, [navigationBarStore.isExpanded]);
 
   // Template.
