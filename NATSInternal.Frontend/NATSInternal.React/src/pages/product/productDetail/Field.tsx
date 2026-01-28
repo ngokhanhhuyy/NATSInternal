@@ -16,12 +16,12 @@ export default function Field({ propertyName, ...props }: Props): React.ReactNod
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-[150px_1fr] lg:grid-cols-1 xl:grid-cols-[150px_1fr]">
-      <span className="block opacity-50 font-bold">
+    <div className="flex flex-col">
+      <span className="text-sm font-bold opacity-50">
         {getDisplayName(propertyName) ?? propertyName}
       </span>
 
-      <span {...props} className={joinClassName("block", props.className)} />
+      <span {...props} className={joinClassName("text-blue-700 dark:text-blue-400", props.className)} />
     </div>
   );
 }

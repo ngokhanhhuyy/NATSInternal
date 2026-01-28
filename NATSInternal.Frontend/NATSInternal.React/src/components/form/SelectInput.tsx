@@ -2,44 +2,61 @@ import { useTsxHelper } from "@/helpers";
 
 // Child component.
 import Input from "./Input";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
 // Props.
 type SelectInputOption = {
-  value: string | undefined;
+  value: string;
   displayName?: string;
 };
 
 export type SelectInputProps = {
-  showDisplayNameAsPrefix?: boolean;
   options: SelectInputOption[];
   value: string;
   onValueChanged(newValue: string): any;
-} & Omit<React.ComponentPropsWithoutRef<"select">, "children">;
+  disabled?: boolean;
+} & Omit<React.ComponentPropsWithoutRef<"div">, "children">;
 
 // Component.
-export default function SelectInput(props: SelectInputProps) {
-  // Props.
-  const { showDisplayNameAsPrefix, options, value, onValueChanged, ...domProps } = props;
-
+export default function SelectInput(props: SelectInputProps): React.ReactNode {
   // Dependencies.
   const { joinClassName } = useTsxHelper();
 
   // Template.
   function renderInput(className?: string, path?: string) {
     return (
-      <select
-        {...domProps}
-        name={path}
-        className={joinClassName(className, props.className, "cursor-pointer")}
-        value={value}
-        onInput={(event) => onValueChanged((event.target as HTMLSelectElement).value)}
-      >
-        {options.map((op, index) => (
-          <option value={op.value} key={index}>
-            {op.displayName ?? op.value}
-          </option>
-        ))}
-      </select>
+      <Menu>
+        <input type="hidden" name={path} id={props.id} />
+
+        <MenuButton className={joinClassName(
+          className,
+          props.className,
+          "form-control text-start hover:cursor-pointer")}
+        >
+          {props.options.find(option => option.value == props.value)?.displayName}
+        </MenuButton>
+
+        <MenuItems
+          className={joinClassName(
+            "bg-white/50 dark:bg-neutral-800/50 border border-blue-500 outline outline-blue-500",
+            "rounded-xl shadow-lg p-1.5 backdrop-blur-md",
+            "w-(--button-width) [--anchor-gap:--spacing(1.5)]",
+            "origin-top transition duration-200 ease-out data-closed:scale-95 data-closed:opacity-0"
+          )}
+          anchor="bottom start"
+          modal={false}
+          transition>
+          {props.options.map((option, index) => (
+            <MenuItem key={index}>
+              <div
+                className="data-focus:bg-blue-500 data-focus:text-white cursor-pointer px-3 py-1 rounded-lg"
+                onClick={() => props.onValueChanged(option.value)}>
+                {option.displayName ?? option.value}
+              </div>
+            </MenuItem>
+          ))}
+        </MenuItems>
+      </Menu>
     );
   }
 

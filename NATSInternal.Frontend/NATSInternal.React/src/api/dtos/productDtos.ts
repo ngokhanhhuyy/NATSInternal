@@ -55,7 +55,6 @@ declare global {
     unit: string;
     defaultAmountBeforeVatPerUnit: number;
     defaultVatPercentagePerUnit: number;
-    stockingQuantity: number;
     isForRetail: boolean;
     isDiscontinued: boolean;
     createdDateTime: string;
@@ -64,6 +63,7 @@ declare global {
     lastUpdatedUser: UserBasicResponseDto | null;
     category: ProductCategoryBasicResponseDto | null;
     brand: BrandBasicResponseDto | null;
+    stock: StockBasicResponseDto;
     photos: PhotoBasicResponseDto[];
     authorization: ProductExistingAuthorizationResponseDto;
   };

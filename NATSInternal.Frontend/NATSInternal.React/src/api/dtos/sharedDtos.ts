@@ -35,6 +35,12 @@ declare global {
     id: string;
     name: string;
   };
+
+  type StockBasicResponseDto = {
+    id: string;
+    stockingQuantity: number;
+    resupplyThresholdQuantity: number;
+  };
   
   type PhotoBasicResponseDto = {
     id: string;

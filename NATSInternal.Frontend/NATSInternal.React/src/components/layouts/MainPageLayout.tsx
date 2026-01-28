@@ -1,7 +1,7 @@
-import React, { useMemo, useEffect, Fragment } from "react";
+import React, { useState, useMemo, useEffect, Fragment } from "react";
 import { useMatches, Outlet, Link, useNavigation } from "react-router";
 import { useNavigate } from "react-router";
-import { useAuthenticationStore } from "@/stores";
+import { useAuthenticationStore, useNavigationBarStore } from "@/stores";
 import { useRouteHelper, useTsxHelper } from "@/helpers";
 
 // Child components.
@@ -17,8 +17,12 @@ export default function MainPageLayout(): React.ReactNode {
   const navigation = useNavigation();
   const navigate = useNavigate();
   const isAuthenticated = useAuthenticationStore(store => store.isAuthenticated);
+  const isNavigationBarExpanded = useNavigationBarStore(store => store.isExpanded);
   const { getSignInRoutePath } = useRouteHelper();
   const { joinClassName, compute } = useTsxHelper();
+
+  // States.
+  const [shouldBlockPointerEvent, setShouldBlockPointerEvent] = useState<boolean>(() => false);
 
   // Computed.
   const isNavigating = compute<boolean>(() => Boolean(navigation.location));
@@ -30,6 +34,10 @@ export default function MainPageLayout(): React.ReactNode {
     }
   }, []);
 
+  useEffect(() => {
+    setTimeout(() => setShouldBlockPointerEvent(isNavigationBarExpanded), 100);
+  }, [isNavigationBarExpanded]);
+
   // Template.
   if (!isAuthenticated) {
     return null;
@@ -37,7 +45,14 @@ export default function MainPageLayout(): React.ReactNode {
 
   return (
     <RootLayout>
-      <div id="main-page-layout" className={joinClassName(isNavigating && "navigating")}>
+      <div
+        id="main-page-layout"
+        className={joinClassName(
+          "transition-opacity",
+          isNavigating && "opacity-50 navigating",
+          shouldBlockPointerEvent && "pointer-events-none"
+        )}
+      >
         {/* The bar on top the current page, containing breadcrumb */}
         <div id="breadcrumb">
           <Breadcrumb />

@@ -6,6 +6,7 @@ import { createProductListModel } from "@/models";
 // Child components.
 import SearchablePageableListPage from "@/pages/shared/searchablePageableList/SearchablePageableListPage";
 import { BrandListPanel, ProductCategoryListPanel } from "./SecondaryPanels";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 // Api.
 const api = useApi();
@@ -45,15 +46,27 @@ export default function ProductListPage(): React.ReactNode {
       renderTableBodyRowChildren={(itemModel) => (
         <>
           <td>
-            <Link to={itemModel.detailRoute} className="font-bold">
+            <Link to={itemModel.detailRoute} className="text-blue-700 dark:text-blue-400 font-bold">
               {itemModel.name}
             </Link>
           </td>
-          <td>{itemModel.formattedDefaultAmountBeforeVatPerUnit}</td>
+          <td>
+            <div className="flex justify-between">
+              <span>{itemModel.formattedDefaultAmountBeforeVatPerUnit}</span>
+              {itemModel.defaultVatPercentagePerUnit > 0 && (
+                <span className="opacity-50">({itemModel.defaultVatPercentagePerUnit}% VAT)</span>
+              )}
+            </div>
+          </td>
           <td>{itemModel.category?.name}</td>
           <td>{itemModel.stockingQuantity} {itemModel.unit}</td>
-          <td className="text-red-700 dark:text-red-400 align-middle">
-            {itemModel.isResupplyNeeded && <span>Cần nhập hàng</span>}
+          <td className="text-yellow-600 dark:text-yellow-400 align-middle">
+            {itemModel.isResupplyNeeded && (
+              <div className="flex items-center gap-1.5">
+                <ExclamationTriangleIcon className="size-4.5" />
+                <span>Cần nhập hàng</span>
+              </div>
+            )}
           </td>
         </>
       )}

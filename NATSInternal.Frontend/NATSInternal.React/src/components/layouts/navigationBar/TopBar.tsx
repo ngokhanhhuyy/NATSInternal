@@ -7,8 +7,13 @@ import MainLogo from "./MainLogo";
 import { Button } from "@/components/ui";
 import { Bars4Icon, MoonIcon, SunIcon, Cog6ToothIcon } from "@heroicons/react/24/solid";
 
+// Props.
+type TopBarProps = {
+  shouldRenderNavigationBarToggleButton: boolean;
+};
+
 // Component.
-export default function TopBar(): React.ReactNode {
+export default function TopBar(props: TopBarProps): React.ReactNode {
   // Dependencies.
   const navigationBarStore = useNavigationBarStore(); 
   const { joinClassName } = useTsxHelper();
@@ -42,9 +47,11 @@ export default function TopBar(): React.ReactNode {
         <ThemeToggleButton />
 
         {/* Navigation bar toggle button */}
-        <Button className="h-full aspect-[1.2] md:hidden shrink-0" onClick={navigationBarStore.toggle}>
-          <Bars4Icon className="size-6" />
-        </Button>
+        {props.shouldRenderNavigationBarToggleButton && (
+          <Button className="h-full aspect-[1.2] md:hidden shrink-0" onClick={navigationBarStore.toggle}>
+            <Bars4Icon className="size-6" />
+          </Button>
+        )}
       </div>
     </div>
   );

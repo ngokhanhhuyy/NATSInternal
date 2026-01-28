@@ -96,7 +96,7 @@ public class ProductController : Controller
                 ModelState.AddModelErrors(operationException);
             }
 
-            return UpdateView(model);
+            return CreateView(model);
         }
     }
 
@@ -112,6 +112,42 @@ public class ProductController : Controller
 
         ProductUpsertModel model = new(productResponseDto, categoryOptions, brandOptions);
         return UpdateView(model);
+    }
+
+    [HttpPost("{id:guid}/chinh-sua")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update(
+        [FromRoute] Guid id,
+        [FromForm] ProductUpsertModel model,
+        CancellationToken token)
+    {
+        model.Id = id;
+        try
+        {
+            ProductUpdateRequestDto requestDto = model.ToUpdateRequestDto();
+            await _mediator.Send(requestDto);
+
+            return this.SuccessfulSubmissionConfirmationView(Url.Action("Detail", new { id }));
+        }
+        catch (Exception exception) when (exception is ValidationException or OperationException)
+        {
+            IEnumerable<ProductCategoryBasicResponseDto> categoryOptions;
+            IEnumerable<BrandBasicResponseDto> brandOptions;
+            (categoryOptions, brandOptions) = await LoadCategoryAndBrandOptionsAsync(token);
+            model.MapFromCategoryOptionResponseDtos(categoryOptions);
+            model.MapFromBrandOptionResponseDtos(brandOptions);
+
+            if (exception is ValidationException validationException)
+            {
+                ModelState.AddModelErrors(validationException);
+            }
+            else if (exception is OperationException operationException)
+            {
+                ModelState.AddModelErrors(operationException);
+            }
+
+            return UpdateView(model);
+        }
     }
 
     [HttpGet("{id:guid}/xoa-bo")]

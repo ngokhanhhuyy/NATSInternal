@@ -41,7 +41,7 @@ function SecondaryListPanel<
     
   // Template.
   const headerChildren = (
-    <Link to={props.listRoutePath} className="btn btn-block-header btn-sm gap-1">
+    <Link to={props.listRoutePath} className="btn btn-panel-header btn-sm gap-1">
       <Bars4Icon className="size-4"/>
       <span>Danh sách đầy đủ</span>
     </Link>
@@ -123,7 +123,7 @@ export function BrandListPanel(): React.ReactNode {
       isInitialLoading={isInitialLoading}
       listRoutePath={getBrandListRoutePath()}
       renderItem={(item: BrandListBrandModel) => (
-        <Link to={item.detailRoute} className="font-bold">
+        <Link to={item.detailRoute} className="text-blue-700 dark:text-blue-400 font-bold">
           {item.name}
         </Link>
       )}
@@ -161,7 +161,7 @@ export function ProductCategoryListPanel(): React.ReactNode {
       resourceName="productCategory"
       isInitialLoading={isInitialLoading}
       listRoutePath={getProductCategoryListRoutePath()}
-      renderItem={(item) => item.name}
+      renderItem={(item) => <span className="text-blue-700 dark:text-blue-400">{item.name}</span>}
     />
   );
 }

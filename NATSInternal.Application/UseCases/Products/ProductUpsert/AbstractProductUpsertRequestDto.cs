@@ -6,9 +6,9 @@ namespace NATSInternal.Application.UseCases.Products;
 public abstract class AbstractProductUpsertRequestDto : IRequestDto
 {
     #region Properties
-    public required string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
-    public required string Unit { get; set; }
+    public string Unit { get; set; } = string.Empty;
     public long DefaultAmountBeforeVatPerUnit { get; set; }
     public int DefaultVatPercentagePerUnit { get; set; }
     public bool IsForRetail { get; set; }

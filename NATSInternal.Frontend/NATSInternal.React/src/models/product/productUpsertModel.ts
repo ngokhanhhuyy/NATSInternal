@@ -13,10 +13,16 @@ declare global {
     isDiscontinued: boolean;
     brand: BrandBasicModel | null;
     category: ProductCategoryBasicModel | null;
+    stock: ProductUpsertStockModel;
     photos: PhotoCreateOrUpdateModel[];
     get detailRoutePath(): string;
     toCreateRequestDto(): ProductCreateRequestDto;
     toUpdateRequestDto(): ProductUpdateRequestDto;
+  };
+
+  type ProductUpsertStockModel = {
+    stockingQuantity: number;
+    resupplyThresholdQuantity: number;
   };
 }
 
@@ -34,6 +40,7 @@ export function createProductUpsertModel(responseDto?: ProductGetDetailResponseD
     isDiscontinued: responseDto?.isDiscontinued ?? false,
     brand: (responseDto?.brand && createBrandBasicModel(responseDto.brand)) ?? null,
     category: (responseDto?.category && createProductCategoryBasicModel(responseDto.category)) ?? null,
+    stock: createProductUpsertStockModel(responseDto?.stock),
     photos: responseDto?.photos.map(dto => createPhotoCreateOrUpdateModel(dto)) ?? [],
     get detailRoutePath(): string {
       return getProductDetailRoutePath(this.id);
@@ -48,6 +55,13 @@ export function createProductUpsertModel(responseDto?: ProductGetDetailResponseD
         isDiscontinued: this.isDiscontinued
       };
     }
+  };
+}
+
+function createProductUpsertStockModel(responseDto?: StockBasicResponseDto): ProductUpsertStockModel {
+  return {
+    stockingQuantity: responseDto?.stockingQuantity ?? 0,
+    resupplyThresholdQuantity: responseDto?.resupplyThresholdQuantity ?? 0
   };
 }
 

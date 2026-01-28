@@ -49,9 +49,13 @@ export default function MainContainer(props: MainContainerProps): React.ReactNod
     <div
       {...domProps}
       id="main-container"
-      className={joinClassName(props.className, isLoading && "opacity-50 cursor-wait")}
+      className={joinClassName(
+        props.className,
+        "transition-opacity duration-200",
+        isLoading && "opacity-50 cursor-wait"
+      )}
     >
-      <div className="flex flex-col">
+      <div id="page-title-container">
         <span className="text-2xl">{pageTitle}</span>
         <span className="text-md opacity-50">{props.description}</span>
       </div>

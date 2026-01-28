@@ -5,25 +5,43 @@
         justify-content: start;
         align-items: stretch;
 
-        &:where(label), &:where(.field-validation-valid), &:where(.field-validation-error) {
+        &:has(input[required]), &:has(select[required]), &:has(textarea[required]) {
+            --color: var(--color-red-700);
+
+            @variant dark {
+                & {
+                    --color: var(--color-red-400);
+                }
+            }
+
+            & > label::after {
+                content: "*";
+                color: var(--color);
+                margin-left: --spacing(1);
+                display: inline-block;
+                transform: scale(125%) translateY(5%);
+            }
+        }
+
+        & label, & .field-validation-valid, & .field-validation-error {
             font-size: var(--text-sm);
         }
 
-        &:where(label) {
+        & label {
             opacity: 75%;
         }
 
-        &:has(.field-validation-valid):where(label), &:has(.field-validation-valid):where(label) {
+        &:has(.field-validation-valid) label, &:has(.field-validation-valid) label {
             opacity: 75%;
         }
 
         &:has(.field-validation-error) {
-            :where(label), :where(.field-validation-error) {
+            & label, & .field-validation-error {
                 color: var(--color-red-500);
             }
         }
     }
-
+    
     .form-input-group {
         display: flex;
         flex: 1;

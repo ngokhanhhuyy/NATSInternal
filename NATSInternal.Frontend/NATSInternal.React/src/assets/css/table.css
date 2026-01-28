@@ -2,38 +2,38 @@
     .data-table {
         --row-height: unset;
         --border-width: 1px;
-        --border-color: rgba(0, 0, 0, 15%);
-        --odd-background-color: rgba(0, 0, 0, 5%);
+        --border-color: --alpha(var(--color-black) / 10%);
+        --odd-background-color: --alpha(var(--color-black) / 5%);
         --border-color-from-actual-border: var(--border-color);
         --border-color-from-background: transparent;
         --row-background-color-from-actual-row-background: var(--odd-background-color);
         --row-background-color-from-background: transparent;
-        width: 100%;
+        min-width: fit-content;
         margin: 0;
         padding: 0;
         border-collapse: collapse;
 
         @variant dark {
             & {
-                --border-color: rgba(255, 255, 255, 15%);
+                --border-color: rgba(255, 255, 255, 10%);
                 --odd-background-color: rgba(255, 255, 255, 3%);
             }
         }
 
         & thead :where(tr),
-        & tbody :where(tr):not(:last-child) {
+        & tbody :where(tr:not(:last-child)) {
             border-bottom: var(--border-width) solid var(--border-color-from-actual-border);
         }
     
         & :where(th),
         & :where(td) {
             padding-inline: --spacing(3);
+            white-space: nowrap;
         }
 
         & :where(th) {
             font-size: var(--text-sm);
             padding-block: --spacing(0.5);
-            opacity: 50%;
         }
 
         & :where(td) {
@@ -51,43 +51,33 @@
     }
 }
 
-@utility data-table-grid-color-from-background {
-    --row-height: --spacing(10);
-    --border-color-from-actual-border: transparent;
-    --border-color-from-background: var(--border-color);
-    --row-background-color-from-actual-row-background: transparent;
-    --row-background-color-from-background: var(--odd-background-color);
+@layer utilities {
+    .data-table-grid-color-from-background {
+        --row-height: --spacing(10);
+        --border-color-from-actual-border: transparent;
+        --border-color-from-background: var(--border-color);
+        --row-background-color-from-actual-row-background: transparent;
+        --row-background-color-from-background: var(--odd-background-color);
 
-    &::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        width: 100%;
-        height: 999px;
-        background-image: repeating-linear-gradient(
-            180deg,
-            var(--border-color-from-background) 0,
-            var(--border-color-from-background) var(--border-width),
-            var(--row-background-color-from-background) var(--border-width),
-            var(--row-background-color-from-background) calc(var(--row-height) - var(--border-width)),
-            var(--border-color-from-background) calc(var(--row-height) - var(--border-width)),
-            var(--border-color-from-background) calc(var(--row-height) + var(--border-width)),
-            transparent calc(var(--row-height) + var(--border-width)),
-            transparent calc(var(--row-height) + (var(--row-height) - var(--border-width))),
-            var(--border-color-from-background) calc(var(--row-height) + (var(--row-height) - var(--border-width))),
-            var(--border-color-from-background) calc(var(--row-height) + var(--row-height))
-        ) !important;
-    }
-}
-
-@utility data-table-row-height-* {
-    & :where(tr) {
-        height: --value([integer]);
-    }
-}
-
-@utility data-table-cell-content-nowrap {
-    & :where(td), & :where(th) {
-        white-space: nowrap;
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 999px;
+            background-image: repeating-linear-gradient(
+                180deg,
+                var(--border-color-from-background) 0,
+                var(--border-color-from-background) var(--border-width),
+                var(--row-background-color-from-background) var(--border-width),
+                var(--row-background-color-from-background) calc(var(--row-height) - var(--border-width)),
+                var(--border-color-from-background) calc(var(--row-height) - var(--border-width)),
+                var(--border-color-from-background) calc(var(--row-height) + var(--border-width)),
+                transparent calc(var(--row-height) + var(--border-width)),
+                transparent calc(var(--row-height) + (var(--row-height) - var(--border-width))),
+                var(--border-color-from-background) calc(var(--row-height) + (var(--row-height) - var(--border-width))),
+                var(--border-color-from-background) calc(var(--row-height) + var(--row-height))
+            ) !important;
+        }
     }
 }

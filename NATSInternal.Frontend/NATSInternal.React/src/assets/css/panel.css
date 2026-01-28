@@ -1,14 +1,22 @@
 ﻿@layer components {
     .panel {
+        background-color: white;
         display: flex;
         flex-direction: column;
         overflow: hidden;
         box-sizing: border-box;
+        border-radius: var(--radius-lg);
+
+        @variant dark {
+            & {
+                background-color: --alpha(var(--color-white) / 8%);
+            }
+        }
     }
-        
+
     .panel-header {
-        background-color: --alpha(var(--color-black) / 10%);
-        border: 1px solid --alpha(var(--color-black) / 15%);
+        background-color: --alpha(var(--color-blue-500) / 25%);
+        border: 1px solid --alpha(var(--color-blue-500) / 50%);
         display: flex;
         justify-content: space-between;
         gap: --spacing(3);
@@ -22,24 +30,29 @@
         
         @variant dark {
             & {
-                background-color: --alpha(var(--color-white) / 10%);
-                border-color: --alpha(var(--color-white) / 15%);
+                background-color: --alpha(var(--color-blue-400) / 15%);
+                border-color: --alpha(var(--color-blue-400) / 40%);
+            }
+        }
+    }
+    
+    .panel-header-title {
+        color: --alpha(var(--color-blue-800) / 75%);
+        font-size: var(--text-sm);
+        font-weight: bold;
+        text-transform: uppercase;
+        
+        @variant dark {
+            & {
+                color: var(--color-blue-400);
             }
         }
     }
 
-    .panel-header-title {
-        font-size: var(--text-sm);
-        font-weight: bold;
-        text-transform: uppercase;
-    }
-    
     .panel-body {
         border-color: --alpha(var(--color-black) / 15%);
-        border-left-width: 1px;
-        border-left-style: solid;
-        border-right-width: 1px;
-        border-right-style: solid;
+        border-inline-width: 1px;
+        border-inline-style: solid;
         flex: 1;
         overflow: hidden;
         
@@ -56,23 +69,38 @@
             }
         }
     }
-    
+
     .panel-footer {
-        --background-color: --alpha(var(--color-black) / 10%);
-        --border-color: --alpha(var(--color-black) / 15%);
-        background-color: var(--background-color);
-        border: 1px solid var(--border-color);
+        background-color: --alpha(var(--color-black) / 10%);
+        border: 1px solid --alpha(var(--color-black) / 10%);
         border-bottom-left-radius: var(--radius-lg);
         border-bottom-right-radius: var(--radius-lg);
-        display: flex;
-        justify-content: stretch;
-        padding: --spacing(3);
+        padding: --spacing(2);
 
         @variant dark {
             & {
-                --background-color: --alpha(var(--color-white) / 10%);
-                --border-color: --alpha(var(--color-white) / 15%);
+                background-color: --alpha(var(--color-white) / 5%);
+                border-color: --alpha(var(--color-white) / 15%);
             }
         }
+    }
+}
+
+@layer utilities {
+    .panel-focus-animation {
+        border-radius: var(--radius-lg);
+        animation-name: panel-focus-animation;
+        animation-duration: 2s;
+        animation-iteration-count: 1;
+    }
+}
+
+@keyframes panel-focus-animation {
+    0% {
+        box-shadow: 0 0 15px var(--color-emerald-500);
+    }
+
+    100% {
+        box-shadow: 0 0 15px transparent;
     }
 }

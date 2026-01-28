@@ -13,6 +13,7 @@
         transition: .25s ease;
         cursor: pointer;
         display: flex;
+        gap: --spacing(1.5);
         justify-content: center;
         align-items: center;
         /* box-shadow: var(--shadow-xs); */
@@ -27,7 +28,7 @@
 
         @variant dark {
             & {
-                background: --alpha(var(--color-neutral-800) / 100%);
+                background: oklch(from var(--color-neutral-800) l c h / 100%);
                 color: var(--color-white);
                 border-color: rgba(255, 255, 255, 15%);
 
@@ -50,108 +51,141 @@
     }
 }
 
-@utility btn-primary {
-    background-color: black;
-    color: white;
-    border-color: black;
+@layer utilities {
+    .btn-primary {
+        background-color: var(--color-blue-700);
+        color: white;
+        border-color: --alpha(var(--color-black) / 5%);
 
-    &:hover {
-        background-color: rgba(0, 0, 0, 70%);
-        border-color: rgba(0, 0, 0, 70%);
-    }
+        &:hover {
+            background-color: var(--color-blue-500);
+        }
 
-    @variant dark {
-        & {
-            background-color: var(--color-neutral-200);
-            color: black;
-            border-color: white;
+        @variant dark {
+            & {
+                background-color: var(--color-blue-400);
+                color: black;
+                border-color: --alpha(var(--color-white) / 10%);
 
-            &:hover {
-                background-color: var(--color-neutral-300);
-                border-color: var(--color-neutral-100);
+                &:hover {
+                    background-color: var(--color-blue-300);
+                }
             }
         }
     }
-}
 
-@utility btn-danger {
-    background: var(--color-red-500);
-    color: white;
-    border-color: var(--color-red-500);
-
-    &.outline-only {
+    .btn-primary-outline {
         background: white;
-        color: var(--color-red-500);
-    }
+        color: var(--color-blue-700);
+        border-color: var(--color-blue-700);
 
-    &:hover {
-        background: var(--color-red-600);
-
-        &.outline-only {
+        &:hover {
+            background: var(--color-blue-700);
             color: white;
         }
-    }
 
-    @variant dark {
-        & {
-            background: var(--color-red-700);
-            color: white;
-            border-color: var(--color-red-600);
-
-            &.outline-only {
-                background: var(--color-neutral-800);
-                color: var(--color-red-500);
-            }
-
-            &:hover {
-                background: var(--color-red-800);
-
-                &.outline-only {
+        @variant dark {
+            & {
+                background: black;
+                color: var(--color-blue-400);
+                border-color: var(--color-blue-400);
+                
+                &:hover {
+                    background: var(--color-blue-400);
                     color: white;
                 }
             }
         }
     }
-}
 
-@utility btn-panel-header {
-    border-color: rgba(0, 0, 0, 20%);
-
-    @variant dark {
-        & {
-            border-color: rgba(255, 255, 255, 20%);
-        }
-    }
-}
-
-@utility btn-panel-footer {
-    @apply btn-panel-header;
-}
-
-@utility btn-sm {
-    --padding-inline-coeffecient: 1.5;
-    --padding-block-coeffecient: 0.85;
-    --min-height-coeffecient: 7;
-    font-size: var(--text-sm);
-    border-radius: var(--radius-md);
-
-    & > svg {
-        --size-coeffecient: 3.5;
-    }
-}
-
-@utility btn-as-input {
-    background: rgba(0, 0, 0, 2.5%);
-
-    &:hover {
-        background: rgba(0, 0, 0, 10%);
-    }
-
-    html.dark {
-        background: rgba(255, 255, 255, 2.5%);
+    .btn-danger {
+        background: var(--color-red-500);
+        color: white;
+        border-color: var(--color-red-500);
 
         &:hover {
-            background: rgba(255, 255, 255, 15%);
+            background: var(--color-red-600);
+        }
+
+        @variant dark {
+            & {
+                background: var(--color-red-700);
+                color: white;
+                border-color: var(--color-red-600);
+
+                &:hover {
+                    background: var(--color-red-800);
+                }
+            }
+        }
+    }
+
+    .btn-danger-outline {
+        background: white;
+        color: var(--color-red-500);
+        border-color: var(--color-red-500);
+
+        &:hover {
+            background: var(--color-red-600);
+            color: white;
+        }
+
+        @variant dark {
+            & {
+                color: var(--color-red-600);
+                border-color: var(--color-red-600);
+                
+                &:hover {
+                    background: var(--color-red-700);
+                    color: white;
+                }
+            }
+        }
+    }
+
+    .btn-panel-header {
+        border-color: --alpha(var(--color-blue-500) / 50%);
+        
+        &:hover {
+
+            border-color: --alpha(var(--color-blue-500) / 75%);
+        }
+    }
+
+    .btn-panel-footer {
+        border-color: --alpha(var(--color-neutral-500) / 50%);
+        
+        &:hover {
+
+            border-color: --alpha(var(--color-neutral-500) / 75%);
+        }
+    }
+
+    .btn-sm {
+        --padding-inline-coeffecient: 1.5;
+        --padding-block-coeffecient: 0.85;
+        --min-height-coeffecient: 7;
+        font-size: var(--text-sm);
+        border-radius: var(--radius-md);
+
+        & > svg {
+            --size-coeffecient: 3.5;
+        }
+    }
+
+    .btn-as-input {
+        background: rgba(0, 0, 0, 2.5%);
+
+        &:hover {
+            background: rgba(0, 0, 0, 10%);
+        }
+
+        html.dark {
+            background: rgba(255, 255, 255, 2.5%);
+
+            &:hover {
+                background: rgba(255, 255, 255, 15%);
+            }
         }
     }
 }

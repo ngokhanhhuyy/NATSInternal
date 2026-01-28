@@ -35,7 +35,7 @@ export default function RootLayout(props: RootLayoutProps): React.ReactNode {
   // Template.
   return (
     <div id="root-layout">
-      {shouldRenderNavigationBar && <TopBar />}
+      <TopBar shouldRenderNavigationBarToggleButton={shouldRenderNavigationBar} />
       <main>
         {props.children}
         {shouldRenderNavigationBar && <NavigationBar />}

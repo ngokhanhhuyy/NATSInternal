@@ -30,7 +30,7 @@ export default function LatestTransactionPanel(): React.ReactNode {
             {model.map((transaction, index) => (
               <tr key={index}>
                 <td>
-                  <Link to="#" className="font-bold">
+                  <Link to="#" className="text-blue-700 dark:text-blue-400">
                     {transaction.type}
                   </Link>
                 </td>

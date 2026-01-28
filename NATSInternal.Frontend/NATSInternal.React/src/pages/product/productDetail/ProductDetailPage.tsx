@@ -5,10 +5,11 @@ import { createProductDetailModel } from "@/models";
 
 // Child components.
 import { MainContainer } from "@/components/layouts";
-import DetailPanel from "./DetailPanel.tsx";
-import ManagementPanel from "./ManagementPanel.tsx";
-import PhotoPanel from "./PhotoPanel.tsx";
-import LatestTransactionPanel from "./LatestTransactionPanel.tsx";
+import DetailPanel from "./DetailPanel";
+import ManagementPanel from "./ManagementPanel";
+import StockPanel from "./StockPanel";
+import PhotoPanel from "./PhotoPanel";
+import LatestTransactionPanel from "./LatestTransactionPanel";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 // Api.
@@ -37,12 +38,13 @@ export default function ProductDetailPage(): React.ReactNode {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch">
-          <DetailPanel model={model} />
-
           <div className="flex flex-col gap-y-3">
+            <DetailPanel model={model} />
+            <StockPanel model={model} />
             <ManagementPanel model={model} />
-            <PhotoPanel model={model} />
           </div>
+          
+          <PhotoPanel model={model} />
         </div>
 
         <LatestTransactionPanel />

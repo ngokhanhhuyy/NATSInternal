@@ -29,7 +29,7 @@ public class ProductUpsertModel
     {
         Id = responseDto.Id;
         Name = responseDto.Name;
-        Unit = responseDto.Name;
+        Unit = responseDto.Unit;
         DefaultAmountBeforeVatPerUnit = responseDto.DefaultAmountBeforeVatPerUnit;
         DefaultVatPercentagePerUnit = responseDto.DefaultVatPercentagePerUnit;
         IsForRetail = responseDto.IsForRetail;
@@ -137,20 +137,35 @@ public class ProductUpsertModel
 
     public ProductCreateRequestDto ToCreateRequestDto()
     {
-        ProductCreateRequestDto requestDto = new()
-        {
-            Name = Name,
-            Unit = Unit,
-            Description = Description,
-            DefaultAmountBeforeVatPerUnit = DefaultAmountBeforeVatPerUnit,
-            DefaultVatPercentagePerUnit = DefaultVatPercentagePerUnit,
-            IsForRetail = IsForRetail,
-            BrandId = BrandId,
-            CategoryName = CategoryName,
-            Stock = Stock.ToRequestDto()
-        };
+        ProductCreateRequestDto requestDto = new();
+        MapToRequestDto(requestDto);
 
         return requestDto;
+    }
+
+    public ProductUpdateRequestDto ToUpdateRequestDto()
+    {
+        ProductUpdateRequestDto requestDto = new();
+        MapToRequestDto(requestDto);
+        requestDto.Id = Id;
+        requestDto.IsDiscontinued = IsDiscontinued;
+
+        return requestDto;
+    }
+    #endregion
+
+    #region PrivateMethods
+    private void MapToRequestDto(AbstractProductUpsertRequestDto requestDto)
+    {
+        requestDto.Name = Name;
+        requestDto.Unit = Unit;
+        requestDto.Description = Description;
+        requestDto.DefaultAmountBeforeVatPerUnit = DefaultAmountBeforeVatPerUnit;
+        requestDto.DefaultVatPercentagePerUnit = DefaultVatPercentagePerUnit;
+        requestDto.IsForRetail = IsForRetail;
+        requestDto.BrandId = BrandId;
+        requestDto.CategoryName = CategoryName;
+        requestDto.Stock = Stock.ToRequestDto();
     }
     #endregion
 }

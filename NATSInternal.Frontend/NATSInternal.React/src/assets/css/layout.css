@@ -1,27 +1,29 @@
 #root {
     --topbar-height: 60px;
-    width: 100vw;
+    width: 100%;
     height: auto;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: stretch;
     margin-inline: auto;
+    padding-top: var(--topbar-height);
     
-    body:has(#navbar) & {
+    /* body:has(#navbar) & {
         display: grid;
         grid-template-columns: 1fr auto;
-        padding-top: var(--topbar-height);
+        justify-content: stretch;
 
         @media (min-width: theme(screens.md)) {
-            grid-template-columns: auto 1fr;
+            grid-template-columns: auto 2fr;
             max-width: --spacing(384);
         }
-    }
+    } */
 }
 
 #root-layout {
-    width: 100vw
+    width: 100%;
+    max-width: --spacing(384);
 }
 
 main {
@@ -52,7 +54,7 @@ main {
     
     @variant dark {
         & {
-            background-color: --alpha(var(--color-neutral-800) / 70%);
+            background-color: --alpha(var(--color-neutral-800) / 50%);
             border-color: rgba(255, 255, 255, 15%);
             backdrop-filter: blur(var(--blur-md));
         }
@@ -136,6 +138,7 @@ main {
     margin-top: calc(var(--topbar-height) * -1);
     display: block;
     pointer-events: none;
+    z-index: 1000;
     
     &.expanded {
         pointer-events: auto;
@@ -252,6 +255,7 @@ main {
         
         &:hover {
             background-color: rgba(0, 0, 0, 5%);
+            color: var(--color-blue-700);
             text-decoration: none;
 
             .tooltip {
@@ -271,18 +275,19 @@ main {
             @variant dark {
                 & {
                     background-color: rgba(255, 255, 255, 20%);
+                    color: var(--color-blue-400);
                 }
             }
         }
         
         &.active {
-            background-color: black;
+            background-color: var(--color-blue-700);
             color: white;
             box-shadow: var(--shadow-sm);
             
             @variant dark {
                 & {
-                    background-color: white;
+                    background-color: var(--color-blue-400);
                     color: black;
                 }
             }
@@ -293,11 +298,11 @@ main {
             height: --spacing(6);
             display: inline-block;
 
-            @variant dark {
+            /* @variant dark {
                 & {
                     stroke: white;
                 }
-            }
+            } */
         }
 
         .tooltip {
@@ -327,11 +332,7 @@ main {
 }
 
 #main-page-layout {
-    background-color: white;
-    border: 1px solid rgba(0, 0, 0, 10%);
     border-bottom-width: 0;
-    border-top-left-radius: var(--radius-2xl);
-    border-top-right-radius: var(--radius-2xl);
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -339,8 +340,6 @@ main {
     align-items: stretch;
     margin-inline: --spacing(3);
     margin-top: --spacing(3);
-    overflow-inline: hidden;
-    box-shadow: var(--shadow-lg);
 
     &.navigating {
         opacity: 50%;
@@ -352,24 +351,21 @@ main {
             }
         }
     }
-    
-    @variant dark {
-        & {
-            background-color: rgba(255, 255, 255, 10%);
-            border-color: rgba(255, 255, 255, 20%);
-        }
-    }
 }
 
 #breadcrumb {
-    border-bottom: 1px solid rgba(0, 0, 0, 15%);
+    background: white;
+    border: 1px solid --alpha(var(--color-black) / 15%);
+    border-top-left-radius: var(--radius-2xl);
+    border-top-right-radius: var(--radius-2xl);
     padding: --spacing(3);
     display: flex;
     gap: --spacing(3);
     
     @variant dark {
         & {
-            border-bottom-color: rgba(255, 255, 255, 15%);
+            background-color: --alpha(var(--color-white) / 8%);
+            border-color: --alpha(var(--color-white) / 15%);
         }
     }
 }
@@ -379,6 +375,23 @@ main {
     flex-direction: column;
     justify-content: stretch;
     gap: --spacing(5);
-    margin: --spacing(5);
     transition-property: opacity;
+}
+
+#page-title-container {
+    background: white;
+    border: 1px solid --alpha(var(--color-black) / 15%);
+    border-top: none;
+    border-bottom-left-radius: var(--radius-2xl);
+    border-bottom-right-radius: var(--radius-2xl);
+    display: flex;
+    flex-direction: column;
+    padding: --spacing(3) --spacing(5);
+    
+    @variant dark {
+        & {
+            background-color: --alpha(var(--color-white) / 8%);
+            border-color: --alpha(var(--color-white) / 15%);
+        }
+    }
 }

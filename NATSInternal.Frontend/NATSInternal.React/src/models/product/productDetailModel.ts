@@ -2,6 +2,7 @@ import {
   createBrandBasicModel,
   createPhotoBasicModel,
   createProductCategoryBasicModel,
+  createStockBasicModel,
   createUserBasicModel
 } from "@/models";
 import { useCurrencyHelper, useDateTimeHelper, useRouteHelper } from "@/helpers";
@@ -14,7 +15,6 @@ declare global {
     unit: string;
     defaultAmountBeforeVatPerUnit: number;
     defaultVatPercentagePerUnit: number;
-    stockingQuantity: number;
     isForRetail: boolean;
     isDiscontinued: boolean;
     createdDateTime: string;
@@ -22,6 +22,7 @@ declare global {
     lastUpdatedDateTime: string | null;
     lastUpdatedUser: UserBasicModel | null;
     category: ProductCategoryBasicModel | null;
+    stock: StockBasicModel;
     brand: BrandBasicModel | null;
     photos: PhotoBasicModel[];
     authorization: ProductExistingAuthorizationResponseDto;
@@ -42,7 +43,6 @@ export function createProductDetailModel(responseDto: ProductGetDetailResponseDt
     unit: responseDto.unit,
     defaultAmountBeforeVatPerUnit: responseDto.defaultAmountBeforeVatPerUnit,
     defaultVatPercentagePerUnit: responseDto.defaultVatPercentagePerUnit,
-    stockingQuantity: responseDto.stockingQuantity,
     isForRetail: responseDto.isForRetail,
     isDiscontinued: responseDto.isDiscontinued,
     createdDateTime: getDisplayDateTimeString(responseDto.createdDateTime),
@@ -51,6 +51,7 @@ export function createProductDetailModel(responseDto: ProductGetDetailResponseDt
     lastUpdatedUser: responseDto.lastUpdatedUser && createUserBasicModel(responseDto.lastUpdatedUser),
     category: responseDto.category && createProductCategoryBasicModel(responseDto.category),
     brand: responseDto.brand && createBrandBasicModel(responseDto.brand),
+    stock: createStockBasicModel(responseDto.stock),
     photos: responseDto.photos.map(dto => createPhotoBasicModel(dto)),
     formattedDefaultAmountBeforeVatPerUnit: getAmountDisplayText(responseDto.defaultAmountBeforeVatPerUnit),
     updateRoutePath: getProductUpdateRoutePath(responseDto.id),

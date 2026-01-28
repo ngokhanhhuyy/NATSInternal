@@ -113,7 +113,8 @@ export default function SignInPage(): React.ReactNode {
         "bg-white dark:bg-neutral-900",
         "border border-transparent sm:border-black/10 dark:sm:border-white/10",
         "shadow-none sm:shadow-xs",
-        "flex flex-col rounded-xl p-8 items-stretch w-[350px] relative"
+        "flex flex-col rounded-xl p-8 items-stretch w-[350px] relative",
+        "-translate-y-[50%] sm:translate-y-0"
       )}
       upsertAction={loginAsync}
       onUpsertingSucceeded={handleLoginSucceeded}

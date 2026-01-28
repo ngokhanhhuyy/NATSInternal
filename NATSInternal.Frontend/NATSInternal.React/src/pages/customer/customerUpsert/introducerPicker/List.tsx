@@ -81,7 +81,7 @@ export default function List(props: ListProps): React.ReactNode {
         {model.items.length ? model.items.map((customer, index) => (
           <li className="list-group-item flex justify-between items-center px-3 py-2" key={index}>
             <div className="flex flex-col">
-              <NewTabLink className="font-bold" href={customer.detailRoute}>
+              <NewTabLink className="text-blue-700 dark:text-blue-400 font-bold" href={customer.detailRoute}>
                 {customer.fullName}
               </NewTabLink>
               <span className="text-sm opacity-75">
@@ -105,6 +105,7 @@ export default function List(props: ListProps): React.ReactNode {
         pageCount={model.pageCount}
         onPageChanged={page => setModel(m => ({ ...m, page }))}
         isReloading={isLoading}
+        getPageButtonClassName={(_, isActive) => isActive ? "btn-primary" : undefined}
       />
     </div>
   );

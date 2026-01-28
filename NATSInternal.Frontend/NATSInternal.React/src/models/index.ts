@@ -10,6 +10,7 @@ export * from "./productCategory/productCategoryListModel";
 export * from "./shared/customerBasicModel";
 export * from "./shared/brandBasicModel";
 export * from "./shared/productCategoryBasicModel";
+export * from  "./shared/stockBasicModel";
 export * from "./shared/photoBasicModel";
 export * from "./shared/photoCreateOrUpdateModel";
 export * from "./shared/userBasicModel";

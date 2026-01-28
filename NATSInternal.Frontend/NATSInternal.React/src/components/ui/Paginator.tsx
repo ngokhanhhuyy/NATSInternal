@@ -15,7 +15,7 @@ export type PaginatorProps = {
   pageCount: number;
   isReloading: boolean;
   onPageChanged: (page: number) => any;
-  getPageButtonClassName?: (page: number, isActive: boolean) => string;
+  getPageButtonClassName?: (page: number, isActive: boolean) => string | null | undefined;
 } & React.ComponentPropsWithoutRef<"div">;
 
 export default function Paginator(props: PaginatorProps): React.ReactNode {
@@ -75,7 +75,6 @@ export default function Paginator(props: PaginatorProps): React.ReactNode {
         className={joinClassName(
           "min-w-8.5",
           isPageExceedingXsScreenRange(page) && "hidden sm:flex",
-          currentPage === page ? "btn-primary" : undefined,
           getPageButtonClassName?.(pageCount, page === currentPage)
         )}
         onClick={() => handlePageButtonClick(page)}
