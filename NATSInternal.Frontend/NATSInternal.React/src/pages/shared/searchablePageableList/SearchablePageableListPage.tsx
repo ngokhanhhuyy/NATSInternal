@@ -1,9 +1,12 @@
 import React, { useState, useRef, useEffect, useTransition } from "react";
+import { Link } from "react-router";
 
 // Child components.
 import { MainContainer } from "@/components/layouts";
+import { Paginator } from "@/components/ui";
 import SearchablePageableListPageFilterBlock from "./SearchablePageableListPageFilterPanel";
 import SearchablePageableListPageTableBlock from "./SearchablePageableListPageTablePanel";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 // Props.
 type Props<
@@ -64,13 +67,6 @@ export default function SearchablePageableListPage<
       isLoading={isReloading}
     >
       <div className="flex flex-col items-stretch gap-3">
-        <SearchablePageableListPageFilterBlock
-          model={model}
-          onModelChanged={changedData => setModel(m => ({ ...m, ...changedData }))}
-          onSearchButtonClicked={reloadAsync}
-          isReloading={false}
-        />
-
         <SearchablePageableListPageTableBlock
           model={model}
           onPageChanged={page => setModel(m => ({ ...m, page }))}
@@ -78,6 +74,30 @@ export default function SearchablePageableListPage<
           isReloading={isReloading}
           renderHeaderRowChildren={props.renderTableHeaderRowChildren}
           renderBodyRowChildren={props.renderTableBodyRowChildren}
+        />
+
+        <div className="flex justify-end gap-3 mb-3 md:mb-5">
+          <Paginator
+            page={model.page}
+            pageCount={model.pageCount}
+            onPageChanged={(page) => setModel(m => ({ ...m, page }))}
+            isReloading={isReloading}
+            getPageButtonClassName={(_, isActive) => isActive ? "btn-primary" : undefined}
+          />
+
+          <div className="border-r border-black/25 dark:border-white/25 w-px" />
+
+          <Link className="btn gap-1 shrink-0" to={model.createRoutePath}>
+            <PlusIcon className="size-4.5" />
+            <span>Tạo sản phẩm mới</span>
+          </Link>
+        </div>
+
+        <SearchablePageableListPageFilterBlock
+          model={model}
+          onModelChanged={changedData => setModel(m => ({ ...m, ...changedData }))}
+          onSearchButtonClicked={reloadAsync}
+          isReloading={false}
         />
       </div>
 

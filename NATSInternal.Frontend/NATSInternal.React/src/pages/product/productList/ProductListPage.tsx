@@ -5,8 +5,8 @@ import { createProductListModel } from "@/models";
 
 // Child components.
 import SearchablePageableListPage from "@/pages/shared/searchablePageableList/SearchablePageableListPage";
-import { BrandListPanel, ProductCategoryListPanel } from "./SecondaryPanels";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+// import { BrandListPanel, ProductCategoryListPanel } from "./SecondaryPanels";
+import { ExclamationTriangleIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 
 // Api.
 const api = useApi();
@@ -29,6 +29,27 @@ export default function ProductListPage(): React.ReactNode {
   const initialModel = useLoaderData<ProductListModel>();
 
   // Template.
+  const renderAmountAndVatPercentage = (itemModel: ProductListProductModel): React.ReactNode => {
+    return (
+      <>
+        <span className="opacity-50 inline md:hidden">Giá:</span>
+        <span>{itemModel.formattedDefaultAmountBeforeVatPerUnit}</span>
+        {itemModel.defaultVatPercentagePerUnit > 0 && (
+          <span className="opacity-50">({itemModel.defaultVatPercentagePerUnit}% VAT)</span>
+        )}
+      </>
+    );
+  };
+
+  const renderStockingQuantity = (itemModel: ProductListProductModel): React.ReactNode => {
+    return (
+      <>
+        <span className="inline md:hidden opacity-50">Còn lại:</span>
+        <span>{itemModel.stockingQuantity} {itemModel.unit}</span>
+      </>
+    );
+  };
+
   return (
     <SearchablePageableListPage<ProductListModel, ProductListProductModel>
       description="Danh sách các sản phẩm trong kho, kể cả các sản phẩm đã ngừng kinh doanh."
@@ -36,45 +57,58 @@ export default function ProductListPage(): React.ReactNode {
       loadDataAsync={loadDataAsync}
       renderTableHeaderRowChildren={() => (
         <>
-          <th>Tên sản phẩm</th>
-          <th>Giá niêm yết</th>
-          <th>Phân loại</th>
-          <th>Còn lại trong kho</th>
-          <th>Lưu ý</th>
+          <th className="hidden md:table-cell">Tên sản phẩm</th>
+          <th className="hidden md:table-cell">Giá niêm yết</th>
+          <th className="hidden md:table-cell">Phân loại</th>
+          <th className="hidden md:table-cell">Còn lại trong kho</th>
         </>
       )}
       renderTableBodyRowChildren={(itemModel) => (
         <>
           <td>
-            <Link to={itemModel.detailRoute} className="text-blue-700 dark:text-blue-400 font-bold">
-              {itemModel.name}
-            </Link>
-          </td>
-          <td>
-            <div className="flex justify-between">
-              <span>{itemModel.formattedDefaultAmountBeforeVatPerUnit}</span>
-              {itemModel.defaultVatPercentagePerUnit > 0 && (
-                <span className="opacity-50">({itemModel.defaultVatPercentagePerUnit}% VAT)</span>
+            <div className="flex gap-2 items-center">
+              {itemModel.isResupplyNeeded ? (
+                <ExclamationTriangleIcon className="text-yellow-600 dark:text-yellow-400 size-4.5" />
+              ) : (
+                <CheckCircleIcon className="text-emerald-600 dark:text-emerald-400 size-4.5" />
+              )}
+              
+              <Link to={itemModel.detailRoute} className="text-blue-700 dark:text-blue-400 font-bold">
+                {itemModel.name}
+              </Link>
+            </div>
+
+            <div className="block md:hidden text-sm ps-7">
+              <div className="flex justify-start gap-3">
+                {renderAmountAndVatPercentage(itemModel)}
+              </div>
+
+              <div className="flex gap-3">
+                {renderStockingQuantity(itemModel)}
+              </div>
+              
+              {itemModel.category && (
+                <div className="flex gap-3">
+                  <span className="opacity-50">Phân loại: </span>
+                  <span>{itemModel.category.name}</span>
+                </div>
               )}
             </div>
           </td>
-          <td>{itemModel.category?.name}</td>
-          <td>{itemModel.stockingQuantity} {itemModel.unit}</td>
-          <td className="text-yellow-600 dark:text-yellow-400 align-middle">
-            {itemModel.isResupplyNeeded && (
-              <div className="flex items-center gap-1.5">
-                <ExclamationTriangleIcon className="size-4.5" />
-                <span>Cần nhập hàng</span>
-              </div>
-            )}
+          <td className="hidden md:table-cell">
+            <div className="flex justify-between gap-5">
+              {renderAmountAndVatPercentage(itemModel)}
+            </div>
           </td>
+          <td className="hidden md:table-cell">{itemModel.category?.name}</td>
+          <td className="hidden md:table-cell">{renderStockingQuantity(itemModel)}</td>
         </>
       )}
     >
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
         <BrandListPanel />
         <ProductCategoryListPanel />
-      </div>
+      </div> */}
     </SearchablePageableListPage>
   );
 }

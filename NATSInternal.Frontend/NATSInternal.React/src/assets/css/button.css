@@ -55,20 +55,21 @@
     .btn-primary {
         background-color: var(--color-blue-700);
         color: white;
-        border-color: --alpha(var(--color-black) / 5%);
+        border-color: transparent;
 
         &:hover {
-            background-color: var(--color-blue-500);
+            background-color: var(--color-blue-600);
+            border-color: transparent;
         }
 
         @variant dark {
             & {
-                background-color: var(--color-blue-400);
-                color: black;
-                border-color: --alpha(var(--color-white) / 10%);
+                background-color: var(--color-blue-500);
+                border-color: --alpha(var(--color-blue-400) / 75%);
 
                 &:hover {
-                    background-color: var(--color-blue-300);
+                    background-color: var(--color-blue-400);
+                    border-color: --alpha(var(--color-blue-300) / 75%);
                 }
             }
         }
@@ -86,7 +87,7 @@
 
         @variant dark {
             & {
-                background: black;
+                background: var(--color-neutral-900);
                 color: var(--color-blue-400);
                 border-color: var(--color-blue-400);
                 
@@ -143,21 +144,41 @@
         }
     }
 
-    .btn-panel-header {
-        border-color: --alpha(var(--color-blue-500) / 50%);
+    .btn-panel-header, .btn-panel-footer {
+        border-color: --alpha(var(--color-blue-500) / 75%);
         
         &:hover {
+            border-color: var(--color-blue-500);
+        }
 
-            border-color: --alpha(var(--color-blue-500) / 75%);
+        @variant dark {
+            & {
+                border-color: var(--color-blue-400);
+
+                &:hover {
+                    background-color: var(--color-neutral-700);
+                    border-color: var(--color-blue-400);
+                }
+            }
         }
     }
 
-    .btn-panel-footer {
-        border-color: --alpha(var(--color-neutral-500) / 50%);
-        
-        &:hover {
+    .btn-panel-footer-primary {
+        background-color: var(--color-blue-700);
+        color: white;
+        border-color: transparent;
 
-            border-color: --alpha(var(--color-neutral-500) / 75%);
+        @variant dark {
+            & {
+                background-color: white;
+                color: black;
+                font-weight: bold;
+                border-color: white;
+
+                &:hover {
+                    background-color: var(--color-neutral-200);
+                }
+            }
         }
     }
 

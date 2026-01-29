@@ -111,10 +111,9 @@ export default function SignInPage(): React.ReactNode {
     <Form
       className={joinClassName(
         "bg-white dark:bg-neutral-900",
-        "border border-transparent sm:border-black/10 dark:sm:border-white/10",
+        "border border-transparent sm:border-black/15 dark:sm:border-white/15",
         "shadow-none sm:shadow-xs",
         "flex flex-col rounded-xl p-8 items-stretch w-[350px] relative",
-        "-translate-y-[50%] sm:translate-y-0"
       )}
       upsertAction={loginAsync}
       onUpsertingSucceeded={handleLoginSucceeded}
@@ -175,8 +174,8 @@ export default function SignInPage(): React.ReactNode {
     <RootLayout>
       <div
         className={joinClassName(
-          "bg-white dark:bg-neutral-900 sm:bg-black/2 dark:sm:bg-black",
-          "flex flex-col justify-center items-center w-screen h-screen"
+          "bg-white dark:bg-neutral-900 sm:bg-transparent dark:sm:bg-transparent",
+          "flex flex-col justify-start items-center w-screen h-screen pt-[25vh]"
         )}
         onKeyUp={(event) => event.key === "Enter" && handleEnterKeyPressedAsync()}
       >

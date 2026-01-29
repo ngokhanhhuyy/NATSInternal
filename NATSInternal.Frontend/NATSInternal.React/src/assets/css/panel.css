@@ -3,14 +3,13 @@
         background-color: white;
         display: flex;
         flex-direction: column;
-        overflow: hidden;
         box-sizing: border-box;
         border-radius: var(--radius-xl);
         min-width: 0;
 
         @variant dark {
             & {
-                background-color: --alpha(var(--color-white) / 8%);
+                background-color: transparent;
             }
         }
     }
@@ -28,11 +27,18 @@
         padding-block: --spacing(1.5);
         border-top-left-radius: var(--radius-xl);
         border-top-right-radius: var(--radius-xl);
+        transition-property: border-radius;
+        transition-duration: .2s;
+        
+        .panel:has(.panel-body:is(.hidden)) > & {
+            border-bottom-left-radius: var(--radius-xl);
+            border-bottom-right-radius: var(--radius-xl);
+        }
         
         @variant dark {
             & {
-                background-color: --alpha(var(--color-blue-400) / 15%);
-                border-color: --alpha(var(--color-blue-400) / 40%);
+                background-color: var(--color-blue-500);
+                border-color: var(--color-blue-400);
             }
         }
     }
@@ -45,13 +51,13 @@
         
         @variant dark {
             & {
-                color: var(--color-blue-400);
+                color: white;
             }
         }
     }
 
     .panel-body {
-        border-color: --alpha(var(--color-black) / 15%);
+        border-color: --alpha(var(--color-black) / 20%);
         border-inline-width: 1px;
         border-inline-style: solid;
         flex: 1;
@@ -65,23 +71,22 @@
         }
         
         @variant dark {
-            & {
-                border-color: --alpha(var(--color-white) / 15%);
-            }
+            background-color: --alpha(var(--color-white) / 8%);
+            border-color: --alpha(var(--color-white) / 15%);
         }
     }
 
     .panel-footer {
-        background-color: --alpha(var(--color-black) / 10%);
-        border: 1px solid --alpha(var(--color-black) / 10%);
+        background-color: --alpha(var(--color-blue-500) / 25%);
+        border: 1px solid --alpha(var(--color-blue-500) / 50%);
         border-bottom-left-radius: var(--radius-xl);
         border-bottom-right-radius: var(--radius-xl);
         padding: --spacing(2);
 
         @variant dark {
             & {
-                background-color: --alpha(var(--color-white) / 5%);
-                border-color: --alpha(var(--color-white) / 15%);
+                background-color: var(--color-blue-500);
+                border-color: var(--color-blue-400);
             }
         }
     }

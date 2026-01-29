@@ -11,7 +11,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --html-background: rgba(0, 0, 0, 0.02);
+    --html-background: --alpha(var(--color-black) / 5%);
     --color-primary: var(--color-black);
     --color-primary-foreground: var(--color-white);
     --color-secondary: var(--color-white);

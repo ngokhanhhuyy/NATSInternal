@@ -283,12 +283,13 @@ main {
         &.active {
             background-color: var(--color-blue-700);
             color: white;
+            border: 1px solid --alpha(var(--color-blue-600) / 75%);
             box-shadow: var(--shadow-sm);
             
             @variant dark {
                 & {
-                    background-color: var(--color-blue-400);
-                    color: black;
+                    background-color: var(--color-blue-500);
+                    border-color: --alpha(var(--color-blue-400) / 75%);
                 }
             }
         }
@@ -375,7 +376,7 @@ main {
     display: flex;
     flex-direction: column;
     justify-content: stretch;
-    gap: --spacing(5);
+    gap: --spacing(3);
     transition-property: opacity;
     padding-bottom: --spacing(3);
 }

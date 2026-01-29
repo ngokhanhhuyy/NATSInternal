@@ -1,9 +1,4 @@
 import React from "react";
-import { Link } from "react-router";
-import Paginator from "@/components/ui/Paginator";
-
-// Child components.
-import { PlusIcon } from "@heroicons/react/24/outline";
 
 // Props.
 type Props<
@@ -39,12 +34,6 @@ export default function SearchablePageableListPageTableBlock<
         <div className="panel-header-title">
           Danh sách kết quả
         </div>
-
-        {/* CreateLink */}
-        <Link className="btn btn-panel-header btn-sm gap-1 shrink-0" to={props.model.createRoutePath}>
-          <PlusIcon className="size-4.5" />
-          <span>Tạo mới</span>
-        </Link>
       </div>
 
       {/* Body */}
@@ -72,19 +61,6 @@ export default function SearchablePageableListPageTableBlock<
           )}
         </div>
       </div>
-
-      {/* Footer */}
-      {props.model.pageCount > 1 && (
-        <div className="panel-footer flex justify-center px-3 py-2">
-          <Paginator
-            page={props.model.page}
-            pageCount={props.model.pageCount}
-            onPageChanged={props.onPageChanged}
-            isReloading={props.isReloading}
-            getPageButtonClassName={(_, isActive) => isActive ? "btn-primary" : "btn-panel-footer"}
-          />
-        </div>
-      )}
     </div>
   );
 }
