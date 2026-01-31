@@ -32,16 +32,16 @@ export default function SelectInput(props: SelectInputProps): React.ReactNode {
           className,
           props.className,
           "form-control text-start hover:cursor-pointer",
-          "data-active:border-blue-500 data-active:outline-blue-500")}
-        >
+          "data-open:border-blue-500 data-open:outline-blue-500"
+        )}>
           {props.options.find(option => option.value == props.value)?.displayName}
         </MenuButton>
 
         <MenuItems
           className={joinClassName(
-            "bg-white/50 dark:bg-neutral-800/50 border border-black/15  dark:border-white/15",
-            "rounded-lg shadow-lg p-1.5 backdrop-blur-md scale-y-100",
-            "w-(--button-width) [--anchor-gap:--spacing(1.5)]",
+            "bg-white/50 dark:bg-neutral-800/65 border border-black/25 dark:border-white/25",
+            "rounded-lg shadow-lg p-1.5 backdrop-blur-md scale-y-100 origin-center",
+            "w-(--button-width) [--anchor-gap:--spacing(1.5)] max-h-100 overflow-y-auto",
             "origin-center transition duration-200 ease-out data-closed:scale-y-0 data-closed:opacity-0"
           )}
           anchor="bottom start"

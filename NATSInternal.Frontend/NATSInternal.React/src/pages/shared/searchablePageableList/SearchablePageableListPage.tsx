@@ -95,6 +95,14 @@ export default function SearchablePageableListPage<
           onSearchButtonClicked={reloadAsync}
           isReloading={false}
         />
+        
+
+        <SearchablePageableListPageFilterBlock
+          model={model}
+          onModelChanged={changedData => setModel(m => ({ ...m, ...changedData }))}
+          onSearchButtonClicked={reloadAsync}
+          isReloading={false}
+        />
       </div>
 
       {props.children}
