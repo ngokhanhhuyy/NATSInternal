@@ -1,4 +1,5 @@
 @import "tailwindcss" important;
+@import "./alert.css";
 @import "./button.css";
 @import "./collapsible.css";
 @import "./form.css";

@@ -5,6 +5,7 @@ export * from "./guidHelper";
 export * from "./jsonHelper";
 export * from "./paginationHelper";
 export * from "./phoneNumberHelper";
+export * from "./photoHelper";
 export * from "./roleHelper";
 export * from "./routeHelper";
 export * from "./tsxHelper.tsx";

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTsxHelper } from "@/helpers";
 
 // Props.
 type Props<
@@ -9,6 +10,7 @@ type Props<
       IUpsertableListModel<TItemModel>,
     TItemModel extends object> = {
   model: TListModel;
+  isReloading: boolean;
   renderHeaderRowChildren?(): React.ReactNode;
   renderBodyRowChildren?(itemModel: TItemModel): React.ReactNode;
 };
@@ -22,6 +24,9 @@ export default function ResultsTablePanel<
         IUpsertableListModel<TItemModel>,
       TItemModel extends object>
     (props: Props<TListModel, TItemModel>): React.ReactNode {
+  // Dependencies.
+  const { joinClassName } = useTsxHelper();
+
   // Template.
   return (
     <div className="panel">
@@ -34,7 +39,10 @@ export default function ResultsTablePanel<
       </div>
 
       {/* Body */}
-      <div className="panel-body flex-1 min-w-0">
+      <div className={joinClassName(
+        "panel-body flex-1 min-w-0 transition-opacity",
+        props.isReloading && "opacity-50 cursor-wait"
+      )}>
         <div className="w-full overflow-x-auto">
           {props.model.items.length ? (
             <table className="data-table min-w-max w-full">

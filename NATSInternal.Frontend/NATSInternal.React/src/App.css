@@ -1,5 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 @import "tailwindcss";
+@font-face {
+  font-family: "Roboto";
+  src: url("./assets/fonts/Roboto-Variable.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+}
 
 html {
     font-family: "Roboto", "IBM Plex Sans", "Libre Franklin", Helvetica, Arial, sans-serif;
@@ -13,20 +18,4 @@ input {
     box-shadow: none;
     outline: none;
     @apply: border-red-600;
-}
-
-input:focus {
-}
-
-button {
-    background: white;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    padding: 3px;
-    transition: .25s ease;
-    cursor: pointer;
-}
-
-button:hover {
-    filter: brightness(.9);
 }

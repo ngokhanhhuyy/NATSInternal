@@ -30,8 +30,15 @@
         }
 
         & :where(th) {
+            background-color: --alpha(var(--color-black) / 10%);
             font-size: var(--text-sm);
             padding-block: --spacing(0.5);
+
+            @variant dark {
+                & {
+                    background-color: --alpha(var(--color-white) / 10%);
+                }
+            }
         }
 
         & :where(td) {

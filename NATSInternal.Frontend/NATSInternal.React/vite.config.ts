@@ -28,13 +28,13 @@ export default defineConfig({
         ws: true,
         rewrite: (path) => path.replace(/^\/api/, "/api"),
       },
-      "^/images": {
-        target: "http://localhost:5000",
-        changeOrigin: false,
-        secure: false,
-        ws: true,
-        rewrite: (path) => path.replace(/^\/images/, "/images"),
-      },
+      // "^/images": {
+      //   target: "http://localhost:5000",
+      //   changeOrigin: false,
+      //   secure: false,
+      //   ws: true,
+      //   rewrite: (path) => path.replace(/^\/images/, "/images"),
+      // },
       "^/proxyWebsocket": {
         target: "http://localhost:5175",
         changeOrigin: true,

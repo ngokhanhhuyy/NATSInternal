@@ -1,19 +1,38 @@
-import React, { useState, useEffect, useTransition } from "react";
+import React, { useState, useRef, useMemo, useEffect, useTransition } from "react";
 import { useLoaderData, Link } from "react-router";
 import { useApi } from "@/api";
-import { createProductListModel } from "@/models";
+import { createProductListModel, createBrandBasicModel, createProductCategoryBasicModel } from "@/models";
+import { useTsxHelper } from "@/helpers";
 
 // Child components.
-import DisplayOptionsPanel from "@/pages/shared/searchablePageableList/DisplayOptionsPanel";
 import FilterOptionsPanel from "@/pages/shared/searchablePageableList/FilterOptionsPanel";
 import ResultsTablePanel from "@/pages/shared/searchablePageableList/ResultsTablePanel";
 import { MainContainer } from "@/components/layouts";
 import { Paginator } from "@/components/ui";
-// import { BrandListPanel, ProductCategoryListPanel } from "./SecondaryPanels";
+import { FormField, SelectInput, type SelectInputOption } from "@/components/form";
 import { ExclamationTriangleIcon, CheckCircleIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { BuildingStorefrontIcon, TagIcon } from "@heroicons/react/24/outline";
 
 // Data loader.
-export async function loadDataAsync(model?: ProductListModel): Promise<ProductListModel> {
+type DataLoaderResults = {
+  productList: ProductListModel;
+  brandOptions: BrandBasicModel[];
+  categoryOptions: ProductCategoryBasicModel[];
+};
+
+export async function loadDataAsync(): Promise<DataLoaderResults> {
+  const api = useApi();
+  
+  const [productList, brandOptions, categoryOptions] = await Promise.all([
+    loadProductListAsync(),
+    api.brand.getAllAsync().then(dtos => dtos.map(dto => createBrandBasicModel(dto))),
+    api.productCategory.getAllAsync().then(dtos => dtos.map(dto => createProductCategoryBasicModel(dto)))
+  ]);
+
+  return { productList, brandOptions, categoryOptions };
+}
+
+export async function loadProductListAsync(model?: ProductListModel): Promise<ProductListModel> {
   const api = useApi();
   if (model) {
     const responseDto = await api.product.getListAsync(model.toRequestDto());
@@ -28,18 +47,43 @@ export async function loadDataAsync(model?: ProductListModel): Promise<ProductLi
 // Components.
 export default function ProductListPage(): React.ReactNode {
   // Dependencies.
-  const initialModel = useLoaderData<ProductListModel>();
+  const initialModel = useLoaderData<DataLoaderResults>();
+  const { joinClassName, compute } = useTsxHelper();
 
   // States.
-  const [model, setModel] = useState(() => initialModel);
+  const [model, setModel] = useState(() => initialModel.productList);
   const [isInitialRendering, setIsInitialRendering] = useState(() => true);
   const [isReloading, startTransition] = useTransition();
+  const latestRequestId = useRef<number>(0);
+
+  // Computed.
+  const brandOptionsModel = compute(() => initialModel.brandOptions);
+  const categoryOptionsModel = compute(() => initialModel.categoryOptions);
+
+  const brandOptions = useMemo<SelectInputOption[]>(() => {
+    return [
+      { value: "", displayName: "Chưa chọn thương hiệu" },
+      ...(initialModel.brandOptions.map((brand) => ({ value: brand.id, displayName: brand.name })) ?? [])
+    ];
+  }, []);
+
+  const categoryOptions = useMemo<SelectInputOption[]>(() => {
+    return [
+      { value: "", displayName: "Chưa chọn phân loại" },
+      ...(initialModel.categoryOptions?.map((category) => ({ value: category.name, displayName: category.name })) ?? [])
+    ];
+  }, []);
 
   // Callbacks.
   async function reloadAsync(): Promise<void> {
-    const reloadedModel = await loadDataAsync(model);
-    setModel(reloadedModel);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    latestRequestId.current += 1;
+    const currentRequestId = latestRequestId.current;
+    const reloadedModel = await loadProductListAsync(model);
+
+    if (latestRequestId.current === currentRequestId) {
+      setModel(reloadedModel);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
   
   // Effect.
@@ -50,86 +94,78 @@ export default function ProductListPage(): React.ReactNode {
     }
 
     startTransition(reloadAsync);
-  }, [model.searchContent, model.sortByAscending, model.sortByFieldName, model.page, model.resultsPerPage]);
+  }, [
+    model.searchContent,
+    model.sortByAscending,
+    model.sortByFieldName,
+    model.page,
+    model.resultsPerPage,
+    model.brand,
+    model.category
+  ]);
 
   // Template.
-  const renderAmountAndVatPercentage = (itemModel: ProductListProductModel): React.ReactNode => {
-    return (
-      <>
-        <span className="opacity-50 inline md:hidden">Giá:</span>
-        <span>{itemModel.formattedDefaultAmountBeforeVatPerUnit}</span>
-        {itemModel.defaultVatPercentagePerUnit > 0 && (
-          <span className="opacity-50">({itemModel.defaultVatPercentagePerUnit}% VAT)</span>
-        )}
-      </>
-    );
-  };
-
-  const renderStockingQuantity = (itemModel: ProductListProductModel): React.ReactNode => {
-    return (
-      <>
-        <span className="inline md:hidden opacity-50">Còn lại:</span>
-        <span>{itemModel.stockingQuantity} {itemModel.unit}</span>
-      </>
-    );
-  };
-
   return (
     <MainContainer
       description="Danh sách các sản phẩm trong kho, kể cả các sản phẩm đã ngừng kinh doanh."
       className="gap-3"
-      isLoading={isReloading}
     >
       <div className="flex flex-col items-stretch gap-3">
         <ResultsTablePanel
           model={model}
+          isReloading={isReloading}
           renderHeaderRowChildren={() => (
             <>
-              <th className="hidden md:table-cell">Tên sản phẩm</th>
-              <th className="hidden md:table-cell">Giá niêm yết</th>
-              <th className="hidden md:table-cell">Phân loại</th>
-              <th className="hidden md:table-cell">Còn lại trong kho</th>
+              <th>Sản phẩm</th>
+              <th>Tình trạng</th>
             </>
           )}
           renderBodyRowChildren={(itemModel: ProductListProductModel) => (
             <>
               <td>
-                <div className="flex gap-2 items-center">
+                <div className="grid grid-cols-[auto_auto_1fr] items-center gap-3">
                   {itemModel.isResupplyNeeded ? (
-                    <ExclamationTriangleIcon className="text-yellow-600 dark:text-yellow-400 size-4.5" />
+                    <ExclamationTriangleIcon className="text-yellow-600 dark:text-yellow-400 size-6" />
                   ) : (
-                    <CheckCircleIcon className="text-emerald-600 dark:text-emerald-400 size-4.5" />
+                    <CheckCircleIcon className="text-emerald-600 dark:text-emerald-400 size-6" />
                   )}
-                  
-                  <Link to={itemModel.detailRoute} className="text-blue-700 dark:text-blue-400 font-bold">
-                    {itemModel.name}
-                  </Link>
-                </div>
 
-                <div className="block md:hidden text-sm ps-7">
-                  <div className="flex justify-start gap-3">
-                    {renderAmountAndVatPercentage(itemModel)}
-                  </div>
+                  <img src={itemModel.thumbnailUrl} className="img-thumbnail size-12" alt={itemModel.name} />
 
-                  <div className="flex gap-3">
-                    {renderStockingQuantity(itemModel)}
-                  </div>
-                  
-                  {itemModel.category && (
-                    <div className="flex gap-3">
-                      <span className="opacity-50">Phân loại: </span>
-                      <span>{itemModel.category.name}</span>
+                  <div className="flex flex-col self-start">
+                    <div className="flex gap-3 items-center">
+                      <Link to={itemModel.detailRoute} className="text-blue-700 dark:text-blue-400 font-bold">
+                        {itemModel.name}
+                      </Link>
+
+                      <div className={joinClassName(
+                        "alert dark:font-bold dark:alert-sm",
+                        itemModel.isResupplyNeeded
+                          ? "alert-warning-outline dark:alert-warning"
+                          : "alert-emerald-outline dark:alert-emerald",
+                      )}>
+                        {itemModel.stockingQuantity}
+                      </div>
                     </div>
-                  )}
+
+                    <div className="text-sm">
+                      {itemModel.brand && (
+                        <div className="flex justify-start items-center gap-1">
+                          <BuildingStorefrontIcon className="size-4" />
+                          <span>{itemModel.brand.name}</span>
+                        </div>
+                      )}
+
+                      {itemModel.category && (
+                        <div className="flex justify-start items-center gap-1">
+                          <TagIcon className="size-4" />
+                          <span>{itemModel.category.name}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </td>
-              <td className="hidden md:table-cell">
-                <div className="flex justify-between gap-5">
-                  {renderAmountAndVatPercentage(itemModel)}
-                </div>
-              </td>
-              <td className="hidden md:table-cell">{itemModel.category?.name}</td>
-              <td className="hidden md:table-cell">{renderStockingQuantity(itemModel)}</td>
             </>
           )}
         />
@@ -139,11 +175,12 @@ export default function ProductListPage(): React.ReactNode {
             page={model.page}
             pageCount={model.pageCount}
             onPageChanged={(page) => setModel(m => ({ ...m, page }))}
-            isReloading={isReloading}
             getPageButtonClassName={(_, isActive) => isActive ? "btn-primary" : undefined}
           />
 
-          <div className="border-r border-black/25 dark:border-white/25 w-px" />
+          {model.pageCount > 1 && (
+            <div className="border-r border-black/25 dark:border-white/25 w-px" />
+          )}
 
           <Link className="btn gap-1 shrink-0" to={model.createRoutePath}>
             <PlusIcon className="size-4.5" />
@@ -151,20 +188,45 @@ export default function ProductListPage(): React.ReactNode {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-          <DisplayOptionsPanel
-            model={model}
-            onModelChanged={changedData => setModel(m => ({ ...m, ...changedData }))}
-            isReloading={false}
-          />
+        <FilterOptionsPanel
+          model={model}
+          onModelChanged={changedData => setModel(m => ({ ...m, ...changedData }))}
+          onSearchButtonClicked={reloadAsync}
+          isInitialRendering={isInitialRendering}
+        >
+          <div className={"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3"}>
+            <FormField path="brandId" displayName="Thương hiệu">
+              <SelectInput
+                disabled={isInitialRendering}
+                options={brandOptions}
+                value={model.brand?.id ?? ""}
+                onValueChanged={(brandId) => {
+                  setModel(m => {
+                    const brand = brandId ? (brandOptionsModel ?? []).filter(b => b.id === brandId)[0] : null;
+                    return { ...m, brand };
+                  });
+                }}
+              />
+            </FormField>
 
-          <FilterOptionsPanel
-            model={model}
-            onModelChanged={changedData => setModel(m => ({ ...m, ...changedData }))}
-            onSearchButtonClicked={reloadAsync}
-            isReloading={false}
-          />
-        </div>
+            <FormField path="categoryName" displayName="Phân loại">
+              <SelectInput
+                disabled={isInitialRendering}
+                options={categoryOptions}
+                value={model.category?.name ?? ""}
+                onValueChanged={(categoryName) => {
+                  setModel(m => {
+                    const category = categoryName
+                      ? (categoryOptionsModel ?? []).filter(c => c.name === categoryName)[0]
+                      : null;
+
+                    return { ...m, category };
+                  });
+                }}
+              />
+            </FormField>
+          </div>
+        </FilterOptionsPanel>
       </div>
     </MainContainer>
   );

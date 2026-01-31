@@ -13,7 +13,6 @@ type PaginationRanges = {
 export type PaginatorProps = {
   page: number;
   pageCount: number;
-  isReloading: boolean;
   onPageChanged: (page: number) => any;
   getPageButtonClassName?: (page: number, isActive: boolean) => string | null | undefined;
 } & React.ComponentPropsWithoutRef<"div">;
@@ -22,7 +21,7 @@ export default function Paginator(props: PaginatorProps): React.ReactNode {
   // Props.
   const {
     page: currentPage,
-    pageCount, isReloading,
+    pageCount,
     onPageChanged,
     className,
     getPageButtonClassName,
@@ -61,7 +60,7 @@ export default function Paginator(props: PaginatorProps): React.ReactNode {
   };
 
   // Template.
-  if (!pageCount) {
+  if (pageCount <= 1) {
     return null;
   }
 
@@ -86,14 +85,7 @@ export default function Paginator(props: PaginatorProps): React.ReactNode {
   };
 
   return (
-    <div
-      className={joinClassName(
-        className,
-        "flex flex-row justify-center gap-2",
-        props.isReloading && "pointer-events-none"
-      )}
-      {...domProps}
-    >
+    <div {...domProps} className={joinClassName(className, "flex flex-row justify-center gap-2")}>
       {isPageExceedingSmScreenRange(1) && (
         <div className={joinClassName(
           "flex gap-2",
