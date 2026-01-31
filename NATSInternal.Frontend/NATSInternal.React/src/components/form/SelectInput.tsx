@@ -42,7 +42,7 @@ export default function SelectInput(props: SelectInputProps): React.ReactNode {
             "bg-white/50 dark:bg-neutral-800/50 border border-black/15  dark:border-white/15",
             "rounded-lg shadow-lg p-1.5 backdrop-blur-md scale-y-100",
             "w-(--button-width) [--anchor-gap:--spacing(1.5)]",
-            "origin-top transition duration-200 ease-out data-closed:scale-y-0 data-closed:opacity-0"
+            "origin-center transition duration-200 ease-out data-closed:scale-y-0 data-closed:opacity-0"
           )}
           anchor="bottom start"
           modal={false}

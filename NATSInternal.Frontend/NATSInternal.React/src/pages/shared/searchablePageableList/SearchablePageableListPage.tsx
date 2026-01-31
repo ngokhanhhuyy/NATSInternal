@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useTransition } from "react";
+import React, { useState, useEffect, useTransition } from "react";
 import { Link } from "react-router";
 
 // Child components.
@@ -37,16 +37,12 @@ export default function SearchablePageableListPage<
   const [model, setModel] = useState(() => props.initialModel);
   const [isInitialRendering, setIsInitialRendering] = useState(() => true);
   const [isReloading, startTransition] = useTransition();
-  const pendingRequest = useRef<(() => void) | null>(null);
 
   // Callbacks.
   async function reloadAsync(): Promise<void> {
     const reloadedModel = await props.loadDataAsync(model);
     setModel(reloadedModel);
     window.scrollTo({ top: 0, behavior: "smooth" });
-    if (pendingRequest.current) {
-      pendingRequest.current();
-    }
   }
 
   // Effect.
@@ -57,7 +53,7 @@ export default function SearchablePageableListPage<
     }
 
     startTransition(reloadAsync);
-  }, [model.sortByAscending, model.sortByFieldName, model.page, model.resultsPerPage]);
+  }, [model.searchContent, model.sortByAscending, model.sortByFieldName, model.page, model.resultsPerPage]);
 
   // Template.
   return (

@@ -69,7 +69,7 @@ async function executeAsync(
     endpointPath: string,
     requestDto?: object,
     params?: Params,
-    delay: number = 300): Promise<Response> {
+    delay: number = 0): Promise<Response> {
   let endpointUrl = "/api" + endpointPath;
   if (params != null && getQueryString(params) != null) {
     endpointUrl += "?" + getQueryString(params);
