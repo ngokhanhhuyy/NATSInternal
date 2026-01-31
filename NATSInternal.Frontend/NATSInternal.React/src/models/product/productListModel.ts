@@ -14,6 +14,8 @@ declare global {
     page: number;
     resultsPerPage: number;
     searchContent: string;
+    brand: BrandBasicModel | null;
+    category: ProductCategoryBasicModel | null;
     items: ProductListProductModel[];
     pageCount: number;
     itemCount: number;
@@ -51,6 +53,8 @@ export function createProductListModel(responseDto?: ProductGetListResponseDto):
     page: 1,
     resultsPerPage:  productListOptions.defaultResultsPerPage,
     searchContent: "",
+    brand: null,
+    category: null,
     items: [],
     pageCount: 0,
     itemCount: 0,
@@ -81,6 +85,14 @@ export function createProductListModel(responseDto?: ProductGetListResponseDto):
 
       if (this.searchContent) {
         requestDto.searchContent = this.searchContent;
+      }
+
+      if (this.brand) {
+        requestDto.brandId = this.brand.id;
+      }
+
+      if (this.category) {
+        requestDto.categoryId = this.category.id;
       }
 
       return requestDto;

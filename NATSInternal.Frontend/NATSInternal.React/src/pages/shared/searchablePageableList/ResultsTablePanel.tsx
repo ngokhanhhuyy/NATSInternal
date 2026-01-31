@@ -9,15 +9,12 @@ type Props<
       IUpsertableListModel<TItemModel>,
     TItemModel extends object> = {
   model: TListModel;
-  onPageChanged(page: number): any;
-  onResultsPerPageChanged(resultsPerPage: number): any;
-  isReloading: boolean;
   renderHeaderRowChildren?(): React.ReactNode;
   renderBodyRowChildren?(itemModel: TItemModel): React.ReactNode;
 };
 
 // Component.
-export default function SearchablePageableListPageTableBlock<
+export default function ResultsTablePanel<
       TListModel extends
         ISearchableListModel<TItemModel> &
         ISortableListModel<TItemModel> &

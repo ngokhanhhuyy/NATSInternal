@@ -1,17 +1,10 @@
 ﻿@layer components {
     .panel {
-        background-color: white;
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
         border-radius: var(--radius-xl);
         min-width: 0;
-
-        @variant dark {
-            & {
-                background-color: transparent;
-            }
-        }
     }
 
     .panel-header {
@@ -57,6 +50,7 @@
     }
 
     .panel-body {
+        background-color: white;
         border-color: --alpha(var(--color-black) / 20%);
         border-inline-width: 1px;
         border-inline-style: solid;
@@ -71,8 +65,10 @@
         }
         
         @variant dark {
-            background-color: --alpha(var(--color-white) / 8%);
-            border-color: --alpha(var(--color-white) / 15%);
+            & {
+                background-color: var(--color-neutral-900);
+                border-color: --alpha(var(--color-white) / 15%);
+            }
         }
     }
 

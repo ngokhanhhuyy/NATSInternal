@@ -4,8 +4,8 @@ import { Link } from "react-router";
 // Child components.
 import { MainContainer } from "@/components/layouts";
 import { Paginator } from "@/components/ui";
-import SearchablePageableListPageFilterBlock from "./SearchablePageableListPageFilterPanel";
-import SearchablePageableListPageTableBlock from "./SearchablePageableListPageTablePanel";
+import DisplayOptionsPanel from "./DisplayOptionsPanel";
+import ResultsTablePanel from "./ResultsTablePanel";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
 // Props.
@@ -63,11 +63,8 @@ export default function SearchablePageableListPage<
       isLoading={isReloading}
     >
       <div className="flex flex-col items-stretch gap-3">
-        <SearchablePageableListPageTableBlock
+        <ResultsTablePanel
           model={model}
-          onPageChanged={page => setModel(m => ({ ...m, page }))}
-          onResultsPerPageChanged={resultsPerPage => setModel(m => ({ ...m, page: 1, resultsPerPage }))}
-          isReloading={isReloading}
           renderHeaderRowChildren={props.renderTableHeaderRowChildren}
           renderBodyRowChildren={props.renderTableBodyRowChildren}
         />
@@ -89,7 +86,7 @@ export default function SearchablePageableListPage<
           </Link>
         </div>
 
-        <SearchablePageableListPageFilterBlock
+        <DisplayOptionsPanel
           model={model}
           onModelChanged={changedData => setModel(m => ({ ...m, ...changedData }))}
           onSearchButtonClicked={reloadAsync}
@@ -97,7 +94,7 @@ export default function SearchablePageableListPage<
         />
         
 
-        <SearchablePageableListPageFilterBlock
+        <DisplayOptionsPanel
           model={model}
           onModelChanged={changedData => setModel(m => ({ ...m, ...changedData }))}
           onSearchButtonClicked={reloadAsync}
