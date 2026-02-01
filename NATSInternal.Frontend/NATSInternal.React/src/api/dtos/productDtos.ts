@@ -36,6 +36,7 @@ declare global {
     defaultVatPercentagePerUnit: number;
     stockingQuantity: number;
     isResupplyNeeded: boolean;
+    isDiscontinued: boolean;
     thumbnailUrl: string | null;
     category: ProductCategoryBasicResponseDto | null;
     brand: BrandBasicResponseDto | null;

@@ -10,8 +10,8 @@ import ResultsTablePanel from "@/pages/shared/searchablePageableList/ResultsTabl
 import { MainContainer } from "@/components/layouts";
 import { Paginator } from "@/components/ui";
 import { FormField, SelectInput, type SelectInputOption } from "@/components/form";
-import { ExclamationTriangleIcon, CheckCircleIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { BuildingStorefrontIcon, TagIcon } from "@heroicons/react/24/outline";
+import { ExclamationTriangleIcon, ExclamationCircleIcon, CheckCircleIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { BuildingStorefrontIcon, TagIcon, MinusCircleIcon } from "@heroicons/react/24/outline";
 
 // Data loader.
 type DataLoaderResults = {
@@ -74,6 +74,22 @@ export default function ProductListPage(): React.ReactNode {
     ];
   }, []);
 
+  const computeAlertClassName = (itemModel: ProductListProductModel): string => {
+    if (itemModel.stockingQuantity === 0) {
+      return "alert-red-outline dark:alert-red";
+    }
+
+    if (itemModel.isResupplyNeeded) {
+      return "alert-yellow-outline dark:alert-yellow";
+    }
+
+    if (itemModel.isDiscontinued) {
+      return "alert-neutral-outline dark:alert-neutral";
+    }
+
+    return "alert-emerald-outline dark:alert-emerald";
+  };
+
   // Callbacks.
   async function reloadAsync(): Promise<void> {
     latestRequestId.current += 1;
@@ -105,6 +121,22 @@ export default function ProductListPage(): React.ReactNode {
   ]);
 
   // Template.
+  const renderIcon = (itemModel: ProductListProductModel) => {
+    if (itemModel.stockingQuantity === 0) {
+      return <ExclamationCircleIcon className="text-red-600 dark:text-red-400 size-6" />;
+    }
+
+    if (itemModel.isResupplyNeeded) {
+      return <ExclamationTriangleIcon className="text-yellow-600 dark:text-yellow-400 size-6" />;
+    }
+
+    if (itemModel.isDiscontinued) {
+      return <MinusCircleIcon className="text-neutral-600 dark:text-neutral-400 size-6" />;
+    }
+
+    return <CheckCircleIcon className="text-emerald-600 dark:text-emerald-400 size-6" />;
+  };
+
   return (
     <MainContainer
       description="Danh sách các sản phẩm trong kho, kể cả các sản phẩm đã ngừng kinh doanh."
@@ -114,35 +146,29 @@ export default function ProductListPage(): React.ReactNode {
         <ResultsTablePanel
           model={model}
           isReloading={isReloading}
-          renderHeaderRowChildren={() => (
-            <>
-              <th>Sản phẩm</th>
-              <th>Tình trạng</th>
-            </>
-          )}
           renderBodyRowChildren={(itemModel: ProductListProductModel) => (
             <>
               <td>
                 <div className="grid grid-cols-[auto_auto_1fr] items-center gap-3">
-                  {itemModel.isResupplyNeeded ? (
-                    <ExclamationTriangleIcon className="text-yellow-600 dark:text-yellow-400 size-6" />
-                  ) : (
-                    <CheckCircleIcon className="text-emerald-600 dark:text-emerald-400 size-6" />
-                  )}
+                  {renderIcon(itemModel)}
 
                   <img src={itemModel.thumbnailUrl} className="img-thumbnail size-12" alt={itemModel.name} />
 
                   <div className="flex flex-col self-start">
                     <div className="flex gap-3 items-center">
-                      <Link to={itemModel.detailRoute} className="text-blue-700 dark:text-blue-400 font-bold">
+                      <Link
+                        to={itemModel.detailRoute}
+                        className={joinClassName(
+                          "font-bold",
+                          !itemModel.isDiscontinued && "text-blue-700 dark:text-blue-400"
+                        )}
+                      >
                         {itemModel.name}
                       </Link>
 
                       <div className={joinClassName(
-                        "alert dark:font-bold dark:alert-sm",
-                        itemModel.isResupplyNeeded
-                          ? "alert-warning-outline dark:alert-warning"
-                          : "alert-emerald-outline dark:alert-emerald",
+                        "alert dark:font-bold dark:alert-sm min-w-8 text-center",
+                        computeAlertClassName(itemModel)
                       )}>
                         {itemModel.stockingQuantity}
                       </div>

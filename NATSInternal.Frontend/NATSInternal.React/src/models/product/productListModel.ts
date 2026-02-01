@@ -34,6 +34,7 @@ declare global {
     defaultVatPercentagePerUnit: number;
     stockingQuantity: number;
     isResupplyNeeded: boolean;
+    isDiscontinued: boolean;
     thumbnailUrl: string;
     authorization: ProductExistingAuthorizationResponseDto;
     category: ProductCategoryBasicModel | null;

@@ -61,7 +61,7 @@ public static class DisplayNames
     public const string Address = "Địa chỉ";
     public const string IdCardNumber = "Số căn cước";
     public const string JoiningDate = "Ngày gia nhập";
-    public const string Status = "Trạng thái";
+    public const string Status = "Tình trạng";
     public const string CreatedDateTime = "Ngày tạo";
     public const string LastUpdatedDateTime = "Ngày cập nhật";
     public const string CreatedUser = "Nhân viên tạo";
@@ -146,6 +146,7 @@ public static class DisplayNames
     public const string Stock = "Kho hàng";
     public const string StockingQuantity = "Số lượng trong kho";
     public const string ResupplyThresholdQuantity = "Số lượng ngưỡng cảnh báo hết hàng";
+    public const string Default = "Mặc định";
     #endregion
 
     #region StaticConstructors

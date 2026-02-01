@@ -9,7 +9,7 @@ public class ProductGetListRequestDto : IRequest<ProductGetListResponseDto>, ILi
 {
     #region Properties
     public bool SortByAscending { get; set; } = true;
-    public string SortByFieldName { get; set; } = nameof(FieldToSort.Name);
+    public string SortByFieldName { get; set; } = nameof(FieldToSort.Status);
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
     public Guid? BrandId { get; set; }
@@ -29,6 +29,7 @@ public class ProductGetListRequestDto : IRequest<ProductGetListResponseDto>, ILi
     #region Enums
     public enum FieldToSort
     {
+        Status,
         Name,
         DefaultAmountBeforeVatPerUnit,
         CreatedDateTime,

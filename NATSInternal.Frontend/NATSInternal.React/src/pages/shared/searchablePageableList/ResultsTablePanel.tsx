@@ -53,7 +53,7 @@ export default function ResultsTablePanel<
               </thead>
               <tbody>
                 {props.model.items.map((customer, index) => (
-                  <tr key={index} className="whitespace-nowrap">
+                  <tr key={index}>
                     {props.renderBodyRowChildren?.(customer)}
                   </tr>
                 ))}

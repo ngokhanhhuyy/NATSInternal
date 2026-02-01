@@ -70,6 +70,16 @@ internal class ProductService : IProductService
 
         switch (requestDto.SortByFieldName)
         {
+            case nameof(ProductGetListRequestDto.FieldToSort.Status):
+                projectedQuery = projectedQuery
+                    .ApplySorting(pst => pst.Product.IsDiscontinued, requestDto.SortByAscending)
+                    .ThenApplySorting(
+                        pst => pst.Stock != null
+                            ? pst.Stock.StockingQuantity - pst.Stock.ResupplyThresholdQuantity
+                            : int.MaxValue,
+                        requestDto.SortByAscending)
+                    .ThenApplySorting(pst => pst.Product.Name, requestDto.SortByAscending);
+                break;
             case nameof(ProductGetListRequestDto.FieldToSort.Name):
                 projectedQuery = projectedQuery.ApplySorting(pst => pst.Product.Name, requestDto.SortByAscending);
                 break;

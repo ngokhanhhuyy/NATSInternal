@@ -41,6 +41,7 @@ public class ProductGetListProductResponseDto
         Unit = product.Unit;
         DefaultAmountBeforeVatPerUnit = product.DefaultAmountBeforeVatPerUnit;
         DefaultVatPercentagePerUnit = product.DefaultVatPercentagePerUnit;
+        IsDiscontinued = product.IsDiscontinued;
 
         if (product.Category is not null)
         {
@@ -75,6 +76,7 @@ public class ProductGetListProductResponseDto
     public int DefaultVatPercentagePerUnit { get; }
     public int StockingQuantity { get; }
     public bool IsResupplyNeeded { get; }
+    public bool IsDiscontinued { get; }
     public string? ThumbnailUrl { get; }
     public ProductCategoryBasicResponseDto? Category { get; }
     public BrandBasicResponseDto? Brand { get; }
