@@ -17,7 +17,7 @@ export default function LatestTransactionPanel(): React.ReactNode {
       </div>
 
       <div className="panel-body relative">
-        <table className="data-table">
+        <table className="data-table min-w-max w-full">
           <thead>
             <tr>
               <th>Loại</th>

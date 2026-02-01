@@ -14,19 +14,15 @@ export default function DetailPanel(props: Props): React.ReactNode {
   const TargetTransactionTypeAlert = () => {
     if (props.model.isForRetail) {
       return (
-        <div className="bg-emerald-500/25 border border-emerald-500 rounded-md px-1 py-0.5 text-xs">
-          <span className="text-emerald-500">
-            Cả liệu trình và bán lẻ
-          </span>
+        <div className="alert alert-emerald-outline dark:alert-emerald dark:font-bold alert-sm">
+          Cả liệu trình và bán lẻ
         </div>
       );
     }
 
     return (
-      <div className="bg-blue-500/25 border border-blue-500 rounded-md px-1 py-0.5 text-xs">
-        <span className="text-blue-500">
-          Chỉ liệu trình
-        </span>
+      <div className="alert alert-blue-outline dark:alert-blue dark:font-bold alert-sm">
+        Chỉ liệu trình
       </div>
     );
   };
@@ -35,20 +31,28 @@ export default function DetailPanel(props: Props): React.ReactNode {
     const stock = props.model.stock;
     if (props.model.isDiscontinued) {
       return (
-        <div className="bg-red-500/25 border border-red-500 rounded-md px-1 py-0.5 text-xs">
-          <span className="text-red-500">
-            Đã ngưng kinh doanh
-          </span>
+        <div className="alert alert-neutral-outline dark:alert-neutral dark:font-bold alert-sm">
+          Đã ngưng kinh doanh
         </div>
       );
-    } else if (stock != null && stock.stockingQuantity <= stock.resupplyThresholdQuantity) {
-      return (
-        <div className="bg-yellow-600/25 border border-yellow-600 rounded-md px-1 py-0.5 text-xs">
-          <span className="text-yellow-500">
-            Cần nhập hàng
-          </span>
-        </div>
-      );
+    }
+    
+    if (stock != null) {
+      if (stock.stockingQuantity === 0) {
+        return (
+          <div className="alert alert-red-outline dark:alert-red dark:font-bold alert-sm">
+            Đã hết hàng
+          </div>
+        );
+      }
+
+      if (stock.stockingQuantity <= stock.resupplyThresholdQuantity) {
+        return (
+          <div className="alert alert-yellow-outline dark:alert-yellow dark:font-bold alert-sm">
+            Sắp hết hàng
+          </div>
+        );
+      }
     }
   };
 
