@@ -6,7 +6,7 @@ import { getDisplayName } from "@/metadata";
 // Child component.
 import { Button } from "@/components/ui";
 import { FormField, TextInput, SelectInput, type SelectInputOption } from "@/components/form";
-import { ChevronUpIcon } from "@heroicons/react/24/outline";
+import { ChevronUpIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 import { BarsArrowUpIcon, BarsArrowDownIcon } from "@heroicons/react/24/outline";
 
 // Props.
@@ -135,6 +135,13 @@ function DisplayOptionsPanel<
           </div>
 
           {props.children}
+
+          <div className="flex justify-end">
+            <Button className="btn-primary-outline dark:btn-primary gap-1">
+              <ArrowPathIcon />
+              <span>Tải lại kết quả</span>
+            </Button>
+          </div>
         </div>
       </div>
     </div>

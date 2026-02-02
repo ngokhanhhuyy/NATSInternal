@@ -5,13 +5,12 @@ import { createProductListModel, createBrandBasicModel, createProductCategoryBas
 import { useTsxHelper } from "@/helpers";
 
 // Child components.
+import ResultsPanel from "./ResultsPanel";
 import FilterOptionsPanel from "@/pages/shared/searchablePageableList/FilterOptionsPanel";
-import ResultsTablePanel from "@/pages/shared/searchablePageableList/ResultsTablePanel";
 import { MainContainer } from "@/components/layouts";
 import { Paginator } from "@/components/ui";
 import { FormField, SelectInput, type SelectInputOption } from "@/components/form";
-import { ExclamationTriangleIcon, ExclamationCircleIcon, CheckCircleIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { BuildingStorefrontIcon, TagIcon, MinusCircleIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 // Data loader.
 type DataLoaderResults = {
@@ -48,7 +47,7 @@ export async function loadProductListAsync(model?: ProductListModel): Promise<Pr
 export default function ProductListPage(): React.ReactNode {
   // Dependencies.
   const initialModel = useLoaderData<DataLoaderResults>();
-  const { joinClassName, compute } = useTsxHelper();
+  const { compute } = useTsxHelper();
 
   // States.
   const [model, setModel] = useState(() => initialModel.productList);
@@ -73,22 +72,6 @@ export default function ProductListPage(): React.ReactNode {
       ...(initialModel.categoryOptions?.map((category) => ({ value: category.name, displayName: category.name })) ?? [])
     ];
   }, []);
-
-  const computeAlertClassName = (itemModel: ProductListProductModel): string => {
-    if (itemModel.stockingQuantity === 0) {
-      return "alert-red-outline dark:alert-red";
-    }
-
-    if (itemModel.isResupplyNeeded) {
-      return "alert-yellow-outline dark:alert-yellow";
-    }
-
-    if (itemModel.isDiscontinued) {
-      return "alert-neutral-outline dark:alert-neutral";
-    }
-
-    return "alert-emerald-outline dark:alert-emerald";
-  };
 
   // Callbacks.
   async function reloadAsync(): Promise<void> {
@@ -121,80 +104,13 @@ export default function ProductListPage(): React.ReactNode {
   ]);
 
   // Template.
-  const renderIcon = (itemModel: ProductListProductModel) => {
-    if (itemModel.stockingQuantity === 0) {
-      return <ExclamationCircleIcon className="text-red-600 dark:text-red-400 size-6" />;
-    }
-
-    if (itemModel.isResupplyNeeded) {
-      return <ExclamationTriangleIcon className="text-yellow-600 dark:text-yellow-400 size-6" />;
-    }
-
-    if (itemModel.isDiscontinued) {
-      return <MinusCircleIcon className="text-neutral-600 dark:text-neutral-400 size-6" />;
-    }
-
-    return <CheckCircleIcon className="text-emerald-600 dark:text-emerald-400 size-6" />;
-  };
-
   return (
     <MainContainer
       description="Danh sách các sản phẩm trong kho, kể cả các sản phẩm đã ngừng kinh doanh."
       className="gap-3"
     >
       <div className="flex flex-col items-stretch gap-3">
-        <ResultsTablePanel
-          model={model}
-          isReloading={isReloading}
-          renderBodyRowChildren={(itemModel: ProductListProductModel) => (
-            <>
-              <td>
-                <div className="grid grid-cols-[auto_auto_1fr] items-center gap-3">
-                  {renderIcon(itemModel)}
-
-                  <img src={itemModel.thumbnailUrl} className="img-thumbnail size-12" alt={itemModel.name} />
-
-                  <div className="flex flex-col self-start">
-                    <div className="flex gap-3 items-center">
-                      <Link
-                        to={itemModel.detailRoute}
-                        className={joinClassName(
-                          "font-bold",
-                          !itemModel.isDiscontinued && "text-blue-700 dark:text-blue-400"
-                        )}
-                      >
-                        {itemModel.name}
-                      </Link>
-
-                      <div className={joinClassName(
-                        "alert dark:font-bold dark:alert-sm min-w-8 text-center",
-                        computeAlertClassName(itemModel)
-                      )}>
-                        {itemModel.stockingQuantity}
-                      </div>
-                    </div>
-
-                    <div className="text-sm">
-                      {itemModel.brand && (
-                        <div className="flex justify-start items-center gap-1">
-                          <BuildingStorefrontIcon className="size-4" />
-                          <span>{itemModel.brand.name}</span>
-                        </div>
-                      )}
-
-                      {itemModel.category && (
-                        <div className="flex justify-start items-center gap-1">
-                          <TagIcon className="size-4" />
-                          <span>{itemModel.category.name}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </td>
-            </>
-          )}
-        />
+        <ResultsPanel model={model} isReloading={isReloading} />
 
         <div className="flex justify-end gap-3 mb-3 md:mb-5">
           <Paginator
@@ -227,10 +143,7 @@ export default function ProductListPage(): React.ReactNode {
                 options={brandOptions}
                 value={model.brand?.id ?? ""}
                 onValueChanged={(brandId) => {
-                  setModel(m => {
-                    const brand = brandId ? (brandOptionsModel ?? []).filter(b => b.id === brandId)[0] : null;
-                    return { ...m, brand };
-                  });
+                  setModel(m => ({ ...m, brand: brandOptionsModel.find(b => b.id == brandId) ?? null }));
                 }}
               />
             </FormField>
@@ -241,13 +154,7 @@ export default function ProductListPage(): React.ReactNode {
                 options={categoryOptions}
                 value={model.category?.name ?? ""}
                 onValueChanged={(categoryName) => {
-                  setModel(m => {
-                    const category = categoryName
-                      ? (categoryOptionsModel ?? []).filter(c => c.name === categoryName)[0]
-                      : null;
-
-                    return { ...m, category };
-                  });
+                  setModel(m => ({ ...m, category: categoryOptionsModel.find(c => c.name === categoryName) ?? null }));
                 }}
               />
             </FormField>
