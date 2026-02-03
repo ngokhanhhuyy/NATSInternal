@@ -1,0 +1,647 @@
+{
+  "explorer.autoReveal": false,
+  "editor.semanticTokenColorCustomizations": {
+    // "[Andromeda]": {
+    //     "enabled": true,
+    //     "rules": {
+    //         "selfParameter": {
+    //             "foreground": "#FF00AA",
+    //             "fontStyle": "italic"
+    //         },
+    //         // "variable": {
+    //         //     "foreground": "#D5CED9"
+    //         // },
+    //         // "property": {
+    //         //     "foreground": "#D5CED9"
+    //         // },
+    //         // "module": {
+    //         //     "foreground": "#D5CED9"
+    //         // },
+    //         "class": {
+    //             "foreground": "#EE5D43",
+    //             "fontStyle": "bold"
+    //         },
+    //         "parameter": "#7CB7FF"
+    //     }
+    // },
+    "[Andromeda]": {
+      "enabled": true,
+      "rules": {
+        "selfParameter": {
+          "foreground": "#FF00AA",
+          "fontStyle": "italic"
+        },
+        "variable": {
+          "foreground": "#fdeedf"
+        },
+        "property": {
+          "foreground": "#fdeedf"
+        },
+        "class": {
+          "foreground": "#66D9EF",
+        },
+        "module": {
+          "foreground": "#fdeedf"
+        }
+      }
+    },
+    "[GitHub Light]": {
+      "enabled": true,
+      "rules": {
+        "class": {
+          "foreground": "#BF3989"
+        },
+        "interface": {
+          "foreground": "#BF3989"
+        },
+        "type": {
+          "foreground": "#BF3989"
+        },
+        "enum": {
+          "foreground": "#BF3989"
+        },
+        "property": {
+          "foreground": "#109c00",
+        },
+        "function": {
+          "foreground": "#6f42c1",
+        },
+        "clsParameter": {
+          "foreground": "#e36209",
+          "fontStyle": "italic",
+        },
+        "selfParameter": {
+          "foreground": "#e36209",
+          "fontStyle": "italic",
+        },
+        "typeParameter": {
+          "foreground": "#e36209"
+        },
+        "typeParameter.declaration": {
+          "foreground": "#e36209",
+        },
+        "magicFunction": {
+          "foreground": "#BF3989"
+        },
+        "razorTagHelperAttribute": {
+          "foreground": "#ff283d"
+        },
+        "xmlDocCommentName": {
+          "foreground": "#22863A"
+        },
+        "razorComponentElement": {
+          "foreground": "#BF3989"
+        },
+      }
+    },
+    "[GitHub Dark]": {
+      "enabled": true,
+      "rules": {
+        "class": {
+          "foreground": "#f183c5"
+        },
+        "interface": {
+          "foreground": "#f183c5"
+        },
+        "type": {
+          "foreground": "#f183c5"
+        },
+        "enum": {
+          "foreground": "#f183c5"
+        },
+        "property": {
+          "foreground": "#B7DC6F"
+        },
+        "clsParameter": {
+          "foreground": "#ffab70",
+          "fontStyle": "italic",
+        },
+        "selfParameter": {
+          "foreground": "#ffab70",
+          "fontStyle": "italic",
+        },
+        "typeParameter": {
+          "foreground": "#ffab70",
+        },
+        "typeParameter.declaration": {
+          "foreground": "#ffab70",
+        },
+        "magicFunction": {
+          "foreground": "#f183c5"
+        },
+        "razorTagHelperAttribute": {
+          "foreground": "#f97583"
+        },
+        "razorTagHelperElement": {
+          "foreground": "#f97583"
+        },
+        "xmlDocCommentName": {
+          "foreground": "#85E89D"
+        },
+        "razorComponentElement": {
+          "foreground": "#f97583"
+        },
+      }
+    },
+    "[Min Dark]": {
+      "enabled": true,
+      "rules": {
+        "class": {
+          "foreground": "#A6E22E"
+        },
+      }
+    },
+    "[Flatland Monokai]": {
+      "enabled": true,
+      "rules": {
+        "enum": {
+          "foreground": "#66D9FF"
+        },
+        "interface": {
+          "foreground": "#A6E22E",
+          "fontStyle": "underline"
+        },
+        "typeParameter": {
+          "foreground": "#FD971F"
+        },
+        "type": {
+          "fontStyle": ""
+        }
+      }
+    },
+    "[Default Dark Modern]": {
+      "rules": {
+        "property": "#DCDCDC",
+        "field": "#DCDCDC",
+        "namespace": "#DCDCDC",
+        "struct": "#86c691",
+        "interface": "#b8d7a3"
+      }
+    },
+    "[Default Dark+]": {
+      "rules": {
+        "property": "#DCDCDC",
+        "field": "#DCDCDC",
+        "namespace": "#DCDCDC",
+        "struct": "#86c691",
+        "interface": "#b8d7a3"
+      }
+    }
+  },
+  "editor.tokenColorCustomizations": {
+    "[Flatland Monokai]": {
+      "textMateRules": [
+        {
+          "scope": [
+            "storage.type.type.ts",
+            "storage.type.class.ts"
+          ],
+          "settings": {
+            "foreground": "#F92672"
+          }
+        },
+        {
+          "scope": "storage.type.interface.ts",
+          "settings": {
+            "foreground": "#F92672"
+          }
+        },
+        {
+          "scope": [
+            "storage.type.ts",
+            "storage.type.function.ts"
+          ],
+          "settings": {
+            "foreground": "#F92672"
+          }
+        },
+        {
+          "scope": "meta.function-call.python meta.function-call.generic.python",
+          "settings": {
+            "foreground": "#a6e22e",
+            "fontStyle": "italic",
+          }
+        },
+        {
+          "scope": "variable.language.special.self.python",
+          "settings": {
+            "foreground": "#fd971f",
+            "fontStyle": "italic bold"
+          }
+        },
+        {
+          "scope": "variable.parameter",
+          "settings": {
+            "foreground": "#fd971f",
+            "fontStyle": "italic",
+          }
+        },
+        {
+          "scope": [
+            "source.python meta.class.python entity.name.type.class.python",
+          ],
+          "settings": {
+            "foreground": "#66D9FF",
+            "fontStyle": "italic bold",
+          }
+        },{
+          "scope": [
+            "variable.language.super.ts",
+          ],
+          "settings": {
+            "foreground": "#66D9FF",
+          }
+        },
+        {
+          "scope": "meta.function.python entity.name.function.python",
+          "settings": {
+            "foreground": "#a6e22e",
+            "fontStyle": "bold",
+          }
+        },
+        {
+          "scope": "entity.other.inherited-class",
+          "settings": {
+            "foreground": "#34d058",
+            "fontStyle": "bold underline italic",
+          }
+        },
+        {
+          "scope": "variable.language.this.ts, variable.argument.css, variable.css",
+          "settings": {
+            "foreground": "#FD971F",
+          }
+        },
+        {
+          "scope": "source.tsx meta.interface.tsx storage.type.interface.tsx",
+          "settings": {
+            "foreground": "#F92672",
+          }
+        },
+        {
+          "scope": "source.tsx meta.var.expr.tsx storage.type.tsx",
+          "settings": {
+            "foreground": "#F92672",
+          }
+        },
+        {
+          "scope": [
+            "storage.type.type.tsx"
+          ],
+          "settings": {
+            "foreground": "#F92672",
+          }
+        },
+        {
+          "scope": "source.ts support.type.builtin.ts",
+          "settings": {
+            "foreground": "#AE81FF",
+          }
+        },
+      
+        {
+          "scope": "source.ts support.type.primitive.ts",
+          "settings": {
+            "foreground": "#AE81FF",
+          }
+        }
+      ],
+    },
+    "[GitHub Light]": {
+      "textMateRules": [
+        {
+          "scope": [
+            "string",
+            "punctuation.definition.string",
+            "string punctuation.section.embedded source"
+          ],
+          "settings": {
+            "foreground": "#003470",
+          }
+        },
+        {
+          "scope": [
+            "source.vue text.html.derivative meta.tag.other.unrecognized.html.derivative entity.name.tag.html",
+          ],
+          "settings": {
+            "foreground": "#005CC5",
+          }
+        },
+        {
+          "scope": [
+            "meta.arrow.ts storage.type.function.arrow.ts",
+          ],
+          "settings": {
+            "foreground": "#F97583"
+          }
+        },
+        {
+          "scope": [
+            "support.class.component.tsx"
+          ],
+          "settings": {
+            "foreground": "#BF3989"
+          }
+        }
+      ]
+    },
+    "[GitHub Dark]": {
+      "textMateRules": [
+        {
+          "scope": [
+            "string",
+            "punctuation.definition.string",
+            "string punctuation.section.embedded source"
+          ],
+          "settings": {
+            "foreground": "#fff08f",
+          }
+        },
+        {
+          "scope": [
+            "source.vue text.html.derivative meta.tag.other.unrecognized.html.derivative entity.name.tag.html",
+          ],
+          "settings": {
+            "foreground": "#79B8FF",
+          }
+        },
+        {
+          "scope": [
+            "meta.arrow.ts storage.type.function.arrow.ts",
+          ],
+          "settings": {
+            "foreground": "#F97583"
+          }
+        },
+        {
+          "scope": [
+            "support.class.component.tsx"
+          ],
+          "settings": {
+            "foreground": "#f183c5"
+          }
+        }
+      ]
+    },
+  },
+  "workbench.colorCustomizations": {
+      "[GitHub Light]": {
+          "textCodeBlock.background": "#e8e8e8",
+          "menu.border": "#d4d4d4",
+          "menu.selectionBackground": "#6F42C1",
+          "menu.selectionForeground": "#ffffff",
+          "widget.shadow": "#00000029"
+      },
+      "[GitHub Dark]": {
+          "menu.border": "#646464",
+          "menu.selectionBackground": "#6F42C1",
+          "menu.selectionForeground": "#ffffff",
+          "widget.shadow": "#00000029"
+      },
+      "[Flatland Monokai]": {
+          "menu.border": "#757575",
+      },
+  },
+  "editor.fontLigatures": true,
+  "python.terminal.launchArgs": [],
+  "editor.accessibilitySupport": "off",
+  "security.workspace.trust.untrustedFiles": "open",
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.config": true,
+    "**/.idea": true,
+    "**/.nuxt": true,
+    "**/.output": true,
+    "**/.vs": true,
+    "**/.vscode": true,
+    "**/bin": true,
+    "**/node_modules": true,
+    "**/obj": true
+  },
+  "mypy-type-checker.args": [
+    "--strict"
+  ],
+  "editor.fontFamily": "Iosevka SS18, Consolas, 'Courier New', monospace",
+  "editor.fontWeight": "normal",
+  "qttools.creator": "C:\\Qt\\Qt\\6.5.2\\msvc2019_64\\bin",
+  "qttools.extraSearchDirectories": [],
+  "debug.terminal.clearBeforeRusing": true,
+  "workbench.tree.indent": 20,
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportUnusedImport": "none",
+    // "reportMissingImports": "none",
+    "reportWildcardImportFromLibrary": "none",
+    "reportUnknownMemberType": "none",
+    // "reportGeneralTypeIssues": "none",
+    // "reportUnknownVariableType": "none",
+    // "reportUnknownArgumentType": "none",
+    // "reportUnnecessaryComparison": "none",
+    // "reportUntypedBaseClass": "none",
+    // "reportMissingTypeStubs": "none",
+    "reportUnusedVariable": "information",
+    // "reportOptionalMemberAccess": "none",
+    // "reportUntypedFunctionDecorator": "none",
+    // "reportOptionalCall": "none",
+    // "reportIncompatibleMethodOverride": "none",
+    // "reportUntypedFunctionDecorator": "none",
+    // "reportMissingParameterType": "error",
+    // "reporTAttributeMismatch": "error",
+    // "reportInvalidTypeVarUse": "error",
+  },
+  "git.enableSmartCommit": true,
+  "editor.defaultFormatter": "ms-python.python",
+  "mypy.runUsingActiveInterpreter": true,
+  "python.analysis.logLevel": "Error",
+  "python.analysis.exclude": [
+    ".vs",
+    ".vscode",
+    "**/__pycache__",
+    "**/alembic",
+    ".fleet",
+    ".mypy_cache"
+  ],
+  "[csharp]": {
+    "editor.defaultFormatter": "ms-dotnettools.csharp"
+  },
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.autopep8"
+  },
+  "mypy-type-checker.reportingScope": "workspace",
+  "python.analysis.packageIndexDepths": [
+    {
+      "name": "sklearn",
+      "depth": 2
+    },
+    {
+      "name": "matplotlib",
+      "depth": 2
+    },
+    {
+      "name": "scipy",
+      "depth": 2
+    },
+    {
+      "name": "django",
+      "depth": 2
+    },
+    {
+      "name": "flask",
+      "depth": 2
+    },
+    {
+      "name": "fastapi",
+      "depth": 2
+    }
+  ],
+  "python.analysis.fixAll": [
+    "source.unusedImports"
+  ],
+  "python.analysis.importFormat": "relative",
+  "python.analysis.diagnosticMode": "workspace",
+  "fold.level": 0,
+  "cmake.configureOnOpen": true,
+  "csharp.experimental.debug.hotReload": true,
+  "git.openRepositoryInParentFolders": "never",
+  "terminal.integrated.fontWeightBold": "normal",
+  "terminal.integrated.fontWeight": "normal",
+  "cmake.showOptionsMovedNotification": false,
+  "[vue]": {
+    "editor.defaultFormatter": "Vue.volar"
+  },
+  "vue.format.style.initialIndent": true,
+  "vue.format.script.initialIndent": true,
+  "files.autoSave": "afterDelay",
+  "javascript.preferences.quoteStyle": "double",
+  "typescript.preferences.quoteStyle": "double",
+  "editor.inlineSuggest.enabled": false,
+  "prettier.singleQuote": false,
+  "workbench.editor.wrapTabs": true,
+  "workbench.editor.tabSizing": "fit",
+  "editor.minimap.enabled": false,
+  "typescript.format.semicolons": "insert",
+  "editor.semanticHighlighting.enabled": true,
+  "typescript.tsserver.web.projectWideIntellisense.suppressSemanticErrors": false,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  "indentRainbow.colors": [
+    "rgba(255,255,64,0.07)",
+    "rgba(127,255,127,0.07)",
+    "rgba(255,127,255,0.07)",
+    "rgba(79,236,236,0.07)"
+  ],
+  "explicitFolding.rules": {
+    "*": {
+      "begin": "{{{",
+      "end": "}}}"
+    },
+  },
+  "editor.cursorBlinking": "expand",
+  "guides.stack.style": "dashed",
+  "guides.active.style": "dotted",
+  "guides.normal.color.dark": "rgba(220, 220, 220, 0.75)",
+  "guides.normal.style": "dashed",
+  "fonted.font": "Roboto",
+  "indentRainbow.excludedLanguages": [
+    "csharp",
+    "plaintext"
+  ],
+  "diffEditor.ignoreTrimWhitespace": false,
+  "remote.SSH.remotePlatform": {
+    "GoogleCloudVMInstance": "linux",
+    "khanhhuy-dev-vm-instance": "linux",
+    "GCloudWorkstation": "linux",
+    "workstation": "linux"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "remote.SSH.connectTimeout": 30,
+  "editor.rulers": [
+
+    120
+  ],
+  "[html]": {
+    "editor.rulers": [
+      120
+    ],
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.tabs.defaultColor": "terminal.ansiGreen",
+  "dotnet.codeLens.enableReferencesCodeLens": false,
+  "dotnet.codeLens.enableTestsCodeLens": false,
+  "[typescript]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.smoothScrolling": true,
+  "security.allowedUNCHosts": [
+    "wsl.localhost"
+  ],
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.cshtml": "${basename}.cs, ${capture}.cshtml.cs",
+    "*.tsx": "${capture}.ts, ${capture}.module.css"
+  },
+  "[xml]": {
+    "editor.defaultFormatter": "DotJoshJohnson.xml"
+  },
+  "typescript.format.enable": false,
+  "javascript.format.enable": false,
+  "vue.server.hybridMode": false,
+  "database-client.autoSync": true,
+  "[aspnetcorerazor]": {
+    "editor.defaultFormatter": "ms-dotnettools.csharp"
+  },
+  "workbench.iconTheme": "material-icon-theme",
+  "prettier.tabWidth": 4,
+  "typescript.implementationsCodeLens.enabled": true,
+  "editor.unicodeHighlight.includeStrings": false,
+  "svelte.enable-ts-plugin": true,
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  "editor.stickyScroll.enabled": false,
+  "workbench.editorAssociations": {
+    "*.xlsx": "default"
+  },
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "prettier.printWidth": 95,
+  "svelte.plugin.svelte.format.config.printWidth": 95,
+  "[css]": {
+    "editor.defaultFormatter": "vscode.css-language-features"
+  },
+  "vue.autoInsert.dotValue": true,
+  "[astro]": {
+    "editor.defaultFormatter": "astro-build.astro-vscode"
+  },
+  "accessibility.verbosity.inlineCompletions": false,
+  "editor.unicodeHighlight.ambiguousCharacters": false,
+  "editor.unicodeHighlight.includeComments": false,
+  "terminal.integrated.fontFamily": "JetBrainsMono NF SemiBold",
+  "terminal.integrated.fontLigatures.enabled": true,
+  "editor.inlineSuggest.edits.renderSideBySide": "never",
+  "editor.renderWhitespace": "all",
+  "explorer.fileNesting.expand": false,
+  "editor.inlayHints.enabled": "off",
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.fontSize": 15,
+  "workbench.colorTheme": "Flatland Monokai",
+}
