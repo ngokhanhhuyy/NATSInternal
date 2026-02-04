@@ -1,11 +1,14 @@
 @layer components {
     .btn {
+        --btn-background-color: rgba(255, 255, 255);
+        --btn-foreground-color: --alpha(var(--color-black) / 80%);
+        --btn-border-color: --alpha(var(--color-black) / 15%);
         --padding-inline-coeffecient: 2;
         --padding-block-coeffecient: 1;
         --min-height-coeffecient: 9;
-        background: rgba(255, 255, 255);
-        color: rgba(0, 0, 0, 80%);
-        border: 1px solid rgba(0, 0, 0, 15%);
+        background: var(--btn-background-color);
+        color: var(--btn-foreground-color);
+        border: 1px solid var(--btn-border-color);
         border-radius: var(--radius-lg);
         padding-inline: calc(var(--spacing) * var(--padding-inline-coeffecient));
         padding-block: calc(var(--spacing) * var(--padding-block-coeffecient));

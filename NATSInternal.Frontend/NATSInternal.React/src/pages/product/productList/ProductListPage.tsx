@@ -74,34 +74,23 @@ export default function ProductListPage(): React.ReactNode {
   }, []);
 
   // Callbacks.
-  async function reloadAsync(): Promise<void> {
+  function reload(): void {
     latestRequestId.current += 1;
-    const currentRequestId = latestRequestId.current;
-    const reloadedModel = await loadProductListAsync(model);
+    startTransition(async () => {
+      const currentRequestId = latestRequestId.current;
+      const reloadedModel = await loadProductListAsync(model);
 
-    if (latestRequestId.current === currentRequestId) {
-      setModel(reloadedModel);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+      if (latestRequestId.current === currentRequestId) {
+        setModel(reloadedModel);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    });
   }
-  
-  // Effect.
-  useEffect(() => {
-    if (isInitialRendering) {
-      setIsInitialRendering(false);
-      return;
-    }
 
-    startTransition(reloadAsync);
-  }, [
-    model.searchContent,
-    model.sortByAscending,
-    model.sortByFieldName,
-    model.page,
-    model.resultsPerPage,
-    model.brand,
-    model.category
-  ]);
+  // Effects.
+  useEffect(() => {
+    setIsInitialRendering(false);
+  }, []);
 
   // Template.
   return (
@@ -133,8 +122,7 @@ export default function ProductListPage(): React.ReactNode {
         <FilterOptionsPanel
           model={model}
           onModelChanged={changedData => setModel(m => ({ ...m, ...changedData }))}
-          onSearchButtonClicked={reloadAsync}
-          isInitialRendering={isInitialRendering}
+          onReloadButtonClicked={reload}
         >
           <div className={"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3"}>
             <FormField path="brandId" displayName="Thương hiệu">

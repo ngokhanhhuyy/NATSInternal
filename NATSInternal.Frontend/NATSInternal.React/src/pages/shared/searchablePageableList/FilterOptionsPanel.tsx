@@ -19,8 +19,7 @@ type Props<
     TItemModel extends object> = {
   model: TListModel;
   onModelChanged(changedData: Partial<TListModel>): any;
-  onSearchButtonClicked(): any;
-  isInitialRendering: boolean;
+  onReloadButtonClicked(): any;
   children: React.ReactNode | React.ReactNode[];
 };
 
@@ -137,7 +136,7 @@ function DisplayOptionsPanel<
           {props.children}
 
           <div className="flex justify-end">
-            <Button className="btn-primary-outline dark:btn-primary gap-1">
+            <Button className="btn-primary-outline bg-blue-500/25 dark:btn-primary gap-1" onClick={props.onReloadButtonClicked}>
               <ArrowPathIcon />
               <span>Tải lại kết quả</span>
             </Button>
