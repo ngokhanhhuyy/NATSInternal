@@ -15,7 +15,7 @@ export default function MainLogo(): React.ReactNode {
     <Link id="main-logo" to={getHomeRoutePath()}>
       <ApplicationIcon />
 
-      <span className="text-emerald-500 dark:text-emerald-400 font-light text-2xl block">
+      <span>
         natsinternal
       </span>
     </Link>
