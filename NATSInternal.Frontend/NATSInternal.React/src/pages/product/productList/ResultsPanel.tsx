@@ -3,12 +3,8 @@ import { Link } from "react-router";
 import { useTsxHelper } from "@/helpers";
 
 // Child components.
-import {
-  BuildingStorefrontIcon, CheckCircleIcon,
-  ExclamationCircleIcon,
-  ExclamationTriangleIcon, MinusCircleIcon,
-  TagIcon
-} from "@heroicons/react/24/outline";
+import { BuildingStorefrontIcon, CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import { ExclamationTriangleIcon, MinusCircleIcon, TagIcon, ArchiveBoxIcon } from "@heroicons/react/24/outline";
 
 // Props.
 type ResultsPanelProps = {
@@ -87,7 +83,13 @@ function ResultItem(props: { model: ProductListProductModel }): React.ReactNode 
     <li className="list-group-item grid grid-cols-[auto_auto_1fr] items-center gap-3 px-3 py-1.5">
       <Icon />
 
-      <img src={props.model.thumbnailUrl} className="img-thumbnail size-12" alt={props.model.name} />
+      {props.model.thumbnailUrl ? (
+        <img src={props.model.thumbnailUrl} className="img-thumbnail size-12" alt={props.model.name} />
+      ) : (
+        <div className="img-thumbnail size-12 flex justify-center items-center">
+          <ArchiveBoxIcon className="size-6 opacity-50" />
+        </div>
+      )}
 
       <div className="flex flex-col self-start">
         <div className="flex gap-3 items-center">

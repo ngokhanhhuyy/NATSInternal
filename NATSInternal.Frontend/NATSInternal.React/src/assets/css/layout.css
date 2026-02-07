@@ -357,7 +357,7 @@ main {
 
 #breadcrumb {
     background: white;
-    border: 1px solid --alpha(var(--color-black) / 15%);
+    border: 1px solid --alpha(var(--color-black) / 20%);
     border-top-left-radius: var(--radius-2xl);
     border-top-right-radius: var(--radius-2xl);
     padding: --spacing(3);
@@ -383,7 +383,7 @@ main {
 
 #page-title-container {
     background: white;
-    border: 1px solid --alpha(var(--color-black) / 15%);
+    border: 1px solid --alpha(var(--color-black) / 20%);
     border-top: none;
     border-bottom-left-radius: var(--radius-2xl);
     border-bottom-right-radius: var(--radius-2xl);

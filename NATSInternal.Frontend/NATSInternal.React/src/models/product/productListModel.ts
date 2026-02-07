@@ -2,7 +2,6 @@ import { createBrandBasicModel } from "../shared/brandBasicModel";
 import { createProductCategoryBasicModel } from "../shared/productCategoryBasicModel";
 import { getMetadata } from "@/metadata";
 import { useCurrencyHelper, useRouteHelper } from "@/helpers";
-import defaultImageUrl from "@/assets/images/default.jpg";
 
 declare global {
   type ProductListModel = Implements<
@@ -35,7 +34,7 @@ declare global {
     stockingQuantity: number;
     isResupplyNeeded: boolean;
     isDiscontinued: boolean;
-    thumbnailUrl: string;
+    thumbnailUrl: string | null;
     authorization: ProductExistingAuthorizationResponseDto;
     category: ProductCategoryBasicModel | null;
     brand: BrandBasicModel | null;
@@ -111,7 +110,7 @@ export function createProductListModel(responseDto?: ProductGetListResponseDto):
 export function createProductListProductModel(responseDto: ProductGetListProductResponseDto): ProductListProductModel {
   return {
     ...responseDto,
-    thumbnailUrl: responseDto.thumbnailUrl ?? defaultImageUrl,
+    thumbnailUrl: responseDto.thumbnailUrl,
     formattedDefaultAmountBeforeVatPerUnit: getAmountDisplayText(responseDto.defaultAmountBeforeVatPerUnit),
     category: responseDto.category && createProductCategoryBasicModel(responseDto.category),
     brand: responseDto.brand && createBrandBasicModel(responseDto.brand),

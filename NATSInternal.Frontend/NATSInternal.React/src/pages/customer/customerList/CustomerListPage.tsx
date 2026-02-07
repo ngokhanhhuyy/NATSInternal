@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useState, useRef, useEffect, useTransition } from "react";
 import { Link } from "react-router";
 import { useLoaderData } from "react-router";
 import { useApi } from "@/api";
 import { createCustomerListModel } from "@/models";
-import { useTsxHelper } from "@/helpers";
 
 // Child components.
-import SearchablePageableListPage from "@/pages/shared/searchablePageableList/SearchablePageableListPage";
+import ResultsPanel from "./ResultsPanel";
+import FilterOptionsPanel from "@/pages/shared/searchablePageableList/FilterOptionsPanel";
+import { MainContainer } from "@/components/layouts";
+import { Paginator } from "@/components/ui";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 // Api.
 const api = useApi();
@@ -22,62 +25,91 @@ export async function loadDataAsync(model?: CustomerListModel): Promise<Customer
   return createCustomerListModel(responseDto);
 }
 
-// Component.
+// Components.
 export default function CustomerListPage(): React.ReactNode {
   // Dependencies.
   const initialModel = useLoaderData<CustomerListModel>();
-  const { joinClassName } = useTsxHelper();
+
+  // States.
+  const [model, setModel] = useState(() => initialModel);
+  const [hasPendingReloading, setHasPendingReloading] = useState(() => false);
+  const [reloadTriggeringKey, setReloadTriggerKey] = useState(() => 0);
+  const [isInitialRendering, setIsInitialRendering] = useState(() => true);
+  const [isReloading, startTransition] = useTransition();
+  const latestRequestId = useRef<number>(0);
+
+  // Callbacks.
+  function reload(): void {
+    latestRequestId.current += 1;
+    startTransition(async () => {
+      const currentRequestId = latestRequestId.current;
+      const reloadedModel = await loadDataAsync(model);
+
+      if (latestRequestId.current === currentRequestId) {
+        setModel(reloadedModel);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    });
+  }
+
+  // Effects.
+  useEffect(() => {
+    if (isInitialRendering) {
+      setIsInitialRendering(false);
+      return;
+    }
+
+    reload();
+  }, [reloadTriggeringKey]);
+  
+  useEffect(() => {
+    if (isInitialRendering) {
+      return;
+    }
+
+    setHasPendingReloading(true);
+  }, [model.sortByAscending, model.sortByFieldName, model.searchContent, model.page, model.resultsPerPage]);
 
   // Template.
   return (
-    <SearchablePageableListPage<CustomerListModel, CustomerListCustomerModel>
-      description="Danh sách các khách hàng đã và đang giao dịch với cửa hàng."
-      initialModel={initialModel}
-      loadDataAsync={loadDataAsync}
-      renderTableHeaderRowChildren={() => (
-        <>
-          <th>Họ và tên</th>
-          <th>Biệt danh</th>
-          <th>Giới tính</th>
-          <th>Số điện thoại</th>
-          <th>Ngày sinh</th>
-          <th>Nợ còn lại</th>
-        </>
-      )}
-      renderTableBodyRowChildren={(itemModel) => (
-        <>
-          <td className="px-3 py-2">
-            <Link to={itemModel.detailRoute} className="font-bold">
-              {itemModel.fullName}
-            </Link>
-          </td>
+    <MainContainer
+      description="Danh sách các sản phẩm trong kho, kể cả các sản phẩm đã ngừng kinh doanh."
+      className="gap-3"
+    >
+      <div className="flex flex-col items-stretch gap-3">
+        <ResultsPanel model={model} isReloading={isReloading} />
 
-          <td className="px-3 py-2">
-            {itemModel.nickName && (
-              <span className="opacity-50">{itemModel.nickName}</span>
-            )}
-          </td>
+        <div className="flex justify-end gap-3 mb-3 md:mb-5">
+          <Paginator
+            page={model.page}
+            pageCount={model.pageCount}
+            onPageChanged={(page) => {
+              setModel(m => ({ ...m, page }));
+              setReloadTriggerKey(key => key += 1);
+            }}
+            getPageButtonClassName={(_, isActive) => isActive ? "btn-primary" : undefined}
+          />
 
-          <td className={joinClassName(
-            "px-3 py-2",
-            itemModel.gender === "Male" ? "text-blue-700 dark:text-blue-400" : "text-red-700 dark:text-red-400"
-          )}>
-            {itemModel.gender === "Male" ? "Nam" : "Nữ"}
-          </td>
+          {model.pageCount > 1 && (
+            <div className="border-r border-black/25 dark:border-white/25 w-px" />
+          )}
 
-          <td className="px-3 py-2">
-            {itemModel.formattedPhoneNumber}
-          </td>
+          <Link className="btn gap-1 shrink-0" to={model.createRoutePath}>
+            <PlusIcon className="size-4.5" />
+            <span>Tạo sản phẩm mới</span>
+          </Link>
+        </div>
 
-          <td className="px-3 py-2">
-            {itemModel.formattedBirthday}
-          </td>
-
-          <td className={joinClassName("px-3 py-2", !itemModel.debtRemainingAmount && "opacity-25")}>
-            {itemModel.formattedDebtRemainingAmount}
-          </td>
-        </>
-      )}
-    />
+        <FilterOptionsPanel
+          model={model}
+          onModelChanged={changedData => setModel(m => ({ ...m, ...changedData }))}
+          onReloadButtonClicked={() => {
+            setModel(m => ({ ...m, page: 1 }));
+            setReloadTriggerKey(key => key += 1);
+          }}
+          hasPendingReloading={hasPendingReloading}
+        />
+      </div>
+    </MainContainer>
   );
 }

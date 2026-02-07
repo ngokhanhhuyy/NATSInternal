@@ -8,8 +8,8 @@
     }
 
     .panel-header {
-        background-color: --alpha(var(--color-blue-500) / 25%);
-        border: 1px solid --alpha(var(--color-blue-500) / 50%);
+        background-color: var(--color-blue-600);
+        border: 1px solid transparent;
         display: flex;
         justify-content: space-between;
         gap: --spacing(3);
@@ -37,7 +37,7 @@
     }
     
     .panel-header-title {
-        color: --alpha(var(--color-blue-800) / 75%);
+        color: white;
         font-size: var(--text-sm);
         font-weight: bold;
         text-transform: uppercase;

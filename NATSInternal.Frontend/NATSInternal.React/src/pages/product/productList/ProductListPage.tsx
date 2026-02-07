@@ -51,6 +51,8 @@ export default function ProductListPage(): React.ReactNode {
 
   // States.
   const [model, setModel] = useState(() => initialModel.productList);
+  const [hasPendingReloading, setHasPendingReloading] = useState(() => false);
+  const [reloadTriggeringKey, setReloadTriggerKey] = useState(() => 0);
   const [isInitialRendering, setIsInitialRendering] = useState(() => true);
   const [isReloading, startTransition] = useTransition();
   const latestRequestId = useRef<number>(0);
@@ -79,6 +81,7 @@ export default function ProductListPage(): React.ReactNode {
     startTransition(async () => {
       const currentRequestId = latestRequestId.current;
       const reloadedModel = await loadProductListAsync(model);
+      setHasPendingReloading(false);
 
       if (latestRequestId.current === currentRequestId) {
         setModel(reloadedModel);
@@ -89,8 +92,21 @@ export default function ProductListPage(): React.ReactNode {
 
   // Effects.
   useEffect(() => {
-    setIsInitialRendering(false);
-  }, []);
+    if (isInitialRendering) {
+      setIsInitialRendering(false);
+      return;
+    }
+
+    reload();
+  }, [reloadTriggeringKey]);
+
+  useEffect(() => {
+    if (isInitialRendering) {
+      return;
+    }
+
+    setHasPendingReloading(true);
+  }, [model.sortByAscending, model.sortByFieldName, model.searchContent, model.page, model.resultsPerPage]);
 
   // Template.
   return (
@@ -105,7 +121,10 @@ export default function ProductListPage(): React.ReactNode {
           <Paginator
             page={model.page}
             pageCount={model.pageCount}
-            onPageChanged={(page) => setModel(m => ({ ...m, page }))}
+            onPageChanged={(page) => {
+              setModel(m => ({ ...m, page }));
+              setReloadTriggerKey(key => key += 1);
+            }}
             getPageButtonClassName={(_, isActive) => isActive ? "btn-primary" : undefined}
           />
 
@@ -122,7 +141,11 @@ export default function ProductListPage(): React.ReactNode {
         <FilterOptionsPanel
           model={model}
           onModelChanged={changedData => setModel(m => ({ ...m, ...changedData }))}
-          onReloadButtonClicked={reload}
+          onReloadButtonClicked={() => {
+            setModel(m => ({ ...m, page: 1 }));
+            setReloadTriggerKey(key => key += 1);
+          }}
+          hasPendingReloading={hasPendingReloading}
         >
           <div className={"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3"}>
             <FormField path="brandId" displayName="Thương hiệu">

@@ -111,10 +111,7 @@ async function executeAsync(
  * @returns A `Promise` which resolves to an object as an implementation of type `TResponseDto`.
  * @example getAsync<ResponseDtos.User.Detail>("user/1");
  */
-async function getAsync<TResponseDto>(
-    endpointPath: string,
-    params?: Params,
-    delay?: number): Promise<TResponseDto> {
+async function getAsync<TResponseDto>(endpointPath: string, params?: Params,  delay?: number): Promise<TResponseDto> {
   const response = await executeAsync("get", endpointPath, undefined, params, delay);
   return await response.json() as TResponseDto;
 }

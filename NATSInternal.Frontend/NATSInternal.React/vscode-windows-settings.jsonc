@@ -230,7 +230,11 @@
           }
         },
         {
-          "scope": "variable.parameter",
+          "scope": [
+            "variable.parameter",
+            "variable.argument.css",
+            "variable.css"
+          ],
           "settings": {
             "foreground": "#fd971f",
             "fontStyle": "italic",
@@ -244,7 +248,8 @@
             "foreground": "#66D9FF",
             "fontStyle": "italic bold",
           }
-        },{
+        },
+        {
           "scope": [
             "variable.language.super.ts",
           ],
@@ -267,7 +272,10 @@
           }
         },
         {
-          "scope": "variable.language.this.ts, variable.argument.css, variable.css",
+          "scope": [
+            "variable.language.this.ts, variable.argument.css, variable.css",
+            "variable.other.jsdoc"
+          ],
           "settings": {
             "foreground": "#FD971F",
           }
@@ -298,7 +306,6 @@
             "foreground": "#AE81FF",
           }
         },
-      
         {
           "scope": "source.ts support.type.primitive.ts",
           "settings": {
@@ -385,22 +392,22 @@
     },
   },
   "workbench.colorCustomizations": {
-      "[GitHub Light]": {
-          "textCodeBlock.background": "#e8e8e8",
-          "menu.border": "#d4d4d4",
-          "menu.selectionBackground": "#6F42C1",
-          "menu.selectionForeground": "#ffffff",
-          "widget.shadow": "#00000029"
-      },
-      "[GitHub Dark]": {
-          "menu.border": "#646464",
-          "menu.selectionBackground": "#6F42C1",
-          "menu.selectionForeground": "#ffffff",
-          "widget.shadow": "#00000029"
-      },
-      "[Flatland Monokai]": {
-          "menu.border": "#757575",
-      },
+    "[GitHub Light]": {
+      "textCodeBlock.background": "#e8e8e8",
+      "menu.border": "#d4d4d4",
+      "menu.selectionBackground": "#6F42C1",
+      "menu.selectionForeground": "#ffffff",
+      "widget.shadow": "#00000029"
+    },
+    "[GitHub Dark]": {
+      "menu.border": "#646464",
+      "menu.selectionBackground": "#6F42C1",
+      "menu.selectionForeground": "#ffffff",
+    },
+    "[Flatland Monokai]": {
+      "menu.border": "#757575",
+      "editor.selectionHighlightBorder": "#ffffff4b",
+    },
   },
   "editor.fontLigatures": true,
   "python.terminal.launchArgs": [],
@@ -435,7 +442,7 @@
     // "reportGeneralTypeIssues": "none",
     // "reportUnknownVariableType": "none",
     // "reportUnknownArgumentType": "none",
-    // "reportUnnecessaryComparison": "none",
+    // "reportUnnecessaryComparison": "none",clouf
     // "reportUntypedBaseClass": "none",
     // "reportMissingTypeStubs": "none",
     "reportUnusedVariable": "information",
@@ -550,14 +557,15 @@
     "GoogleCloudVMInstance": "linux",
     "khanhhuy-dev-vm-instance": "linux",
     "GCloudWorkstation": "linux",
-    "workstation": "linux"
+    "workstation": "linux",
+    "Fedora-VM": "linux",
+    "Fedora": "linux"
   },
   "[jsonc]": {
     "editor.defaultFormatter": "vscode.json-language-features"
   },
   "remote.SSH.connectTimeout": 30,
   "editor.rulers": [
-
     120
   ],
   "[html]": {
@@ -644,4 +652,5 @@
   },
   "editor.fontSize": 15,
   "workbench.colorTheme": "Flatland Monokai",
+  "terminal.integrated.stickyScroll.enabled": false,
 }
