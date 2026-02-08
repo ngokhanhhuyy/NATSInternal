@@ -11,9 +11,94 @@
 <span>List: {array.join(", ")}</span>
 <button type="button" onclick={() => array.push(count)}> Add </button>
 
-<style>
+<style lang="postcss">
   @reference "tailwindcss";
   button {
     @apply cursor-pointer rounded-lg border border-black/10 bg-white px-2 py-0.5 shadow-xs hover:border-black/15 hover:bg-black/2;
+  }
+
+  @layer components {
+    .data-table {
+      --row-height: unset;
+      --border-width: 1px;
+      --border-color: --alpha(var(--color-black) / 10%);
+      --odd-background-color: --alpha(var(--color-black) / 5%);
+      --border-color-from-actual-border: var(--border-color);
+      --border-color-from-background: transparent;
+      --row-background-color-from-actual-row-background: var(--odd-background-color);
+      --row-background-color-from-background: transparent;
+      margin: 0;
+      padding: 0;
+      border-collapse: collapse;
+
+      @variant dark {
+        & {
+          --border-color: rgba(255, 255, 255, 10%);
+          --odd-background-color: rgba(255, 255, 255, 3%);
+        }
+      }
+
+      & thead :where(tr),
+      & tbody :where(tr:not(:last-child)) {
+        border-bottom: var(--border-width) solid var(--border-color-from-actual-border);
+      }
+
+      & :where(th),
+      & :where(td) {
+        padding-inline: --spacing(3);
+      }
+
+      & :where(th) {
+        background-color: --alpha(var(--color-black) / 10%);
+        font-size: var(--text-sm);
+        padding-block: --spacing(0.5);
+
+        @variant dark {
+          background-color: --alpha(var(--color-white) / 10%);
+        }
+      }
+
+      & :where(td) {
+        padding-block: --spacing(1.5);
+      }
+
+      /* & :not(thead) :where(tr:nth-child(odd)) {
+            background-color: var(--row-background-color-from-actual-row-background);
+        } */
+
+      & :where(th:not(:last-child)),
+      & :where(td:not(:last-child)) {
+        border-right: var(--border-width) solid var(--border-color-from-actual-border);
+      }
+    }
+  }
+
+  @utility data-table-grid-color-from-background {
+    --row-height: --spacing(10);
+    --border-color-from-actual-border: transparent;
+    --border-color-from-background: var(--border-color);
+    --row-background-color-from-actual-row-background: transparent;
+    --row-background-color-from-background: var(--odd-background-color);
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 999px;
+      background-image: repeating-linear-gradient(
+        180deg,
+        var(--border-color-from-background) 0,
+        var(--border-color-from-background) var(--border-width),
+        var(--row-background-color-from-background) var(--border-width),
+        var(--row-background-color-from-background) calc(var(--row-height) - var(--border-width)),
+        var(--border-color-from-background) calc(var(--row-height) - var(--border-width)),
+        var(--border-color-from-background) calc(var(--row-height) + var(--border-width)),
+        transparent calc(var(--row-height) + var(--border-width)),
+        transparent calc(var(--row-height) + (var(--row-height) - var(--border-width))),
+        var(--border-color-from-background) calc(var(--row-height) + (var(--row-height) - var(--border-width))),
+        var(--border-color-from-background) calc(var(--row-height) + var(--row-height))
+      ) !important;
+    }
   }
 </style>

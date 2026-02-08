@@ -56,33 +56,31 @@
     }
 }
 
-@layer utilities {
-    .data-table-grid-color-from-background {
-        --row-height: --spacing(10);
-        --border-color-from-actual-border: transparent;
-        --border-color-from-background: var(--border-color);
-        --row-background-color-from-actual-row-background: transparent;
-        --row-background-color-from-background: var(--odd-background-color);
+@utility data-table-grid-color-from-background {
+    --row-height: --spacing(10);
+    --border-color-from-actual-border: transparent;
+    --border-color-from-background: var(--border-color);
+    --row-background-color-from-actual-row-background: transparent;
+    --row-background-color-from-background: var(--odd-background-color);
 
-        &::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            width: 100%;
-            height: 999px;
-            background-image: repeating-linear-gradient(
-                180deg,
-                var(--border-color-from-background) 0,
-                var(--border-color-from-background) var(--border-width),
-                var(--row-background-color-from-background) var(--border-width),
-                var(--row-background-color-from-background) calc(var(--row-height) - var(--border-width)),
-                var(--border-color-from-background) calc(var(--row-height) - var(--border-width)),
-                var(--border-color-from-background) calc(var(--row-height) + var(--border-width)),
-                transparent calc(var(--row-height) + var(--border-width)),
-                transparent calc(var(--row-height) + (var(--row-height) - var(--border-width))),
-                var(--border-color-from-background) calc(var(--row-height) + (var(--row-height) - var(--border-width))),
-                var(--border-color-from-background) calc(var(--row-height) + var(--row-height))
-            ) !important;
-        }
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 999px;
+        background-image: repeating-linear-gradient(
+            180deg,
+            var(--border-color-from-background) 0,
+            var(--border-color-from-background) var(--border-width),
+            var(--row-background-color-from-background) var(--border-width),
+            var(--row-background-color-from-background) calc(var(--row-height) - var(--border-width)),
+            var(--border-color-from-background) calc(var(--row-height) - var(--border-width)),
+            var(--border-color-from-background) calc(var(--row-height) + var(--border-width)),
+            transparent calc(var(--row-height) + var(--border-width)),
+            transparent calc(var(--row-height) + (var(--row-height) - var(--border-width))),
+            var(--border-color-from-background) calc(var(--row-height) + (var(--row-height) - var(--border-width))),
+            var(--border-color-from-background) calc(var(--row-height) + var(--row-height))
+        ) !important;
     }
 }
