@@ -194,7 +194,8 @@
         {
           "scope": [
             "storage.type.type.ts",
-            "storage.type.class.ts"
+            "storage.type.class.ts",
+            "meta.method.declaration.ts storage.type.property.ts"
           ],
           "settings": {
             "foreground": "#F92672"
