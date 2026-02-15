@@ -1,20 +1,30 @@
-<script setup lang="tsx">
-import { useSlots } from "vue";
-import { JSX } from "vue/jsx-runtime";
+<script lang="ts">
+import type { JSX } from "vue/jsx-runtime";
 
+type Slots = {
+  default: () => JSX.Element;
+  header: (headerNumbers: number[]) => JSX.Element; 
+}
+</script>
+
+<script setup lang="tsx">
 let count = $ref(0);
 
-const countDouble = () => <h2>{count ** 2}</h2>;
-const props = defineProps<{
-  renderFooter(): JSX.Element;
-}>();
+const props = defineProps<a
+const slots = defineSlots<Slots>();
+
+const map = new Map();
 
 defineRender(
-  <div>
-    <h1>MyName: {count || "Notset"}</h1>
-    <button type="button" onClick={() => count++}>Increment</button>
-    {countDouble()}
-    {props.renderFooter()}
+  <div class="panel">
+    <div class="header"></div>
   </div>
 );
 </script>
+
+<style scoped>
+.panel {
+  display: flex;
+  flex-direction: column;
+}
+</style>

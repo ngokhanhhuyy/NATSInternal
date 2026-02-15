@@ -1,7 +1,8 @@
-import React, { useState, useRef, useMemo, useEffect, useTransition } from "react";
+import React, { useState, useRef, useMemo, useTransition } from "react";
 import { useLoaderData, Link } from "react-router";
 import { useApi } from "@/api";
 import { createProductListModel, createBrandBasicModel, createProductCategoryBasicModel } from "@/models";
+import { useInitialRendering, useWatcher } from "@/hooks";
 import { useTsxHelper } from "@/helpers";
 
 // Child components.
@@ -53,7 +54,6 @@ export default function ProductListPage(): React.ReactNode {
   const [model, setModel] = useState(() => initialModel.productList);
   const [hasPendingReloading, setHasPendingReloading] = useState(() => false);
   const [reloadTriggeringKey, setReloadTriggerKey] = useState(() => 0);
-  const [isInitialRendering, setIsInitialRendering] = useState(() => true);
   const [isReloading, startTransition] = useTransition();
   const latestRequestId = useRef<number>(0);
 
@@ -90,21 +90,12 @@ export default function ProductListPage(): React.ReactNode {
     });
   }
 
-  // Effects.
-  useEffect(() => {
-    if (isInitialRendering) {
-      setIsInitialRendering(false);
-      return;
-    }
-
+  // Life cycle hooks.
+  useWatcher(() => {
     reload();
   }, [reloadTriggeringKey]);
 
-  useEffect(() => {
-    if (isInitialRendering) {
-      return;
-    }
-
+  useWatcher(() => {
     setHasPendingReloading(true);
   }, [model.sortByAscending, model.sortByFieldName, model.searchContent, model.page, model.resultsPerPage]);
 

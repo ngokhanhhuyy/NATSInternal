@@ -1,5 +1,5 @@
-import { createContext, createMemo, useContext, Show } from "solid-js";
-import { useHTMLHelper } from "@/helpers";
+import { createContext, useContext, Show } from "solid-js";
+import { useTsxHelper } from "@/helpers";
 
 // Shared components.
 import { FormContext } from "@/components/form/Form";
@@ -19,7 +19,7 @@ export type FormFieldProps = {
 export default function FormField(props: FormFieldProps) {
   // Dependencies.
   const formContext = useContext(FormContext);
-  const htmlHelper = useHTMLHelper();
+  const { joinClassName } = useTsxHelper();
 
   // Computed states.
   function computeErrorMessage(): string | undefined {
@@ -38,7 +38,7 @@ export default function FormField(props: FormFieldProps) {
   }
 
   return (
-    <div class={htmlHelper.joinClassName("form-group", props.class)}>
+    <div class={joinClassName("form-group", props.class)}>
       <pre>{JSON.stringify(formContext?.getErrorCollection().details, null, 2)}</pre>
       {/* Label */}
       <Show when={props.label}>
@@ -48,7 +48,9 @@ export default function FormField(props: FormFieldProps) {
       {/* Input */}
       <FormFieldContext.Provider value={{
         isValidated: !!formContext?.getErrorCollection?.().isValidated,
-        hasError: computeHasErrorMessage()
+        get hasError() {
+          return computeHasErrorMessage();
+        }
       }}>
         {props.children}
       </FormFieldContext.Provider>

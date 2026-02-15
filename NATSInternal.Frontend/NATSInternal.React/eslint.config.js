@@ -9,9 +9,16 @@ import { defineConfig } from "eslint/config";
 export default defineConfig([
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
   { languageOptions: { globals: globals.browser } },
-  pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
+  pluginJs.configs.recommended,
   pluginReact.configs.flat.recommended,
+  {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      "no-undef": "off",
+      "no-unused-vars": "off",
+    },
+  },
   {
     plugins: {
       "@stylistic": stylistic
@@ -30,7 +37,7 @@ export default defineConfig([
         }
       ],
       "@typescript-eslint/no-unused-vars": [
-        "warn",
+        "error",
         {
           "varsIgnorePattern": "^_",
           "argsIgnorePattern": "^_",

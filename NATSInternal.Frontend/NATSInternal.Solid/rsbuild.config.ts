@@ -9,6 +9,17 @@ export default defineConfig({
     }),
     pluginSolid()
   ],
+  tools: {
+    swc: {
+      jsc: {
+        experimental: {
+          plugins: [
+            ["solid-labels/swc", {}]
+          ]
+        }
+      }
+    }
+  },
   source: {
     entry: {
       index: "./src/main.tsx"

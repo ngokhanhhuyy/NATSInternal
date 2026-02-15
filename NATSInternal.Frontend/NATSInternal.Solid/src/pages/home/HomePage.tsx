@@ -1,4 +1,4 @@
-import { createSignal, createMemo, createContext, useContext, For, Show, type Context } from "solid-js";
+import { createSignal, createMemo, createContext, useContext, For, Show, Switch, Match, type Context } from "solid-js";
 import { createMutable } from "solid-js/store";
 
 function createReactiveObject<T extends object>(target: T): T {
@@ -23,7 +23,7 @@ function createReactiveObject<T extends object>(target: T): T {
   return result as T;
 }
 
-type Model = { userName: string; roles: string[]; };
+type Model = { userName: string | null; roles: string[]; };
 
 type HomePageContext = Readonly<Model> & {
   onRoleAdded(newRole: string): void;
@@ -34,17 +34,23 @@ type HomePageContext = Readonly<Model> & {
 const HomePageContext = createContext<HomePageContext>();
 
 export default function HomePage() {
-  const model = createMutable<Model>({ userName: "", roles: [] });
+  const model = createMutable<Model>({ userName: null, roles: [] });
+  const state = $signal<number>();
 
   return (
     <div class="w-100vh h-100vh d-block justify-content-center align-items-center p-3 bg-white">
       <pre>{JSON.stringify(model, null, 2)}</pre>
-      <RoleManager
-        model={model.roles}
-        onRoleAdded={(newRole) => model.roles.push(newRole)}
-        onRoleReplaced={(index, replacedRole) => model.roles[index] = replacedRole}
-        onRoleRemoved={(index) => model.roles.splice(index, 1)}
-      />
+      <Switch>
+        <Match when={state != null} keyed>
+          {state => (
+
+          )}
+        </Match>
+      </Switch>
+
+      <Show when={state !== null} keyed>
+        {(userName) => <div class="opacity-50">{userName}</div>}
+      </Show>
     </div>
   );
 }

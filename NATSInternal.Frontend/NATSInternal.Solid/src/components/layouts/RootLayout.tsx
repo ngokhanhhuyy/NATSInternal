@@ -15,7 +15,7 @@ export default function RootLayout(props: RootLayoutProps): React.ReactNode {
   const location = useLocation();
   const matchedRoutes = useMatches();
   const { getSignInRoutePath } = useRouteHelper();
-  const { joinClass, compute } = useTsxHelper();
+  const { joinClassName: joinClass, compute } = useTsxHelper();
 
   // Computed.
   const shouldRenderNavigationBar = compute<boolean>(() => !location.pathname.startsWith(getSignInRoutePath()));

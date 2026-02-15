@@ -1,0 +1,5 @@
+{
+  "plugins": [
+    ["solid-labels/babel", { "dev": false }]
+  ]
+}

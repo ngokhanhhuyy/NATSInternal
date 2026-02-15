@@ -13,7 +13,7 @@ export default function Button(props: ButtonProps) {
   const [localProps, otherProps] = splitProps(mergedProps, ["type", "showSpinner"]);
 
   // Dependencies.
-  const { joinClass } = useTsxHelper();
+  const { joinClassName: joinClass } = useTsxHelper();
 
   // Template.
   return (

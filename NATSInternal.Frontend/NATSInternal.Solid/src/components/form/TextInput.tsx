@@ -1,5 +1,5 @@
 import Input from "./Input";
-import { useHTMLHelper } from "@/helpers";
+import { useTsxHelper } from "@/helpers";
 
 // Props.
 export type TextInputProps = {
@@ -11,13 +11,13 @@ export type TextInputProps = {
 // Component.
 export default function TextInput(props: TextInputProps) {
   // Dependencies.
-  const htmlHelper = useHTMLHelper();
+  const { joinClassName } = useTsxHelper();
 
   // Template.
   function renderInput(getClassName: () => string | undefined) {
     return (
       <input
-        class={htmlHelper.joinClassName(getClassName(), "form-control")}
+        class={joinClassName(getClassName(), "form-control")}
         type={props.password ? "password" : "text"}
         value={props.value}
         onInput={(event) => props.onValueChanged(event.target.value)}

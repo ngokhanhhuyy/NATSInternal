@@ -11,7 +11,7 @@ import { Bars4Icon, MoonIcon, SunIcon, Cog6ToothIcon } from "@heroicons/react/24
 export default function TopBar(): React.ReactNode {
   // Dependencies.
   const navigationBarStore = useNavigationBarStore();
-  const { joinClass } = useTsxHelper();
+  const { joinClassName: joinClass } = useTsxHelper();
 
   // States.
   const [isScrolled, setIsScrolled] = useState<boolean>(false);

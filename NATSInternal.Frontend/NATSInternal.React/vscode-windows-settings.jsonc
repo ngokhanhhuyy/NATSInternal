@@ -57,6 +57,9 @@
         "type": {
           "foreground": "#BF3989"
         },
+        "component": {
+          "foreground": "#BF3989"
+        },
         "enum": {
           "foreground": "#BF3989"
         },
@@ -104,6 +107,9 @@
           "foreground": "#f183c5"
         },
         "type": {
+          "foreground": "#f183c5"
+        },
+        "component": {
           "foreground": "#f183c5"
         },
         "enum": {
@@ -195,22 +201,11 @@
           "scope": [
             "storage.type.type.ts",
             "storage.type.class.ts",
-            "meta.method.declaration.ts storage.type.property.ts"
-          ],
-          "settings": {
-            "foreground": "#F92672"
-          }
-        },
-        {
-          "scope": "storage.type.interface.ts",
-          "settings": {
-            "foreground": "#F92672"
-          }
-        },
-        {
-          "scope": [
+            "storage.type.interface.ts",
             "storage.type.ts",
-            "storage.type.function.ts"
+            "storage.type.function.ts",
+            "source.tsx meta.interface.tsx storage.type.interface.tsx",
+            "storage.type.type.tsx"
           ],
           "settings": {
             "foreground": "#F92672"
@@ -224,18 +219,7 @@
           }
         },
         {
-          "scope": "variable.language.special.self.python",
-          "settings": {
-            "foreground": "#fd971f",
-            "fontStyle": "italic bold"
-          }
-        },
-        {
-          "scope": [
-            "variable.parameter",
-            "variable.argument.css",
-            "variable.css"
-          ],
+          "scope": ["variable.parameter", "variable.argument.css", "variable.css", "variable.language.special.self.python"],
           "settings": {
             "foreground": "#fd971f",
             "fontStyle": "italic",
@@ -244,15 +228,10 @@
         {
           "scope": [
             "source.python meta.class.python entity.name.type.class.python",
-          ],
-          "settings": {
-            "foreground": "#66D9FF",
-            "fontStyle": "italic bold",
-          }
-        },
-        {
-          "scope": [
             "variable.language.super.ts",
+            "entity.name.tag.template.html.vue",
+            "meta.tag.structure.slot.start.html entity.name.tag.html",
+            "meta.tag.structure.slot.end.html entity.name.tag.html"
           ],
           "settings": {
             "foreground": "#66D9FF",
@@ -288,12 +267,6 @@
           }
         },
         {
-          "scope": "source.tsx meta.var.expr.tsx storage.type.tsx",
-          "settings": {
-            "foreground": "#F92672",
-          }
-        },
-        {
           "scope": [
             "storage.type.type.tsx"
           ],
@@ -307,8 +280,14 @@
             "foreground": "#AE81FF",
           }
         },
+      
         {
-          "scope": "source.ts support.type.primitive.ts",
+          "scope": [
+            "source.ts support.type.primitive.ts",
+            "source.ts support.type.builtin.ts",
+            "source.tsx support.type.primitive.tsx",
+            "source.ts support.type.builtin.tsx",
+          ],
           "settings": {
             "foreground": "#AE81FF",
           }
@@ -338,6 +317,7 @@
         {
           "scope": [
             "meta.arrow.ts storage.type.function.arrow.ts",
+            "meta.attribute.directive.vue entity.other.attribute-name.html.vue",
           ],
           "settings": {
             "foreground": "#F97583"
@@ -345,7 +325,11 @@
         },
         {
           "scope": [
-            "support.class.component.tsx"
+            "support.class.component.tsx",
+            "support.class.component.tsx",
+            "entity.name.tag.template.html.vue",
+            "meta.tag.structure.slot.start.html entity.name.tag.html",
+            "meta.tag.structure.slot.end.html entity.name.tag.html"
           ],
           "settings": {
             "foreground": "#BF3989"
@@ -376,6 +360,7 @@
         {
           "scope": [
             "meta.arrow.ts storage.type.function.arrow.ts",
+            "meta.attribute.directive.vue entity.other.attribute-name.html.vue",
           ],
           "settings": {
             "foreground": "#F97583"
@@ -383,7 +368,10 @@
         },
         {
           "scope": [
-            "support.class.component.tsx"
+            "support.class.component.tsx",
+            "entity.name.tag.template.html.vue",
+            "meta.tag.structure.slot.start.html entity.name.tag.html",
+            "meta.tag.structure.slot.end.html entity.name.tag.html"
           ],
           "settings": {
             "foreground": "#f183c5"
@@ -393,22 +381,22 @@
     },
   },
   "workbench.colorCustomizations": {
-    "[GitHub Light]": {
-      "textCodeBlock.background": "#e8e8e8",
-      "menu.border": "#d4d4d4",
-      "menu.selectionBackground": "#6F42C1",
-      "menu.selectionForeground": "#ffffff",
-      "widget.shadow": "#00000029"
-    },
-    "[GitHub Dark]": {
-      "menu.border": "#646464",
-      "menu.selectionBackground": "#6F42C1",
-      "menu.selectionForeground": "#ffffff",
-    },
-    "[Flatland Monokai]": {
-      "menu.border": "#757575",
-      "editor.selectionHighlightBorder": "#ffffff4b",
-    },
+      "[GitHub Light]": {
+          "textCodeBlock.background": "#e8e8e8",
+          "menu.border": "#d4d4d4",
+          "menu.selectionBackground": "#6F42C1",
+          "menu.selectionForeground": "#ffffff",
+          "widget.shadow": "#00000029"
+      },
+      "[GitHub Dark]": {
+          "menu.border": "#646464",
+          "menu.selectionBackground": "#6F42C1",
+          "menu.selectionForeground": "#ffffff",
+      },
+      "[Flatland Monokai]": {
+          "menu.border": "#757575",
+		      "editor.selectionHighlightBorder": "#ffffff4b",
+      },
   },
   "editor.fontLigatures": true,
   "python.terminal.launchArgs": [],
@@ -429,7 +417,7 @@
   "mypy-type-checker.args": [
     "--strict"
   ],
-  "editor.fontFamily": "Iosevka SS18, Consolas, 'Courier New', monospace",
+  "editor.fontFamily": "Consolas Nerd Font, Iosevka SS18, Consolas, 'Courier New', monospace",
   "editor.fontWeight": "normal",
   "qttools.creator": "C:\\Qt\\Qt\\6.5.2\\msvc2019_64\\bin",
   "qttools.extraSearchDirectories": [],
@@ -517,7 +505,6 @@
   "[vue]": {
     "editor.defaultFormatter": "Vue.volar"
   },
-  "vue.format.style.initialIndent": true,
   "vue.format.script.initialIndent": true,
   "files.autoSave": "afterDelay",
   "javascript.preferences.quoteStyle": "double",
@@ -567,6 +554,7 @@
   },
   "remote.SSH.connectTimeout": 30,
   "editor.rulers": [
+
     120
   ],
   "[html]": {
@@ -609,7 +597,6 @@
     "editor.defaultFormatter": "ms-dotnettools.csharp"
   },
   "workbench.iconTheme": "material-icon-theme",
-  "prettier.tabWidth": 4,
   "typescript.implementationsCodeLens.enabled": true,
   "editor.unicodeHighlight.includeStrings": false,
   "svelte.enable-ts-plugin": true,
@@ -630,7 +617,7 @@
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features"
   },
-  "prettier.printWidth": 95,
+  "prettier.printWidth": 120,
   "svelte.plugin.svelte.format.config.printWidth": 95,
   "[css]": {
     "editor.defaultFormatter": "vscode.css-language-features"
@@ -652,6 +639,11 @@
     "*.css": "tailwindcss"
   },
   "editor.fontSize": 15,
-  "workbench.colorTheme": "Flatland Monokai",
   "terminal.integrated.stickyScroll.enabled": false,
+  "[svelte]": {
+    "editor.defaultFormatter": "svelte.svelte-vscode"
+  },
+  "vue.format.template.initialIndent": false,
+  "vue.hover.rich": true,
+  "workbench.colorTheme": "Flatland Monokai",
 }

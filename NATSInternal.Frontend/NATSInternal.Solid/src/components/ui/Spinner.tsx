@@ -14,7 +14,7 @@ export default function Spinner(props: SpinnerProps) {
   const [localProps, otherProps] = splitProps(mergedProps, ["size", "variant", "shadow"]);
 
   // Dependencies.
-  const { joinClass } = useTsxHelper();
+  const { joinClassName: joinClass } = useTsxHelper();
 
   // Computed.
   const getShadowClass = createMemo<string | undefined>(() => localProps.shadow ? "shadow-sm" : undefined);

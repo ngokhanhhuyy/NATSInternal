@@ -5,7 +5,7 @@ import { useRouteHelper, useTsxHelper } from "@/helpers";
 export default function MainLogo(): JSX.Element {
   // Dependencies.
   const { getHomeRoutePath } = useRouteHelper();
-  const { joinClass } = useTsxHelper();
+  const { joinClassName: joinClass } = useTsxHelper();
 
   // Template.
   return (

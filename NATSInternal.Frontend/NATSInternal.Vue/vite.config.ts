@@ -2,23 +2,25 @@ import VueJsx from "@vitejs/plugin-vue-jsx";
 import VueMacros from "vue-macros/vite";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import ReactivityTransform from '@vue-macros/reactivity-transform/vite'
+import tailwindcss from "@tailwindcss/vite";
+import { fileURLToPath, URL } from "node:url";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    tailwindcss(),
     VueMacros({
       shortEmits: true,
 
       shortVmodel: {
-        prefix: "$"
+        prefix: "$",
       },
 
-      reactivityTransform: true,
+      reactivityTransform: false,
       shortBind: true,
 
       defineProp: {
-        edition: "kevinEdition"
+        edition: "kevinEdition",
       },
       defineRender: true,
       defineEmit: true,
@@ -32,15 +34,19 @@ export default defineConfig({
 
       plugins: {
         vue: vue({
-          include: [/\.vue$/, /\.setup\.[cm]?[jt]sx?$/]
+          include: [/\.vue$/, /\.setup\.[cm]?[jt]sx?$/],
         }),
-
-        vueJsx: VueJsx()
-      }
+        vueJsx: VueJsx(),
+      },
     }),
-    ReactivityTransform()
+    // ReactivityTransform()
   ],
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
   server: {
-    allowedHosts: ["frontend.khanhhuy.dev"]
-  }
+    allowedHosts: ["frontend.khanhhuy.dev"],
+  },
 });
