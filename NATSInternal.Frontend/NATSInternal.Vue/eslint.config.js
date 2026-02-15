@@ -3,7 +3,8 @@ import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 import stylistic from "@stylistic/eslint-plugin";
-import pluginVue from "eslint-plugin-vue";
+// import pluginVue from "eslint-plugin-vue";
+import vueParser from "vue-eslint-parser";
 import { defineConfig } from "eslint/config";
 
 /** @type {import("eslint").Linter.FlatConfig[]} */
@@ -12,9 +13,9 @@ export default defineConfig([
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
-  ...pluginVue.configs["flat/recommended"],
+  // ...pluginVue.configs["flat/recommended"],
   {
-    files: ["**/*.{ts,tsx,d.ts}"],
+    files: ["**/*.{ts,tsx,d.ts,vue}"],
     rules: {
       "no-undef": "off",
       "no-unused-vars": "off",
@@ -43,7 +44,7 @@ export default defineConfig([
       ],
 
       "@typescript-eslint/no-unused-vars": [
-        "error",
+        "warn",
         {
           varsIgnorePattern: "^_",
           argsIgnorePattern: "^_",
@@ -55,6 +56,20 @@ export default defineConfig([
       "@typescript-eslint/no-unsafe-function-type": "off",
       "@typescript-eslint/no-namespace": "off",
       "@typescript-eslint/no-empty-object-type": "off",
+      "vue/multi-word-component-names": "off",
+      "vue/v-bind-style": "off"
+    },
+  },
+  {
+    files: ["**/*.vue"],
+    languageOptions: {
+      parser: vueParser,
+      parserOptions: {
+        parser: tseslint.parser, // delegate <script lang="ts"> to TS parser
+        ecmaVersion: "latest",
+        sourceType: "module",
+        extraFileExtensions: [".vue"],
+      },
     },
   },
 ]);

@@ -5,8 +5,8 @@ declare global {
   type ErrorCollectionModel = {
     isValidated: boolean;
     details: ErrorDetailModel[];
-    mapFromApiErrorDetails(apiErrors: ApiErrorDetails): ErrorCollectionModel;
-    clear(): ErrorCollectionModel;
+    mapFromApiErrorDetails(apiErrors: ApiErrorDetails): void;
+    clear(): void;
   };
 }
 
@@ -14,17 +14,16 @@ export function createErrorCollectionModel(): ErrorCollectionModel {
   const model: ErrorCollectionModel = {
     isValidated: false,
     details: [],
-    mapFromApiErrorDetails(apiErrors) {
-      return {
-        ...model,
-        isValidated: true,
-        details: Object
-          .entries(apiErrors)
-          .map(([key, value]) => ({ propertyPath: key, message: value }))
-          .filter((detail) => detail.message)
-        };
+    mapFromApiErrorDetails(apiErrors): void {
+      this.isValidated = true;
+      this.details = Object
+        .entries(apiErrors)
+        .map(([key, value]) => ({ propertyPath: key, message: value }))
+        .filter((detail) => detail.message);
     },
-    clear: () => ({ ...model, details: [] }),
+    clear(): void {
+      this.details = [];
+    },
   };
 
   return model;
