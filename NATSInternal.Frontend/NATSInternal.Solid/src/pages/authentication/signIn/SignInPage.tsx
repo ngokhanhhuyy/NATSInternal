@@ -18,8 +18,8 @@ export default function SignInPage() {
   const routeHelper = useRouteHelper();
 
   // Model and state.
-  const [getModel, setModel] = createSignal(createSignInModel());
-  const [getState, setState] = createSignal({
+  const [model, setModel] = createSignal(createSignInModel());
+  const [states, getStates] = createSignal({
     commonError: null as string | null,
     isSignedIn: false,
     isInitiallyChecking: false,
@@ -43,24 +43,24 @@ export default function SignInPage() {
       navigate(params.returningPath ?? routeHelper.getHomeRoutePath(), { replace: true });
     }
 
-    setState((state) => ({ ...state, isInitiallyChecking: true }));
+    getStates((state) => ({ ...state, isInitiallyChecking: true }));
   }
 
   async function loginAsync(): Promise<void> {
-    setState((state) => ({
+    getStates((state) => ({
       ...state,
       isSubmitting: true,
       commonError: null,
     }));
 
     try {
-      await api.authentication.signInAsync(getModel().toRequestDto());
+      await api.authentication.getAccessCookieAsync(model().toRequestDto());
       authenticationStore.isAuthenticated = true;
-      setState(state => ({ ...state, isSubmitting: false, isSignedIn: true }));
+      getStates(state => ({ ...state, isSubmitting: false, isSignedIn: true }));
     } finally {
       batch(() => {
         setModel(model => ({ ...model, password: "" }));
-        setState(state => ({
+        getStates(state => ({
           ...state,
           isSubmitting: false,
           isSignedIn: false
@@ -88,7 +88,7 @@ export default function SignInPage() {
       commonError = "Đã xảy ra lỗi không xác định.";
     }
 
-    setState(state => ({ ...state, commonError }));
+    getStates(state => ({ ...state, commonError }));
   }
 
   async function handleEnterKeyPressedAsync(): Promise<void> {
@@ -100,9 +100,9 @@ export default function SignInPage() {
   // Template.
   function renderSignInButton(): JSX.Element {
     return (
-      <Show when={!getState().isSignedIn}>
+      <Show when={!states().isSignedIn}>
         <button type="submit" class="btn btn-primary w-100" disabled={!computeAreRequiredFieldsFilled()}>
-          <Show when={getState().isSubmitting} fallback={<span>Đăng nhập</span>}>
+          <Show when={states().isSubmitting} fallback={<span>Đăng nhập</span>}>
             <span class="spinner-border spinner-border-sm" aria-hidden="true" />
           </Show>
         </button>
@@ -129,7 +129,7 @@ export default function SignInPage() {
             <FormField class="mb-3" propertyPath="userName">
               <div class="form-floating">
                 <TextInput
-                  value={getModel().userName}
+                  value={model().userName}
                   onValueChanged={(userName) => setModel(model => ({ ...model, userName }))}
                 />
                 <label class="form-label bg-transparent fw-normal">
@@ -143,7 +143,7 @@ export default function SignInPage() {
               <div class="form-floating">
                 <TextInput
                   password
-                  value={getModel().password}
+                  value={model().password}
                   onValueChanged={(password) => setModel(model => ({ ...model, password }))}
                 />
                 <label class="form-label bg-transparent fw-normal">
@@ -157,10 +157,10 @@ export default function SignInPage() {
               {renderSignInButton()}
 
               {/* CommonError */}
-              <Show when={getState().commonError}>
+              <Show when={states().commonError}>
                 <span class="alert alert-danger d-flex justify-content-center mt-3 w-100">
                   <i class="bi bi-exclamation-triangle-fill me-1" />
-                  {getState().commonError}
+                  {states().commonError}
                 </span>
               </Show>
             </div>

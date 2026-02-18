@@ -1,11 +1,11 @@
-import { createContext, useContext, Show } from "solid-js";
+import { createContext, useContext, createMemos, Show } from "@/solid";
 import { useTsxHelper } from "@/helpers";
 
 // Shared components.
 import { FormContext } from "@/components/form/Form";
 
 // Context.
-export type FormFieldContextPayload = { isValidated: boolean; hasError: boolean; };
+export type FormFieldContextPayload = Readonly<{ isValidated: boolean; hasError: boolean; }>;
 export const FormFieldContext = createContext<FormFieldContextPayload>();
 
 // Props.
@@ -21,43 +21,46 @@ export default function FormField(props: FormFieldProps) {
   const formContext = useContext(FormContext);
   const { joinClassName } = useTsxHelper();
 
-  // Computed states.
-  function computeErrorMessage(): string | undefined {
-    console.log("Triggered");
-    if (formContext && props.propertyPath) {
-      const messages = formContext.getErrorCollection().details
-        .filter(d => d.propertyPath === props.propertyPath)
-        .map(d => d.message);
+  // Memos.
+  const memos = createMemos({
+    errorMessage: (): string | undefined => {
+      if (formContext && props.propertyPath) {
+        const messages = formContext.errorCollection.details
+          .filter(d => d.propertyPath === props.propertyPath)
+          .map(d => d.message);
 
-      return messages.length >= 1 ? messages[0] : undefined;
+        return messages.length >= 1 ? messages[0] : undefined;
+      }
+    },
+    hasErrorMessage: () => !!memos.errorMessage
+  });
+
+  // Payload.
+  const payload: FormFieldContextPayload = {
+    get isValidated() {
+      return !!formContext?.errorCollection?.isValidated;
+    },
+    get hasError() {
+      return memos.hasErrorMessage;
     }
-  }
-
-  function computeHasErrorMessage(): boolean {
-    return !!computeErrorMessage();
-  }
+  };
 
   return (
     <div class={joinClassName("form-group", props.class)}>
-      <pre>{JSON.stringify(formContext?.getErrorCollection().details, null, 2)}</pre>
+      <pre>{JSON.stringify(formContext?.errorCollection.details, null, 2)}</pre>
       {/* Label */}
       <Show when={props.label}>
         <label class="form-label">{props.label}</label>
       </Show>
 
       {/* Input */}
-      <FormFieldContext.Provider value={{
-        isValidated: !!formContext?.getErrorCollection?.().isValidated,
-        get hasError() {
-          return computeHasErrorMessage();
-        }
-      }}>
+      <FormFieldContext.Provider value={payload}>
         {props.children}
       </FormFieldContext.Provider>
 
       {/* Message */}
-      <Show when={computeHasErrorMessage()}>
-        <span class="text-danger">{computeErrorMessage()}</span>
+      <Show when={memos.hasErrorMessage}>
+        <span class="text-danger">{memos.errorMessage}</span>
       </Show>
     </div>
   );

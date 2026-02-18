@@ -1,0 +1,64 @@
+@layer components {
+    .modal {
+        --opacity: 0%;
+        --dialog-scale: 0%;
+        background: rgba(0, 0, 0, 50%);
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        position: fixed;
+        top: 0;
+        left: 0;
+        backdrop-filter: blur(var(--blur-md));
+        transition-property: opacity;
+        transition-duration: .2s;
+    }
+    
+    .modal-dialog {
+        background: white;
+        border: 1px solid transparent;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-lg);
+        width: 100%;
+        max-width: var(--container-sm);
+        margin-inline: --spacing(3);
+        transform: scale(var(--dialog-scale));
+        transition-duration: .2s;
+    }
+    
+    .modal-dialog-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: --spacing(3);
+    }
+    
+    .modal-dialog-header-title {
+        font-size: var(--text-sm);
+        font-weight: bold;
+        opacity: 75%;
+        text-transform: uppercase;
+    }
+    
+    .modal-dialog-body {
+        border-block: 1px solid rgba(0, 0, 0, 10%);
+    }
+    
+    .modal-dialog-footer {
+        display: flex;
+        justify-content: end;
+        gap: --spacing(3);
+        padding: --spacing(2);
+    }
+}
+
+@utility modal-open {
+    --opacity: 100%;
+    
+    :where(.modal-dialog) {
+        --dialog-scale: 100%;
+    }
+}

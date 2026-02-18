@@ -1,32 +1,37 @@
 import { useHttpClient } from "./httpClient";
-import { VerifyUserNameAndPasswordRequestDto, ChangePasswordRequestDto } from "./dtos";
-import { AuthorizationError } from "./errors";
 
 const httpClient = useHttpClient();
 
-async function signInAsync(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void> {
-  return await httpClient.postAndIgnoreAsync("/authentication/getAccessCookie", requestDto);
-}
+export type AuthenticationApi = {
+  getAccessCookieAsync(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void>;
+  clearAccessCookieAsync(): Promise<void>;
+  getCallerDetailAsync(): Promise<UserGetDetailResponseDto>;
+  changePasswordAsync(requestDto: ChangePasswordRequestDto): Promise<void>;
+  checkAuthenticationStatusAsync(): Promise<void>;
+};
 
-async function clearAccessToken(): Promise<void> {
-  return await httpClient.postAndIgnoreAsync("/authentication/clearAccessCookie", {  });
-}
+const api: AuthenticationApi = {
+  async getAccessCookieAsync(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void> {
+    return await httpClient.postAndIgnoreAsync("/authentication/get-access-cookie", requestDto);
+  },
 
-async function changePasswordAsync(requestDto: ChangePasswordRequestDto): Promise<void> {
-  return await httpClient.postAndIgnoreAsync("/authentication/changePassword", requestDto);
-}
+  async clearAccessCookieAsync(): Promise<void> {
+    return await httpClient.postAndIgnoreAsync("/authentication/clear-access-cookie", {  });
+  },
+  
+  async getCallerDetailAsync(): Promise<UserGetDetailResponseDto> {
+    return await httpClient.getAsync("/authentication/caller-detail");
+  },
 
-async function checkAuthenticationStatusAsync(): Promise<boolean> {
-  try {
-    await httpClient.getAsync("/authentication/checkAuthenticationStatus", { });
-    return true;
-  } catch (error) {
-    if (error instanceof AuthorizationError) {
-      return false;
-    }
+  async changePasswordAsync(requestDto: ChangePasswordRequestDto): Promise<void> {
+    return await httpClient.postAndIgnoreAsync("/authentication/change-password", requestDto);
+  },
 
-    throw error;
+  async checkAuthenticationStatusAsync(): Promise<void> {
+    await httpClient.postAndIgnoreAsync("/authentication/check-authentication-status", { });
   }
-}
+};
 
-export { signInAsync, clearAccessToken, changePasswordAsync, checkAuthenticationStatusAsync };
+export function useAuthenticationApi(): AuthenticationApi {
+  return api;
+}

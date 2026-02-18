@@ -1,0 +1,15 @@
+@layer components {
+    .img-thumbnail {
+        background-color: --alpha(var(--color-black) / 5%);
+        border: 1px solid --alpha(var(--color-black) / 20%);
+        padding: --spacing(1);
+        border-radius: var(--radius-lg);
+        
+        @variant dark {
+            & {
+                background-color: --alpha(var(--color-white) / 10%);
+                border-color:  --alpha(var(--color-white) / 20%);
+            }
+        }
+    }
+}

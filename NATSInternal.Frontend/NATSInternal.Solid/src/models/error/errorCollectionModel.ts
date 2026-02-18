@@ -1,5 +1,4 @@
-import { createCloneMethod } from "../baseModels";
-import { ApiErrorDetails } from "@/api";
+import type { ApiErrorDetails } from "@/api";
 
 declare global {
   type ErrorDetailModel = { propertyPath: string; message: string; };
@@ -18,6 +17,7 @@ export function createErrorCollectionModel(): ErrorCollectionModel {
     mapFromApiErrorDetails(apiErrors) {
       return {
         ...model,
+        isValidated: true,
         details: Object
           .entries(apiErrors)
           .map(([key, value]) => ({ propertyPath: key, message: value }))

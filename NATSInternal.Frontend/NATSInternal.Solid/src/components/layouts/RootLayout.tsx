@@ -1,5 +1,4 @@
-import { createEffect } from "solid-js";
-import { useLocation, useCurrentMatches } from "@solidjs/router";
+import { createEffect, createMemos, useLocation, useCurrentMatches } from "@/solid";
 import { useRouteHelper, useTsxHelper } from "@/helpers";
 
 // Child components.
@@ -12,13 +11,18 @@ type RootLayoutProps = Omit<JSX.HTMLD, "id">;
 // Component.
 export default function RootLayout(props: RootLayoutProps): React.ReactNode {
   // Dependencies.
-  const location = useLocation();
-  const matchedRoutes = useMatches();
+  const router = {
+    location: useLocation(),
+    get matchedRoutes() { return useCurrentMatches(); }
+  };
   const { getSignInRoutePath } = useRouteHelper();
-  const { joinClassName: joinClass, compute } = useTsxHelper();
+  const { joinClassName, compute } = useTsxHelper();
 
   // Computed.
-  const shouldRenderNavigationBar = compute<boolean>(() => !location.pathname.startsWith(getSignInRoutePath()));
+  const shouldRenderNavigationBar = compute<boolean>();
+  const memos = createMemos({
+    "shouldRenderNavigationBar": () => !router.location.pathname.startsWith(getSignInRoutePath())
+  });
 
   // Effect.
   useEffect(() => {
@@ -36,13 +40,17 @@ export default function RootLayout(props: RootLayoutProps): React.ReactNode {
   return (
     <div
       id="root-layout"
-      className={joinClass(
+      class={joinClassName(
         "w-screen h-auto min-h-screen grid-cols-[auto_1fr] justify-stretch items-stretch",
         shouldRenderNavigationBar && "pt-(--topbar-height)"
       )}
     >
+      <solid:suspense>
+        
+      </solid:suspense>
+
       {shouldRenderNavigationBar && <TopBar />}
-      <main className={joinClass(
+      <main class={joinClassName(
         "max-w-384 flex justify-stretch items-stretch mx-auto",
         "transition-opacity min-h-[calc(100vh-var(--topbar-height))]"
       )}>

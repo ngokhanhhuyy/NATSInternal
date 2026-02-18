@@ -23,7 +23,6 @@ const shouldBlockPointerEvent = ref(false);
 
 // Computed.
 const breadcrumItemsData = computed<BreadcrumbItemData[]>(() => {
-  console.log(route.matched);
   return route.matched
     .filter((matchedRoute) => matchedRoute.meta.breadcrumbItem)
     .map<BreadcrumbItemData>((matchedRoute) => {

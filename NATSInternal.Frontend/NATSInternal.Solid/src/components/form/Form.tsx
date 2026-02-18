@@ -1,16 +1,16 @@
-import { createSignal, createContext, batch, Show } from "solid-js";
+import { createMutable, createContext, createMemos, batch, Show } from "@/solid";
 import { ValidationError, OperationError } from "@/api";
 import { createErrorCollectionModel } from "@/models";
-import { useHTMLHelper } from "@/helpers";
+import { useTsxHelper } from "@/helpers";
 
 // Type.
 type SubmissionState = "notSubmitting" | "submitting" | "submissionSucceeded";
 
 // Payload.
-type FormContextPayload = {
-  getErrorCollection: () => ErrorCollectionModel;
-  getSubmissionState: () => SubmissionState;
-};
+type FormContextPayload = Readonly<{
+  errorCollection: ErrorCollectionModel;
+  submissionState: SubmissionState;
+}>;
 
 // Context.
 export const FormContext = createContext<FormContextPayload>();
@@ -26,34 +26,43 @@ type FormProps<T> = {
 // Component.
 export default function Form<T>(props: FormProps<T>) {
   // Dependencies.
-  const htmlHelper = useHTMLHelper();
+  const { joinClassName } = useTsxHelper();
 
   // States.
-  const [getErrorCollection, setErrorCollection] = createSignal(createErrorCollectionModel());
-  const [getSubmissionState, setSubmissionState] = createSignal<SubmissionState>("notSubmitting");
+  const states = createMutable({
+    errorCollection: createErrorCollectionModel(),
+    submissionState: "notSubmitting" as SubmissionState
+  });
 
   // Computed.
-  const computeOpacityClassName = (): string | undefined => {
-    if (getSubmissionState() === "submitting") {
-      return "opacity-50";
+  const memos = createMemos({
+    opacityClassName: (): string | undefined => {
+      if (states.submissionState === "submitting") {
+        return "opacity-50";
+      }
     }
+  });
+
+  const contextPayload: FormContextPayload = {
+    get errorCollection() { return states.errorCollection; },
+    get submissionState() { return states.submissionState; }
   };
 
   // Callbacks.
   async function handleSubmitAsync(event: SubmitEvent): Promise<void> {
     event.preventDefault();
     batch(() => {
-      setErrorCollection(errorCollection => errorCollection.clear());
-      setSubmissionState("submitting");
+      states.errorCollection.clear();
+      states.submissionState = "submitting";
     });
 
     try {
       const result = await props.submitAction();
       props.onSubmissionSucceeded?.(result);
-      setSubmissionState("submissionSucceeded");
+      states.submissionState = "submissionSucceeded";
     } catch (error) {
       if (error instanceof ValidationError || error instanceof OperationError) {
-        setErrorCollection(errorCollection => errorCollection.mapFromApiErrorDetails(error.errors));
+        states.errorCollection = states.errorCollection.mapFromApiErrorDetails(error.errors);
         props.onSubmissionFailed?.(error, true);
         return;
       }
@@ -61,14 +70,14 @@ export default function Form<T>(props: FormProps<T>) {
       props.onSubmissionFailed?.(error, false);
       throw error;
     } finally {
-      setSubmissionState("notSubmitting");
+      states.submissionState = "notSubmitting";
     }
   }
 
   // Template.
   function renderFallback() {
     return (
-      <div class={htmlHelper.joinClassName(
+      <div class={joinClassName(
         "bg-success-subtle border border-success rounded-3",
         "d-flex justify-content-center align-items-center p-5"
       )}>
@@ -79,14 +88,14 @@ export default function Form<T>(props: FormProps<T>) {
   }
 
   return (
-    <FormContext.Provider value={{ getErrorCollection, getSubmissionState }}>
+    <FormContext.Provider value={contextPayload}>
       <Show
-        when={getSubmissionState() !== "submissionSucceeded"}
+        when={states.submissionState !== "submissionSucceeded"}
         fallback={renderFallback()}
       >
         <form
           {...props}
-          class={htmlHelper.joinClassName(props.class, computeOpacityClassName())}
+          class={joinClassName(props.class, memos.opacityClassName)}
           noValidate
           onSubmit={handleSubmitAsync}
         >

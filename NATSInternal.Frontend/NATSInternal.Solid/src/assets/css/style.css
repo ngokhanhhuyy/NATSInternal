@@ -1,0 +1,74 @@
+@import "tailwindcss" important;
+@import "./alert.css";
+@import "./button.css";
+@import "./collapsible.css";
+@import "./form.css";
+@import "./image.css";
+@import "./input.css";
+@import "./layout.css";
+@import "./modal.css";
+@import "./panel.css";
+@import "./table.css";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --html-background: --alpha(var(--color-black) / 5%);
+    --color-primary: var(--color-black);
+    --color-primary-foreground: var(--color-white);
+    --color-secondary: var(--color-white);
+    --color-danger: var(--color-red-600);
+    --color-success: var(--color-emerald-500);
+    --color-hinting: var(--color-blue-600);
+}
+
+html {
+    --topbar-height: 60px;
+    --border-color: rgba(0, 0, 0, 0.1);
+    background: var(--html-background);
+    font-family: Roboto, Helvetica, Roboto, Arial, sans-serif;
+    font-size: 14px;
+    overscroll-behavior: none;
+
+    &.dark {
+        --html-background: black;
+        --color-primary: var(--color-white);
+        --color-primary-foreground: var(--color-black);
+        --color-secondary: var(--color-black);
+        color: white;
+        color-scheme: dark;
+    }
+}
+
+body {
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+}
+
+a:not(.hover\:underline):not(.hover\:overline):not(.hover\:line-through):not(.hover\:no-underline):hover {
+    text-decoration: underline;
+}
+
+ul.list-group {
+    --border-color: rgba(0, 0, 0, 10%);
+    --border-width: 1px;
+    list-style: none;
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--radius-lg);
+
+    @variant dark {
+        & {
+            --border-color: rgba(255, 255, 255, 10%);
+        }
+    }
+
+    &.list-group-flush {
+        --border-width: 0;
+    }
+
+    & li:not(:last-child) {
+        border-bottom: 1px solid var(--border-color);
+    }
+}
