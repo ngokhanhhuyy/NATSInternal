@@ -9,9 +9,7 @@
             --color: var(--color-red-700);
 
             @variant dark {
-                & {
-                    --color: var(--color-red-400);
-                }
+                --color: var(--color-red-400);
             }
 
             & > label::after {
@@ -65,10 +63,8 @@
         padding: --spacing(1) --spacing(3);
 
         @variant dark {
-            & {
-                background: --alpha(var(--color-white) / 5%);
-                border-color: --alpha(var(--color-white) / 15%);
-            }
+            background: --alpha(var(--color-white) / 5%);
+            border-color: --alpha(var(--color-white) / 15%);
         }
     }
 } 

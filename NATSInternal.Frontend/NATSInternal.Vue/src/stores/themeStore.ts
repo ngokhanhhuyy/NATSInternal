@@ -1,4 +1,4 @@
-import { reactive, watch, toRefs, toRaw } from "vue";
+import { reactive, watch, toRefs } from "vue";
 import { defineStore } from "pinia";
 import { usePreferredDark } from "@vueuse/core";
 
@@ -56,7 +56,6 @@ export const useThemeStore = defineStore("themeStore", () => {
   };
 
   const toggle = (): void => {
-    console.log("beforeClicked", toRaw(states));
     const nextToggleTheme = getNextToggleTheme();
     if (nextToggleTheme === "auto") {
       states.auto = true;
@@ -65,7 +64,6 @@ export const useThemeStore = defineStore("themeStore", () => {
 
     states.theme = nextToggleTheme;
     states.auto = false;
-    console.log("afterClicked", toRaw(states));
   };
 
   const toggleTheme = (): void => {

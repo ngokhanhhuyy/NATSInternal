@@ -1,4 +1,3 @@
-// @ts-check
 import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
@@ -65,11 +64,19 @@ export default defineConfig([
     languageOptions: {
       parser: vueParser,
       parserOptions: {
-        parser: tseslint.parser, // delegate <script lang="ts"> to TS parser
+        parser: {
+          ts: tseslint.parser,
+          tsx: tseslint.parser,
+          js: tseslint.parser,
+          jsx: tseslint.parser,
+        },
         ecmaVersion: "latest",
         sourceType: "module",
         extraFileExtensions: [".vue"],
+        ecmaFeatures: {
+          jsx: true,
+        },
       },
     },
-  },
+  }
 ]);

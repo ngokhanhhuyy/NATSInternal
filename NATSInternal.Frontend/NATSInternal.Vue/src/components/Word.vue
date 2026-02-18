@@ -1,24 +1,14 @@
-<script lang="ts">
-import type { JSX } from "vue/jsx-runtime";
-
-type Slots = {
-  default: () => JSX.Element;
-  header: (headerNumbers: number[]) => JSX.Element; 
-}
-</script>
-
 <script setup lang="tsx">
-let count = $ref(0);
+import { ref, useSlots } from "vue";
+import UserTSX, { type Model } from "./testing/UserTSX.vue";
 
-const props = defineProps<a
-const slots = defineSlots<Slots>();
+const a = 1 as number | null;
+const models: Model[] = [];
+const template = (
 
-const map = new Map();
-
-defineRender(
-  <div class="panel">
-    <div class="header"></div>
-  </div>
+  <UserTSX for={(user, index) in models} models={user}>
+    {(scoped) => <></>}
+  </UserTSX>
 );
 </script>
 

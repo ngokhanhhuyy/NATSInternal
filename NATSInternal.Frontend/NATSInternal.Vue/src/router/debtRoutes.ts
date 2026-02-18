@@ -5,8 +5,9 @@ const DebtOverviewPage = () => import("@/pages/debt/debtOverview/DebtOverviewPag
 
 // Routes.
 export const debtRoutes: RouteRecordRaw = {
-  path: "/khoan-no",
+  path: "khoan-no",
   name: "debt",
+  redirect: { name: "debt-overview" },
   meta: {
     breadcrumbItem: {
       text: "Nợ",
@@ -15,8 +16,9 @@ export const debtRoutes: RouteRecordRaw = {
   },
   children: [
     {
-      path: "/",
+      path: "",
       component: DebtOverviewPage,
+      name: "debt-overview",
       meta: {
         pageTitle: "Tổng quan nợ",
         breadcrumbItem: {

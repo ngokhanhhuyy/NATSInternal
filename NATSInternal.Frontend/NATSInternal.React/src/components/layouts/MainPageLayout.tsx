@@ -9,7 +9,7 @@ import RootLayout from "./RootLayout";
 import { HomeIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
 // Props.
-type BreadcrumbItem = { pageTitle: string | null; breadcrumbTitle: string; routePath: string | null };
+type BreadcrumbItemData = { pageTitle: string | null; breadcrumbTitle: string; routePath: string | null };
 
 // Components.
 export default function MainPageLayout(): React.ReactNode {
@@ -71,7 +71,7 @@ function Breadcrumb(): React.ReactNode {
   const { joinClassName } = useTsxHelper();
 
   // Computed.
-  const breadcrumItems = useMemo<BreadcrumbItem[]>(() => {
+  const breadcrumItems = useMemo<BreadcrumbItemData[]>(() => {
     const items: { pageTitle: string | null; breadcrumbTitle: string; routePath: string | null }[] = [];
     for (const matchRoute of matchedRoutes) {
       const handle = matchRoute.handle;
@@ -103,7 +103,7 @@ function Breadcrumb(): React.ReactNode {
   );
 }
 
-function BreadcrumbItem(props: BreadcrumbItem & { isFirst: boolean, isLast: boolean; }): React.ReactNode {
+function BreadcrumbItem(props: BreadcrumbItemData & { isFirst: boolean, isLast: boolean; }): React.ReactNode {
   // Dependencies.
   const { joinClassName } = useTsxHelper();
 

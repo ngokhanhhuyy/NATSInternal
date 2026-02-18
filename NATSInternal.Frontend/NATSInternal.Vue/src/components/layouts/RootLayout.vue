@@ -25,10 +25,11 @@ watch(() => route.matched, (matched) => {
 <template>
   <div id="root-layout">
     <TopBar should-render-navigation-bar-toggle-button={shouldRenderNavigationBar} />
+    
+    <main>
+      <RouterView />
+      <NavigationBar v-if="navigationBarStore.shouldBeRendered" />
+    </main>
   </div>
 
-  <main>
-    <RouterView />
-    <NavigationBar v-if="navigationBarStore.shouldBeRendered" />
-  </main>
 </template>

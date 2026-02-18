@@ -40,13 +40,11 @@
         }
 
         @variant dark {
-            & {
-                --btn-background-color: var(--color-neutral-800);
-                --btn-foreground-color: var(--color-white);
-                --btn-border-color: --alpha(var(--color-white) / 15%);
+            --btn-background-color: var(--color-neutral-800);
+            --btn-foreground-color: var(--color-white);
+            --btn-border-color: --alpha(var(--color-white) / 15%);
 
-                --btn-background-color-hover: --alpha(var(--color-white) / 10%);
-            }
+            --btn-background-color-hover: --alpha(var(--color-white) / 10%);
         }
 
         &:disabled {
@@ -70,13 +68,11 @@
     --btn-border-color-hover: transparent;
 
     @variant dark {
-        & {
-            --btn-background-color: var(--color-blue-500);
-            --btn-border-color: --alpha(var(--color-blue-400) / 75%);
-            
-            --btn-background-color-hover: var(--color-blue-400);
-            --btn-border-color-hover: --alpha(var(--color-blue-300) / 75%);
-        }
+        --btn-background-color: var(--color-blue-500);
+        --btn-border-color: --alpha(var(--color-blue-400) / 75%);
+        
+        --btn-background-color-hover: var(--color-blue-400);
+        --btn-border-color-hover: --alpha(var(--color-blue-300) / 75%);
     }
 }
 
@@ -89,14 +85,12 @@
     --btn-foreground-color-hover: white;
 
     @variant dark {
-        & {
-            --btn-background-color: var(--color-neutral-900);
-            --btn-foreground-color: var(--color-blue-400);
-            --btn-border-color: var(--color-blue-400);
-            
-            --btn-background-color-hover:  var(--color-blue-400);
-            --btn-foreground-color-hover: white;
-        }
+        --btn-background-color: var(--color-neutral-900);
+        --btn-foreground-color: var(--color-blue-400);
+        --btn-border-color: var(--color-blue-400);
+        
+        --btn-background-color-hover:  var(--color-blue-400);
+        --btn-foreground-color-hover: white;
     }
 }
 
@@ -108,14 +102,12 @@
     --btn-background-color-hover: var(--color-red-600);
 
     @variant dark {
-        & {
-            --btn-background-color: var(--color-red-700);
-            --btn-foreground-color: white;
-            --btn-border-color: var(--color-red-600);
+        --btn-background-color: var(--color-red-700);
+        --btn-foreground-color: white;
+        --btn-border-color: var(--color-red-600);
 
-            --btn-background-color-hover: var(--color-red-600);
-            --btn-border-color-hover: var(--color-red-500);
-        }
+        --btn-background-color-hover: var(--color-red-600);
+        --btn-border-color-hover: var(--color-red-500);
     }
 }
 
@@ -128,14 +120,12 @@
     --btn-foreground-color-hover: white;
 
     @variant dark {
-        & {
-            --btn-background-color: var(--color-neutral-900);
-            --btn-foreground-color: var(--color-red-600);
-            --btn-border-color: var(--color-red-600);
+        --btn-background-color: var(--color-neutral-900);
+        --btn-foreground-color: var(--color-red-600);
+        --btn-border-color: var(--color-red-600);
 
-            --btn-background-color-hover: var(--color-red-700);
-            --btn-foreground-color-hover: white;
-        }
+        --btn-background-color-hover: var(--color-red-700);
+        --btn-foreground-color-hover: white;
     }
 }
 
@@ -145,12 +135,10 @@
     --btn-border-color-hover: var(--color-blue-800);
 
     @variant dark {
-        & {
-            --btn-foreground-color: var(--color-blue-400);
-            --btn-border-color: var(--color-blue-400);
-            --btn-background-color-hover: var(--color-neutral-700);
-            --btn-border-color-hover: var(--color-blue-400);
-        }
+        --btn-foreground-color: var(--color-blue-400);
+        --btn-border-color: var(--color-blue-400);
+        --btn-background-color-hover: var(--color-neutral-700);
+        --btn-border-color-hover: var(--color-blue-400);
     }
 }
 
@@ -169,9 +157,7 @@
     --btn-background-color-hover: --alpha(var(--color-black) / 10%);
 
     @variant dark {
-        & {
-            --btn-background-color: --alpha(var(--color-white) / 2.5%);
-            --btn-background-color-hover: --alpha(var(--color-white) / 15%);
-        }
+        --btn-background-color: --alpha(var(--color-white) / 2.5%);
+        --btn-background-color-hover: --alpha(var(--color-white) / 15%);
     }
 }

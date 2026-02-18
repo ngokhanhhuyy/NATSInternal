@@ -1,4 +1,4 @@
-import { createMemoryHistory, createRouter, type RouteRecordRaw } from "vue-router";
+import { createWebHistory, createRouter, type RouteRecordRaw } from "vue-router";
 import { useAuthenticationStore } from "@/stores";
 
 // Layouts.
@@ -27,6 +27,8 @@ const routes: RouteRecordRaw[] = [
       {
         path: "/",
         component: MainPageLayout,
+        name: "main-page",
+        redirect: { name: "home" },
         children: [
           homeRoutes,
           customerRoutes,
@@ -37,14 +39,21 @@ const routes: RouteRecordRaw[] = [
           debtRoutes,
           reportRoutes,
           userRoutes
-        ]
+        ],
+        meta: {
+          pageTitle: "Trang chủ",
+          breadcrumbItem: {
+            text: "Trang chủ",
+            to: { name: "home" }
+          }
+        }
       }
     ]
   }
 ];
 
 const router = createRouter({
-  history: createMemoryHistory(),
+  history: createWebHistory(),
   routes
 });
 

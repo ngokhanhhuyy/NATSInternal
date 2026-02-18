@@ -10,15 +10,14 @@ const userList = ref<Model[]>([]);
   <ul>
     <li v-for="user in userList" v-bind:key="user.userName">
       <User v-bind:model="user">
-        <template #header="{ model }">
-          <div>{model.userName}</div>
+        <template #header="model">
+          <div>{{ model.userName }}</div>
         </template>
         <template #default>
           <div class="">{{ user.userName }}</div>
         </template>
       </User>
 
-      
       <UserSFC v-model="user" v-bind:myName="123">
         <template #header="{ model }">
           <div>{{model.userName}}</div>

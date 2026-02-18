@@ -12,21 +12,24 @@ export const useNavigationBarStore = defineStore("navigationBarStore", () => {
 
   // Computed
   const shouldBeRendered = computed<boolean>(() => {
-    return route.matched[0]?.name !== "sign-in";
+    return route.matched.filter(m => m.name === "main-page").length === 1;
   });
 
   const activeItemName = computed<RouteRecordNameGeneric | undefined>(() => {
-    return route.matched[0]?.name;
-  });
-
-  // Watch.
-  watch(() => breakpoints.md, () => {
-    if (breakpoints.md.value) {
-      isExpanded.value = false;
+    if (shouldBeRendered) {
+      const mainPageRouteIndex = route.matched.map(matchedRoute => matchedRoute.name).indexOf("main-page");
+      return route.matched[mainPageRouteIndex + 1]?.name;
     }
   });
 
-  watch([route], () => console.log(route.matched), { immediate: true });
+  // Watch.
+  watch(breakpoints.md, () => {
+    if (breakpoints.md.value) {
+      isExpanded.value = false;
+    }
+
+    console.log(breakpoints.md.value);
+  });
 
   return {
     isExpanded: readonly(isExpanded),

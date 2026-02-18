@@ -155,7 +155,7 @@ export default function SignInPage(): React.ReactNode {
         <span className="alert alert-danger d-flex justify-content-center mt-3 w-100">
             <i className="bi bi-exclamation-triangle-fill me-1" />
           {state.commonError}
-          </span>
+        </span>
       )}
     </Form>
   );

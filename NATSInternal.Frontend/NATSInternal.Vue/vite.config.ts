@@ -29,7 +29,9 @@ export default defineConfig({
       exportProps: true,
       exportRender: true,
       chainCall: true,
-      jsxDirective: true,
+      jsxDirective: {
+        prefix: "",
+      },
       booleanProp: true,
 
       plugins: {

@@ -50,7 +50,9 @@ const submittingClassName = computed<string | null>(() => {
 });
 
 const className = computed<any[]>(() => {
-  return [submittingClassName, `transition transition-500`, states.submissionState === "submitting" && "cursor-wait"];
+  return [
+    submittingClassName.value,
+    "transition transition-500", states.submissionState === "submitting" && "cursor-wait"];
 });
 
 // Callbacks.
@@ -79,6 +81,6 @@ async function handleUpsertingAsync(event: Event): Promise<void> {
 
 <template>
   <form v-bind:class="className" v-on:submit="handleUpsertingAsync" novalidate>
-    <slot></slot>
+    <slot v-bind="{ errorCollection: states.errorCollection }"></slot>
   </form>
 </template>

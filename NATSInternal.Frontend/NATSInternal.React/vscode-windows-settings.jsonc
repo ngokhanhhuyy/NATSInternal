@@ -298,6 +298,22 @@
       "textMateRules": [
         {
           "scope": [
+            "meta.property-value.css support.constant.property-value.css",
+          ],
+          "settings": {
+            "foreground": "#109c00",
+          }
+        },
+        {
+          "scope": [
+            "meta.property-list.css meta.property-value.css"
+          ],
+          "settings": {
+            "foreground": "#e36209"
+          }
+        },
+        {
+          "scope": [
             "string",
             "punctuation.definition.string",
             "string punctuation.section.embedded source"
@@ -320,7 +336,7 @@
             "meta.attribute.directive.vue entity.other.attribute-name.html.vue",
           ],
           "settings": {
-            "foreground": "#F97583"
+            "foreground": "#D73A49"
           }
         },
         {
@@ -339,6 +355,22 @@
     },
     "[GitHub Dark]": {
       "textMateRules": [
+        {
+          "scope": [
+            "meta.property-value.css support.constant.property-value.css",
+          ],
+          "settings": {
+            "foreground": "#B7DC6F",
+          }
+        },
+        {
+          "scope": [
+            "meta.property-list.css meta.property-value.css"
+          ],
+          "settings": {
+            "foreground": "#FFAB70"
+          }
+        },
         {
           "scope": [
             "string",
@@ -370,8 +402,8 @@
           "scope": [
             "support.class.component.tsx",
             "entity.name.tag.template.html.vue",
-            "meta.tag.structure.slot.start.html entity.name.tag.html",
-            "meta.tag.structure.slot.end.html entity.name.tag.html"
+            "entity.name.tag.script.html.vue",
+            "entity.name.tag.style.html.vue"
           ],
           "settings": {
             "foreground": "#f183c5"
@@ -503,6 +535,7 @@
   "terminal.integrated.fontWeight": "normal",
   "cmake.showOptionsMovedNotification": false,
   "[vue]": {
+    "editor.tabSize": 2,
     "editor.defaultFormatter": "Vue.volar"
   },
   "vue.format.script.initialIndent": true,
@@ -554,7 +587,6 @@
   },
   "remote.SSH.connectTimeout": 30,
   "editor.rulers": [
-
     120
   ],
   "[html]": {
@@ -563,6 +595,7 @@
     ],
     "editor.defaultFormatter": "vscode.html-language-features"
   },
+  "editor.insertSpaces": true,
   "terminal.integrated.defaultProfile.windows": "PowerShell",
   "terminal.integrated.tabs.defaultColor": "terminal.ansiGreen",
   "dotnet.codeLens.enableReferencesCodeLens": false,
@@ -571,10 +604,6 @@
     "editor.tabSize": 2,
     "editor.insertSpaces": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescriptreact]": {
-    "editor.tabSize": 2,
-    "editor.insertSpaces": true
   },
   "editor.cursorSmoothCaretAnimation": "on",
   "editor.smoothScrolling": true,
@@ -620,7 +649,9 @@
   "prettier.printWidth": 120,
   "svelte.plugin.svelte.format.config.printWidth": 95,
   "[css]": {
-    "editor.defaultFormatter": "vscode.css-language-features"
+    "editor.tabSize": 4,
+    "editor.formatOnType": true,
+    "editor.defaultFormatter": "vscode.css-language-features",
   },
   "vue.autoInsert.dotValue": true,
   "[astro]": {
@@ -643,7 +674,9 @@
   "[svelte]": {
     "editor.defaultFormatter": "svelte.svelte-vscode"
   },
-  "vue.format.template.initialIndent": false,
   "vue.hover.rich": true,
-  "workbench.colorTheme": "Flatland Monokai",
+  "editor.formatOnType": true,
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "workbench.colorTheme": "GitHub Dark"
 }

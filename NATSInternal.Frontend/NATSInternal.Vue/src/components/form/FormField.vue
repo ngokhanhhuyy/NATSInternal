@@ -91,13 +91,14 @@ provide(FormFieldProvidePayloadKey, {
 
 <template>
   <div class="form-field flex flex-col justify-stretched">
+    {{ !!errorMessage }}
     <label v-if="displayName" v-bind:for="props.path">
       {{ displayName }}
     </label>
 
     <slot></slot>
 
-    <span v-bind:class="validationMessageClassName">
+    <span v-if="!!errorMessage" v-bind:class="validationMessageClassName">
       {{ errorMessage }}
     </span>
   </div>

@@ -25,25 +25,23 @@
         }
 
         @variant dark {
-            & {
-                background-color: var(--color-neutral-800);
-                border-color: --alpha(var(--color-white) / 15%);
-                color-scheme: dark;
+            background-color: var(--color-neutral-800);
+            border-color: --alpha(var(--color-white) / 15%);
+            color-scheme: dark;
+
+            &:focus {
+                border-color: var(--color-blue-500);
+                outline-color: var(--color-blue-500);
+            }
+
+            .form-field.invalid:not(:disabled) & {
+                background: --alpha(var(--color-red-600) / 10%);
+                color: var(--color-red-600);
+                border-color: --alpha(var(--color-red-600) / 70%);
 
                 &:focus {
-                    border-color: var(--color-blue-500);
-                    outline-color: var(--color-blue-500);
-                }
-
-                .form-field.invalid:not(:disabled) & {
-                    background: --alpha(var(--color-red-600) / 10%);
-                    color: var(--color-red-600);
-                    border-color: --alpha(var(--color-red-600) / 70%);
-
-                    &:focus {
-                        border-color: var(--color-red-600);
-                        outline-color: --alpha(var(--color-red-500) / 15%);
-                    }
+                    border-color: var(--color-red-600);
+                    outline-color: --alpha(var(--color-red-500) / 15%);
                 }
             }
         }
@@ -54,7 +52,7 @@
             border-color: --alpha(var(--color-red-500) / 70%);
 
             &:focus {
-                outline-color: --alpha(var(--color-red-500) / 15%);
+                outline-color: var(--color-red-500);
             }
         }
 
@@ -73,9 +71,7 @@
             cursor: pointer;
 
             @variant dark {
-                & {
-                    background-image: url("../images/chevron-down-white.svg");
-                }
+                background-image: url("../images/chevron-down-white.svg");
             }
         }
     }

@@ -1,32 +1,41 @@
-<script setup lang="tsx">
+<script lang="tsx">
+import { defineComponent, type PropType, type SetupContext, type SlotsType } from "vue";
 import type { JSX } from "vue/jsx-runtime";
 export type Model = {
   userName: string;
   roleId: number;
 };
 
-const props = defineProps<{
-  model: Model;
-}>();
+type Props = { model: Model };
+type Emits = {
+  modelChanged(newModel: Model): void;
+};
+type Slots = SlotsType<{
+  default?: () => any;
+  header?: (model: Model) => any;
+}>;
 
-const emit = defineEmits<{
-  (event: "modelChanged", newModel: Model): void;
-}>();
+const User = defineComponent<Props, Emits, string, Slots>((props, { emit, slots }) => {
+  return () => (
+    <>
+      <input
+        type="text"
+        value={props.model.userName}
+        onInput={(e) => emit("modelChanged", { ...props.model, userName: (e.target as HTMLInputElement).value })}
+      />
+      {slots.header?.(props.model)}
+      {slots.default?.()}
+    </>
+  );
+});
 
-const slots = defineSlots<{
-  header(scoped: { model: Model }): JSX.Element;
-  default(): void;
-}>
+export default User;
 
-defineRender(
-  <>
-    <input
-      type="text"
-      value={props.model.userName}
-      onInput={(e) => emit("modelChanged", { ...props.model, userName: (e.target as HTMLInputElement).value })}
-    />
-    {slots().header({ model: props.model })}
-    <slot name="header" {...{ model: props.model }}></slot>
-  </>
-);
+const UserList = () => {
+  return () => (
+    <User model={{ userName: "Huy", roleId: 1 }}>
+      <span></span>
+    </User>
+  );
+};
 </script>
