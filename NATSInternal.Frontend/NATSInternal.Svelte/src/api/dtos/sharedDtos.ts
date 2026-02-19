@@ -18,30 +18,36 @@ declare global {
     nickName: string | null;
     isDeleted: boolean;
   };
-
+  
   type ProductBasicResponseDto = {
     id: string;
     name: string;
     unit: string;
     isDeleted: boolean;
   };
-
+  
   type BrandBasicResponseDto = {
     id: string;
     name: string;
   };
-
+  
   type ProductCategoryBasicResponseDto = {
     id: string;
     name: string;
   };
 
+  type StockBasicResponseDto = {
+    id: string;
+    stockingQuantity: number;
+    resupplyThresholdQuantity: number;
+  };
+  
   type PhotoBasicResponseDto = {
     id: string;
     url: string;
     isThumbnail: boolean;
   };
-
+  
   type PhotoCreateOrUpdateRequestDto = {
     id: string | null;
     file: string;
@@ -51,4 +57,4 @@ declare global {
   };
 }
 
-export {};
+export { };

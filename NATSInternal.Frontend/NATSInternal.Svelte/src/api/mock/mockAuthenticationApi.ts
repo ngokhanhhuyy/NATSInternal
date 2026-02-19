@@ -8,7 +8,7 @@ import * as v from "valibot";
 export type Caller = Readonly<{
   id: string;
   userName: string;
-  roles: { id: string; name: string; displayName: string; powerLevel: number; permissionNames: string[] }[];
+  roles: { id: string; name: string; displayName: string; powerLevel: number, permissionNames: string[] }[];
   hasPermission(permissionName: string): boolean;
   get powerLevel(): number;
 }>;
@@ -20,7 +20,7 @@ const mockAuthenticationApi: AuthenticationApi = {
     await throttleAsync();
     console.log(123);
     validateUsingSchema(VerifyUserNameAndPasswordRequestDto, requestDto);
-    const user = mockDatabase.users.find((u) => u.userName === requestDto.userName);
+    const user = mockDatabase.users.find(u => u.userName === requestDto.userName);
     if (!user) {
       throw new OperationError({ userName: "Không tồn tại" });
     }
@@ -79,10 +79,12 @@ export function getAndEnsureCallerExists(): Caller {
     return {
       ...callerAsUser,
       hasPermission(permissionName: string): boolean {
-        return this.roles.flatMap((role) => role.permissionNames).includes(permissionName);
+        return this.roles
+          .flatMap(role => role.permissionNames)
+          .includes(permissionName);
       },
       get powerLevel(): number {
-        return Math.max(...this.roles.map((role) => role.powerLevel));
+        return Math.max(...this.roles.map(role => role.powerLevel));
       }
     };
   } catch {
@@ -95,12 +97,12 @@ export function setCaller(user: User): void {
   const caller: Pick<Caller, "id" | "userName" | "roles"> = {
     id: user.id,
     userName: user.userName,
-    roles: user.roles.map((role) => ({
+    roles: user.roles.map(role => ({
       id: role.id,
       name: role.name,
       displayName: role.displayName,
       powerLevel: role.powerLevel,
-      permissionNames: role.permissions.map((permission) => permission.name)
+      permissionNames: role.permissions.map(permission => permission.name)
     }))
   };
 

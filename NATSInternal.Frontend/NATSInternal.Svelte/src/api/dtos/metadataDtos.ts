@@ -6,19 +6,21 @@ declare global {
   };
 
   type MetadataGetDisplayNamesListResponseDto = Record<string, string>;
-
+  
   type MetadataGetListOptionsListResponseDto = {
     user: MetadataGetListOptionsResponseDto;
     customer: MetadataGetListOptionsResponseDto;
     product: MetadataGetListOptionsResponseDto;
+    brand: MetadataGetListOptionsResponseDto;
+    productCategory: MetadataGetListOptionsResponseDto;
   };
 
   type MetadataGetListOptionsResponseDto = {
     resourceName: string;
     sortByFieldNameOptions: string[];
-    defaultSortByFieldName: string | null;
-    defaultSortByAscending: boolean | null;
-    defaultResultsPerPage: number | null;
+    defaultSortByFieldName: string;
+    defaultSortByAscending: boolean;
+    defaultResultsPerPage: number;
   };
 
   type MetadataGetCreatingAuthorizationListResponseDto = {
@@ -30,4 +32,4 @@ declare global {
   };
 }
 
-export { }
+export { };

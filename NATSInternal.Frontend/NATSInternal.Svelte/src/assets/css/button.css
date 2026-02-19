@@ -1,0 +1,163 @@
+@layer components {
+    .btn {
+        --btn-background-color: rgba(255, 255, 255);
+        --btn-foreground-color: --alpha(var(--color-black) / 80%);
+        --btn-border-color: --alpha(var(--color-black) / 20%);
+
+        --btn-background-color-hover: var(--color-neutral-100);
+        --btn-foreground-color-hover: var(--btn-foreground-color);
+        --btn-border-color-hover: var(--btn-border-color);
+
+        --padding-inline: --spacing(2);
+        --padding-block: --spacing(1);
+        --min-height: --spacing(9);
+
+        --svg-size: --spacing(4.5);
+
+        background: var(--btn-background-color);
+        color: var(--btn-foreground-color);
+        border: 1px solid var(--btn-border-color);
+        border-radius: var(--radius-lg);
+        padding-inline: var(--padding-inline);
+        padding-block: var(--padding-block);
+        min-height: var(--min-height);
+        transition: .25s ease;
+        cursor: pointer;
+        display: flex;
+        gap: --spacing(1.5);
+        justify-content: center;
+        align-items: center;
+        /* box-shadow: var(--shadow-xs); */
+
+        &:hover {
+            background-color: var(--btn-background-color-hover);
+            color: var(--btn-foreground-color-hover);
+            border-color: var(--btn-border-color-hover);
+
+            &:is(a) {
+                text-decoration: none !important;
+            }
+        }
+
+        @variant dark {
+            --btn-background-color: var(--color-neutral-800);
+            --btn-foreground-color: var(--color-white);
+            --btn-border-color: --alpha(var(--color-white) / 15%);
+
+            --btn-background-color-hover: --alpha(var(--color-white) / 10%);
+        }
+
+        &:disabled {
+            opacity: 50%;
+            pointer-events: none;
+        }
+
+        & > svg {
+            width: var(--svg-size);
+            height: var(--svg-size);
+        }
+    }
+}
+
+@utility btn-primary {
+    --btn-background-color: var(--color-blue-700);
+    --btn-foreground-color: white;
+    --btn-border-color: transparent;
+
+    --btn-background-color-hover: var(--color-blue-600);
+    --btn-border-color-hover: transparent;
+
+    @variant dark {
+        --btn-background-color: var(--color-blue-500);
+        --btn-border-color: --alpha(var(--color-blue-400) / 75%);
+        
+        --btn-background-color-hover: var(--color-blue-400);
+        --btn-border-color-hover: --alpha(var(--color-blue-300) / 75%);
+    }
+}
+
+@utility btn-primary-outline {
+    --btn-background-color: white;
+    --btn-foreground-color: var(--color-blue-700);
+    --btn-border-color: var(--color-blue-700);
+
+    --btn-background-color-hover: var(--color-blue-700);
+    --btn-foreground-color-hover: white;
+
+    @variant dark {
+        --btn-background-color: var(--color-neutral-900);
+        --btn-foreground-color: var(--color-blue-400);
+        --btn-border-color: var(--color-blue-400);
+        
+        --btn-background-color-hover:  var(--color-blue-400);
+        --btn-foreground-color-hover: white;
+    }
+}
+
+@utility btn-danger {
+    --btn-background-color: var(--color-red-500);
+    --btn-foreground-color: white;
+    --btn-border-color: var(--color-red-500);
+
+    --btn-background-color-hover: var(--color-red-600);
+
+    @variant dark {
+        --btn-background-color: var(--color-red-700);
+        --btn-foreground-color: white;
+        --btn-border-color: var(--color-red-600);
+
+        --btn-background-color-hover: var(--color-red-600);
+        --btn-border-color-hover: var(--color-red-500);
+    }
+}
+
+@utility btn-danger-outline {
+    --btn-background-color: white;
+    --btn-foreground-color: var(--color-red-500);
+    --btn-border-color: var(--color-red-500);
+
+    --btn-background-color-hover: var(--color-red-600);
+    --btn-foreground-color-hover: white;
+
+    @variant dark {
+        --btn-background-color: var(--color-neutral-900);
+        --btn-foreground-color: var(--color-red-600);
+        --btn-border-color: var(--color-red-600);
+
+        --btn-background-color-hover: var(--color-red-700);
+        --btn-foreground-color-hover: white;
+    }
+}
+
+@utility btn-panel-header {
+    --btn-foreground-color: var(--color-blue-600);
+    --btn-border-color: var(--color-blue-700);
+    --btn-border-color-hover: var(--color-blue-800);
+
+    @variant dark {
+        --btn-foreground-color: var(--color-blue-400);
+        --btn-border-color: var(--color-blue-400);
+        --btn-background-color-hover: var(--color-neutral-700);
+        --btn-border-color-hover: var(--color-blue-400);
+    }
+}
+
+@utility btn-sm {
+    --padding-inline: --spacing(1.5);
+    --padding-block: --spacing(0.85);
+    --min-height: --spacing(7);
+    --svg-size: --spacing(3.5);
+
+    font-size: var(--text-sm);
+    border-radius: var(--radius-md);
+}
+
+@utility btn-as-input {
+    --btn-background-color: --alpha(var(--color-black) / 2.5%);
+    --btn-background-color-hover: --alpha(var(--color-black) / 10%);
+
+    @variant dark {
+        --btn-background-color: --alpha(var(--color-white) / 2.5%);
+        --btn-background-color-hover: --alpha(var(--color-white) / 15%);
+    }
+}

@@ -1,5 +1,5 @@
-import { createCustomerBasicModel } from "../shared/customerBasicModel";
-import { createUserBasicModel } from "../shared/userBasicModel";
+import { createCustomerBasicModelFromResponseDto } from "../shared/customerBasicModel";
+import { createUserBasicModel } from "@/models/shared/userBasicModel";
 import { useAvatarHelper, useCurrencyHelper, useDateTimeHelper } from "@/helpers";
 import { useRouteHelper, usePhoneNumberHelper } from "@/helpers";
 
@@ -28,7 +28,7 @@ declare global {
     authorization: CustomerExistingAuthorizationResponseDto;
     get avatarUrl(): string;
     get displayDebtRemainingAmountText(): string;
-    get updateRoute(): string;
+    get updateRoutePath(): string;
   }>;
 }
 
@@ -48,14 +48,14 @@ export function createCustomerDetailModel(responseDto: CustomerGetDetailResponse
     createdDateTime: getDisplayDateTimeString(responseDto.createdDateTime),
     lastUpdatedUser: responseDto.lastUpdatedUser && createUserBasicModel(responseDto.lastUpdatedUser),
     lastUpdatedDateTime: responseDto.lastUpdatedDateTime && getDisplayDateTimeString(responseDto.lastUpdatedDateTime),
-    introducer: responseDto.introducer && createCustomerBasicModel(responseDto.introducer),
+    introducer: responseDto.introducer && createCustomerBasicModelFromResponseDto(responseDto.introducer),
     get avatarUrl(): string {
       return getDefaultAvatarUrlByFullName(this.fullName);
     },
-    get displayDebtRemainingAmountText(): string {
+    get displayDebtRemainingAmountText(): string{
       return getAmountDisplayText(this.debtRemainingAmount);
     },
-    get updateRoute(): string {
+    get updateRoutePath(): string {
       return getCustomerUpdateRoutePath(this.id);
     }
   };

@@ -80,17 +80,17 @@ function generateUsers(): User[] {
   console.log("Generating users.");
 
   const dataList: Pick<User, "userName" | "password">[] = [
-    { userName: "admin", password: "admin123" },
-    { userName: "developer", password: "developer123" },
-    { userName: "staff", password: "staff123" }
+    { userName: "admin", password: "admin123"  },
+    { userName: "developer", password: "developer123"  },
+    { userName: "staff", password: "staff123"  },
   ];
 
-  return dataList.map((data) => ({
+  return dataList.map(data => ({
     id: crypto.randomUUID(),
     ...data,
     createdDateTime: new Date(),
     deletedDateTime: null,
-    roles: []
+    roles: [],
   }));
 }
 
@@ -103,7 +103,7 @@ function generateRoles(): Role[] {
     { name: "Staff", displayName: "Nhân viên", powerLevel: 10 }
   ];
 
-  return dataList.map((data) => ({
+  return dataList.map(data => ({
     ...data,
     id: crypto.randomUUID(),
     users: [],
@@ -117,10 +117,10 @@ function generateUserRoles(users: User[], roles: Role[]): UserRole[] {
   const userRoles: UserRole[] = [];
   for (const user of users) {
     const userPowerLevel = roles
-      .filter((role) => role.name.toLowerCase() === user.userName)
-      .map((role) => role.powerLevel)[0];
-
-    for (const role of roles.filter((eveluatingRole) => eveluatingRole.powerLevel <= userPowerLevel)) {
+      .filter(role => role.name.toLowerCase() === user.userName)
+      .map(role => role.powerLevel)[0];
+    
+    for (const role of roles.filter(eveluatingRole => eveluatingRole.powerLevel <= userPowerLevel)) {
       user.roles.push(role);
       role.users.push(user);
       userRoles.push({
@@ -149,7 +149,7 @@ function generateBrands(): Brand[] {
     const name = fakerVI.company.name();
     const hyphenJoinedName = name
       .split(new RegExp("(\\.|,)\\s+"))
-      .map((nameElement) => nameElement.toLowerCase())
+      .map(nameElement => nameElement.toLowerCase())
       .join("-");
     const website = `https://${hyphenJoinedName}.${["net", "com", "info", "org"][Math.floor(Math.random() * 4)]}`;
 
@@ -170,7 +170,7 @@ function generateBrands(): Brand[] {
 
 function generateProductsAndProductCategories(brands: Brand[]): [Product[], ProductCategory[]] {
   console.log("Generating products and product categories.");
-
+  
   const products: Product[] = [];
   const productCategories: ProductCategory[] = [];
   for (let i = 0; i < 30; i++) {

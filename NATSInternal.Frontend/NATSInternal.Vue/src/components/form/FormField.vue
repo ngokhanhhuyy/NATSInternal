@@ -74,24 +74,23 @@ const validationMessageClassName = computed<string | undefined>(() => {
 
 // Provide.
 provide(FormFieldProvidePayloadKey, {
-    get isValidated(): boolean {
-      return computed(() => !!formProvidePayload?.errorCollection.isValidated).value;
-    },
-    get hasError(): boolean {
-      return computed(() => !!errorMessage.value).value;
-    },
-    get path(): string | undefined {
-      return computed(() => props.path).value;
-    },
-    get displayName(): string | undefined {
-      return computed(() => props.displayName ?? undefined).value;
-    }
+  get isValidated(): boolean {
+    return computed(() => !!formProvidePayload?.errorCollection.isValidated).value;
+  },
+  get hasError(): boolean {
+    return computed(() => !!errorMessage.value).value;
+  },
+  get path(): string | undefined {
+    return computed(() => props.path).value;
+  },
+  get displayName(): string | undefined {
+    return computed(() => props.displayName ?? undefined).value;
+  }
 });
 </script>
 
 <template>
   <div class="form-field flex flex-col justify-stretched">
-    {{ !!errorMessage }}
     <label v-if="displayName" v-bind:for="props.path">
       {{ displayName }}
     </label>

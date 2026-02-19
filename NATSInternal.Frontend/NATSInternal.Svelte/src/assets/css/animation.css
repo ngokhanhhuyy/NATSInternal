@@ -1,0 +1,24 @@
+@utility {
+
+}
+
+@utility animation-duration-* {
+    animation-duration: --value(integer)s;
+}
+
+@keyframes fade {
+    0% {
+        opacity: 100%;
+        transform: scaleY(100%);
+    }
+
+    99% {
+        opacity: 0%;
+        transform: scaleY(0%);
+        display: block;
+    }
+
+    100% {
+        display: none;
+    }
+}

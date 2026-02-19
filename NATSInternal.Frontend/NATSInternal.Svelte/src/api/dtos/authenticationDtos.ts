@@ -10,3 +10,5 @@ declare global {
     newPassword: string;
   };
 }
+
+export { };

@@ -17,12 +17,9 @@ import { reactive, computed, provide } from "vue";
 import { ValidationError, OperationError } from "@/api";
 import { createErrorCollectionModel } from "@/models";
 
-
 // Props and emits.
 const props = defineProps<{
   upsertAction: () => Promise<TUpsertResult>;
-  onUpsertingSucceeded?: (result: TUpsertResult) => any;
-  onUpsertingFailed?: (error: Error, errorHandled: boolean) => any;
   isModelDirty?: boolean;
 }>();
 
@@ -52,7 +49,8 @@ const submittingClassName = computed<string | null>(() => {
 const className = computed<any[]>(() => {
   return [
     submittingClassName.value,
-    "transition transition-500", states.submissionState === "submitting" && "cursor-wait"];
+    "transition transition-500", states.submissionState === "submitting" && "cursor-wait"
+  ];
 });
 
 // Callbacks.

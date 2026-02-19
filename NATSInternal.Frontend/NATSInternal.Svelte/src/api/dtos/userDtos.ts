@@ -1,23 +1,31 @@
 declare global {
-  type UserGetListRequestDto = Partial<{
+  type UserGetListRequestDto = ImplementsPartial<
+      ISearchableListRequestDto &
+      IPageableListRequestDto &
+      ISortableListRequestDto, {
     sortByAscending: boolean;
-    sortByFieldName: "CreatedDateTime" | "UserName" | "RoleMaxPowerLevel";
+    sortByFieldName: string;
     page: number;
     resultsPerPage: number;
     searchContent: string;
     roleId: string;
   }>;
 
-  type UserGetListResponseDto = {
-    items: UserBasicResponseDto[];
+  type UserGetListResponseDto = Implements<IPageableListResponseDto<UserGetListUserResponseDto>, {
+    items: UserGetListUserResponseDto[];
     pageCount: number;
+    itemCount: number;
+  }>;
+
+  type UserGetListUserResponseDto = UserBasicResponseDto & {
+    authorization: UserExistingAuthorizationResponseDto;
   };
 
   type UserGetDetailResponseDto = {
     id: string;
     userName: string;
     roles: UserGetDetailRoleResponseDto[];
-    authorization: UserExistingAuthorizationResponseDto;
+    authorization: UserExistingAuthorizationResponseDto
   };
 
   type UserGetDetailRoleResponseDto = {
@@ -29,4 +37,4 @@ declare global {
   };
 }
 
-export {};
+export { };

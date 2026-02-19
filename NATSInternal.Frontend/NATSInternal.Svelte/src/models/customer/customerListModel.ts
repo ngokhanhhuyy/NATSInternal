@@ -3,19 +3,24 @@ import { useAvatarHelper, useCurrencyHelper, useDateTimeHelper } from "@/helpers
 import { usePhoneNumberHelper, useRouteHelper } from "@/helpers";
 
 declare global {
-  type CustomerListModel = {
+  type CustomerListModel = Implements<
+      ISearchableListModel<CustomerListCustomerModel> &
+      ISortableListModel<CustomerListCustomerModel> &
+      IPageableListModel<CustomerListCustomerModel> &
+      IUpsertableListModel<CustomerListCustomerModel>, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
-    resultsPerPage: number | null;
+    resultsPerPage: number;
     searchContent: string;
     items: CustomerListCustomerModel[];
     pageCount: number;
+    itemCount: number;
     get sortByFieldNameOptions(): string[];
     get createRoutePath(): string;
     mapFromResponseDto(responseDto: CustomerGetListResponseDto): CustomerListModel;
     toRequestDto(): CustomerGetListRequestDto;
-  };
+  }>;
 
   type CustomerListCustomerModel = Readonly<{
     id: string;
@@ -41,15 +46,16 @@ const { formatRawPhoneNumber } = usePhoneNumberHelper();
 const { getCustomerCreateRoutePath, getCustomerDetailRoutePath } = useRouteHelper();
 const customerListOptions = getMetadata().listOptionsList.customer;
 
-export function createCustomerListModel(responseDto: CustomerGetListResponseDto): CustomerListModel {
+export function createCustomerListModel(responseDto?: CustomerGetListResponseDto): CustomerListModel {
   const model: CustomerListModel = {
     sortByAscending: customerListOptions.defaultSortByAscending ?? true,
     sortByFieldName: customerListOptions.defaultSortByFieldName ?? "",
     page: 1,
-    resultsPerPage: customerListOptions.defaultResultsPerPage,
+    resultsPerPage:  customerListOptions.defaultResultsPerPage,
     searchContent: "",
     items: [],
     pageCount: 0,
+    itemCount: 0,
     get sortByFieldNameOptions(): string[] {
       return customerListOptions.sortByFieldNameOptions;
     },
@@ -60,14 +66,15 @@ export function createCustomerListModel(responseDto: CustomerGetListResponseDto)
       return {
         ...this,
         items: responseDto.items.map(createCustomerListCustomerModel),
-        pageCount: responseDto.pageCount
+        pageCount: responseDto.pageCount,
+        itemCount: responseDto.itemCount
       };
     },
     toRequestDto(): CustomerGetListRequestDto {
       const requestDto: CustomerGetListRequestDto = {
         sortByAscending: this.sortByAscending,
         sortByFieldName: this.sortByFieldName,
-        page: this.page
+        page: this.page,
       };
 
       if (this.resultsPerPage) {
@@ -82,7 +89,11 @@ export function createCustomerListModel(responseDto: CustomerGetListResponseDto)
     }
   };
 
-  return model.mapFromResponseDto(responseDto);
+  if (responseDto) {
+    return model.mapFromResponseDto(responseDto);
+  }
+
+  return model;
 }
 
 function createCustomerListCustomerModel(responseDto: CustomerGetListCustomerResponseDto): CustomerListCustomerModel {
@@ -102,6 +113,6 @@ function createCustomerListCustomerModel(responseDto: CustomerGetListCustomerRes
     },
     get detailRoute(): string {
       return getCustomerDetailRoutePath(this.id);
-    }
-  };
+    },
+  }; 
 }

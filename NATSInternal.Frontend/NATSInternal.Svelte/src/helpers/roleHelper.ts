@@ -7,24 +7,24 @@ export type RoleHelper = {
 };
 
 const roleForegroundColorClassNameMap: Record<RoleName, string> = {
-  Developer: "text-indigo-500",
-  Manager: "text-red-500",
-  Accountant: "text-emerald-500",
-  Staff: "text-primary/50"
+  "Developer": "text-indigo-500",
+  "Manager": "text-red-500",
+  "Accountant": "text-emerald-500",
+  "Staff": "text-primary/50"
 };
 
 const roleBackgroundColorClassNameMap: Record<RoleName, string> = {
-  Developer: "bg-indigo-500/10",
-  Manager: "bg-red-500/10",
-  Accountant: "bg-emerald-500/10",
-  Staff: "bg-primary/5"
+  "Developer": "bg-indigo-500/10",
+  "Manager": "bg-red-500/10",
+  "Accountant": "bg-emerald-500/10",
+  "Staff": "bg-primary/5"
 };
 
 const roleBorderColorClassNameMap: Record<RoleName, string> = {
-  Developer: "border-indigo-500/25",
-  Manager: "border-red-500/25",
-  Accountant: "border-emerald-500/25",
-  Staff: "border-primary/15"
+  "Developer": "border-indigo-500/25",
+  "Manager": "border-red-500/25",
+  "Accountant": "border-emerald-500/25",
+  "Staff": "border-primary/15"
 };
 
 const roleHelper: RoleHelper = {
@@ -37,7 +37,7 @@ const roleHelper: RoleHelper = {
 
   getRoleBorderColorClassName(roleName: string): string | null {
     return roleBorderColorClassNameMap[roleName as RoleName] ?? null;
-  }
+  },
 };
 
 export function useRoleHelper(): RoleHelper {

@@ -9,7 +9,7 @@ export type PhotoApi = {
 const photoApi: PhotoApi = {
   async getMultipleByProductIdsAsync(requestDto: PhotoGetMultipleByProductIds): Promise<PhotoBasicResponseDto[]> {
     return await httpClient.getAsync("/photos", requestDto);
-  }
+  },
 };
 
 export function usePhotoApi(): PhotoApi {

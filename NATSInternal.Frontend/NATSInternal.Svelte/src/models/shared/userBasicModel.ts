@@ -1,12 +1,12 @@
 import { useRouteHelper } from "@/helpers";
 
 declare global {
-  type UserBasicModel = {
+  type UserBasicModel = Readonly<{
     id: string;
     userName: string;
     isDeleted: boolean;
-    get detailRoute(): string;
-  };
+    detailRoute: string;
+  }>;
 }
 
 const { getUserProfileRoutePath } = useRouteHelper();
@@ -14,8 +14,6 @@ const { getUserProfileRoutePath } = useRouteHelper();
 export function createUserBasicModel(responseDto: UserBasicResponseDto): UserBasicModel {
   return {
     ...responseDto,
-    get detailRoute(): string {
-      return getUserProfileRoutePath(this.id);
-    }
+    detailRoute: getUserProfileRoutePath(responseDto.id)
   };
 }

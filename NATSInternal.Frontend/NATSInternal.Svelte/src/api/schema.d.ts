@@ -960,7 +960,9 @@ export interface components {
       readonly canDelete?: boolean;
     };
     ProductGetListResponseDto: {
-      readonly items?: components["schemas"]["ProductBasicResponseDto"][] | null;
+      readonly items?:
+        | components["schemas"]["ProductBasicResponseDto"][]
+        | null;
       /** Format: int32 */
       pageCount?: number;
     };

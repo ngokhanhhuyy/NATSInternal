@@ -85,5 +85,5 @@ export const PermissionNames = {
   // Permissions to interact with announcements.
   CreateAnnouncement: "CreateAnnouncement",
   EditAnnouncement: "EditAnnouncement",
-  DeleteAnnouncement: "DeleteAnnouncement"
+  DeleteAnnouncement: "DeleteAnnouncement",
 };

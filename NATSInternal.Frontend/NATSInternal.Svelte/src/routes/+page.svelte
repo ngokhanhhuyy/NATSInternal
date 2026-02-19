@@ -1,104 +1,116 @@
 <script lang="ts">
-  let count = $state(0);
-  const array: number[] = $state([]);
+import { page, navigating } from "$app/state";
+import { goto } from "$app/navigation";
+import { useApi, ConnectionError, InternalServerError } from "@/api";
+import { createSignInModel } from "@/models";
+import { useAuthenticationStore } from "@/stores";
+import { useRouteHelper } from "@/helpers";
+
+// Child components.
+import { Form, FormField } from "@/components/form";
+
+// Dependencies.
+const api = useApi();
+const authenticationStore = useAuthenticationStore();
+const { getHomeRoutePath } = useRouteHelper();
+
+// States.
+const states= $state({
+  model: createSignInModel(),
+  commonError: null as string | null,
+  isSignedIn: false,
+  isInitialChecking: false,
+  isSubmitting: false
+});
+
+// Callbacks.
+const signInAsync = async (): Promise<void> => {
+  states.isSubmitting = true;
+  states.commonError = null;
+  
+  try {
+    await api.authentication.getAccessCookieAsync(states.model.toRequestDto());
+  } finally {
+    states.model.password = "";
+    states.isSubmitting = false;
+  }
+};
+
+const handleSignInSucceeded = (): void => {
+  states.isSignedIn = true;
+  authenticationStore.isAuthenticated = true;
+  setTimeout(() => goto(getHomeRoutePath(), { replaceState: true }));
+};
+
+const handleSignInFailed = (error: Error, errorHandled: boolean): void => {
+  if (errorHandled) {
+    return;
+  }
+
+  states.isSignedIn = false;
+  if (error instanceof InternalServerError) {
+    states.commonError = "Đã xảy ra lỗi từ máy chủ.";
+  } else if (error instanceof ConnectionError) {
+    states.commonError = "Không thể kết nối đến máy chủ.";
+  } else {
+    states.commonError = "Đã xảy ra lỗi không xác định.";
+  }
+};
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
-<span>{count}</span>
-<button onclick={() => count++} type="button"> Increment </button>
-<br />
-<span>List: {array.join(", ")}</span>
-<button type="button" onclick={() => array.push(count)}> Add </button>
+<div class="form-container">
+  <Form
+    class="form"
+    upsertAction={signInAsync}
+    onUpsertingSucceeded={handleSignInSucceeded}
+    onUpsertingFailed={handleSignInFailed}
+  >
+    <!-- Introduction -->
+    <div class="flex flex-col mb-5">
+      <span class="text-4xl font-bold">Đăng nhập</span>
+      <span class="text-lg">
+          Chào mừng bạn đã quay trở lại.
+        </span>
+    </div>
+
+    <!-- UserName -->
+    <FormField class="mb-3" path="userName">
+      <input
+        bind:value={states.model.userName}
+        type="text"
+        class="form-control"
+        placeholder="Tên tài khoản"
+        autocapitalize="off"
+      />
+    </FormField>
+  </Form>
+</div>
 
 <style lang="postcss">
-  @reference "tailwindcss";
-  button {
-    @apply cursor-pointer rounded-lg border border-black/10 bg-white px-2 py-0.5 shadow-xs hover:border-black/15 hover:bg-black/2;
-  }
+@reference "@/assets/css/style.css";
 
-  @layer components {
-    .data-table {
-      --row-height: unset;
-      --border-width: 1px;
-      --border-color: --alpha(var(--color-black) / 10%);
-      --odd-background-color: --alpha(var(--color-black) / 5%);
-      --border-color-from-actual-border: var(--border-color);
-      --border-color-from-background: transparent;
-      --row-background-color-from-actual-row-background: var(--odd-background-color);
-      --row-background-color-from-background: transparent;
-      margin: 0;
-      padding: 0;
-      border-collapse: collapse;
+.form-container {
+  @apply 
+    bg-white dark:bg-neutral-900 sm:bg-transparent dark:sm:bg-transparent
+    flex flex-col justify-start items-center w-screen h-screen pt-[25vh];
+}
 
-      @variant dark {
-        & {
-          --border-color: rgba(255, 255, 255, 10%);
-          --odd-background-color: rgba(255, 255, 255, 3%);
-        }
-      }
+.form {
+  @apply 
+    bg-white dark:bg-neutral-900
+    border border-transparent sm:border-black/15 dark:sm:border-white/15
+    shadow-none sm:shadow-xs
+    flex flex-col rounded-xl p-8 items-stretch w-87.5 relative;
+}
 
-      & thead :where(tr),
-      & tbody :where(tr:not(:last-child)) {
-        border-bottom: var(--border-width) solid var(--border-color-from-actual-border);
-      }
+.successful-notification {
+  @apply
+    bg-emerald-500/10 border border-emerald-500/50
+    flex justify-center items-center w-87.5 relative rounded-xl p-8 shadow-none sm:shadow-xs
+    text-emerald-700 dark:text-emerald-400 uppercase font-bold;
+}
 
-      & :where(th),
-      & :where(td) {
-        padding-inline: --spacing(3);
-      }
-
-      & :where(th) {
-        background-color: --alpha(var(--color-black) / 10%);
-        font-size: var(--text-sm);
-        padding-block: --spacing(0.5);
-
-        @variant dark {
-          background-color: --alpha(var(--color-white) / 10%);
-        }
-      }
-
-      & :where(td) {
-        padding-block: --spacing(1.5);
-      }
-
-      /* & :not(thead) :where(tr:nth-child(odd)) {
-            background-color: var(--row-background-color-from-actual-row-background);
-        } */
-
-      & :where(th:not(:last-child)),
-      & :where(td:not(:last-child)) {
-        border-right: var(--border-width) solid var(--border-color-from-actual-border);
-      }
-    }
-  }
-
-  @utility data-table-grid-color-from-background {
-    --row-height: --spacing(10);
-    --border-color-from-actual-border: transparent;
-    --border-color-from-background: var(--border-color);
-    --row-background-color-from-actual-row-background: transparent;
-    --row-background-color-from-background: var(--odd-background-color);
-
-    &::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      width: 100%;
-      height: 999px;
-      background-image: repeating-linear-gradient(
-        180deg,
-        var(--border-color-from-background) 0,
-        var(--border-color-from-background) var(--border-width),
-        var(--row-background-color-from-background) var(--border-width),
-        var(--row-background-color-from-background) calc(var(--row-height) - var(--border-width)),
-        var(--border-color-from-background) calc(var(--row-height) - var(--border-width)),
-        var(--border-color-from-background) calc(var(--row-height) + var(--border-width)),
-        transparent calc(var(--row-height) + var(--border-width)),
-        transparent calc(var(--row-height) + (var(--row-height) - var(--border-width))),
-        var(--border-color-from-background) calc(var(--row-height) + (var(--row-height) - var(--border-width))),
-        var(--border-color-from-background) calc(var(--row-height) + var(--row-height))
-      ) !important;
-    }
-  }
+.copyright {
+  @apply text-primary/50 absolute bottom-1 sm:relative sm:bottom-[unset] flex justify-end mb-3 sm:mt-10 sm:mb-0;
+}
 </style>
