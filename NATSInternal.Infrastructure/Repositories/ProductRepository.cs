@@ -43,6 +43,11 @@ internal class ProductRepository : IProductRepository
         _context.Products.Update(product);
     }
 
+    public async Task<Brand?> GetBrandByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.Brands.SingleOrDefaultAsync(b => b.Id == id, cancellationToken);
+    }
+
     public async Task<Brand?> GetBrandByIdIncludingCountryAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Brands
@@ -85,6 +90,11 @@ internal class ProductRepository : IProductRepository
     public void RemoveCategory(ProductCategory category)
     {
         _context.ProductCategories.Remove(category);
+    }
+
+    public async Task<Country?> GetCountryByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await _context.Countries.SingleOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
     #endregion
 }

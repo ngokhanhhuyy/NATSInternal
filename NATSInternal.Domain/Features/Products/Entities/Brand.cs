@@ -23,7 +23,7 @@ internal class Brand : AbstractEntity
         string? email,
         string? address,
         DateTime createdDateTime,
-        Guid? countryId)
+        Country? country)
     {
         Name = name;
         Website = website;
@@ -32,7 +32,7 @@ internal class Brand : AbstractEntity
         Email = email;
         Address = address;
         CreatedDateTime = createdDateTime;
-        CountryId = countryId;
+        Country = country;
 
         AddDomainEvent(new BrandCreatedEvent(Id, Name));
     }
@@ -71,7 +71,7 @@ internal class Brand : AbstractEntity
         string? email,
         string? address,
         DateTime createdDateTime,
-        Guid? countryId)
+        Country? country)
     {
         Name = name;
         Website = website;
@@ -80,7 +80,7 @@ internal class Brand : AbstractEntity
         Email = email;
         Address = address;
         CreatedDateTime = createdDateTime;
-        CountryId = countryId;
+        Country = country;
     }
     #endregion
 }

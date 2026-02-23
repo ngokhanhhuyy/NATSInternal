@@ -4,14 +4,14 @@ using NATSInternal.Domain.Features.Products;
 
 namespace NATSInternal.Application.UseCases.Products;
 
-public class BrandGetDetailHandler : IRequestHandler<BrandGetDetailRequestDto, BrandGetDetailResponseDto>
+internal class BrandGetDetailHandler : IRequestHandler<BrandGetDetailRequestDto, BrandGetDetailResponseDto>
 {
     #region Fields
     private readonly IProductRepository _repository;
     #endregion
 
     #region Constructors
-    internal BrandGetDetailHandler(IProductRepository repository)
+    public BrandGetDetailHandler(IProductRepository repository)
     {
         _repository = repository;
     }
@@ -20,8 +20,7 @@ public class BrandGetDetailHandler : IRequestHandler<BrandGetDetailRequestDto, B
     #region Methods
     public async Task<BrandGetDetailResponseDto> Handle(BrandGetDetailRequestDto requestDto, CancellationToken token)
     {
-        Brand brand = await _repository
-            .GetBrandByIdIncludingCountryAsync(requestDto.Id, token)
+        Brand brand = await _repository.GetBrandByIdAsync(requestDto.Id, token)
             ?? throw new NotFoundException();
 
         return new(brand);

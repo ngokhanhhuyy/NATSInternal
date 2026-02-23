@@ -5,6 +5,10 @@ const httpClient = useHttpClient();
 export type BrandApi = {
   getListAsync(requestDto?: BrandGetListRequestDto): Promise<BrandGetListResponseDto>;
   getAllAsync(): Promise<BrandBasicResponseDto[]>;
+  getDetailAsync(id: string): Promise<BrandGetDetailResponseDto>;
+  createAsync(requestDto: BrandUpsertRequestDto): Promise<string>;
+  updateAsync(id: string, requestDto: BrandUpsertRequestDto): Promise<void>;
+  deleteAsync(id: string): Promise<void>;
 };
 
 const brandApi: BrandApi = {
@@ -14,6 +18,22 @@ const brandApi: BrandApi = {
 
   async getAllAsync(): Promise<BrandBasicResponseDto[]> {
     return await httpClient.getAsync("/products/brands/all");
+  },
+
+  async getDetailAsync(id: string): Promise<BrandGetDetailResponseDto> {
+    return await httpClient.getAsync(`/products/brands/${id}`);
+  },
+
+  async createAsync(requestDto: BrandUpsertRequestDto): Promise<string> {
+    return await httpClient.postAsync("/products/brands", requestDto);
+  },
+
+  async updateAsync(id: string, requestDto: BrandUpsertRequestDto): Promise<void> {
+    return await httpClient.putAndIgnoreAsync(`/products/brands/${id}`, requestDto);
+  },
+
+  async deleteAsync(id: string): Promise<void> {
+    return await httpClient.deleteAndIgnoreAsync(`/products/brands/${id}`);
   }
 };
 

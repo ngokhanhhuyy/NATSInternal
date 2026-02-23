@@ -41,12 +41,12 @@ internal class CustomerUpsertValidator<TRequestDto> : Validator<TRequestDto>
             .WithName(DisplayNames.Birthday);
         RuleFor(dto => dto.PhoneNumber)
             .MaximumLength(CustomerContracts.PhoneNumberMaxLength)
-            .Matches(@"^[0-9]*$")
+            .IsValidPhoneNumber()
             .WithMessage(ErrorMessages.Invalid)
             .WithName(DisplayNames.PhoneNumber);
         RuleFor(dto => dto.ZaloNumber)
             .MaximumLength(CustomerContracts.ZaloNumberMaxLength)
-            .Matches(@"^[0-9]*$")
+            .IsValidPhoneNumber()
             .WithMessage(ErrorMessages.Invalid)
             .WithName(DisplayNames.ZaloNumber);
         RuleFor(dto => dto.FacebookUrl)

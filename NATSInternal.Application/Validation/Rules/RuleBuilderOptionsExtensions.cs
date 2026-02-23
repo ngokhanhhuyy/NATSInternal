@@ -4,10 +4,11 @@ using NATSInternal.Application.Extensions;
 using NATSInternal.Application.Localization;
 using NATSInternal.Application.UseCases.Shared;
 using NATSInternal.Domain.Features.Users;
+using System.Text.RegularExpressions;
 
 namespace NATSInternal.Application.Validation.Rules;
 
-internal static class RuleBuilderOptionsExtensions
+internal static partial class RuleBuilderOptionsExtensions
 {
     #region ExtensionMethods
     public static IRuleBuilderOptions<T, DateTime?> LaterThanDateTime<T>(
@@ -165,6 +166,36 @@ internal static class RuleBuilderOptionsExtensions
                 .Replace("{Thumbnail}", DisplayNames.Thumbnail.ToLower()))
             .WithName(DisplayNames.Photo);
     }
+
+    public static IRuleBuilderOptions<T, string?> IsValidWebsiteUrl<T>(this IRuleBuilder<T, string?> ruleBuilder)
+    {
+        return ruleBuilder
+            .Must((_, url) =>
+            {
+                if (url is null)
+                {
+                    return true;
+                }
+
+                return GetWebsiteUrlRegex().IsMatch(url);
+            })
+            .WithMessage(ErrorMessages.Invalid);
+    }
+
+    public static IRuleBuilderOptions<T, string?> IsValidPhoneNumber<T>(this IRuleBuilder<T, string?> ruleBuilder)
+    {
+        return ruleBuilder
+            .Must((_, url) =>
+            {
+                if (url is null)
+                {
+                    return true;
+                }
+
+                return GetPhoneNumberRegex().IsMatch(url);
+            })
+            .WithMessage(ErrorMessages.Invalid);
+    }
     #endregion
 
     #region PrivateMethods
@@ -176,5 +207,13 @@ internal static class RuleBuilderOptionsExtensions
             return new(currentDateTime.AddMonths(-1).Year, currentDateTime.AddMonths(-1).Month, 1, 0, 0, 0);
         }
     }
+    #endregion
+
+    #region StaticMethods
+    [GeneratedRegex(@"^((http|https)://)?(www\.)?[\w\d]+(\.[\w\d]+)+(/.*)?$")]
+    private static partial Regex GetWebsiteUrlRegex();
+
+    [GeneratedRegex(@"^\+?[0-9]+$")]
+    private static partial Regex GetPhoneNumberRegex();
     #endregion
 }

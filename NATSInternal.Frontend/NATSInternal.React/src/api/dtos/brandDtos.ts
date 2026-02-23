@@ -16,6 +16,28 @@ declare global {
     itemCount: number;
   }>;
 
+  type BrandGetDetailResponseDto = {
+    id: string;
+    name: string;
+    website: string | null;
+    socialMediaUrl: string | null;
+    phoneNumber: string | null;
+    email: string | null;
+    address: string | null;
+    createdDateTime: string;
+    country: CountryBasicResponseDto | null;
+  };
+
+  type BrandUpsertRequestDto = {
+    name: string;
+    website: string | null;
+    socialMediaUrl: string | null;
+    phoneNumber: string | null;
+    email: string | null;
+    address: string | null;
+    countryId: string | null;
+  };
+
   type BrandGetListBrandResponseDto = {
     id: string;
     name: string;

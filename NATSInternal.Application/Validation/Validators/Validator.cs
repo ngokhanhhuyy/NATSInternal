@@ -1,10 +1,11 @@
+using System.Text.RegularExpressions;
 using FluentValidation;
 using ImageMagick;
 using NATSInternal.Application.UseCases;
 
 namespace NATSInternal.Application.Validation.Validators;
 
-public class Validator<TRequestDto> : AbstractValidator<TRequestDto> where TRequestDto : IRequestDto
+public partial class Validator<TRequestDto> : AbstractValidator<TRequestDto> where TRequestDto : IRequestDto
 {
     #region Constructors
     public Validator()

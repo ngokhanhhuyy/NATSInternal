@@ -13,6 +13,8 @@ internal interface IProductRepository
 
     void UpdateProduct(Product product);
 
+    Task<Brand?> GetBrandByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
     Task<Brand?> GetBrandByIdIncludingCountryAsync(Guid id, CancellationToken cancellationToken = default);
 
     void AddBrand(Brand brand);
@@ -28,5 +30,7 @@ internal interface IProductRepository
     void UpdateCategory(ProductCategory category);
 
     void RemoveCategory(ProductCategory category);
+
+    Task<Country?> GetCountryByIdAsync(Guid id, CancellationToken cancellationToken = default);
     #endregion
 }

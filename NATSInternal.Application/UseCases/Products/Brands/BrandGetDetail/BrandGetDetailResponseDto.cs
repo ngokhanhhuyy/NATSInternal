@@ -15,6 +15,7 @@ public class BrandGetDetailResponseDto
         PhoneNumber = brand.PhoneNumber;
         Email = brand.Email;
         Address = brand.Address;
+        CreatedDateTime = brand.CreatedDateTime;
         
         if (brand.Country is not null)
         {

@@ -36,6 +36,12 @@ declare global {
     name: string;
   };
 
+  type CountryBasicResponseDto = {
+    id: string;
+    code: string;
+    name: string;
+  };
+
   type StockBasicResponseDto = {
     id: string;
     stockingQuantity: number;

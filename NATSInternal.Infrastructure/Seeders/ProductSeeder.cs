@@ -370,7 +370,7 @@ internal partial class ProductSeeder
                     .Replace(_viFaker.Phone.PhoneNumber(), "0")
                     .Replace(" ", ""),
                 createdDateTime: _clock.Now,
-                countryId: countries[_random.Next(countries.Count)].Id
+                country: countries[_random.Next(countries.Count)]
             );
 
             _context.Brands.Add(brand);

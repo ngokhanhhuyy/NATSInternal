@@ -68,19 +68,28 @@ public static class ApplicationConfiguration
         services.AddTransient<IRequestHandler<ProductCreateRequestDto, Guid>, ProductCreateHandler>();
         services.AddTransient<IRequestHandler<ProductUpdateRequestDto>, ProductUpdateHandler>();
         services.AddTransient<IRequestHandler<ProductDeleteRequestDto>, ProductDeleteHandler>();
+
+        // Brand UseCases.
         services.AddTransient<
             IRequestHandler<BrandGetListRequestDto, BrandGetListResponseDto>,
             BrandGetListHandler>();
         services.AddTransient<
+            IRequestHandler<BrandGetDetailRequestDto, BrandGetDetailResponseDto>,
+            BrandGetDetailHandler>();
+        services.AddTransient<IRequestHandler<BrandCreateRequestDto, Guid>, BrandCreateHandler>();
+        services.AddTransient<IRequestHandler<BrandUpdateRequestDto>, BrandUpdateHandler>();
+        services.AddTransient<IRequestHandler<BrandDeleteRequestDto>, BrandDeleteHandler>();
+        services.AddTransient<
             IRequestHandler<BrandGetAllRequestDto, IEnumerable<BrandBasicResponseDto>>,
             BrandGetAllHandler>();
+
+        // ProductCategory UseCases.
         services.AddTransient<
             IRequestHandler<ProductCategoryGetAllRequestDto, IEnumerable<ProductCategoryBasicResponseDto>>,
             ProductCategoryGetAllHandler>();
         services.AddTransient<
             IRequestHandler<ProductCategoryGetListRequestDto, ProductCategoryGetListResponseDto>,
             ProductCategoryGetListHandler>();
-
 
         // Photo UseCases.
         services.AddTransient<
