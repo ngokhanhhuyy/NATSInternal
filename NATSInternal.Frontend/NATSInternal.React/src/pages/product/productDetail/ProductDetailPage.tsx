@@ -28,15 +28,8 @@ export default function ProductDetailPage(): React.ReactNode {
 
   // Templates.
   return (
-    <MainContainer description={description}>
+    <MainContainer>
       <div className="flex flex-col gap-3 w-full">
-        <div className="flex justify-start">
-          <Link className="btn gap-1.5" to={model.updateRoutePath}>
-            <PencilSquareIcon className="size-4" />
-            <span>Chỉnh sửa</span>
-          </Link>
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch">
           <div className="flex flex-col gap-y-3">
             <DetailPanel model={model} />
@@ -59,5 +52,3 @@ export default function ProductDetailPage(): React.ReactNode {
     </MainContainer>
   );
 }
-
-const description = "Thông tin chi tiết của sản phẩm, tình trạng lưu kho và các giao dịch liên quan gần nhất";

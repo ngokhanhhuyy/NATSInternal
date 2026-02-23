@@ -1,25 +1,57 @@
 import React, { useMemo } from "react";
+import { useLoaderData } from "react-router";
+import { getDisplayName } from "@/metadata";
+import type { ProductUpsertInitialLoadedModels } from "./ProductUpsertPage";
 
 // Child components.
-import { FormField, TextInput, TextAreaInput, NumberInput, BooleanSelectInput } from "@/components/form";
+import { FormField, TextInput, TextAreaInput, NumberInput } from "@/components/form";
+import { SelectInput, type SelectInputOption } from "@/components/form";
+import { BooleanSelectInput, type BooleanSelectInputOption } from "@/components/form";
 
 // Props.
 type DetailPanelProps = {
   model: ProductUpsertModel;
-  onModelChanged(changedData: Partial<ProductUpsertModel>): any;
+  onModelUpdated(updatedData: Partial<ProductUpsertModel>): any;
 };
 
 export default function DetailPanel(props: DetailPanelProps): React.ReactNode {
+  // Dependencies.
+  const { brandOptionModels, categoryOptionModels } = useLoaderData<ProductUpsertInitialLoadedModels>();
+
   // Computed.
-  const isForRetailInputOptions = useMemo(() => ([
-    { value: true, displayName: "Cả liệu trình và bán lẻ" },
-    { value: false, displayName: "Chỉ liệu trình" }
-  ]), []);
-  
-  const isDiscontinuedInputOptions = useMemo(() => ([
-    { value: true, displayName: "Đã ngưng sử dụng trong giao dịch" },
-    { value: false, displayName: "Có thể sử dụng trong giao dịch" }
-  ]), []);
+  const brandDisplayName = useMemo<string>(() => getDisplayName("brand") ?? "", []);
+  const categoryDislayName = useMemo<string>(() => getDisplayName("productCategory") ?? "", []);
+
+  const brandOptions = useMemo<(SelectInputOption[])>(() => {
+    return [
+      { value: "", displayName: "Chưa chọn thương hiệu" },
+      ...brandOptionModels.map(dto => ({ value: dto.id, displayName: dto.name }))
+    ];
+  }, []);
+
+  const categoryOptions = useMemo<SelectInputOption[]>(() => {
+    return [
+      { value: "", displayName: "Chưa chọn phân loại" },
+      ...categoryOptionModels.map(dto => ({ value: dto.name, displayName: dto.name }))
+    ];
+  }, []);
+
+  // Callbacks.
+  function handleBrandChanged(id: string): void {
+    if (id) {
+      props.onModelUpdated({ brand: brandOptionModels.find(b => b.id === id) });
+    }
+
+    props.onModelUpdated({ brand: null });
+  }
+
+  function handleProductCategoryChanged(name: string): void {
+    if (name) {
+      props.onModelUpdated({ category: categoryOptionModels.find(b => b.name === name) });
+    }
+
+    props.onModelUpdated({ category: null });
+  }
 
   // Template.
   return (
@@ -37,7 +69,7 @@ export default function DetailPanel(props: DetailPanelProps): React.ReactNode {
             <TextInput
               placeholder="Sản phẩm A"
               value={props.model.name}
-              onValueChanged={(name) => props.onModelChanged({ name })}
+              onValueChanged={(name) => props.onModelUpdated({ name })}
             />
           </FormField>
           
@@ -46,7 +78,7 @@ export default function DetailPanel(props: DetailPanelProps): React.ReactNode {
             <TextInput
               placeholder="Chai, lọ, vĩ, hộp, ..."
               value={props.model.unit}
-              onValueChanged={(unit) => props.onModelChanged({ unit })}
+              onValueChanged={(unit) => props.onModelUpdated({ unit })}
             />
           </FormField>
 
@@ -55,7 +87,7 @@ export default function DetailPanel(props: DetailPanelProps): React.ReactNode {
             <TextAreaInput
               placeholder="Mô tả sản phẩm"
               value={props.model.description}
-              onValueChanged={(description) => props.onModelChanged({ description })}
+              onValueChanged={(description) => props.onModelUpdated({ description })}
             />
           </FormField>
         </div>
@@ -67,7 +99,7 @@ export default function DetailPanel(props: DetailPanelProps): React.ReactNode {
               <NumberInput
                 value={props.model.defaultAmountBeforeVatPerUnit}
                 onValueChanged={(defaultAmountBeforeVatPerUnit) => {
-                  props.onModelChanged({ defaultAmountBeforeVatPerUnit });
+                  props.onModelUpdated({ defaultAmountBeforeVatPerUnit });
                 }}
               />
               <div className="form-input-group-text border-s-0">vnđ</div>
@@ -80,19 +112,38 @@ export default function DetailPanel(props: DetailPanelProps): React.ReactNode {
               <NumberInput
                 value={props.model.defaultVatPercentagePerUnit}
                 onValueChanged={(defaultVatPercentagePerUnit) => {
-                  props.onModelChanged({ defaultVatPercentagePerUnit });
+                  props.onModelUpdated({ defaultVatPercentagePerUnit });
                 }}
               />
               <div className="form-input-group-text border-s-0">%</div>
             </div>
           </FormField>
 
+          {/* Brand */}
+          <FormField path="brand.id" displayName={brandDisplayName} className="sm:col-span-3">
+            <SelectInput
+              options={brandOptions}
+              value={props.model.brand?.id ?? ""}
+              onValueChanged={handleBrandChanged}
+            />
+          </FormField>
+
+          {/* Category */}
+          <FormField path="category.name" displayName={categoryDislayName} className="sm:col-span-3">
+            <SelectInput
+              options={categoryOptions}
+              value={props.model.category?.name ?? ""}
+              onValueChanged={handleProductCategoryChanged}
+            />
+          </FormField>
+
+
           {/* IsForRetail */}
           <FormField path="isForRetail" displayName="Dành cho loại giao dịch" className="sm:col-span-3">
             <BooleanSelectInput
               options={isForRetailInputOptions}
               value={props.model.isForRetail}
-              onValueChanged={(isForRetail) => props.onModelChanged({ isForRetail })}
+              onValueChanged={(isForRetail) => props.onModelUpdated({ isForRetail })}
             />
           </FormField>
 
@@ -101,7 +152,7 @@ export default function DetailPanel(props: DetailPanelProps): React.ReactNode {
             <BooleanSelectInput
               options={isDiscontinuedInputOptions}
               value={props.model.isDiscontinued}
-              onValueChanged={(isDiscontinued) => props.onModelChanged({ isDiscontinued })}
+              onValueChanged={(isDiscontinued) => props.onModelUpdated({ isDiscontinued })}
             />
           </FormField>
         </div>
@@ -109,3 +160,14 @@ export default function DetailPanel(props: DetailPanelProps): React.ReactNode {
     </div>
   );
 }
+
+const isForRetailInputOptions: BooleanSelectInputOption[] = [
+  { value: true, displayName: "Cả liệu trình và bán lẻ" },
+  { value: false, displayName: "Chỉ liệu trình" }
+];
+
+const isDiscontinuedInputOptions: BooleanSelectInputOption[] = [
+  { value: true, displayName: "Đã ngưng sử dụng trong giao dịch" },
+  { value: false, displayName: "Có thể sử dụng trong giao dịch" }
+];
+

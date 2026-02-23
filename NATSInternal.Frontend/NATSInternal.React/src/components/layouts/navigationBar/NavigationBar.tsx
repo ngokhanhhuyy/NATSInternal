@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, createContext } from "react";
 import { useLocation } from "react-router";
+import { useScreenBreakpoints } from "@/hooks";
 import { useNavigationBarStore } from "@/stores";
 import { useRouteHelper, useTsxHelper } from "@/helpers";
 
@@ -28,6 +29,9 @@ import {
   ChartPieIcon as ReportSolidIcon,
   IdentificationIcon as UserSolidIcon } from "@heroicons/react/24/solid";
 
+// Context.
+type NavigationBarContextPayload = { activeItemName: string | null; };
+export const NavigationBarContext = createContext<NavigationBarContextPayload>({ activeItemName: null });
 
 // Component.
 export default function NavigationBar(): React.ReactNode {
@@ -37,7 +41,7 @@ export default function NavigationBar(): React.ReactNode {
   const { joinClassName } = useTsxHelper();
 
   // States.
-  const mdScreenMediaQuery = useRef(window.matchMedia("(min-width: 48rem)"));
+  const breakpoints = useScreenBreakpoints();
   const navigationBarElementRef = useRef<HTMLElement>(null!);
   const navigationBarContainerElementRef = useRef<HTMLDivElement>(null!);
   const [activeItemName, setActiveItemName] = useState<string | null>(null);
@@ -45,19 +49,10 @@ export default function NavigationBar(): React.ReactNode {
 
   // Effect.
   useEffect(() => {
-    const handleMdScreenQueryMatchChanged = () => {
-      if (mdScreenMediaQuery.current.matches) {
-        navigationBarStore.collapse();
-      }
-    };
-
-    handleMdScreenQueryMatchChanged();
-    mdScreenMediaQuery.current.addEventListener("change", handleMdScreenQueryMatchChanged);
-
-    return () => {
-      mdScreenMediaQuery.current.addEventListener("change", handleMdScreenQueryMatchChanged);
-    };
-  }, []);
+    if (breakpoints.md) {
+      navigationBarStore.collapse();
+    }
+  }, [breakpoints.md]);
 
   useEffect(() => {
     const handleClicked = (event: PointerEvent) => {

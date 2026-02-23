@@ -1,5 +1,4 @@
 import { createMemo } from "solid-js";
-import { useLocation, useParams, useSearchParams, useMatch, useCurrentMatches } from "@solidjs/router";
 
 type Computers = Record<string, () => any>;
 type Memos<TComputers extends Computers> = { [K in keyof TComputers]: Readonly<ReturnType<TComputers[K]>> };
@@ -38,3 +37,4 @@ export function useRoute() {
 export * from "solid-js";
 export { createStore, createMutable } from "solid-js/store";
 export * from "@solidjs/router";
+export * from "./router";

@@ -1,108 +1,78 @@
-import React, { useState, useEffect, useTransition } from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router";
+import { getDisplayName } from "@/metadata";
 
 // Child components.
+import FilterOptionsPanel from "./FilterOptionsPanel";
 import { MainContainer } from "@/components/layouts";
 import { Paginator } from "@/components/ui";
-import DisplayOptionsPanel from "./DisplayOptionsPanel";
-import ResultsTablePanel from "./ResultsTablePanel";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
 // Props.
-type Props<
-    TListModel extends
-      ISearchableListModel<TItemModel> &
-      ISortableListModel<TItemModel> &
-      IPageableListModel<TItemModel> &
-      IUpsertableListModel<TItemModel>,
-    TItemModel extends object> = {
-  description: string;
-  initialModel: TListModel;
-  loadDataAsync(model?: TListModel): Promise<TListModel>;
-  renderTableHeaderRowChildren?(): React.ReactNode;
-  renderTableBodyRowChildren?(itemModel: TItemModel): React.ReactNode;
+type ListModel<TItemModel extends object> =
+  ISearchableListModel<TItemModel> &
+  ISortableListModel<TItemModel> &
+  IPageableListModel<TItemModel> &
+  IUpsertableListModel<TItemModel>;
+
+type Props<TListModel extends ListModel<TItemModel>, TItemModel extends object> = {
+  resourceName: string;
+  model: TListModel;
+  onModelUpdated: (updatedData: Partial<TListModel>) => any;
+  isReloading: boolean;
   children?: React.ReactNode | React.ReactNode[];
+  onPaginatorPageChanged: (page: number) => any;
+  onFilterPanelReloadButtonClicked: () => any;
+  linkButtons?: React.ReactNode | React.ReactNode[];
+  filterPanelChildren?: React.ReactNode | React.ReactNode[];
+  additionalPanels?: React.ReactNode | React.ReactNode[];
+  additionalDirtyModelComparer?: (originalModel: TListModel, additionalModel: TListModel) => boolean;
 };
 
 // Components.
-export default function SearchablePageableListPage<
-      TListModel extends
-        ISearchableListModel<TItemModel> &
-        ISortableListModel<TItemModel> &
-        IPageableListModel<TItemModel> &
-        IUpsertableListModel<TItemModel>,
-      TItemModel extends object>
-    (props: Props<TListModel, TItemModel>): React.ReactNode {
-  // States.
-  const [model, setModel] = useState(() => props.initialModel);
-  const [isInitialRendering, setIsInitialRendering] = useState(() => true);
-  const [isReloading, startTransition] = useTransition();
-
-  // Callbacks.
-  async function reloadAsync(): Promise<void> {
-    const reloadedModel = await props.loadDataAsync(model);
-    setModel(reloadedModel);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  // Effect.
-  useEffect(() => {
-    if (isInitialRendering) {
-      setIsInitialRendering(false);
-      return;
-    }
-
-    startTransition(reloadAsync);
-  }, [model.searchContent, model.sortByAscending, model.sortByFieldName, model.page, model.resultsPerPage]);
-
+export default function SearchablePageableListPage<TListModel extends ListModel<TItemModel>,  TItemModel extends object>
+  (props: Props<TListModel, TItemModel>): React.ReactNode
+{
+  // Computed.
+  const displayName = useMemo(() => getDisplayName(props.resourceName), []);
+  
   // Template.
   return (
-    <MainContainer
-      description={props.description}
-      className="gap-3"
-      isLoading={isReloading}
-    >
+    <MainContainer className="gap-3" isLoading={props.isReloading}>
       <div className="flex flex-col items-stretch gap-3">
-        <ResultsTablePanel
-          model={model}
-          renderHeaderRowChildren={props.renderTableHeaderRowChildren}
-          renderBodyRowChildren={props.renderTableBodyRowChildren}
-        />
+        {props.children}
 
-        <div className="flex justify-end gap-3 mb-3 md:mb-5">
+        <div className="flex justify-end gap-3">
           <Paginator
-            page={model.page}
-            pageCount={model.pageCount}
-            onPageChanged={(page) => setModel(m => ({ ...m, page }))}
-            isReloading={isReloading}
+            page={props.model.page}
+            pageCount={props.model.pageCount}
+            onPageChanged={props.onPaginatorPageChanged}
             getPageButtonClassName={(_, isActive) => isActive ? "btn-primary" : undefined}
           />
 
-          <div className="border-r border-black/25 dark:border-white/25 w-px" />
-
-          <Link className="btn gap-1 shrink-0" to={model.createRoutePath}>
+          {props.model.pageCount > 1 && (
+            <div className="border-r border-black/25 dark:border-white/25 w-px" />
+          )}
+          
+          <Link className="btn gap-1 shrink-0" to={props.model.createRoutePath}>
             <PlusIcon className="size-4.5" />
-            <span>Tạo sản phẩm mới</span>
+            <span>Tạo {displayName?.toLowerCase()} mới</span>
           </Link>
         </div>
-
-        <DisplayOptionsPanel
-          model={model}
-          onModelChanged={changedData => setModel(m => ({ ...m, ...changedData }))}
-          onSearchButtonClicked={reloadAsync}
-          isReloading={false}
-        />
         
+        {props.linkButtons}
 
-        <DisplayOptionsPanel
-          model={model}
-          onModelChanged={changedData => setModel(m => ({ ...m, ...changedData }))}
-          onSearchButtonClicked={reloadAsync}
-          isReloading={false}
-        />
+        <FilterOptionsPanel
+          model={props.model}
+          onModelUpdated={props.onModelUpdated}
+          onReloadButtonClicked={props.onFilterPanelReloadButtonClicked}
+          additionalDirtyModelComparer={props.additionalDirtyModelComparer}
+        >
+          {props.filterPanelChildren}
+        </FilterOptionsPanel>
       </div>
 
-      {props.children}
+      {props.additionalPanels}
     </MainContainer>
   );
 }

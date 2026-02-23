@@ -6,7 +6,6 @@ import { useAuthenticationStore } from "@/stores";
 import { useTsxHelper, useRouteHelper } from "@/helpers";
 
 // Child components.
-import RootLayout from "@/components/layouts/RootLayout";
 import { Form, FormField, TextInput } from "@/components/form";
 import { Button } from "@/components/ui";
 
@@ -171,23 +170,21 @@ export default function SignInPage(): React.ReactNode {
   );
 
   return (
-    <RootLayout>
-      <div
-        className={joinClassName(
-          "bg-white dark:bg-neutral-900 sm:bg-transparent dark:sm:bg-transparent",
-          "flex flex-col justify-start items-center w-screen h-screen pt-[25vh]"
-        )}
-        onKeyUp={(event) => event.key === "Enter" && handleEnterKeyPressedAsync()}
-      >
-        {!state.isSignedIn ? renderSignInContent() : renderSignedSuccessfullyContent()}
+    <div
+      className={joinClassName(
+        "bg-white dark:bg-neutral-900 sm:bg-transparent dark:sm:bg-transparent",
+        "flex flex-col justify-start items-center w-screen h-screen pt-[25vh]"
+      )}
+      onKeyUp={(event) => event.key === "Enter" && handleEnterKeyPressedAsync()}
+    >
+      {!state.isSignedIn ? renderSignInContent() : renderSignedSuccessfullyContent()}
 
-        <div className={joinClassName(
-          "text-primary/50 absolute bottom-1 sm:relative sm:bottom-unset",
-          "flex justify-end mb-3 sm:mt-7 sm:mb-0")}
-        >
-          © {new Date().getFullYear()} - Bản quyền thuộc về Ngô Khánh Huy
-        </div>
+      <div className={joinClassName(
+        "text-primary/50 absolute bottom-1 sm:relative sm:bottom-unset",
+        "flex justify-end mb-3 sm:mt-7 sm:mb-0")}
+      >
+        © {new Date().getFullYear()} - Bản quyền thuộc về Ngô Khánh Huy
       </div>
-    </RootLayout>
+    </div>
   );
 }

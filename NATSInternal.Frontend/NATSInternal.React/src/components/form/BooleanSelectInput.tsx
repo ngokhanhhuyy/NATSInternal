@@ -4,7 +4,7 @@ import React from "react";
 import SelectInput, { type SelectInputProps } from "./SelectInput";
 
 // Props.
-type BooleanSelectInputOption = {
+export type BooleanSelectInputOption = {
   value: boolean;
   displayName?: string;
 };

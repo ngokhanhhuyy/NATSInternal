@@ -1,4 +1,5 @@
 import React from "react";
+import { useTsxHelper } from "@/helpers";
 
 // Child components
 import FieldContainer from "./FieldContainer";
@@ -10,6 +11,18 @@ type CustomerPersonalInformationProps = { model: CustomerDetailModel };
 
 // Component.
 export default function CustomerPersonalInformation(props: CustomerPersonalInformationProps): React.ReactNode {
+  // Dependencies.
+  const { compute } = useTsxHelper();
+
+  // Computed.
+  const genderClassName = compute<string>(() => {
+    if (props.model.gender === "Male") {
+      return "text-blue-600 dark:text-blue-400";
+    }
+
+    return "text-red-600 dark:text-red-400"; 
+  });
+
   // Template.
   return (
     <Block title="Thông tin cá nhân" bodyClassName="flex flex-col gap-3 p-3">
@@ -31,7 +44,7 @@ export default function CustomerPersonalInformation(props: CustomerPersonalInfor
       <FieldContainer>
         {/* Gender */}
         <Field name="gender">
-          <span className={props.model.gender === "Male" ? "text-blue-500" : "text-red-500"}>
+          <span className={genderClassName}>
             {props.model.gender === "Male" ? "Nam" : "Nữ"}
           </span>
         </Field>
@@ -79,7 +92,7 @@ export default function CustomerPersonalInformation(props: CustomerPersonalInfor
 
         {/* Address */}
         {props.model.address && (
-          <Field name="address" marginBottom={false}>
+          <Field name="address">
             {props.model.address}
           </Field>
         )}

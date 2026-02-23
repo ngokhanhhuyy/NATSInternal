@@ -30,11 +30,15 @@ public class BrandGetListResponseDto : IListResponseDto<BrandGetListBrandRespons
 public class BrandGetListBrandResponseDto
 {
     #region Constructors
-    internal BrandGetListBrandResponseDto(Brand brand, BrandExistingAuthorizationResponseDto authorization)
+    internal BrandGetListBrandResponseDto(
+        Brand brand,
+        int productCount,
+        BrandExistingAuthorizationResponseDto authorization)
     {
         Id = brand.Id;
         Name = brand.Name;
         CountryName = brand.Country?.Name;
+        ProductCount = productCount;
         Authorization = authorization;
     }
     #endregion
@@ -43,6 +47,7 @@ public class BrandGetListBrandResponseDto
     public Guid Id { get; }
     public string Name { get; }
     public string? CountryName { get; }
+    public int ProductCount { get; }
     public BrandExistingAuthorizationResponseDto Authorization { get; }
     #endregion
 }

@@ -1,23 +1,18 @@
-import React, { lazy } from "react";
+import React from "react";
 import { createBrowserRouter, RouterProvider, useRouteError, Navigate } from "react-router";
+import { AuthenticationError } from "@/api";
 import { useRouteHelper } from "@/helpers";
 
 // Layouts.
-import { MainPageLayout } from "@/components/layouts";
+import { RootLayout, MainPageLayout } from "@/components/layouts";
+
+// Routes.
+import { authenticationRoutes } from "./authenticatinoRoutes";
+import { homeRoutes } from "./homeRoutes";
+import { customerRoutes } from "./customerRoutes";
+import { productRoutes } from "./productRoutes";
 
 // Pages.
-import SignInPage from "@/pages/authentication/signIn/SignInPage";
-// import HomePage from "@/pages/home/HomePage";
-const CustomerListPage = lazy(() => import("@/pages/customer/customerList/CustomerListPage"));
-const CustomerDetailPage = lazy(() => import("@/pages/customer/customerDetail/CustomerDetailPage"));
-const CustomerCreatePage = lazy(() => import("@/pages/customer/customerUpsert/CustomerCreatePage"));
-const CustomerUpdatePage = lazy(() => import("@/pages/customer/customerUpsert/CustomerUpdatePage"));
-const ProductListPage = lazy(() => import("@/pages/product/productList/ProductListPage"));
-const ProductDetailPage = lazy(() => import("@/pages/product/productDetail/ProductDetailPage"));
-const ProductCreatePage = lazy(() => import("@/pages/product/productUpsert/ProductCreatePage"));
-const ProductUpdatePage = lazy(() => import("@/pages/product/productUpsert/ProductUpdatePage"));
-import TestingPage from "@/pages/TestingPage";
-import { AuthenticationError } from "@/api";
 
 // Route helper.
 const { getSignInRoutePath, getDashboardRoutePath } = useRouteHelper();
@@ -39,137 +34,21 @@ function AuthenticationErrorBoundary(): React.ReactNode | null {
 const router = createBrowserRouter([
   {
     path: "/",
+    Component: RootLayout,
     errorElement: <AuthenticationErrorBoundary />,
     children: [
-      {
-        path: "dang-nhap",
-        Component: SignInPage,
-        handle: {
-          pageTitle: "Đăng nhập"
-        }
-      },
+      authenticationRoutes,
       {
         path: "",
         Component: MainPageLayout,
         children: [
           {
             index: true,
-            element: <Navigate to={getDashboardRoutePath()} />
+            element: <Navigate to={getDashboardRoutePath()} replace />
           },
-          {
-            path: "bang-dieu-khien",
-            Component: TestingPage,
-            handle: {
-              breadcrumbTitle: "Bảng điều khiển",
-              pageTitle: "Bảng điều khiển"
-            }
-          },
-          {
-            path: "khach-hang",
-            children: [
-              {
-                index: true,
-                Component: CustomerListPage,
-                loader: () => import("@/pages/customer/customerList/CustomerListPage").then(m => m.loadDataAsync()),
-                handle: {
-                  breadcrumbTitle: "Danh sách",
-                  pageTitle: "Danh sách khách hàng"
-                }
-              },
-              {
-                path: "tao-moi",
-                Component: CustomerCreatePage,
-                handle: {
-                  breadcrumbTitle: "Tạo mới",
-                  pageTitle: "Tạo khách hàng mới"
-                }
-              },
-              {
-                path: ":id",
-                children: [
-                  {
-                    index: true,
-                    Component: CustomerDetailPage,
-                    loader: async ({ params }) => {
-                      const module = await import("@/pages/customer/customerDetail/CustomerDetailPage");
-                      return module.loadDataAsync(params.id as string);
-                    },
-                    handle: {
-                      breadcrumbTitle: "Chi tiết",
-                      pageTitle: "Chi tiết khách hàng"
-                    }
-                  },
-                  {
-                    path: "chinh-sua",
-                    Component: CustomerUpdatePage,
-                    loader: async ({ params }) => {
-                      const module = await import("@/pages/customer/customerUpsert/CustomerUpdatePage");
-                      return module.loadDataAsync(params.id as string);
-                    },
-                    handle: {
-                      breadcrumbTitle: "Chỉnh sửa",
-                      pageTitle: "Chỉnh sửa khách hàng"
-                    }
-                  },
-                ]
-              },
-            ],
-            handle: {
-              breadcrumbTitle: "Khách hàng",
-            }
-          },
-          {
-            path: "san-pham",
-            children: [
-              {
-                index: true,
-                Component: ProductListPage,
-                loader: () => import("@/pages/product/productList/ProductListPage").then(m => m.loadDataAsync()),
-                handle: {
-                  breadcrumbTitle: "Danh sách",
-                  pageTitle: "Danh sách sản phẩm"
-                }
-              },
-              {
-                path: "tao-moi",
-                Component: ProductCreatePage,
-                handle: {
-                  breadcrumbTitle: "Tạo mới",
-                  pageTitle: "Tạo sản phẩm mới"
-                }
-              },
-              {
-                path: ":id",
-                children: [
-                  {
-                    index: true,
-                    Component: ProductDetailPage,
-                    loader: ({ params }) => import("@/pages/product/productDetail/ProductDetailPage")
-                      .then((module) => module.loadDataAsync(params.id as string)),
-                    handle: {
-                      breadcrumbTitle: "Chi tiết",
-                      pageTitle: "Chi tiết sản phẩm"
-                    }
-                  },
-                  {
-                    path: "chinh-sua",
-                    Component: ProductUpdatePage,
-                    loader: async ({ params }) => {
-                      const module = await import("@/pages/product/productUpsert/ProductUpdatePage");
-                      return module.loadDataAsync(params.id as string);
-                    },
-                    handle: {
-                      breadcrumbTitle: "Chỉnh sửa",
-                      pageTitle: "Chỉnh sửa sản phẩm"
-                    }
-                  },
-                ]
-              },
-            ],
-            handle: {
-              breadcrumbTitle: "Sản phẩm",
-            }
-          }
+          homeRoutes,
+          customerRoutes,
+          productRoutes
         ],
         handle: {
           breadcrumbTitle: "Trang chủ"
@@ -179,7 +58,7 @@ const router = createBrowserRouter([
   },
   {
     path: "*",
-    element: <Navigate to={getSignInRoutePath()} />
+    element: <Navigate to={getDashboardRoutePath()} replace />
   }
 ]);
 

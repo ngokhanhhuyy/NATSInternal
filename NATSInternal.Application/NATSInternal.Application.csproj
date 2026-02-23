@@ -19,4 +19,8 @@
     <ProjectReference Include="..\NATSInternal.Domain\NATSInternal.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UseCases/Products/Brands/BrandGetDetail/" />
+  </ItemGroup>
+
 </Project>

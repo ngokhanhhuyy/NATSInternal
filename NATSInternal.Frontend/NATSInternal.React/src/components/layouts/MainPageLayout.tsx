@@ -1,11 +1,10 @@
 import React, { useState, useMemo, useEffect, Fragment } from "react";
-import { useMatches, Outlet, Link, useNavigation } from "react-router";
-import { useNavigate } from "react-router";
+import { useMatches, Outlet, Link, useNavigation, useNavigate, type RouteHandle } from "react-router";
 import { useAuthenticationStore, useNavigationBarStore } from "@/stores";
+import { useMatchedRouteHandles } from "@/hooks";
 import { useRouteHelper, useTsxHelper } from "@/helpers";
 
 // Child components.
-import RootLayout from "./RootLayout";
 import { HomeIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
 // Props.
@@ -19,6 +18,9 @@ export default function MainPageLayout(): React.ReactNode {
   const isAuthenticated = useAuthenticationStore(store => store.isAuthenticated);
   const isNavigationBarExpanded = useNavigationBarStore(store => store.isExpanded);
   const { getSignInRoutePath } = useRouteHelper();
+
+  // Dependencies.
+  const matchedRouteHandlesArray = useMatchedRouteHandles();
   const { joinClassName, compute } = useTsxHelper();
 
   // States.
@@ -26,6 +28,13 @@ export default function MainPageLayout(): React.ReactNode {
 
   // Computed.
   const isNavigating = compute<boolean>(() => Boolean(navigation.location));
+  const matchedRouteHandle = compute<RouteHandle | null>(() => {
+    if (!matchedRouteHandlesArray.length) {
+      return null;
+    }
+
+    return matchedRouteHandlesArray[matchedRouteHandlesArray.length - 1];
+  });
 
   // Effect.
   useEffect(() => {
@@ -44,24 +53,27 @@ export default function MainPageLayout(): React.ReactNode {
   }
 
   return (
-    <RootLayout>
-      <div
-        id="main-page-layout"
-        className={joinClassName(
-          "transition-opacity",
-          isNavigating && "opacity-50 navigating",
-          shouldBlockPointerEvent && "pointer-events-none"
-        )}
-      >
-        {/* The bar on top the current page, containing breadcrumb */}
-        <div id="breadcrumb">
-          <Breadcrumb />
-        </div>
-
-        {/* Page */}
-        <Outlet />
+    <div
+      id="main-page-layout"
+      className={joinClassName(
+        "transition-opacity",
+        isNavigating && "opacity-50 navigating",
+        shouldBlockPointerEvent && "pointer-events-none"
+      )}
+    >
+      {/* The bar on top the current page, containing breadcrumb */}
+      <div id="breadcrumb">
+        <Breadcrumb />
       </div>
-    </RootLayout>
+
+      <div id="page-title-container">
+        <span className="text-2xl">{matchedRouteHandle?.pageTitle}</span>
+        <span className="text-md opacity-50">{matchedRouteHandle?.description}</span>
+      </div>
+
+      {/* Page */}
+      <Outlet />
+    </div>
   );
 }
 

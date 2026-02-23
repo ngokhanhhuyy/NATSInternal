@@ -20,6 +20,7 @@ declare global {
     id: string;
     name: string;
     countryName: string;
+    productCount: number;
   };
 }
 

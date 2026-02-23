@@ -1,29 +1,25 @@
-import { useRef } from "react";
+import { useRef, useMemo, useCallback, useDeferredValue } from "react";
 
-// Utility for model serialization.
-const serializeModel = <TModel extends object, TKey extends keyof TModel>
-    (model: TModel | (() => TModel), excludedKeys?: TKey[]): string => {
-  const computedModel = typeof model === "function" ? model() : model;
-  if (excludedKeys && excludedKeys.length) {
-    return JSON.stringify(computedModel, (key, value) => {
-      if (!excludedKeys.includes(key as TKey)) {
-        return value;
-      }
-    });
-  }
+// Types.
+type OriginalModelSetter<TModel extends object> = (newOriginalModel: TModel | (() => TModel)) => void;
+type Comparer<TModel extends object> = (originalModel: TModel, currentModel: TModel) => boolean;
 
-  return JSON.stringify(model);
-};
-
-// Hook.
-export function useDirtyModelChecker<TModel extends object, TKey extends keyof TModel>(
+// Hooks
+export function useDirtyModelChecker<TModel extends object>(
     model: TModel | (() => TModel),
-    excludedKeys?: TKey[]): boolean {
+    comparer: Comparer<TModel>): [boolean, OriginalModelSetter<TModel>] {
   // States.
+  const computedModel = typeof model === "function" ? model() : model;
+  const originalModel = useRef<TModel>(computedModel);
+  const deferredModel = useDeferredValue<TModel>(computedModel, originalModel.current);
 
-  const originalModelJson = useRef(serializeModel(model));
-  return (() => {
-    const currentModelJson = serializeModel(model, excludedKeys);
-    return originalModelJson.current !== currentModelJson;
-  })();
+  // Computed.
+  const isDirty = useMemo(() => !comparer(originalModel.current, deferredModel), [deferredModel]);
+
+  // Callbacks.
+  const setOriginalModel = useCallback<OriginalModelSetter<TModel>>((newOriginalModel: TModel | (() => TModel)) => {
+    originalModel.current = newOriginalModel as TModel;
+  }, []);
+
+  return [isDirty, setOriginalModel];
 }

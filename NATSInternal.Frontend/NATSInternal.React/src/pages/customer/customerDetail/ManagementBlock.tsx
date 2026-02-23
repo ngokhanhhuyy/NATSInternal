@@ -7,10 +7,10 @@ import Field from "./Field";
 import { Block } from "@/components/ui";
 
 // Props.
-type ManagementBlock = { model: CustomerDetailModel };
+type ManagementBlockProps = { model: CustomerDetailModel };
 
 // Component.
-export default function ManagementBlock(props: ManagementBlock): React.ReactNode {
+export default function ManagementBlock(props: ManagementBlockProps): React.ReactNode {
   // Template.
   return (
     <Block title="Quản lý" bodyClassName="p-3">
@@ -29,7 +29,7 @@ export default function ManagementBlock(props: ManagementBlock): React.ReactNode
         </Field>
 
         {/* CreatedDateTime */}
-        <Field name="createdDateTime" marginBottom={!!props.model.lastUpdatedUser || !!props.model.lastUpdatedDateTime}>
+        <Field name="createdDateTime">
           {props.model.createdDateTime}
         </Field>
 
@@ -50,7 +50,7 @@ export default function ManagementBlock(props: ManagementBlock): React.ReactNode
 
         {/* LastUpdatedDateTime */}
         {props.model.lastUpdatedDateTime && (
-          <Field name="lastUpdatedDateTime" marginBottom={false}>
+          <Field name="lastUpdatedDateTime">
             {props.model.lastUpdatedDateTime}
           </Field>
         )}

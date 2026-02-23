@@ -25,7 +25,7 @@ export default function TestingPage() {
 
   // Template.
   return (
-    <MainContainer description="Trang kiểm tra dành để kiểm tra các component.">
+    <MainContainer>
       <div className="panel">
         <div className="panel-header">
           <span className="panel-header-title">

@@ -6,15 +6,15 @@ import Field from "./Field";
 import { Block } from "@/components/ui";
 
 // Props.
-type DebtBlock = { model: CustomerDetailModel };
+type DebtBlockProps = { model: CustomerDetailModel };
 
 // Component.
-export default function DebtBlock(props: DebtBlock): React.ReactNode {
+export default function DebtBlock(props: DebtBlockProps): React.ReactNode {
   // Template.
   return (
     <Block title="Thông tin nợ" bodyClassName="p-3">
       <FieldContainer>
-        <Field name="debtRemainingAmount" marginBottom={false}>
+        <Field name="debtRemainingAmount">
           {props.model.displayDebtRemainingAmountText}
         </Field>
       </FieldContainer>

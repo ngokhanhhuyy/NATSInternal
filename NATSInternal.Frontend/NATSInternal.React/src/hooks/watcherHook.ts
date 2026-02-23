@@ -6,11 +6,12 @@ export function useWatcher(callback: React.EffectCallback, dependencies: React.D
 
   // Effect.
   useEffect(() => {
+    console.log(isInitialRendering.current);
     if (isInitialRendering.current) {
       isInitialRendering.current = false;
       return;
     }
 
-    return callback();
+    callback();
   }, dependencies);
 }

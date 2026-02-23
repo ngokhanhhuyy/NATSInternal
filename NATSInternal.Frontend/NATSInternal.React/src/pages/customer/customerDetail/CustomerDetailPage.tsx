@@ -25,10 +25,7 @@ export default function CustomerDetailPage(): React.ReactNode {
 
   // Template.
   return (
-    <MainContainer description={
-      "Thông tin chi tiết về khách hàng, bao gồm thông tin cá nhân " +
-      "và thông tin về nợ các giao dịch gần nhất"
-    }>
+    <MainContainer>
       <div className="flex flex-col gap-3">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="flex flex-col gap-3">

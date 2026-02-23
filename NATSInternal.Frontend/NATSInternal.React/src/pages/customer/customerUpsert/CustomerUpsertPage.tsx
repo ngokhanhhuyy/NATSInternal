@@ -1,5 +1,5 @@
 import React from "react";
-import { useDirtyModelChecker } from "@/hooks/dirtyModelCheckerHook";
+import { useJSONDirtyModelChecker } from "@/hooks";
 import { useValidationHelper } from "@/helpers";
 
 // Child components.
@@ -27,7 +27,7 @@ export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>)
   const { validatePhoneNumber } = useValidationHelper();
 
   // States.
-  const isModelDirty = useDirtyModelChecker(props.model.toRequestDto());
+  const isModelDirty = useJSONDirtyModelChecker(props.model.toRequestDto());
 
   // Template;
   return (

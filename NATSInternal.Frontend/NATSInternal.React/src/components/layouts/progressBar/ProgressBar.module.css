@@ -1,0 +1,51 @@
+@reference "tailwindcss";
+
+.progress-bar {
+    --stripes-width: --spacing(1);
+    --stripes-angle: 45deg;
+    background: repeating-linear-gradient(
+        45deg,
+        var(--color-blue-500) 0,
+        var(--color-blue-500) var(--stripes-width),
+        var(--color-blue-200) var(--stripes-width),
+        var(--color-blue-200) calc(var(--stripes-width) + var(--stripes-width)));
+    height: --spacing(1);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10000;
+    animation-name: moving-right-infinitive;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.idle {
+    width: 0;
+    opacity: 0;
+    transition: none;
+}
+
+.loading {
+    transition: width 3s ease-out;
+    width: 75%;
+    opacity: 100%;
+}
+
+.hiding {
+    width: 100%;
+    opacity: 0;
+    transition-property: width, opacity;
+    transition-duration: 0.2s, 0.2s;
+    transition-delay: 0s 0.2s;
+}
+
+.disable-transition {
+    transition: none !important;
+}
+
+@keyframes moving-right-infinitive {
+    to {
+        background-position-x: calc(var(--stripes-width) / sin(var(--stripes-angle)));
+    }
+}

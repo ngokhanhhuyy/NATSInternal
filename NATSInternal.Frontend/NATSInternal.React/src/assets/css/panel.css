@@ -8,8 +8,8 @@
     }
 
     .panel-header {
-        background-color: var(--color-blue-600);
-        border: 1px solid transparent;
+        background-color: --alpha(var(--color-blue-500) / 25%);
+        border: 1px solid --alpha(var(--color-blue-500) / 50%);
         display: flex;
         justify-content: space-between;
         gap: --spacing(3);
@@ -37,7 +37,7 @@
     }
     
     .panel-header-title {
-        color: white;
+        color: var(--color-blue-700);
         font-size: var(--text-sm);
         font-weight: bold;
         text-transform: uppercase;
@@ -52,8 +52,10 @@
     .panel-body {
         background-color: white;
         border-color: --alpha(var(--color-black) / 20%);
-        border-inline-width: 1px;
-        border-inline-style: solid;
+        border-left-width: 1px;
+        border-left-style: solid;
+        border-right-width: 1px;
+        border-right-style: solid;
         flex: 1;
         overflow: hidden;
         

@@ -1,5 +1,3 @@
-import React from "react";
-
 declare module '*.module.scss' {
   const styles: { [className: string]: string };
   export default styles;
@@ -10,13 +8,12 @@ declare global {
   type ImplementsPartial<T extends IPageableListModel, U extends T> = { [P in keyof U]?: U[P] | undefined; };
   type AwaitedReturn<T> = T extends Promise<infer U> ? U : T;
   type ColorVariant = "primary" | "secondary" | "danger" | "success" | "hinting";
-  type ComponentProps<TComponent> = TComponent extends ((_props: infer TProps) => React.ReactNode) ? TProps : never;
   type Truthy<T> = Exclude<T, false | 0 | "" | null | undefined>;
-
-  declare module "react-router" {
-    interface RouteHandle {
-      title: string;
-      breadcrumb: { name: string; routePath: string; };
-    }
+  interface RouteHandle {
+    breadcrumbTitle?: string;
+    pageTitle?: string;
+    description?: string;
   }
 }
+
+export { };

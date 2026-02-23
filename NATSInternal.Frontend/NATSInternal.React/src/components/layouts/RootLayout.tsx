@@ -1,16 +1,14 @@
 import React, { useEffect } from "react";
-import { useLocation, useMatches } from "react-router";
+import { useLocation, useMatches, Outlet } from "react-router";
 import { useRouteHelper, useTsxHelper } from "@/helpers";
 
 // Child components.
 import TopBar from "./navigationBar/TopBar";
 import NavigationBar from "./navigationBar/NavigationBar";
-
-// Props.
-type RootLayoutProps = Omit<React.ComponentPropsWithoutRef<"div">, "id">;
+// import ProgressBar from "./progressBar/ProgressBar";
 
 // Component.
-export default function RootLayout(props: RootLayoutProps): React.ReactNode {
+export default function RootLayout(): React.ReactNode {
   // Dependencies.
   const location = useLocation();
   const matchedRoutes = useMatches();
@@ -37,7 +35,7 @@ export default function RootLayout(props: RootLayoutProps): React.ReactNode {
     <div id="root-layout">
       <TopBar shouldRenderNavigationBarToggleButton={shouldRenderNavigationBar} />
       <main>
-        {props.children}
+        <Outlet />
         {shouldRenderNavigationBar && <NavigationBar />}
       </main>
     </div>

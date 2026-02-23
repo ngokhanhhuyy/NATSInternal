@@ -141,8 +141,8 @@
 
 @utility btn-panel-header {
     --btn-foreground-color: var(--color-blue-600);
-    --btn-border-color: var(--color-blue-700);
-    --btn-border-color-hover: var(--color-blue-800);
+    --btn-border-color: var(--color-blue-400);
+    --btn-border-color-hover: var(--color-blue-500);
 
     @variant dark {
         & {

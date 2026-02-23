@@ -7,12 +7,6 @@ export type TextInputProps = {
 
 // Component.
 export default function TextInput(props: TextInputProps) {
-  const template = (
-    <Show when={{}}>
-      {value => }
-    </Show>
-  );
-
   // Template.
   return (
     <input

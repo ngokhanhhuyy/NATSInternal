@@ -155,19 +155,25 @@ internal class ProductService : IProductService
                 throw new NotImplementedException();
         }
 
-        Page<Brand> queryResult = await _listFetchingService.GetPagedListAsync(
-            query,
+        IQueryable<BrandWithProductCount> projectedQuery = query.Select(b => new BrandWithProductCount
+        {
+            Brand = b,
+            ProductCount = _context.Products.Count(p => p.BrandId == b.Id)
+        });
+
+        Page<BrandWithProductCount> queryResult = await _listFetchingService.GetPagedListAsync(
+            projectedQuery,
             requestDto.Page,
             requestDto.ResultsPerPage,
             cancellationToken
         );
 
         IEnumerable<BrandGetListBrandResponseDto> brandResponseDtos = queryResult.Items
-            .Select(b =>
+            .Select(i =>
             {
                 BrandExistingAuthorizationResponseDto authorizationResponseDto;
-                authorizationResponseDto = _authorizationInternalService.GetBrandExistingAuthorization(b);
-                return new BrandGetListBrandResponseDto(b, authorizationResponseDto);
+                authorizationResponseDto = _authorizationInternalService.GetBrandExistingAuthorization(i.Brand);
+                return new BrandGetListBrandResponseDto(i.Brand, i.ProductCount, authorizationResponseDto);
             });
 
         bool canCreate = _authorizationInternalService.CanCreateBrand();
@@ -234,4 +240,12 @@ file class ProductWithStockAndThumbnail
     public required Stock? Stock { get; init; }
     public required Photo? Thumbnail { get; init; }
     #endregion
+}
+
+file class BrandWithProductCount
+{
+    #region Properties
+    public required Brand Brand { get; init; }
+    public required int ProductCount { get; init; }
+    #endregion   
 }

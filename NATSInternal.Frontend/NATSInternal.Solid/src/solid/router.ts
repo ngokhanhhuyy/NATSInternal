@@ -1,8 +1,14 @@
-import { useLocation, useParams, useSearchParams, useMatch, useCurrentMatches } from "@solidjs/router";
+import { useLocation, useParams, useSearchParams, useCurrentMatches } from "@solidjs/router";
 
 const router = {
   location: useLocation(),
   params: useParams(),
   searchParams: useSearchParams(),
-  get match() { return useMatch(); }
+  get currentMatches() {
+    return useCurrentMatches()();
+  }
 };
+
+export function useRouter(): typeof router {
+  return router;
+}

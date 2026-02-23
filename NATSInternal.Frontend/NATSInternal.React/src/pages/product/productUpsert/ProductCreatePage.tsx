@@ -5,6 +5,13 @@ import { createProductUpsertModel } from "@/models";
 
 // Child components.
 import ProductUpsertPage from "./ProductUpsertPage";
+import { loadBrandAndCategoryOptionsAsync, type ProductUpsertInitialLoadedModels } from "./ProductUpsertPage";
+
+// Data loader.
+type ProductCreateInitiaLoadedModels = ProductUpsertInitialLoadedModels; 
+export async function loadDataAsync(): Promise<ProductCreateInitiaLoadedModels> {
+  return await loadBrandAndCategoryOptionsAsync();
+}
 
 // Components.
 export default function ProductCreatePage(): React.ReactNode {

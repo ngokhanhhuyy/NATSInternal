@@ -26,7 +26,7 @@ export default function ResultsPanel(props: ResultsPanelProps): React.ReactNode 
         </span>
       </div>
 
-      <div className={joinClassName("panel-body transition-opacity", props.isReloading && "opacity-50")}>
+      <div className={joinClassName("panel-body", props.isReloading && "opacity-50")}>
         <ul className="list-group list-group-flush">
           {props.model.items.length > 0 ? props.model.items.map((product, index) => (
             <ResultItem model={product} key={index} />

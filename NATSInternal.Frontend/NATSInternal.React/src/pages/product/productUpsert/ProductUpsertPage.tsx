@@ -1,12 +1,33 @@
 import React from "react";
-import { useDirtyModelChecker } from "@/hooks/dirtyModelCheckerHook";
-import { useTsxHelper } from "@/helpers";
+import { useApi } from "@/api";
+import { useJSONDirtyModelChecker } from "@/hooks/jsonDirtyModelCheckerHook";
+import { createBrandBasicModel, createProductCategoryBasicModel } from "@/models";
 
 // Child components.
 import DetailPanel from "./DetailPanel";
 import StockPanel from "./StockPanel";
 import { FormContainer } from "@/components/layouts";
 import { SubmitButton, DeleteButton } from "@/components/form";
+
+// Types.
+export type ProductUpsertInitialLoadedModels = {
+  brandOptionModels: BrandBasicModel[];
+  categoryOptionModels: ProductCategoryBasicModel[];
+};
+
+// Data loader.
+export async function loadBrandAndCategoryOptionsAsync(): Promise<ProductUpsertInitialLoadedModels> {
+  const api = useApi();
+  const [brandResponseDtos, categoryResponseDtos] = await Promise.all([
+    api.brand.getAllAsync(),
+    api.productCategory.getAllAsync()
+  ]);
+
+  return {
+    brandOptionModels: brandResponseDtos.map(createBrandBasicModel),
+    categoryOptionModels: categoryResponseDtos.map(createProductCategoryBasicModel)
+  };
+}
 
 // Props.
 type Props = {
@@ -23,27 +44,17 @@ type Props = {
 
 // Components.
 export default function ProductUpsertPage(props: Props): React.ReactNode {
-  // Dependencies.
-  const { compute } = useTsxHelper();
-
   // States.
-  const isModelDirty = useDirtyModelChecker(compute(() => {
-    if (props.isForCreating) {
-      return props.model.toCreateRequestDto();
-    }
-
-    return props.model.toUpdateRequestDto();
-  }));
+  const isModelDirty = useJSONDirtyModelChecker(props.model);
   
   // Template.
   return (
     <FormContainer
-      description={props.description}
       upsertAction={props.upsertAction}
       onUpsertingSucceeded={props.onUpsertingSucceeded}
       isModelDirty={isModelDirty}
     >
-      <DetailPanel model={props.model} onModelChanged={props.onModelChanged} />
+      <DetailPanel model={props.model} onModelUpdated={props.onModelChanged} />
       <StockPanel
         model={props.model.stock}
         onModelChanged={(changedData) => props.onModelChanged({ stock: { ...props.model.stock, ...changedData } })}

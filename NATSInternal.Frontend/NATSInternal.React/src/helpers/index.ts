@@ -1,4 +1,5 @@
 export * from "./avatarHelper";
+export * from "./componentHelper";
 export * from "./currencyHelper";
 export * from "./dateTimeHelper";
 export * from "./guidHelper";

@@ -4,9 +4,9 @@ import { useApi } from "@/api";
 import { createBrandListModel, createProductCategoryListModel } from "@/models";
 import { getDisplayName } from "@/metadata";
 import { useRouteHelper, useTsxHelper } from "@/helpers";
+import styles from "./SecondaryPanels.module.css";
 
 // Child components.
-import { Block } from "@/components/ui";
 import { Bars4Icon } from "@heroicons/react/24/outline";
 
 // Props.
@@ -32,28 +32,24 @@ function SecondaryListPanel<
         IPageableListModel<TItemModel> &
         IUpsertableListModel<TItemModel>,
       TItemModel extends BrandListBrandModel | ProductCategoryListProductCategoryModel>
-    (props: Props<TListModel, TItemModel>): React.ReactNode {
+  (props: Props<TListModel, TItemModel>): React.ReactNode
+{
   // Dependencies.
-  const { joinClassName } = useTsxHelper();
-
+  const { compute, joinClassName } = useTsxHelper();
+  
   // Computed.
   const displayName = getDisplayName(props.resourceName) ?? props.resourceName;
     
   // Template.
-  const headerChildren = (
-    <Link to={props.listRoutePath} className="btn btn-panel-header btn-sm gap-1">
-      <Bars4Icon className="size-4"/>
-      <span>Danh sách đầy đủ</span>
-    </Link>
-  );
+  const list = compute<React.ReactNode>(() => {
+    if (props.isInitialLoading) {
+      return (
+        <div className="flex justify-center items-center px-3 py-5">
+          Đang tải..
+        </div>
+      );
+    }
 
-  const loadingChildren = (
-    <div className="flex justify-center items-center px-3 py-5">
-      Đang tải..
-    </div>
-  );
-
-  const renderListChildren = (): React.ReactNode => {
     if (props.model.items.length === 0) {
       return (
         <div className="flex justify-center items-center opacity-50 px-3 py-5">
@@ -79,16 +75,25 @@ function SecondaryListPanel<
         )}
       </ul>
     );
-  };
+  });
 
   return (
-    <Block
-      className={joinClassName(props.isInitialLoading && "opacity-50")}
-      title={displayName}
-      headerChildren={headerChildren}
-    >
-      {props.isInitialLoading ? loadingChildren : renderListChildren()}
-    </Block>
+    <div className={joinClassName("panel", styles.fadeInAnimation)}>
+      <div className="panel-header">
+        <div className="panel-header-title">
+          {displayName}
+        </div>
+
+        <Link to={props.listRoutePath} className="btn btn-panel-header btn-sm gap-1">
+          <Bars4Icon className="size-4"/>
+          <span>Danh sách đầy đủ</span>
+        </Link>
+      </div>
+
+      <div className="panel-body">
+        {list}
+      </div>
+    </div>
   );
 }
 

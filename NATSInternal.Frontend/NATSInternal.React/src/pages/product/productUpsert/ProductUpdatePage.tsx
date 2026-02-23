@@ -5,13 +5,22 @@ import { createProductUpsertModel } from "@/models";
 
 // Child components.
 import ProductUpsertPage from "./ProductUpsertPage";
+import { loadBrandAndCategoryOptionsAsync, type ProductUpsertInitialLoadedModels } from "./ProductUpsertPage";
 
 // Data loader.
-export async function loadDataAsync(id: string): Promise<ProductUpsertModel> {
+type ProductUpdateInitialLoadedModels = ProductUpsertInitialLoadedModels & { updateModel: ProductUpsertModel; }; 
+export async function loadDataAsync(id: string): Promise<ProductUpdateInitialLoadedModels> {
   const api = useApi();
-  const responseDto = await api.product.getDetailAsync(id);
-  return createProductUpsertModel(responseDto);
-}
+  const [responseDto, optionModels] = await Promise.all([
+    api.product.getDetailAsync(id),
+    loadBrandAndCategoryOptionsAsync()
+  ]);
+
+  return {
+    updateModel: createProductUpsertModel(responseDto),
+    ...optionModels
+  };
+};
 
 // Components.
 export default function ProductUpdatePage(): React.ReactNode {
@@ -20,8 +29,8 @@ export default function ProductUpdatePage(): React.ReactNode {
   const api = useApi();
 
   // States.
-  const initialModel = useLoaderData<ProductUpsertModel>();
-  const [model, setModel] = useState<ProductUpsertModel>(() => initialModel);
+  const initialModels = useLoaderData<ProductUpdateInitialLoadedModels>();
+  const [model, setModel] = useState<ProductUpsertModel>(() => initialModels.updateModel);
 
   // Callbacks.
   async function handleUpsertAsync(): Promise<void> {

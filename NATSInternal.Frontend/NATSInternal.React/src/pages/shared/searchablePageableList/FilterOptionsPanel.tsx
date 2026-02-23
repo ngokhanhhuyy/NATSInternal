@@ -1,5 +1,7 @@
 import React, { useMemo } from "react";
+import { flushSync } from "react-dom";
 import { getDisplayName } from "@/metadata";
+import { useDirtyModelChecker } from "@/hooks";
 import { useTsxHelper } from "@/helpers";
 
 // Child component.
@@ -17,9 +19,9 @@ type Props<
       IUpsertableListModel<TItemModel>,
     TItemModel extends object> = {
   model: TListModel;
-  onModelChanged(changedData: Partial<TListModel>): any;
+  onModelUpdated(updatedData: Partial<TListModel>): any;
   onReloadButtonClicked(): any;
-  hasPendingReloading: boolean;
+  additionalDirtyModelComparer?: (originalModel: TListModel, currentModel: TListModel) => boolean;
   children?: React.ReactNode | React.ReactNode[];
 };
 
@@ -34,6 +36,17 @@ function DisplayOptionsPanel<
     (props: Props<TListModel, TItemModel>): React.ReactNode {
   // Dependencies.
   const { joinClassName } = useTsxHelper();
+
+  // States.
+  const [isModelDirty, setModelDirtyCheckerOriginalModel] = useDirtyModelChecker(props.model, (om, m) => {
+    return (
+      m.sortByAscending === om.sortByAscending &&
+      m.sortByFieldName === om.sortByFieldName &&
+      m.searchContent === om.searchContent &&
+      m.page === om.page &&
+      m.resultsPerPage === om.resultsPerPage
+    );
+  });
 
   // Computed.
   const sortByFieldNameOptions = useMemo<SelectInputOption[]>(() => {
@@ -50,9 +63,15 @@ function DisplayOptionsPanel<
     }));
   }, []);
 
+  // Callbacks.
+  const handleReloadButtonClicked = () => {
+    props.onReloadButtonClicked();
+    flushSync(() => setModelDirtyCheckerOriginalModel(props.model));
+  };
+
   // Template.
   return (
-    <div className="panel">
+    <div className="panel mt-3 md:mt-5">
       <div className="panel-header">
         <div className="panel-header-title">
           Tuỳ chọn lọc và sắp xếp
@@ -67,7 +86,7 @@ function DisplayOptionsPanel<
               placeholder="Tìm kiếm"
               autoComplete="off"
               value={props.model.searchContent}
-              onValueChanged={(searchContent) => props.onModelChanged({ searchContent } as Partial<TListModel>)}
+              onValueChanged={(searchContent) => props.onModelUpdated({ searchContent } as Partial<TListModel>)}
             />
           </FormField>
 
@@ -76,7 +95,7 @@ function DisplayOptionsPanel<
               <SelectInput
                 options={sortByFieldNameOptions}
                 value={props.model.sortByFieldName}
-                onValueChanged={(sortByFieldName) => props.onModelChanged({ sortByFieldName } as Partial<TListModel>)}
+                onValueChanged={(sortByFieldName) => props.onModelUpdated({ sortByFieldName } as Partial<TListModel>)}
               />
             </FormField>
 
@@ -84,7 +103,7 @@ function DisplayOptionsPanel<
               <Button
                 className="form-control justify-start gap-2"
                 onClick={() => {
-                  props.onModelChanged({ sortByAscending: !props.model.sortByAscending } as Partial<TListModel>);
+                  props.onModelUpdated({ sortByAscending: !props.model.sortByAscending } as Partial<TListModel>);
                 }}
               >
                 {props.model.sortByAscending ? (
@@ -106,7 +125,7 @@ function DisplayOptionsPanel<
                 options={resultsPerPageOptions}
                 value={props.model.resultsPerPage.toString()}
                 onValueChanged={resultsPerPageAsString => {
-                  props.onModelChanged({ resultsPerPage: parseInt(resultsPerPageAsString) } as Partial<TListModel>);
+                  props.onModelUpdated({ resultsPerPage: parseInt(resultsPerPageAsString) } as Partial<TListModel>);
                 }}
               />
             </FormField>
@@ -116,8 +135,8 @@ function DisplayOptionsPanel<
 
           <div className="flex justify-end">
             <Button 
-              className={joinClassName("gap-1", props.hasPendingReloading && "btn-primary")}
-              onClick={props.onReloadButtonClicked}
+              className={joinClassName("gap-1", isModelDirty && "btn-primary")}
+              onClick={handleReloadButtonClicked}
             >
               <ArrowPathIcon />
               <span>Tải lại kết quả</span>
