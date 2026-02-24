@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router";
 
 // Child components.
-import Field from "@/pages/product/productDetail/Field.tsx";
+import Field from "@/pages/product/productDetail/Field";
 
 // Props.
 type Props = {

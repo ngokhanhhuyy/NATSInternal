@@ -1,7 +1,7 @@
 import React from "react";
 
 // Child component.
-import { Button, NewTabLink } from "@/components/ui";
+import { Button, NewTabWebsiteLink } from "@/components/ui";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 
 // Props
@@ -16,9 +16,9 @@ export default function PickedIntroducerInfo(props: PickedIntroducerInfoProps): 
   return (
     <div className="flex justify-between items-center w-full gap-3">
       <div className="flex flex-col">
-        <NewTabLink className="text-lg font-bold" href={props.model.detailRoute}>
+        <NewTabWebsiteLink className="text-lg font-bold" href={props.model.detailRoute}>
           {props.model.fullName}
-        </NewTabLink>
+        </NewTabWebsiteLink>
         <span className="opacity-50 text-sm">{props.model.nickName}</span>
       </div>
 

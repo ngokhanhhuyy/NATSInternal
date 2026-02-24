@@ -4,7 +4,7 @@ import { useTsxHelper } from "@/helpers";
 // Child components
 import FieldContainer from "./FieldContainer";
 import Field from "./Field";
-import { Block } from "@/components/ui";
+import { Block, NewTabWebsiteLink, NewTabEmailLink, NewTabPhoneLink } from "@/components/ui";
 
 // Props.
 type CustomerPersonalInformationProps = { model: CustomerDetailModel };
@@ -57,36 +57,30 @@ export default function CustomerPersonalInformation(props: CustomerPersonalInfor
         {/* PhoneNumber */}
         {props.model.phoneNumber && (
           <Field name="phoneNumber">
-            <a href={`tel:${props.model.phoneNumber}`} target="_blank" rel="noopener noreferrer">
-              {props.model.phoneNumber}
-            </a>
+            <NewTabPhoneLink phoneNumber={props.model.phoneNumber} />
           </Field>
         )}
 
         {/* ZaloNumber */}
         {props.model.zaloNumber && (
           <Field name="zaloNumber">
-            <a href={"https://zalo.me/" + props.model.zaloNumber} target="_blank" rel="noopener noreferrer">
+            <NewTabWebsiteLink href={"https://zalo.me/" + props.model.zaloNumber}>
               {props.model.zaloNumber}
-            </a>
+            </NewTabWebsiteLink>
           </Field>
         )}
 
         {/* FacebookUrl */}
         {props.model.facebookUrl && (
           <Field name="facebookUrl">
-            <a href={props.model.facebookUrl} target="_blank" rel="noopener noreferrer">
-              {props.model.facebookUrl}
-            </a>
+            <NewTabWebsiteLink href={props.model.facebookUrl}>123</NewTabWebsiteLink>
           </Field>
         )}
 
         {/* Email */}
         {props.model.email && (
           <Field name="email">
-            <a href={"mailto:" + props.model.email.toLowerCase()} target="_blank" rel="noopener noreferrer">
-              {props.model.email.toLowerCase()}
-            </a>
+            <NewTabEmailLink email={props.model.email} />
           </Field>
         )}
 

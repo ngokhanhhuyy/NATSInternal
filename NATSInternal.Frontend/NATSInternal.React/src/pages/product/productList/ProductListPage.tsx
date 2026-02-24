@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useTransition, Profiler, type ProfilerOnRenderCallback } from "react";
+import React, { useState, useCallback, useTransition } from "react";
 import { useLoaderData } from "react-router";
 import { useRerendingTrigger } from "@/hooks";
 
@@ -47,35 +47,28 @@ export default function ProductListPage(): React.ReactNode {
 
   // Template.
   return (
-    <Profiler id="SearchablePageableListPage" onRender={handleRender}>
-      <ListPage
-        resourceName="product"
-        model={model}
-        onModelUpdated={handleModelUpdated}
-        isReloading={isReloading}
-        onPaginatorPageChanged={handlePaginatorPageChanged}
-        onFilterPanelReloadButtonClicked={triggerRerender}
-        filterPanelChildren={
-          <FilterPanelChildren
-            model={model}
-            onModelUpdated={(updatedData) => setModel(m => ({ ...m, ...updatedData }))}
-          />
-        }
-        additionalPanels={
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-5">
-            <BrandListPanel />
-            <ProductCategoryListPanel />
-          </div>
-        }
-        additionalDirtyModelComparer={compareModelAdditionally}
-      >
-        <ResultsPanel model={model} isReloading={isReloading} />
-      </ListPage>
-    </Profiler>
+    <ListPage
+      resourceName="product"
+      model={model}
+      onModelUpdated={handleModelUpdated}
+      isReloading={isReloading}
+      onPaginatorPageChanged={handlePaginatorPageChanged}
+      onFilterPanelReloadButtonClicked={triggerRerender}
+      filterPanelChildren={
+        <FilterPanelChildren
+          model={model}
+          onModelUpdated={(updatedData) => setModel(m => ({ ...m, ...updatedData }))}
+        />
+      }
+      additionalPanels={
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-5">
+          <BrandListPanel />
+          <ProductCategoryListPanel />
+        </div>
+      }
+      additionalDirtyModelComparer={compareModelAdditionally}
+    >
+      <ResultsPanel model={model} isReloading={isReloading} />
+    </ListPage>
   );
 }
-
-const handleRender: ProfilerOnRenderCallback = (_, __, actualDuration, baseDuration) => {
-  console.log("Actual duration", actualDuration);
-  console.log("Base duration", baseDuration);
-};

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, Fragment } from "react";
-import { useMatches, Outlet, Link, useNavigation, useNavigate, type RouteHandle } from "react-router";
+import { useMatches, Outlet, Link, useNavigation, useNavigate } from "react-router";
 import { useAuthenticationStore, useNavigationBarStore } from "@/stores";
 import { useMatchedRouteHandles } from "@/hooks";
 import { useRouteHelper, useTsxHelper } from "@/helpers";

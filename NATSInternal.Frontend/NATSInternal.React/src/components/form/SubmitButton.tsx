@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { useTsxHelper } from "@/helpers";
 
 // Child component.
-import { FormContext } from "@/components/form/Form.tsx";
+import { FormContext } from "@/components/form/Form";
 import { Button } from "@/components/ui";
 import { ArrowDownOnSquareStackIcon } from "@heroicons/react/24/outline";
 

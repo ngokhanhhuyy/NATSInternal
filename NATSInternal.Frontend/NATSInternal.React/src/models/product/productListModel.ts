@@ -39,7 +39,7 @@ declare global {
     category: ProductCategoryBasicModel | null;
     brand: BrandBasicModel | null;
     formattedDefaultAmountBeforeVatPerUnit: string;
-    detailRoute: string;
+    detailRoutePath: string;
   }>;
 }
 
@@ -114,6 +114,6 @@ export function createProductListProductModel(responseDto: ProductGetListProduct
     formattedDefaultAmountBeforeVatPerUnit: getAmountDisplayText(responseDto.defaultAmountBeforeVatPerUnit),
     category: responseDto.category && createProductCategoryBasicModel(responseDto.category),
     brand: responseDto.brand && createBrandBasicModel(responseDto.brand),
-    detailRoute: getProductDetailRoutePath(responseDto.id)
+    detailRoutePath: getProductDetailRoutePath(responseDto.id)
   };
 }

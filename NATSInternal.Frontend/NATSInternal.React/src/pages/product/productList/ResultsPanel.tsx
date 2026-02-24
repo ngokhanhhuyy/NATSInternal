@@ -94,7 +94,7 @@ function ResultItem(props: { model: ProductListProductModel }): React.ReactNode 
       <div className="flex flex-col self-start">
         <div className="flex gap-3 items-center">
           <Link
-            to={props.model.detailRoute}
+            to={props.model.detailRoutePath}
             className={joinClassName(
               "font-bold",
               !props.model.isDiscontinued && "text-blue-700 dark:text-blue-400"

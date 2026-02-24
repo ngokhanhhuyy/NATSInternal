@@ -6,6 +6,7 @@
 @import "./image.css";
 @import "./input.css";
 @import "./layout.css";
+@import "./list.css";
 @import "./modal.css";
 @import "./panel.css";
 @import "./table.css";
@@ -49,26 +50,4 @@ body {
 
 a:not(.hover\:underline):not(.hover\:overline):not(.hover\:line-through):not(.hover\:no-underline):hover {
     text-decoration: underline;
-}
-
-ul.list-group {
-    --border-color: rgba(0, 0, 0, 10%);
-    --border-width: 1px;
-    list-style: none;
-    border: var(--border-width) solid var(--border-color);
-    border-radius: var(--radius-lg);
-
-    @variant dark {
-        & {
-            --border-color: rgba(255, 255, 255, 10%);
-        }
-    }
-
-    &.list-group-flush {
-        --border-width: 0;
-    }
-
-    & li:not(:last-child) {
-        border-bottom: 1px solid var(--border-color);
-    }
 }

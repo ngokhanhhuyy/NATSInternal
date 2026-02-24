@@ -26,12 +26,12 @@ type Props<
 
 // Component.
 function SecondaryListPanel<
-      TListModel extends
-        ISearchableListModel<TItemModel> &
-        ISortableListModel<TItemModel> &
-        IPageableListModel<TItemModel> &
-        IUpsertableListModel<TItemModel>,
-      TItemModel extends BrandListBrandModel | ProductCategoryListProductCategoryModel>
+    TListModel extends
+      ISearchableListModel<TItemModel> &
+      ISortableListModel<TItemModel> &
+      IPageableListModel<TItemModel> &
+      IUpsertableListModel<TItemModel>,
+    TItemModel extends BrandListBrandModel | ProductCategoryListProductCategoryModel>
   (props: Props<TListModel, TItemModel>): React.ReactNode
 {
   // Dependencies.

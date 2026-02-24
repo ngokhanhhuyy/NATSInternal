@@ -23,19 +23,19 @@ export default function StockPanel({ model }: Props): React.ReactNode {
       <div className="panel-body px-3 pt-3 pb-2">
         <div className="flex flex-col gap-y-3">
           {/* StockingQuantity */}
-          <Field propertyName="stockingQuantity">
+          <Field propertyName="stockingQuantity" className="flex gap-3">
             {model.stock.stockingQuantity}
-          </Field>
-
-          {/* ResupplyStockingQuantity */}
-          <Field propertyName="resupplyThresholdQuantity" className="flex gap-3">
-            {model.stock.resupplyThresholdQuantity}
             {!model.isDiscontinued && model.stock.stockingQuantity <= model.stock.resupplyThresholdQuantity && (
-              <div className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
+              <div className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400 text-sm">
                 <ExclamationTriangleIcon className="size-4.5" />
                 <span>Cần nhập hàng</span>
               </div>
             )}
+          </Field>
+
+          {/* ResupplyStockingQuantity */}
+          <Field propertyName="resupplyThresholdQuantity">
+            {model.stock.resupplyThresholdQuantity}
           </Field>
         </div>
       </div>

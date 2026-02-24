@@ -28,6 +28,7 @@ const routeHelper = {
   getProductUpdateRoutePath: (id: string) => `/san-pham/${id}/chinh-sua`,
 
   getProductCategoryListRoutePath: () => "/san-pham/phan-loai",
+  getProductCategoryDetailRoutePath: (id: string) => `/san-pham/phan-loai/${id}`,
   getProductCategoryCreateRoutePath: () => "/san-pham/phan-loai/tao-moi",
   getProductCategoryUpdateRoutePath: (id: string) => `/san-pham/phan-loai/${id}/chinh-sua`,
 

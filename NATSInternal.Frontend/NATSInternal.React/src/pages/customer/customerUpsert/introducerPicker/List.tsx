@@ -4,7 +4,7 @@ import { createCustomerListModel } from "@/models";
 import { useTsxHelper } from "@/helpers";
 
 // Child components.
-import { Button, NewTabLink, MainPaginator } from "@/components/ui";
+import { Button, NewTabWebsiteLink, MainPaginator } from "@/components/ui";
 import { TextInput } from "@/components/form";
 import { CheckIcon } from "@heroicons/react/24/solid";
 
@@ -81,9 +81,9 @@ export default function List(props: ListProps): React.ReactNode {
         {model.items.length ? model.items.map((customer, index) => (
           <li className="list-group-item flex justify-between items-center px-3 py-2" key={index}>
             <div className="flex flex-col">
-              <NewTabLink className="text-blue-700 dark:text-blue-400 font-bold" href={customer.detailRoute}>
+              <NewTabWebsiteLink className="text-blue-700 dark:text-blue-400 font-bold" href={customer.detailRoute}>
                 {customer.fullName}
-              </NewTabLink>
+              </NewTabWebsiteLink>
               <span className="text-sm opacity-75">
                 {customer.nickName}
               </span>

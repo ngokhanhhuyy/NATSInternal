@@ -9,5 +9,5 @@ export * from "./phoneNumberHelper";
 export * from "./photoHelper";
 export * from "./roleHelper";
 export * from "./routeHelper";
-export * from "./tsxHelper.tsx";
+export * from "./tsxHelper";
 export * from "./validationHelper";
