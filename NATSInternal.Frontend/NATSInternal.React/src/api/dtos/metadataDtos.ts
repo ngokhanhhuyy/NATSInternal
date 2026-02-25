@@ -3,6 +3,7 @@ declare global {
     displayNameList: MetadataGetDisplayNamesListResponseDto;
     listOptionsList: MetadataGetListOptionsListResponseDto;
     creatingAuthorizationList: MetadataGetCreatingAuthorizationListResponseDto;
+    countries: CountryBasicResponseDto[];
   };
 
   type MetadataGetDisplayNamesListResponseDto = Record<string, string>;

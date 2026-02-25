@@ -37,19 +37,18 @@ export default function ProductUpdatePage(): React.ReactNode {
     await api.product.updateAsync(model.id, model.toUpdateRequestDto());
   }
 
-  function handleUpsertingSucceededAsync(): void {
-    setTimeout(() => navigate(model.detailRoutePath));
+  function handleUpsertingSucceeded(): void {
+    navigate(model.detailRoutePath);
   }
 
   // Template.
   return (
     <ProductUpsertPage
-      description="Chỉnh sửa một sản phẩm đang tồn tại, dùng cho các giao dịch về bán lẻ và liệu trình."
       isForCreating={false}
       model={model}
-      onModelChanged={(changedData) => setModel(m => ({ ...m, ...changedData }))}
+      onModelUpdated={(changedData) => setModel(m => ({ ...m, ...changedData }))}
       upsertAction={handleUpsertAsync}
-      onUpsertingSucceeded={handleUpsertingSucceededAsync}
+      onUpsertingSucceeded={handleUpsertingSucceeded}
     />
   );
 }

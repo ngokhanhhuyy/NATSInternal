@@ -31,6 +31,8 @@ internal interface IProductRepository
 
     void RemoveCategory(ProductCategory category);
 
+    Task<ICollection<Country>> GetAllCountryAsync(CancellationToken cancellationToken = default);
+
     Task<Country?> GetCountryByIdAsync(Guid id, CancellationToken cancellationToken = default);
     #endregion
 }

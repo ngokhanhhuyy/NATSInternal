@@ -3,6 +3,7 @@ using NATSInternal.Application.Authorization;
 using NATSInternal.Application.Localization;
 using NATSInternal.Application.UseCases.Customers;
 using NATSInternal.Application.UseCases.Products;
+using NATSInternal.Application.UseCases.Shared;
 using NATSInternal.Application.UseCases.Users;
 using NATSInternal.Domain.Features.Customers;
 using NATSInternal.Domain.Features.Products;
@@ -14,6 +15,7 @@ namespace NATSInternal.Application.UseCases.Metadata;
 internal class MetadataGetHandler : IRequestHandler<MetadataGetRequestDto, MetadataGetResponseDto>
 {
     #region Fields
+    private readonly IProductRepository _productRepository;
     private readonly IAuthorizationInternalService _authorizationService;
     private static readonly IDictionary<string, string> _displayNames;
     #endregion
@@ -27,8 +29,9 @@ internal class MetadataGetHandler : IRequestHandler<MetadataGetRequestDto, Metad
             .ToDictionary(f => f.Name, f => (string)f.GetValue(null)!);
     }
     
-    public MetadataGetHandler(IAuthorizationInternalService authorizationService)
+    public MetadataGetHandler(IProductRepository productRepository, IAuthorizationInternalService authorizationService)
     {
+        _productRepository = productRepository;
         _authorizationService = authorizationService;
     }
     #endregion
@@ -38,8 +41,6 @@ internal class MetadataGetHandler : IRequestHandler<MetadataGetRequestDto, Metad
         MetadataGetRequestDto requestDto,
         CancellationToken cancellationToken = default)
     {
-        await Task.CompletedTask;
-
         CustomerGetListRequestDto customerGetListRequestDto = new();
         ProductGetListRequestDto productGetListRequestDto = new();
         BrandGetListRequestDto brandGetListRequestDto = new();
@@ -87,6 +88,8 @@ internal class MetadataGetHandler : IRequestHandler<MetadataGetRequestDto, Metad
             }
         };
 
+        ICollection<Country> countries = await _productRepository.GetAllCountryAsync(cancellationToken);
+
         return new()
         {
             DisplayNameList = _displayNames,
@@ -98,7 +101,8 @@ internal class MetadataGetHandler : IRequestHandler<MetadataGetRequestDto, Metad
                 CanCreateProduct = _authorizationService.CanCreateProduct(),
                 CanCreateBrand = _authorizationService.CanCreateBrand(),
                 CanCreateProductCategory = _authorizationService.CanCreateProductCategory()
-            }
+            },
+            Countries = countries.Select(c => new CountryBasicResponseDto(c)).ToList()
         };
     }
     #endregion

@@ -31,10 +31,9 @@ export async function loadBrandAndCategoryOptionsAsync(): Promise<ProductUpsertI
 
 // Props.
 type Props = {
-  description: string;
   isForCreating: boolean;
   model: ProductUpsertModel;
-  onModelChanged(changedData: Partial<ProductUpsertModel>): any;
+  onModelUpdated(updatedData: Partial<ProductUpsertModel>): any;
   upsertAction(): Promise<void>;
   onUpsertingSucceeded(): any;
   deleteAction?(): Promise<void>;
@@ -54,10 +53,10 @@ export default function ProductUpsertPage(props: Props): React.ReactNode {
       onUpsertingSucceeded={props.onUpsertingSucceeded}
       isModelDirty={isModelDirty}
     >
-      <DetailPanel model={props.model} onModelUpdated={props.onModelChanged} />
+      <DetailPanel model={props.model} onModelUpdated={props.onModelUpdated} />
       <StockPanel
         model={props.model.stock}
-        onModelChanged={(changedData) => props.onModelChanged({ stock: { ...props.model.stock, ...changedData } })}
+        onModelChanged={(changedData) => props.onModelUpdated({ stock: { ...props.model.stock, ...changedData } })}
         isForCreating={props.isForCreating}
       />
       
@@ -65,8 +64,6 @@ export default function ProductUpsertPage(props: Props): React.ReactNode {
         {props.deleteAction && <DeleteButton/>}
         <SubmitButton/>
       </div>
-
-      <pre className="border border-blue-500 p-3 rounded-lg">{JSON.stringify(props.model, null, 2)}</pre>
     </FormContainer>
   );
 }

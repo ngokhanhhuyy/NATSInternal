@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NATSInternal.Application.UseCases.Shared;
 using CustomerGetListFieldToSort = NATSInternal.Application.UseCases.Customers.CustomerGetListRequestDto.FieldToSort;
 using ProductGetListFieldToSort = NATSInternal.Application.UseCases.Products.ProductGetListRequestDto.FieldToSort;
 using BrandGetListFieldToSort = NATSInternal.Application.UseCases.Products.BrandGetListRequestDto.FieldToSort;
@@ -16,9 +17,11 @@ public class MetadataGetResponseDto
     public required MetadataGetListOptionsListResponseDto ListOptionsList { [UsedImplicitly] get; init; }
     public required MetadataGetCreatingAuthorizationListResponseDto CreatingAuthorizationList
     {
-        [UsedImplicitly] get;
+        [UsedImplicitly]
+        get;
         init;
     }
+    public required ICollection<CountryBasicResponseDto> Countries { [UsedImplicitly] get; init; }
     #endregion
 }
 

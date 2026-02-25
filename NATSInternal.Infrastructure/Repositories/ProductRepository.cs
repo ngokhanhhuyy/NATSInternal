@@ -92,6 +92,11 @@ internal class ProductRepository : IProductRepository
         _context.ProductCategories.Remove(category);
     }
 
+    public async Task<ICollection<Country>> GetAllCountryAsync(CancellationToken cancellationToken)
+    {
+        return await _context.Countries.OrderBy(c => c.Name).ToListAsync(cancellationToken);
+    }
+
     public async Task<Country?> GetCountryByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await _context.Countries.SingleOrDefaultAsync(c => c.Id == id, cancellationToken);

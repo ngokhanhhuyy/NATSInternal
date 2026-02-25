@@ -32,7 +32,7 @@ internal class BrandDeleteHandler : IRequestHandler<BrandDeleteRequestDto>
 
         try
         {
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
         catch (PersistenceException exception)
         {

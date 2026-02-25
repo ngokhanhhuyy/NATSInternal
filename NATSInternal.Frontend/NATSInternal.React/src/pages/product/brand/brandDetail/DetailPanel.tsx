@@ -74,12 +74,14 @@ export default function DetailPanel(props: Props): React.ReactNode {
             </Field>
           )}
 
+          {/* Country */}
           {props.model.country && (
             <Field propertyName="country">
               {props.model.country.name}
             </Field>
           )}
 
+          {/* CreatedDateTime */}
           <Field propertyName="createdDateTime">
             {props.model.createdDateTime}
           </Field>

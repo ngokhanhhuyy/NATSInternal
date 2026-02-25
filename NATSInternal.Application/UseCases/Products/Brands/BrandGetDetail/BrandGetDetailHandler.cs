@@ -20,7 +20,7 @@ internal class BrandGetDetailHandler : IRequestHandler<BrandGetDetailRequestDto,
     #region Methods
     public async Task<BrandGetDetailResponseDto> Handle(BrandGetDetailRequestDto requestDto, CancellationToken token)
     {
-        Brand brand = await _repository.GetBrandByIdAsync(requestDto.Id, token)
+        Brand brand = await _repository.GetBrandByIdIncludingCountryAsync(requestDto.Id, token)
             ?? throw new NotFoundException();
 
         return new(brand);

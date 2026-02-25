@@ -7,6 +7,7 @@ export * from "./product/productDetailModel";
 export * from "./product/productUpsertModel";
 export * from "./brand/brandListModel";
 export * from "./brand/brandDetailModel";
+export * from "./brand/brandUpsertModel";
 export * from "./productCategory/productCategoryListModel";
 export * from "./shared/customerBasicModel";
 export * from "./shared/brandBasicModel";
