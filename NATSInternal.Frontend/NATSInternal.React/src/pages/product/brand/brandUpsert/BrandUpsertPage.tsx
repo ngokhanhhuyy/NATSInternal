@@ -9,19 +9,19 @@ import { FormField, TextInput, SelectInput, type SelectInputOption,  } from "@/c
 import { SubmitButton, DeleteButton } from "@/components/form";
 
 // Props.
-type Props = {
+type Props<TUpsertResult extends string | void> = {
   isForCreating: boolean;
   model: BrandUpsertModel;
   onModelUpdated(updatedData: Partial<BrandUpsertModel>): any;
-  upsertAction(): Promise<void>;
-  onUpsertingSucceeded(): any;
+  upsertAction(): Promise<TUpsertResult>;
+  onUpsertingSucceeded(upsertResult: TUpsertResult): any;
   deleteAction?(): Promise<void>;
   onDeletionSucceeded?(): any;
   renderButtons?(): React.ReactNode;
 };
 
 // Component.
-export default function BrandUpsertPage(props: Props): React.ReactNode {
+const BrandUpsertPage = <TUpsertResult extends string | void>(props: Props<TUpsertResult>): React.ReactNode => {
   // States.
   const isModelDirty = useJSONDirtyModelChecker(props.model);
   const [countries] = useState<CountryBasicModel[]>(() => getMetadata().countries.map(createCountryBasicModel));
@@ -48,7 +48,9 @@ export default function BrandUpsertPage(props: Props): React.ReactNode {
   return (
     <FormContainer
       upsertAction={props.upsertAction}
+      deleteAction={props.deleteAction}
       onUpsertingSucceeded={props.onUpsertingSucceeded}
+      onDeletionSucceeded={props.onDeletionSucceeded}
       isModelDirty={isModelDirty}
     >
       <div className="panel">
@@ -125,7 +127,7 @@ export default function BrandUpsertPage(props: Props): React.ReactNode {
       </div>
 
       <div className="flex justify-end gap-3">
-        {props.deleteAction && <DeleteButton/>}
+        {props.deleteAction && <DeleteButton onClick={props.deleteAction} />}
         <SubmitButton/>
       </div>
 
@@ -134,4 +136,6 @@ export default function BrandUpsertPage(props: Props): React.ReactNode {
       </pre>
     </FormContainer>
   );
-}
+};
+
+export default BrandUpsertPage;

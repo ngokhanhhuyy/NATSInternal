@@ -26,7 +26,7 @@ export default function DeleteButton(props: DeleteButtonProps): React.ReactNode 
   
   // Template.
   return (
-    <Button {...props} type="button" className="danger min-w-20">
+    <Button {...props} type="button" className="danger min-w-20" onClick={formContext?.handleDeletionAsync}>
       {!isSubmitting && <TrashIcon className="size-4.5 me-1" />}
       <span>{isSubmitting ? "Đang xoá dữ liệu" : "Xoá dữ liệu"}</span>
     </Button>

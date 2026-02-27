@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useEffect, useState } from "react";
+import React, { useRef, useCallback, useEffect, useState, type ComponentProps } from "react";
 import { useBlocker, type BlockerFunction } from "react-router";
 import { OperationError, ValidationError } from "@/api";
 import { useTsxHelper } from "@/helpers";
@@ -29,17 +29,19 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
   const dirtyModelConfirmationModelRef = useRef<YesNoModalHandler>(null!);
   const formSubmissionSucceededModalRef = useRef<ConfirmationModalHandler>(null!);
   const formSubmissionFailedModalRef = useRef<ConfirmationModalHandler>(null!);
+  const formDeletionSuceededModalRef = useRef<ConfirmationModalHandler>(null!);
+  const formDeletionFailedModalRef = useRef<ConfirmationModalHandler>(null!);
   const [formUpsertingErrorMessages, setFormUpsertingErrorMessages] = useState<string[] | null>(null);
 
   // Callbacks.
-  const handleUpsertingSucceeded = useCallback((result: TUpsertResult) => {
+  function handleUpsertingSucceeded(result: TUpsertResult): void {
     isSubmissionSucceeded.current = true;
     formSubmissionSucceededModalRef.current
       .confirmAsync()
       .then(() => props.onUpsertingSucceeded?.(result));
-  }, [props.onUpsertingSucceeded]);
+  }
 
-  const handleUpsertingFailed = useCallback((error: Error, isErrorHandled: boolean) => {
+  function handleUpsertingFailed(error: Error, isErrorHandled: boolean): void {
     formSubmissionFailedModalRef.current
       .confirmAsync()
       .then(() => {
@@ -50,7 +52,20 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
         window.scrollTo({ top: 0, behavior: "smooth" });
         props.onUpsertingFailed?.(error, isErrorHandled);
       });
-  }, [props.onUpsertingFailed]);
+  }
+
+  function handleDeletionSucceeded(): void {
+    isSubmissionSucceeded.current = true;
+    formDeletionFailedModalRef.current
+      .confirmAsync()
+      .then(() => props.onDeletionSucceeded?.());
+  }
+
+  function handleDeletionFailed(error: Error, isErrorHandled: boolean): void {
+    formSubmissionFailedModalRef.current
+      .confirmAsync()
+      .then(() => props.onDeletionFailed?.(error, isErrorHandled));
+  }
 
   // Effect.
   useEffect(() => {
@@ -70,7 +85,7 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
 
   // Template.
   return (
-    <MainContainer description={props.description}>
+    <MainContainer>
       {formUpsertingErrorMessages && (
         <div className={joinClassName(
           "bg-red-500/5 border border-red-500 dark:border-red-400/50 text-red-500 dark:text-red-400",
@@ -91,8 +106,8 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
         onUpsertingSucceeded={handleUpsertingSucceeded}
         onUpsertingFailed={handleUpsertingFailed}
         deleteAction={props.deleteAction}
-        onDeletionSucceeded={props.onDeletionSucceeded}
-        onDeletionFailed={props.onDeletionFailed}
+        onDeletionSucceeded={handleDeletionSucceeded}
+        onDeletionFailed={handleDeletionFailed}
         isModelDirty={props.isModelDirty}
       >
         {props.children}
@@ -118,11 +133,30 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
       />
 
       <ConfirmationModal
+        ref={formDeletionSuceededModalRef}
+        title="Xoá thành công"
+        IconComponent={CheckCircleIcon}
+        iconClassName="stroke-emerald-600"
+        informationContent="Dữ liệu đã được xoá thành công."
+      />
+
+      <ConfirmationModal
         ref={formSubmissionFailedModalRef}
         title="Dữ liệu không hợp lệ"
         IconComponent={ExclamationTriangleIcon}
         iconClassName="stroke-red-600"
         informationContent={["Dữ liệu đã nhập không hợp lệ.", "Vui lòng kiểm tra lại."]}
+      />
+
+      <ConfirmationModal
+        ref={formDeletionFailedModalRef}
+        title="Dữ liệu không hợp lệ"
+        IconComponent={ExclamationTriangleIcon}
+        iconClassName="stroke-red-600"
+        informationContent={[
+          "Không thể xoá dữ liệu, vui lòng thử lại.",
+          "Nếu lỗi này vẫn tiếp tục xảy ra, xin hãy thông báo cho nhà phát triển."
+        ]}
       />
     </MainContainer>
   );

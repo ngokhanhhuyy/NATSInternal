@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import { flushSync } from "react-dom";
 import { useApi } from "@/api";
 import { createBrandUpsertModel } from "@/models";
+import { useRouteHelper } from "@/helpers";
 
 // Child components.
 import BrandUpsertPage from "./BrandUpsertPage";
@@ -12,20 +12,18 @@ export default function BrandCreatePage(): React.ReactNode {
   // Dependencies.
   const api = useApi();
   const navigate = useNavigate();
+  const { getBrandDetailRoutePath } = useRouteHelper();
   
   // States.
   const [model, setModel] = useState<BrandUpsertModel>(createBrandUpsertModel);
 
   // Callbacks.
-  async function handleUpsertAsync(): Promise<void> {
-    const id = await api.brand.createAsync(model.toCreateRequestDto());
-    flushSync(() => {
-      setModel(m => ({ ...m, id }));
-    });
+  async function handleUpsertAsync(): Promise<string> {
+    return await api.brand.createAsync(model.toCreateRequestDto());
   }
 
-  function handleUpsertingSucceededAsync(): void {
-    navigate(model.detailRoutePath);
+  function handleUpsertingSucceeded(createdId: string): void {
+    navigate(getBrandDetailRoutePath(createdId));
   }
 
   // Template.
@@ -35,7 +33,7 @@ export default function BrandCreatePage(): React.ReactNode {
       model={model}
       onModelUpdated={(updatedData) => setModel(m => ({ ...m, ...updatedData }))}
       upsertAction={handleUpsertAsync}
-      onUpsertingSucceeded={handleUpsertingSucceededAsync}
+      onUpsertingSucceeded={handleUpsertingSucceeded}
     />
   );
 }

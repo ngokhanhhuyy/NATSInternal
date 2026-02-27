@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLoaderData } from "react-router";
 import { useApi } from "@/api";
+import { useRouteHelper } from "@/helpers";
 
 // Child components.
 import BrandUpsertPage from "./BrandUpsertPage";
@@ -10,6 +11,7 @@ export default function BrandUpdatePage(): React.ReactNode {
   // Dependencies.
   const api = useApi();
   const navigate = useNavigate();
+    const { getBrandListRoutePath } = useRouteHelper();
   
   // States.
   const initialModel = useLoaderData<BrandUpsertModel>();
@@ -20,8 +22,16 @@ export default function BrandUpdatePage(): React.ReactNode {
     await api.brand.updateAsync(model.id, model.toUpdateRequestDto());
   }
 
-  function handleUpsertingSucceededAsync(): void {
+  function handleUpsertingSucceeded(): void {
     navigate(model.detailRoutePath);
+  }
+
+  async function handleDeleteAysnc(): Promise<void> {
+    await api.brand.deleteAsync(model.id);
+  }
+
+  function handleDeletionSucceeded(): void {
+    navigate(getBrandListRoutePath());
   }
 
   // Template.
@@ -31,7 +41,9 @@ export default function BrandUpdatePage(): React.ReactNode {
       model={model}
       onModelUpdated={(updatedData) => setModel(m => ({ ...m, ...updatedData }))}
       upsertAction={handleUpsertAsync}
-      onUpsertingSucceeded={handleUpsertingSucceededAsync}
+      onUpsertingSucceeded={handleUpsertingSucceeded}
+      deleteAction={handleDeleteAysnc}
+      onDeletionSucceeded={handleDeletionSucceeded}
     />
   );
 }
