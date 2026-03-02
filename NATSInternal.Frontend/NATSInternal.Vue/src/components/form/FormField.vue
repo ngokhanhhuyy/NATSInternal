@@ -8,7 +8,7 @@ export type FormFieldProvidePayload = {
   displayName?: string
 };
 
-export const FormFieldProvidePayloadKey: InjectionKey<FormFieldProvidePayload> = Symbol("FormFieldProvidePayload");
+export const FormFieldProvidePayloadKey: InjectionKey<FormFieldProvidePayload> = Symbol("form-field-provide-payload");
 </script>
 
 <script setup lang="ts">

@@ -12,5 +12,6 @@ declare module "vue-router" {
   interface RouteMeta {
     pageTitle?: string;
     breadcrumbItem: BreadcrumbItem | ((route: RouteLocationNormalizedLoadedGeneric) => BreadcrumbItem);
+    description?: string;
   }
 }

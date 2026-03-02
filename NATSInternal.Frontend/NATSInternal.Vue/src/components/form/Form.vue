@@ -9,7 +9,7 @@ export type FormProvidePayload = {
   isModelDirty?: boolean;
 };
 
-export const FormProvidePayloadKey: InjectionKey<FormProvidePayload> = Symbol("FormProvidePayload");
+export const FormProvidePayloadKey: InjectionKey<FormProvidePayload> = Symbol("form-provide-payload");
 </script>
 
 <script setup lang="ts" generic="TUpsertResult">

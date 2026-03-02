@@ -1,23 +1,12 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router";
+import { onMounted } from "vue";
 
-// Dependencies.
-const route = useRoute();
-
-// Props.
-const props = defineProps<{
-  description: string;
-  isLoading?: boolean;
-}>();
+// Life-cycle hooks.
+onMounted(() => window.scrollTo({ top: 0, behavior: "smooth" }));
 </script>
 
 <template>
   <div id="main-container">
-    <div id="page-title-container">
-        <span class="text-2xl">{{ route.meta.pageTitle }}</span>
-        <span class="text-md opacity-50">{{ props.description }}</span>
-    </div>
-
     <slot></slot>
   </div>
 </template>

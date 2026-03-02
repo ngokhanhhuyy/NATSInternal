@@ -23,6 +23,11 @@ const states = reactive({
   isSubmitting: false,
 });
 
+// Computed.
+const computeSignInClassName = (isValidated: boolean, isValid: boolean) => {
+  return ["btn", isValidated && !isValid && "btn-danger"];
+};
+
 // Callbacks.
 const signInAsync = async (): Promise<void> => {
   states.isSubmitting = true;
@@ -99,7 +104,7 @@ const handleSignInFailed = (error: Error, errorHandled: boolean): void => {
         </FormField>
 
         <!-- Button -->
-        <button v-bind:class="[`btn`, isValidated && !isValid && `btn-danger`]" type="submit">
+        <button v-bind:class="computeSignInClassName(isValidated, isValid)" type="submit">
           <span v-if="states.isSubmitting">Đang kiểm tra</span>
           <span v-else-if="!isValid">Đăng nhập lại</span>
           <span v-else>Đăng nhập</span>

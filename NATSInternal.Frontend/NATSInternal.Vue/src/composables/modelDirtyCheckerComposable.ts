@@ -1,8 +1,9 @@
 import { ref, computed } from "vue";
 
 // Result type.
-type ModelDirtyResult = {
+type ModelDirtyResult<TModel extends object> = {
   get isDirty(): boolean;
+  setOriginalModel(newOriginalModel: TModel): void;
 };
 
 // Utility for model serialization.
@@ -23,7 +24,7 @@ const serializeModel = <TModel extends object, TKey extends keyof TModel>
 // Composable.
 export function useDirtyModelChecker<TModel extends object, TKey extends keyof TModel>(
     model: TModel | (() => TModel),
-    excludedKeys?: TKey[]): ModelDirtyResult {
+    excludedKeys?: TKey[]): ModelDirtyResult<TModel> {
   const originalModelJson = ref(serializeModel(model));
 
   const result = computed(() => {
@@ -34,6 +35,9 @@ export function useDirtyModelChecker<TModel extends object, TKey extends keyof T
   return {
     get isDirty(): boolean {
       return result.value;
+    },
+    setOriginalModel(newOriginalModel: TModel): void {
+      originalModelJson.value = serializeModel(newOriginalModel);
     }
   };
 }

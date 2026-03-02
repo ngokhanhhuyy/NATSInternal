@@ -108,6 +108,11 @@ const [BreadcrumbItemDefinition, BreadcrumbItem] = createReusableTemplate<{
         </template>
       </div>
     </div>
+    
+    <div id="page-title-container">
+        <span class="text-2xl">{{ route.meta.pageTitle }}</span>
+        <span class="text-md opacity-50">{{ route.meta.description }}</span>
+    </div>
 
     <RouterView v-slot="{ Component }">
       <Transition name="fade" mode="out-in">
