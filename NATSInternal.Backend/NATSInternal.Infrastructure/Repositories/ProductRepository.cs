@@ -71,6 +71,13 @@ internal class ProductRepository : IProductRepository
     }
 
     public async Task<ProductCategory?> GetCategoryByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.ProductCategories.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+    }
+
+    public async Task<ProductCategory?> GetCategoryByNameAsync(
         string name,
         CancellationToken cancellationToken = default)
     {

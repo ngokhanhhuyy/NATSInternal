@@ -77,7 +77,7 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
     #region PrivateMethods
     private static void ConfigureIdentifierNames(ModelBuilder modelBuilder, bool useSnakeCase = false)
     {
-        
+        string separator = useSnakeCase ? "__" : "_";
         // Set default naming convention for all models.
         foreach (IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())
         {
@@ -103,32 +103,43 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
                     continue;
                 }
 
+                string tableName = entity.GetTableName()!;
+                if (useSnakeCase)
+                {
+                    tableName = tableName.Underscore();
+                }
+
                 IEnumerable<string> columnNames = key.Properties.Select(p => useSnakeCase
                     ? ReplaceSnakeCaseSpecialWords(p.Name.Underscore())
                     : p.Name);
 
-                string name = "PK__" + entity.GetTableName()!  + string.Join("__", columnNames);
-                key.SetName(name);
+                key.SetName("PK" + separator + tableName + separator + string.Join(separator, columnNames));
             }
 
             // Set foreign keys' constraint _names.
             foreach (IMutableForeignKey foreignKey in entity.GetForeignKeys())
             {
-                string referencingTable = OmitAspNetPrefix(foreignKey.PrincipalEntityType.GetTableName()!).Underscore();
-                string referencedTable = OmitAspNetPrefix(foreignKey.DeclaringEntityType.GetTableName()!).Underscore();
+                string referencingTable = OmitAspNetPrefix(foreignKey.PrincipalEntityType.GetTableName()!);
+                string referencedTable = OmitAspNetPrefix(foreignKey.DeclaringEntityType.GetTableName()!);
+                if (useSnakeCase)
+                {
+                    referencingTable = referencingTable.Underscore();
+                    referencedTable = referencedTable.Underscore();
+                }
+                
                 string referencingColumns = string.Join(
-                    "__",
+                    separator,
                     foreignKey.Properties.Select(p =>
                     {
-                        if (p.Name.Any(char.IsUpper))
+                        if (useSnakeCase && p.Name.Any(char.IsUpper))
                         {
                             return ReplaceSnakeCaseSpecialWords(p.Name.Underscore());
                         }
 
-                        return ReplaceSnakeCaseSpecialWords(p.Name);
+                        return p.Name;
                     }));
                 foreignKey.SetConstraintName(
-                    $"FK__{referencingTable}__{referencedTable}__{referencingColumns}");
+                    $"FK{separator}{referencingTable}{separator}{referencedTable}{separator}{referencingColumns}");
             }
 
             // Change index names
@@ -150,7 +161,7 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
                         ? ReplaceSnakeCaseSpecialWords(p.Name.Underscore())
                         : p.Name));
 
-                string indexName = string.Join(useSnakeCase ? "__" : "_", indexElementNames);
+                string indexName = string.Join(separator, indexElementNames);
                 index.SetDatabaseName(indexName);
             }
         }

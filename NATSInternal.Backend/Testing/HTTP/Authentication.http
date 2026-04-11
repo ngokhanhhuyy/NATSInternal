@@ -117,10 +117,49 @@ Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
+# @name BrandGetDetail
+GET {{host}}/products/brands/ccd8adb7-afc9-40bb-a8e4-7bb855d47f80
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name BrandUpdate
+PUT {{host}}/products/brands/c8832e31-ddaa-40c7-97f3-aec094f8df37
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+{
+    "name": "Howe - Trantow",
+    "website": "https://howe  trantow.biz",
+    "socialMediaUrl": "https://facebook.com/howe  trantow",
+    "phoneNumber": "021993280894",
+    "email": "Tiana.Kihn52@yahoo.com",
+    "address": "70813 Shemar Track",
+    "countryId": "23b26739-0000-4c79-b273-8fa843079691",
+    "createdDateTime": "2026-04-12T00:07:39.794355Z",
+}
+
+###
 # @name ProductCategoryGetAll
 GET {{host}}/products/categories/all
 Content-Type: application/json
 Cookie: {{accessCookie}}
+
+###
+# @name ProductCategoryGetDetail
+GET {{host}}/products/categories/ac834dc6-1995-430a-b109-e04419c0026c
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name ProductCategoryUpdate
+PUT {{host}}/products/categories/5e5e7af4-856a-4c7d-81a9-b728f2137aec
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+{
+    "name": "Beauty"
+}
 
 ###
 # @name SupplyList

@@ -5,25 +5,28 @@ using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.UseCases.Products;
 
-internal class BrandGetDetailHandler : IRequestHandler<BrandGetDetailRequestDto, BrandGetDetailResponseDto>
+internal class ProductCategoryGetDetailHandler
+    : IRequestHandler<ProductCategoryGetDetailRequestDto, ProductCategoryGetDetailResponseDto>
 {
     #region Fields
-    private readonly IProductRepository _brandRepository;
+    private readonly IProductRepository _productRepository;
     private readonly IUserRepository _userRepository;
     #endregion
 
     #region Constructors
-    public BrandGetDetailHandler(IProductRepository brandRepository, IUserRepository userRepository)
+    public ProductCategoryGetDetailHandler(IProductRepository productCategoryRepository, IUserRepository userRepository)
     {
-        _brandRepository = brandRepository;
+        _productRepository = productCategoryRepository;
         _userRepository = userRepository;
     }
     #endregion
 
     #region Methods
-    public async Task<BrandGetDetailResponseDto> Handle(BrandGetDetailRequestDto requestDto, CancellationToken token)
+    public async Task<ProductCategoryGetDetailResponseDto> Handle(
+        ProductCategoryGetDetailRequestDto requestDto,
+        CancellationToken token)
     {
-        Brand brand = await _brandRepository.GetBrandByIdIncludingCountryAsync(requestDto.Id, token)
+        ProductCategory brand = await _productRepository.GetCategoryByIdAsync(requestDto.Id, token)
             ?? throw new NotFoundException();
 
         User? createdUser = await _userRepository.GetUserByIdAsync(brand.CreatedUserId, token);

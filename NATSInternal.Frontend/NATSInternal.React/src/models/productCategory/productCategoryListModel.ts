@@ -25,10 +25,11 @@ declare global {
     id: string;
     name: string;
     countryName: string;
+    updateRoutePath: string;
   }>;
 }
 
-const { getProductCategoryCreateRoutePath } = useRouteHelper();
+const { getProductCategoryCreateRoutePath, getProductCategoryUpdateRoutePath } = useRouteHelper();
 const listOptions = getMetadata().listOptionsList.brand;
 
 function createListModel(responseDto?: ProductCategoryGetListResponseDto): ProductCategoryListModel {
@@ -82,8 +83,12 @@ function createListModel(responseDto?: ProductCategoryGetListResponseDto): Produ
 }
 
 function createProductCategoryModel(
-    responseDto: ProductCategoryGetListProductCategoryResponseDto): ProductCategoryListProductCategoryModel {
-  return { ...responseDto };
+  responseDto: ProductCategoryGetListProductCategoryResponseDto): ProductCategoryListProductCategoryModel
+{
+  return {
+    ...responseDto,
+    updateRoutePath: getProductCategoryUpdateRoutePath(responseDto.id)
+  };
 }
 
 export {

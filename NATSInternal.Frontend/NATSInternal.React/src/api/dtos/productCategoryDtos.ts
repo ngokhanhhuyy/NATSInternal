@@ -22,6 +22,10 @@ declare global {
     name: string;
     countryName: string;
   }>;
+
+  type ProductCategoryUpdateRequestDto = {
+    name: string;
+  };
 }
 
 export { };

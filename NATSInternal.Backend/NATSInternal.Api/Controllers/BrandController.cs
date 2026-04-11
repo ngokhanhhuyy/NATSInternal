@@ -42,7 +42,7 @@ public class BrandController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
-    [ProducesResponseType<IEnumerable<BrandBasicResponseDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<BrandGetDetailResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -52,7 +52,7 @@ public class BrandController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType<IEnumerable<BrandBasicResponseDto>>(StatusCodes.Status201Created)]
+    [ProducesResponseType<Guid>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -65,7 +65,7 @@ public class BrandController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    [ProducesResponseType<IEnumerable<BrandBasicResponseDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -81,7 +81,7 @@ public class BrandController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
-    [ProducesResponseType<IEnumerable<BrandBasicResponseDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]

@@ -2,6 +2,7 @@ using FluentValidation;
 using MediatR;
 using NATSInternal.Application.Exceptions;
 using NATSInternal.Application.Localization;
+using NATSInternal.Application.Security;
 using NATSInternal.Application.Time;
 using NATSInternal.Application.UnitOfWork;
 using NATSInternal.Domain.Features.Products;
@@ -14,6 +15,7 @@ internal class BrandUpdateHandler : IRequestHandler<BrandUpdateRequestDto>
     private readonly IProductRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidator<BrandUpdateRequestDto> _validator;
+    private readonly ICallerDetailProvider _callerDetailProvider;
     private readonly IClock _clock;
     #endregion
 
@@ -22,11 +24,13 @@ internal class BrandUpdateHandler : IRequestHandler<BrandUpdateRequestDto>
         IProductRepository repository,
         IUnitOfWork unitOfWork,
         IValidator<BrandUpdateRequestDto> validator,
+        ICallerDetailProvider callerDetailProvider,
         IClock clock)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
         _validator = validator;
+        _callerDetailProvider = callerDetailProvider;
         _clock = clock;
     }
     #endregion
@@ -35,7 +39,7 @@ internal class BrandUpdateHandler : IRequestHandler<BrandUpdateRequestDto>
     public async Task Handle(BrandUpdateRequestDto requestDto, CancellationToken cancellationToken)
     {
         requestDto.TransformValues();
-        _validator.Validate(requestDto);
+        _validator.ValidateAndThrow(requestDto);
 
         Brand brand = await _repository
             .GetBrandByIdIncludingCountryAsync(requestDto.Id, cancellationToken)
@@ -61,7 +65,8 @@ internal class BrandUpdateHandler : IRequestHandler<BrandUpdateRequestDto>
             phoneNumber: requestDto.PhoneNumber,
             email: requestDto.Email,
             address: requestDto.Address,
-            createdDateTime: _clock.Now,
+            updatedDateTime: _clock.Now,
+            updatedUserId: _callerDetailProvider.GetId(),
             country: country);
         
         _repository.UpdateBrand(brand);

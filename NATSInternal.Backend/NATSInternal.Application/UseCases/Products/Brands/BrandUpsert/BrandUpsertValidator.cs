@@ -37,7 +37,4 @@ internal class BrandUpsertValidator<TRequestDto> : Validator<TRequestDto> where 
             .WithName(DisplayNames.Address);
     }
     #endregion
-
-    #region Methods
-    #endregion
 }

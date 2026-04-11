@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NATSInternal.Domain.Features.Products;
+using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Infrastructure.DbContext;
 
@@ -13,6 +14,19 @@ internal class BrandEntityTypeConfiguration : IEntityTypeConfiguration<Brand>
         builder.HasKey(b => b.Id);
 
         // Relationship.
+        builder
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(b => b.CreatedUserId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired();
+
+        builder
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(b => b.LastUpdatedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+            
         builder
             .HasOne(b => b.Country)
             .WithMany()

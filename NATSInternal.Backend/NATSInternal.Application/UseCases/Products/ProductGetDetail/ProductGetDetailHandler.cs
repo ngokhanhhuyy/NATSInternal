@@ -65,7 +65,6 @@ internal class ProductGetDetailHandler : IRequestHandler<ProductGetDetailRequest
         );
         
         return new(product, stock, createdUser, lastUpdatedUser, photos, authorizationResponseDto);
-
     }
     #endregion
 }

@@ -40,4 +40,30 @@ public class ProductCategoryController : ControllerBase
     {
         return Ok(await _mediator.Send(new ProductCategoryGetAllRequestDto(), cancellationToken));
     }
+
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType<ProductCategoryGetDetailResponseDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> GetDetail([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    {
+        return Ok(await _mediator.Send(new ProductCategoryGetDetailRequestDto { Id = id }, cancellationToken));
+    }
+
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Update(
+        [FromRoute] Guid id,
+        [FromBody] ProductCategoryUpdateRequestDto requestDto,
+        CancellationToken cancellationToken = default)
+    {
+        requestDto.Id = id;
+        await _mediator.Send(requestDto, cancellationToken);
+        return Ok();
+    }
 }

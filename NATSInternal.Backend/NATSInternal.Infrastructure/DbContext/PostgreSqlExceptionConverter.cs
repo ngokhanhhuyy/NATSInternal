@@ -83,8 +83,7 @@ internal partial class PostgreSqlExceptionConverter : IDbExceptionConverter
         
         IEntityType? entityType = _context.Model
             .GetEntityTypes()
-            .Where(et => et.GetTableName() == tableName)
-            .SingleOrDefault();
+            .SingleOrDefault(et => et.GetTableName() == tableName);
 
         if (entityType is not null)
         {

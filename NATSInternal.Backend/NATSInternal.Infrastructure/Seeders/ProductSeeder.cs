@@ -41,11 +41,15 @@ internal partial class ProductSeeder
 
         if (isDevelopment)
         {
-            List<ProductCategory> categories = await SeedProductCategoriesAsync();
-            List<Brand> brands = await SeedBrandsAsync(countries);
+            List<Guid> userIds = users
+                .Where(u => u.Roles.Any(r => r.Name == RoleNames.Developer))
+                .Select(u => u.Id)
+                .ToList();
+            List<ProductCategory> categories = await SeedProductCategoriesAsync(userIds);
+            List<Brand> brands = await SeedBrandsAsync(userIds, countries);
             return new()
             {
-                Products = await SeedProductsAsync(users, brands, categories)
+                Products = await SeedProductsAsync(userIds, brands, categories)
             };
         }
 
@@ -323,19 +327,20 @@ internal partial class ProductSeeder
         return countries;
     }
 
-    private async Task<List<ProductCategory>> SeedProductCategoriesAsync()
+    private async Task<List<ProductCategory>> SeedProductCategoriesAsync(List<Guid> userIds)
     {
         List<ProductCategory> categories = await _context.ProductCategories.ToListAsync();
         if (categories.Count > 0)
         {
             return categories;
         }
-        
+
         _logger.LogInformation("Seeding product categories.");
 
         foreach (string name in _viFaker.Commerce.Categories(5))
         {
-            ProductCategory category = new(name, _clock.Now);
+            Guid createdUserId = userIds.Skip(_random.Next(userIds.Count)).Take(1).Single();
+            ProductCategory category = new(name, createdUserId, _clock.Now);
             _context.ProductCategories.Add(category);
             categories.Add(category);
         }
@@ -345,7 +350,7 @@ internal partial class ProductSeeder
         return categories;
     }
 
-    private async Task<List<Brand>> SeedBrandsAsync(List<Country> countries)
+    private async Task<List<Brand>> SeedBrandsAsync(List<Guid> userIds, List<Country> countries)
     {
         List<Brand> brands = await _context.Brands.ToListAsync();
         if (brands.Count > 0)
@@ -359,18 +364,22 @@ internal partial class ProductSeeder
         {
             string name = _enFaker.Company.CompanyName();
             string lowerNonDiacriticsName = name.RemoveDiacritics().ToLower();
-            string domainName = GetBrandNameSpecialCharactersToBeRemovedRegex().Replace(lowerNonDiacriticsName, "");
+            string normalizedName = GetBrandNameSpecialCharactersToBeRemovedRegex()
+                .Replace(lowerNonDiacriticsName, "-")
+                .Replace("'", "")
+                .Replace(" ", "-");
             Brand brand = new(
                 name: name,
-                website: $"https://{domainName}.{_enFaker.Internet.DomainSuffix()}",
-                socialMediaUrl: $"https://facebook.com/{domainName}",
-                email: _enFaker.Internet.Email(),
+                website: $"https://{normalizedName}.{_enFaker.Internet.DomainSuffix()}",
+                socialMediaUrl: $"https://facebook.com/{normalizedName}",
+                email: $"{normalizedName}@{_enFaker.Internet.Email().Split("@")[1]}",
                 address: _enFaker.Address.StreetAddress(),
                 phoneNumber: GetPhoneNumberCountryCodeRegex()
                     .Replace(_viFaker.Phone.PhoneNumber(), "0")
                     .Replace(" ", ""),
                 createdDateTime: _clock.Now,
-                country: countries[_random.Next(countries.Count)]
+                createdUserId: userIds[_random.Next(0, userIds.Count)],
+                country: countries[_random.Next(0, countries.Count)]
             );
 
             _context.Brands.Add(brand);
@@ -383,7 +392,7 @@ internal partial class ProductSeeder
     }
 
     private async Task<List<Product>> SeedProductsAsync(
-        List<User> users,
+        List<Guid> userIds,
         List<Brand> brands,
         List<ProductCategory> categories)
     {
@@ -396,27 +405,32 @@ internal partial class ProductSeeder
         _logger.LogInformation("Seeding products.");
 
         string[] units = new[] { "Chai", "Lọ", "Túi", "Hộp", "Vĩ" };
+        List<string> generatedNames = new();
 
         for (int _ = 0; _ < 30; _++)
         {
+            string name = string.Empty;
+            do
+            {
+                name = _enFaker.Commerce.ProductName();
+            } while (generatedNames.Contains(name));
+
             Product product = new(
-                name: _enFaker.Commerce.ProductName(),
+                name: name,
                 description: _viFaker.Commerce.ProductDescription(),
                 unit: units[_random.Next(units.Length)],
                 defaultAmountBeforeVatPerUnit: _random.Next(200, 1000) * 1000L,
                 defaultVatPercentage: 10,
                 isForRetail: _random.Next(10) > 2,
                 isDiscontinued: _random.Next(10) == 0,
-                createdUserId: users
-                    .Where(u => u.Roles.Any(r => r.Name == RoleNames.Developer))
-                    .Select(u => u.Id)
-                    .First(),
+                createdUserId: userIds.OrderBy(_ => Guid.NewGuid()).First(),
                 createdDateTime: _clock.Now,
                 brand: _random.Next(2) == 0 ? brands[_random.Next(brands.Count)] : null,
                 category: _random.Next(2) == 0 ? categories[_random.Next(categories.Count)] : null
             );
 
             _context.Products.Add(product);
+            generatedNames.Add(product.Name);
             products.Add(product);
         }
 
@@ -426,7 +440,7 @@ internal partial class ProductSeeder
     #endregion
     
     #region StaticMethods
-    [GeneratedRegex(@"\.|&|-|_")]
+    [GeneratedRegex(@"\.|&|_|,")]
     private static partial Regex GetBrandNameSpecialCharactersToBeRemovedRegex();
 
     [GeneratedRegex(@"^\+\d+")]

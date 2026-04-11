@@ -1,0 +1,3 @@
+namespace NATSInternal.Application.UseCases.Products;
+
+internal class ProductCategoryUpdateValidator : ProductCategoryUpsertValidator<ProductCategoryUpdateRequestDto>;

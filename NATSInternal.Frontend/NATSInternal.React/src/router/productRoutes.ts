@@ -1,6 +1,7 @@
 import { lazy } from "react";
 import type { RouteObject } from "react-router";
 import { brandRoutes } from "./brandRoutes";
+import { productCategoryRoutes } from "./productCategoryRoutes";
 
 const ProductListPage = lazy(() => import("@/pages/product/productList/ProductListPage"));
 const ProductDetailPage = lazy(() => import("@/pages/product/productDetail/ProductDetailPage"));
@@ -62,7 +63,8 @@ export const productRoutes: RouteObject = {
         },
       ]
     },
-    brandRoutes
+    brandRoutes,
+    productCategoryRoutes
   ],
   handle: {
     breadcrumbTitle: "Sản phẩm",

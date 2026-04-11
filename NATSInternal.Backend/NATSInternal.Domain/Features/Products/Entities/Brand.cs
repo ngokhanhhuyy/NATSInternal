@@ -22,6 +22,7 @@ internal class Brand : AbstractEntity
         string? phoneNumber,
         string? email,
         string? address,
+        Guid createdUserId,
         DateTime createdDateTime,
         Country? country)
     {
@@ -31,6 +32,7 @@ internal class Brand : AbstractEntity
         PhoneNumber = phoneNumber;
         Email = email;
         Address = address;
+        CreatedUserId = createdUserId;
         CreatedDateTime = createdDateTime;
         Country = country;
 
@@ -46,7 +48,10 @@ internal class Brand : AbstractEntity
     public string? PhoneNumber { get; private set; }
     public string? Email { get; private set; }
     public string? Address { get; private set; }
+    public Guid CreatedUserId { get; private set; }
     public DateTime CreatedDateTime { get; private set; }
+    public Guid? LastUpdatedUserId { get; private set; }
+    public DateTime? LastUpdatedDateTime { get; private set; }
     public Guid? CountryId { get; private set; }
     #endregion
 
@@ -70,7 +75,8 @@ internal class Brand : AbstractEntity
         string? phoneNumber,
         string? email,
         string? address,
-        DateTime createdDateTime,
+        Guid updatedUserId,
+        DateTime updatedDateTime,
         Country? country)
     {
         Name = name;
@@ -79,7 +85,8 @@ internal class Brand : AbstractEntity
         PhoneNumber = phoneNumber;
         Email = email;
         Address = address;
-        CreatedDateTime = createdDateTime;
+        LastUpdatedUserId = updatedUserId;
+        LastUpdatedDateTime = updatedDateTime;
         Country = country;
     }
     #endregion
