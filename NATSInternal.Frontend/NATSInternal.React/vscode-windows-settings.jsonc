@@ -175,7 +175,7 @@
         }
       }
     },
-    "[Default Dark Modern]": {
+    "[Dark Modern]": {
       "rules": {
         "property": "#DCDCDC",
         "field": "#DCDCDC",
@@ -184,7 +184,7 @@
         "interface": "#b8d7a3"
       }
     },
-    "[Default Dark+]": {
+    "[Dark+]": {
       "rules": {
         "property": "#DCDCDC",
         "field": "#DCDCDC",

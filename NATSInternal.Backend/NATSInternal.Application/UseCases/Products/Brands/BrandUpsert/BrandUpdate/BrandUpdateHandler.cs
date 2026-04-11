@@ -58,7 +58,7 @@ internal class BrandUpdateHandler : IRequestHandler<BrandUpdateRequestDto>
             name: requestDto.Name,
             website: requestDto.Website,
             socialMediaUrl: requestDto.SocialMediaUrl,
-            phoneNumber: requestDto.SocialMediaUrl,
+            phoneNumber: requestDto.PhoneNumber,
             email: requestDto.Email,
             address: requestDto.Address,
             createdDateTime: _clock.Now,

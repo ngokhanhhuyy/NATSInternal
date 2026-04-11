@@ -18,12 +18,14 @@ internal class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product
             .HasOne(p => p.Brand)
             .WithMany()
             .HasForeignKey(p => p.BrandId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.SetNull);
         
         builder
             .HasOne(p => p.Category)
             .WithMany()
             .HasForeignKey(p => p.CategoryId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.SetNull);
 
         builder

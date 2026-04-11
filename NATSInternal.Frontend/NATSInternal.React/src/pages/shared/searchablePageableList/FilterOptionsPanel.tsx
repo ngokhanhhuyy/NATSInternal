@@ -43,7 +43,6 @@ function DisplayOptionsPanel<
       m.sortByAscending === om.sortByAscending &&
       m.sortByFieldName === om.sortByFieldName &&
       m.searchContent === om.searchContent &&
-      m.page === om.page &&
       m.resultsPerPage === om.resultsPerPage
     );
   });

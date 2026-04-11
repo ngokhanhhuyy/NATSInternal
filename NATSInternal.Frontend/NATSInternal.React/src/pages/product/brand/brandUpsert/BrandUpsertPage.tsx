@@ -114,7 +114,7 @@ const BrandUpsertPage = <TUpsertResult extends string | void>(props: Props<TUpse
                 placeholder="123 Nguyễn Tất Thành"
               />
             </FormField>
-
+            
             <FormField path="country">
               <SelectInput
                 options={countryOptions}
@@ -130,10 +130,6 @@ const BrandUpsertPage = <TUpsertResult extends string | void>(props: Props<TUpse
         {props.deleteAction && <DeleteButton onClick={props.deleteAction} />}
         <SubmitButton/>
       </div>
-
-      <pre className="bg-white/10 border border-white/20 p-3 rounded-lg">
-        {JSON.stringify({ ...props.model, isModelDirty }, null, 2)}
-      </pre>
     </FormContainer>
   );
 };

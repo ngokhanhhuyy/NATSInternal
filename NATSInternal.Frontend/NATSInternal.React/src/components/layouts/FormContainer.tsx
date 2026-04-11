@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useEffect, useState, type ComponentProps } from "react";
+import React, { useState, useRef, useCallback, useEffect, createContext, type ComponentProps } from "react";
 import { useBlocker, type BlockerFunction } from "react-router";
 import { OperationError, ValidationError } from "@/api";
 import { useTsxHelper } from "@/helpers";
@@ -9,15 +9,30 @@ import { Form } from "@/components/form";
 import { ConfirmationModal, YesNoModal, type ConfirmationModalHandler, type YesNoModalHandler } from "@/components/ui";
 import { ExclamationCircleIcon, ExclamationTriangleIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 
+// Context payload.
+type FormContainerContextPayload = {
+  isDeleting: boolean;
+  handleDeletionAsync?(): Promise<void>;
+};
+
+// Context.
+export const FormContainerContext = createContext<FormContainerContextPayload>({
+  isDeleting: false
+});
+
 // Props.
 type FormContainerProps<TUpsertResult> = {
+  deleteAction?: () => Promise<void>;
+  onDeletionSucceeded?: () => any;
+  onDeletionFailed?: (error: Error, errorHandled: boolean) => any;
   isModelDirty?: boolean;
 } & ComponentProps<typeof Form<TUpsertResult>> & ComponentProps<typeof MainContainer>;
 
 // Component.
 export default function FormContainer<TUpsertResult>(props: FormContainerProps<TUpsertResult>): React.ReactNode {
   // Dependencies.
-  const { joinClassName } = useTsxHelper();
+  const { joinClassName, compute } = useTsxHelper();
+
   // Blocker.
   const shouldBlock = useCallback<BlockerFunction>(() => {
     return props.isModelDirty === true && !isSubmissionSucceeded.current;
@@ -25,10 +40,12 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
   const blocker = useBlocker(shouldBlock);
 
   // States.
+  const [deletionState, setDeletionState] = useState<"notDeleting" | "deleting" | "deletionSucceeded">("notDeleting");
   const isSubmissionSucceeded = useRef<boolean>(false);
   const dirtyModelConfirmationModelRef = useRef<YesNoModalHandler>(null!);
   const formSubmissionSucceededModalRef = useRef<ConfirmationModalHandler>(null!);
   const formSubmissionFailedModalRef = useRef<ConfirmationModalHandler>(null!);
+  const formDeletionConfirmationModalRef = useRef<YesNoModalHandler>(null!);
   const formDeletionSuceededModalRef = useRef<ConfirmationModalHandler>(null!);
   const formDeletionFailedModalRef = useRef<ConfirmationModalHandler>(null!);
   const [formUpsertingErrorMessages, setFormUpsertingErrorMessages] = useState<string[] | null>(null);
@@ -54,18 +71,40 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
       });
   }
 
-  function handleDeletionSucceeded(): void {
-    isSubmissionSucceeded.current = true;
-    formDeletionFailedModalRef.current
-      .confirmAsync()
-      .then(() => props.onDeletionSucceeded?.());
+  async function handleDeleteAsync(): Promise<void> {
+    if (!props.deleteAction) {
+      return;
+    }
+
+    const answer = await formDeletionConfirmationModalRef.current.getAnswerAsync();
+    if (!answer) {
+      return;
+    }
+
+    try {
+      setDeletionState("deleting");
+      await props.deleteAction?.();
+      setDeletionState("deletionSucceeded");
+      await formDeletionSuceededModalRef.current.confirmAsync();
+      props.onDeletionSucceeded?.();
+    } catch (error) {
+      setDeletionState("notDeleting");
+      await formDeletionFailedModalRef.current.confirmAsync();
+      if (error instanceof ValidationError || error instanceof OperationError) {
+        props.onDeletionFailed?.(error, true);
+        return;
+      }
+
+      props.onDeletionFailed?.(error as Error, false);
+      throw error;
+    }
   }
 
-  function handleDeletionFailed(error: Error, isErrorHandled: boolean): void {
-    formSubmissionFailedModalRef.current
-      .confirmAsync()
-      .then(() => props.onDeletionFailed?.(error, isErrorHandled));
-  }
+  // Payload.
+  const contextPayload = compute<FormContainerContextPayload>(() => ({
+    isDeleting: deletionState === "deleting",
+    handleDeletionAsync: handleDeleteAsync
+  }));
 
   // Effect.
   useEffect(() => {
@@ -85,79 +124,92 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
 
   // Template.
   return (
-    <MainContainer>
-      {formUpsertingErrorMessages && (
-        <div className={joinClassName(
-          "bg-red-500/5 border border-red-500 dark:border-red-400/50 text-red-500 dark:text-red-400",
-          "flex items-center gap-3 rounded-lg px-4 py-2"
-        )}>
-          <ExclamationCircleIcon className="size-7" />
-          <div className="flex flex-col">
-            {formUpsertingErrorMessages.map((message, index) => (
-              <span key={index}>{message}</span>
-            ))}
+    <FormContainerContext.Provider value={contextPayload}>
+      <MainContainer>
+        {formUpsertingErrorMessages && (
+          <div className={joinClassName(
+            "bg-red-500/5 border border-red-500 dark:border-red-400/50 text-red-500 dark:text-red-400",
+            "flex items-center gap-3 rounded-lg px-4 py-2"
+          )}>
+            <ExclamationCircleIcon className="size-7" />
+            <div className="flex flex-col">
+              {formUpsertingErrorMessages.map((message, index) => (
+                <span key={index}>{message}</span>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <Form
-        className="flex flex-col gap-3"
-        upsertAction={props.upsertAction}
-        onUpsertingSucceeded={handleUpsertingSucceeded}
-        onUpsertingFailed={handleUpsertingFailed}
-        deleteAction={props.deleteAction}
-        onDeletionSucceeded={handleDeletionSucceeded}
-        onDeletionFailed={handleDeletionFailed}
-        isModelDirty={props.isModelDirty}
-      >
-        {props.children}
-      </Form>
+        <Form
+          className="flex flex-col gap-3"
+          upsertAction={props.upsertAction}
+          onUpsertingSucceeded={handleUpsertingSucceeded}
+          onUpsertingFailed={handleUpsertingFailed}
+          isModelDirty={props.isModelDirty}
+        >
+          {props.children}
+        </Form>
 
-      <YesNoModal
-        ref={dirtyModelConfirmationModelRef}
-        IconComponent={ExclamationCircleIcon}
-        iconClassName="stroke-yellow-500 dark:stroke-yellow-600"
-        title="Xác nhận chuyển hướng"
-        questionContent={["Dữ liệu thay đổi chưa được lưu. ", "Bạn có chắc chắn muốn chuyển hướng?"]}
-        yesButtonText="Chắc chắn"
-        yesButtonClassName="danger"
-        noButtonText="Quay lại"
-      />
+        <YesNoModal
+          ref={dirtyModelConfirmationModelRef}
+          IconComponent={ExclamationCircleIcon}
+          iconClassName="stroke-yellow-500 dark:stroke-yellow-600"
+          title="Xác nhận chuyển hướng"
+          questionContent={["Dữ liệu thay đổi chưa được lưu. ", "Bạn có chắc chắn muốn chuyển hướng?"]}
+          yesButtonText="Chắc chắn"
+          yesButtonClassName="btn-danger"
+          noButtonText="Quay lại"
+        />
 
-      <ConfirmationModal
-        ref={formSubmissionSucceededModalRef}
-        title="Lưu thành công"
-        IconComponent={CheckCircleIcon}
-        iconClassName="stroke-emerald-600"
-        informationContent="Dữ liệu đã được lưu thành công."
-      />
+        <ConfirmationModal
+          ref={formSubmissionSucceededModalRef}
+          title="Lưu thành công"
+          IconComponent={CheckCircleIcon}
+          iconClassName="stroke-emerald-600"
+          informationContent="Dữ liệu đã được lưu thành công."
+        />
 
-      <ConfirmationModal
-        ref={formDeletionSuceededModalRef}
-        title="Xoá thành công"
-        IconComponent={CheckCircleIcon}
-        iconClassName="stroke-emerald-600"
-        informationContent="Dữ liệu đã được xoá thành công."
-      />
+        <ConfirmationModal
+          ref={formDeletionSuceededModalRef}
+          title="Xoá thành công"
+          IconComponent={CheckCircleIcon}
+          iconClassName="stroke-emerald-600"
+          informationContent="Dữ liệu đã được xoá thành công."
+        />
 
-      <ConfirmationModal
-        ref={formSubmissionFailedModalRef}
-        title="Dữ liệu không hợp lệ"
-        IconComponent={ExclamationTriangleIcon}
-        iconClassName="stroke-red-600"
-        informationContent={["Dữ liệu đã nhập không hợp lệ.", "Vui lòng kiểm tra lại."]}
-      />
+        <YesNoModal
+          ref={formDeletionConfirmationModalRef}
+          IconComponent={ExclamationCircleIcon}
+          iconClassName="stroke-yellow-500 dark:stroke-yellow-600"
+          title="Xác nhận xoá dữ liệu"
+          questionContent={[
+            "Dữ liệu sau khi xoá có thể sẽ không thể khôi phục được.",
+            "Bạn có chắc chắn muốn xoá không?"
+          ]}
+          yesButtonText="Chắc chắn"
+          yesButtonClassName="btn-danger"
+          noButtonText="Quay lại"
+        />
 
-      <ConfirmationModal
-        ref={formDeletionFailedModalRef}
-        title="Dữ liệu không hợp lệ"
-        IconComponent={ExclamationTriangleIcon}
-        iconClassName="stroke-red-600"
-        informationContent={[
-          "Không thể xoá dữ liệu, vui lòng thử lại.",
-          "Nếu lỗi này vẫn tiếp tục xảy ra, xin hãy thông báo cho nhà phát triển."
-        ]}
-      />
-    </MainContainer>
+        <ConfirmationModal
+          ref={formSubmissionFailedModalRef}
+          title="Dữ liệu không hợp lệ"
+          IconComponent={ExclamationTriangleIcon}
+          iconClassName="stroke-red-600"
+          informationContent={["Dữ liệu đã nhập không hợp lệ.", "Vui lòng kiểm tra lại."]}
+        />
+
+        <ConfirmationModal
+          ref={formDeletionFailedModalRef}
+          title="Dữ liệu không hợp lệ"
+          IconComponent={ExclamationTriangleIcon}
+          iconClassName="stroke-red-600"
+          informationContent={[
+            "Không thể xoá dữ liệu, vui lòng thử lại.",
+            "Nếu lỗi này vẫn tiếp tục xảy ra, xin hãy thông báo cho nhà phát triển."
+          ]}
+        />
+      </MainContainer>
+    </FormContainerContext.Provider>
   );
 }

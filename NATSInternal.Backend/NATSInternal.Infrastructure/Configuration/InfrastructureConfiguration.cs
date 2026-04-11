@@ -30,11 +30,11 @@ public static class InfrastructureConfiguration
     {
         services.AddDbContextFactory<AppDbContext>(options =>
         {
-            // options.UseNpgsql(connectionString, x => x.MigrationsAssembly("NATSInternal.Infrastructure"));
-            options.UseMySql(
-                connectionString,
-                ServerVersion.AutoDetect(connectionString),
-                x => x.MigrationsAssembly("NATSInternal.Infrastructure"));
+            options.UseNpgsql(connectionString);
+            // options.UseMySql(
+            //     connectionString,
+            //     ServerVersion.AutoDetect(connectionString),
+            //     x => x.MigrationsAssembly("NATSInternal.Infrastructure"));
         });
 
         // DbContext.

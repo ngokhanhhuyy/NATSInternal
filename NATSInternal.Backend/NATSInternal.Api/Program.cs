@@ -22,7 +22,7 @@ public static class Program
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         // Connection string - EF Core.
-        string connectionString = builder.Configuration.GetConnectionString("MySql")!;
+        string connectionString = builder.Configuration.GetConnectionString("PostgreSql")!;
 
         // Add services from infrastructure layer.
         string webRootPath = builder.Environment.WebRootPath;

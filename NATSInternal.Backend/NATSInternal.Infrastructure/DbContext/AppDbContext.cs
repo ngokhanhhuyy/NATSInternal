@@ -58,7 +58,10 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.ApplyConfiguration(new CustomerEntityTypeConfiguration());
 
         // Product entity cluster.
+        modelBuilder.ApplyConfiguration(new ProductEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new ProductCategoryEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new BrandEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new CountryEntityTypeConfiguration());
 
         // Stock entity cluster.
         modelBuilder.ApplyConfiguration(new StockEntityTypeConfiguration());
@@ -104,7 +107,7 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
                     ? ReplaceSnakeCaseSpecialWords(p.Name.Underscore())
                     : p.Name);
 
-                string name = "PK__" + string.Join("__", columnNames);
+                string name = "PK__" + entity.GetTableName()!  + string.Join("__", columnNames);
                 key.SetName(name);
             }
 

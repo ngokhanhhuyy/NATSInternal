@@ -60,7 +60,7 @@ export default function BaseModal(props: BaseModalProps) {
       <div className={joinClassName(
         "bg-white dark:bg-neutral-800 border border-transparent dark:border-white/10",
         "rounded-xl shadow w-full max-w-sm mx-3 sm:mx-auto transition-all",
-        props.isOpen ? "scale-100" : "scale-0"
+        props.isOpen ? "scale-100" : "scale-80"
       )}>
         {/* Header */}
         <div className="flex justify-between items-center p-3">
@@ -77,7 +77,7 @@ export default function BaseModal(props: BaseModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 p-2">
+        <div className="flex justify-end gap-2 p-2">
           {props.footerChildren}
         </div>
       </div>

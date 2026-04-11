@@ -5,14 +5,11 @@ import { useTsxHelper } from "@/helpers";
 
 // Type.
 export type SubmissionState = "notSubmitting" | "submitting" | "submissionSucceeded";
-export type SubmissionType = "upsert" | "delete";
 
 // Payload.
 type FormContextPayload = {
   errorCollection: ErrorCollectionModel;
   submissionState: SubmissionState;
-  submissionType: SubmissionType | null;
-  handleDeletionAsync?(): Promise<void>;
   isModelDirty?: boolean;
 };
 
@@ -24,25 +21,13 @@ type FormProps<TUpsertResult> = {
   upsertAction: () => Promise<TUpsertResult>;
   onUpsertingSucceeded?: (result: TUpsertResult) => any;
   onUpsertingFailed?: (error: Error, errorHandled: boolean) => any;
-  deleteAction?: () => Promise<void>;
-  onDeletionSucceeded?: () => any;
-  onDeletionFailed?: (error: Error, errorHandled: boolean) => any;
   isModelDirty?: boolean;
 } & React.ComponentPropsWithoutRef<"form">;
 
 // Component.
 export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
   // Props.
-  const {
-    upsertAction,
-    onUpsertingSucceeded,
-    onUpsertingFailed,
-    deleteAction,
-    onDeletionSucceeded,
-    onDeletionFailed,
-    isModelDirty,
-    ...domProps
-  } = props;
+  const { upsertAction, onUpsertingSucceeded, onUpsertingFailed, isModelDirty, ...domProps } = props;
   
   // Dependencies.
   const { compute, joinClassName } = useTsxHelper();
@@ -50,7 +35,6 @@ export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
   // States.
   const [errorCollection, setErrorCollection] = useState(createErrorCollectionModel);
   const [submissionState, setSubmissionState] = useState<SubmissionState>("notSubmitting");
-  const [submissionType, setSubmissionType] = useState<SubmissionType | null>(null);
 
   // Computed.
   const submittingClassName = compute(() => {
@@ -63,8 +47,6 @@ export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
     return {
       errorCollection,
       submissionState,
-      submissionType,
-      handleDeletionAsync,
       isModelDirty
     };
   }, [errorCollection, submissionState, isModelDirty]);
@@ -74,7 +56,6 @@ export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
     event.preventDefault();
     setErrorCollection(errorCollection => errorCollection.clear());
     setSubmissionState("submitting");
-    setSubmissionType("upsert");
 
     try {
       const result = await upsertAction();
@@ -82,32 +63,9 @@ export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
       setSubmissionState("submissionSucceeded");
     } catch (error) {
       setSubmissionState("notSubmitting");
-      setSubmissionType(null);
       if (error instanceof ValidationError || error instanceof OperationError) {
         setErrorCollection(errorCollection => errorCollection.mapFromApiErrorDetails(error.errors));
         onUpsertingFailed?.(error, true);
-        return;
-      }
-
-      onUpsertingFailed?.(error as Error, false);
-      throw error;
-    }
-  }
-
-  async function handleDeletionAsync(): Promise<void> {
-    setSubmissionState("submitting");
-    setSubmissionType("upsert");
-
-    try {
-      await deleteAction?.();
-      onDeletionSucceeded?.();
-      setSubmissionState("submissionSucceeded");
-    } catch (error) {
-      setSubmissionState("notSubmitting");
-      setSubmissionType(null);
-      if (error instanceof ValidationError || error instanceof OperationError) {
-        setErrorCollection(errorCollection => errorCollection.mapFromApiErrorDetails(error.errors));
-        onDeletionFailed?.(error, true);
         return;
       }
 

@@ -61,13 +61,13 @@ function SecondaryListPanel<
     return (
       <ul className="list-group list-group-flush">
         {props.model.items.map((item, index) => (
-          <li className="px-3 py-2" key={index}>
+          <li className="list-group-item px-3 py-2" key={index}>
             {props.renderItem(item)}
           </li>
         ))}
 
         {props.model.items.length < props.model.itemCount && (
-          <li className="px-3 py-2 text-center opacity-50">
+          <li className="list-group-item px-3 py-2 text-center opacity-50">
             <Link to={props.listRoutePath}>
               {`...và ${props.model.itemCount - props.model.items.length} ${displayName.toLowerCase()} khác`}
             </Link>
