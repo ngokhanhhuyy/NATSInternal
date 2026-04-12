@@ -21,7 +21,7 @@ declare global {
 
   interface IUpsertableListModel<TItemModel extends object> {
     items: TItemModel[];
-    createRoutePath: string;
+    createRoutePath?: string;
   }
 }
 

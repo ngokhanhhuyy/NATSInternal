@@ -16,7 +16,6 @@ declare global {
     pageCount: number;
     itemCount: number;
     get sortByFieldNameOptions(): string[];
-    get createRoutePath(): string;
     mapFromResponseDto(responseDto: ProductCategoryGetListResponseDto): ProductCategoryListModel;
     toRequestDto(): ProductCategoryGetListRequestDto;
   }>;
@@ -25,11 +24,11 @@ declare global {
     id: string;
     name: string;
     countryName: string;
-    updateRoutePath: string;
+    detailRoutePath: string;
   }>;
 }
 
-const { getProductCategoryCreateRoutePath, getProductCategoryUpdateRoutePath } = useRouteHelper();
+const { getProductCategoryDetailRoutePath } = useRouteHelper();
 const listOptions = getMetadata().listOptionsList.brand;
 
 function createListModel(responseDto?: ProductCategoryGetListResponseDto): ProductCategoryListModel {
@@ -44,9 +43,6 @@ function createListModel(responseDto?: ProductCategoryGetListResponseDto): Produ
     itemCount: 0,
     get sortByFieldNameOptions(): string[] {
       return listOptions.sortByFieldNameOptions;
-    },
-    get createRoutePath(): string {
-      return getProductCategoryCreateRoutePath();
     },
     mapFromResponseDto(responseDto: ProductCategoryGetListResponseDto): ProductCategoryListModel {
       return {
@@ -87,7 +83,7 @@ function createProductCategoryModel(
 {
   return {
     ...responseDto,
-    updateRoutePath: getProductCategoryUpdateRoutePath(responseDto.id)
+    detailRoutePath: getProductCategoryDetailRoutePath(responseDto.id)
   };
 }
 

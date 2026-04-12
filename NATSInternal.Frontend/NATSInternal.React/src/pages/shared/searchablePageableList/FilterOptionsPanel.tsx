@@ -89,7 +89,7 @@ function DisplayOptionsPanel<
             />
           </FormField>
 
-          <div className={"grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3 gap-3"}>
+          <div className={"grid grid-cols-1 sm:grid-cols-3 gap-3"}>
             <FormField path="sortByFieldName">
               <SelectInput
                 options={sortByFieldNameOptions}

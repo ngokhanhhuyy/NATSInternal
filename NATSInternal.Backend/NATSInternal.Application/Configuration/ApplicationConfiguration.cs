@@ -96,6 +96,7 @@ public static class ApplicationConfiguration
         services.AddTransient<
             IRequestHandler<ProductCategoryUpdateRequestDto>,
             ProductCategoryUpdateHandler>();
+        services.AddTransient<IRequestHandler<ProductCategoryDeleteRequestDto>, ProductCategoryDeleteHandler>();
 
         // Photo UseCases.
         services.AddTransient<

@@ -128,7 +128,7 @@ export function BrandListPanel(): React.ReactNode {
       isInitialLoading={isInitialLoading}
       listRoutePath={getBrandListRoutePath()}
       renderItem={(item: BrandListBrandModel) => (
-        <Link to={item.detailRoute} className="text-blue-700 dark:text-blue-400 font-bold">
+        <Link to={item.detailRoutePath} className="text-blue-700 dark:text-blue-400 font-bold">
           {item.name}
         </Link>
       )}
@@ -166,7 +166,11 @@ export function ProductCategoryListPanel(): React.ReactNode {
       resourceName="productCategory"
       isInitialLoading={isInitialLoading}
       listRoutePath={getProductCategoryListRoutePath()}
-      renderItem={(item) => <span className="text-blue-700 dark:text-blue-400">{item.name}</span>}
+      renderItem={(item) => (
+        <Link to={item.detailRoutePath} className="text-blue-700 dark:text-blue-400 font-bold">
+          {item.name}
+        </Link>
+      )}
     />
   );
 }

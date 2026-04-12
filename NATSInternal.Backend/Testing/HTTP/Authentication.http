@@ -162,6 +162,11 @@ Cookie: {{accessCookie}}
 }
 
 ###
+# @name ProductCategoryDelete
+DELETE {{host}}/products/categories/006ee6ee-d203-46af-ad1d-1669315357ed
+Cookie: {{accessCookie}}
+
+###
 # @name SupplyList
 // @no-log
 GET {{host}}/supply

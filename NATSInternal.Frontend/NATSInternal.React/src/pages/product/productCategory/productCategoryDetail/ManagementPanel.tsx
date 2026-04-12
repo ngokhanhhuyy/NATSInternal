@@ -5,7 +5,7 @@ import Field from "@/pages/shared/detail/Field";
 
 // Props.
 type Props = {
-  model: BrandDetailModel;
+  model: ProductCategoryDetailModel;
 };
 
 // Component.

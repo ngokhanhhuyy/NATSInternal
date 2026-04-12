@@ -50,7 +50,7 @@ export default function FilterPanelChildren(props: Props): React.ReactNode {
 
   // Template.
   return (
-    <div className={"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3"}>
+    <div className={"grid grid-cols-1 sm:grid-cols-2 gap-3"}>
       <FormField path="brandId" displayName="Thương hiệu">
         <SelectInput
           options={brandOptions}

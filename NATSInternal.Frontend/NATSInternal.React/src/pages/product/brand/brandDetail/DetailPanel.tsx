@@ -1,7 +1,7 @@
 import React from "react";
 
 // Child components.
-import Field from "./Fields";
+import Field from "@/pages/shared/detail/Field";
 import { NewTabWebsiteLink, NewTabPhoneLink, NewTabEmailLink } from "@/components/ui";
 import { BuildingStorefrontIcon } from "@heroicons/react/24/outline";
 

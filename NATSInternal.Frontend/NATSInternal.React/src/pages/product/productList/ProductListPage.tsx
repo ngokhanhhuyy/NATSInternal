@@ -60,8 +60,8 @@ export default function ProductListPage(): React.ReactNode {
           onModelUpdated={(updatedData) => setModel(m => ({ ...m, ...updatedData }))}
         />
       }
-      additionalPanels={
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-5">
+      sideBarPanels={
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-3 items-start justify-start h-fit">
           <BrandListPanel />
           <ProductCategoryListPanel />
         </div>

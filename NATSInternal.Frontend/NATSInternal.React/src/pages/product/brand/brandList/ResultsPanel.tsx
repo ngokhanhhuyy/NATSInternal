@@ -48,7 +48,7 @@ function ResultItem(props: { model: BrandListBrandModel }): React.ReactNode {
         <BuildingStorefrontIcon className="size-6 opacity-50" />
       </div>
       <div className="flex flex-col justify-start items-start">
-        <Link to={props.model.detailRoute} className="font-bold text-blue-700 dark:text-blue-400">
+        <Link to={props.model.detailRoutePath} className="font-bold text-blue-700 dark:text-blue-400">
           {props.model.name}
         </Link>
 

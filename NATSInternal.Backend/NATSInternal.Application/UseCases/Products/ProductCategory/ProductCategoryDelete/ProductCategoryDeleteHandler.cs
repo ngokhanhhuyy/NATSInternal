@@ -5,7 +5,7 @@ using NATSInternal.Domain.Features.Products;
 
 namespace NATSInternal.Application.UseCases.Products;
 
-internal class BrandDeleteHandler : IRequestHandler<BrandDeleteRequestDto>
+internal class ProductCategoryDeleteHandler : IRequestHandler<ProductCategoryDeleteRequestDto>
 {
     #region Fields
     private readonly IProductRepository _repository;
@@ -13,7 +13,7 @@ internal class BrandDeleteHandler : IRequestHandler<BrandDeleteRequestDto>
     #endregion
 
     #region Constructors
-    public BrandDeleteHandler(IProductRepository repository, IUnitOfWork unitOfWork)
+    public ProductCategoryDeleteHandler(IProductRepository repository, IUnitOfWork unitOfWork)
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
@@ -21,13 +21,13 @@ internal class BrandDeleteHandler : IRequestHandler<BrandDeleteRequestDto>
     #endregion
 
     #region Methods
-    public async Task Handle(BrandDeleteRequestDto requestDto, CancellationToken cancellationToken = default)
+    public async Task Handle(ProductCategoryDeleteRequestDto requestDto, CancellationToken cancellationToken = default)
     {
-        Brand brand = await _repository
-            .GetBrandByIdAsync(requestDto.Id, cancellationToken)
+        ProductCategory brand = await _repository
+            .GetCategoryByIdAsync(requestDto.Id, cancellationToken)
             ?? throw new NotFoundException();
 
-        _repository.RemoveBrand(brand);
+        _repository.RemoveCategory(brand);
 
         try
         {

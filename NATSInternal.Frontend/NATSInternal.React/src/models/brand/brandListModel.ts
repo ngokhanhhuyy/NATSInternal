@@ -26,7 +26,7 @@ declare global {
     name: string;
     countryName: string;
     productCount: number;
-    detailRoute: string;
+    detailRoutePath: string;
   }>;
 }
 
@@ -86,6 +86,6 @@ export function createBrandListModel(responseDto?: BrandGetListResponseDto): Bra
 export function createBrandListBrandModel(responseDto: BrandGetListBrandResponseDto): BrandListBrandModel {
   return {
     ...responseDto,
-    detailRoute: getBrandDetailRoutePath(responseDto.id)
+    detailRoutePath: getBrandDetailRoutePath(responseDto.id)
   };
 }

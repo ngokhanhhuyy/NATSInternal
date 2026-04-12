@@ -48,7 +48,7 @@ function ResultItem(props: { model: ProductCategoryListProductCategoryModel }): 
         <TagIcon className="size-6 opacity-50" />
       </div>
       <div className="flex flex-col justify-start items-start">
-        <Link to={props.model.updateRoutePath} className="font-bold text-blue-700 dark:text-blue-400">
+        <Link to={props.model.detailRoutePath} className="font-bold text-blue-700 dark:text-blue-400">
           {props.model.name}
         </Link>
       </div>
