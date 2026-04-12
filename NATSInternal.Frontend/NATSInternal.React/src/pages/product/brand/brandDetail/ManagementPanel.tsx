@@ -19,10 +19,26 @@ export default function DetailPanel(props: Props): React.ReactNode {
         </span>
       </div>
 
-      <div className="panel-body flex flex-col p-3">
+      <div className="panel-body flex flex-col p-3 gap-3">
         <Field propertyName="createdDateTime">
           {props.model.createdDateTime}
         </Field>
+
+        <Field propertyName="createdUser">
+          {props.model.createdUser.userName}
+        </Field>
+
+        {props.model.lastUpdatedDateTime && (
+          <Field propertyName="lastUpdatedDateTime">
+            {props.model.lastUpdatedDateTime}
+          </Field>
+        )}
+
+        {props.model.lastUpdatedUser && (
+          <Field propertyName="lastUpdatedUser">
+            {props.model.lastUpdatedUser.userName}
+          </Field>
+        )}
       </div>
     </div>
   );

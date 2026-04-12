@@ -210,7 +210,7 @@ internal static partial class RuleBuilderOptionsExtensions
     #endregion
 
     #region StaticMethods
-    [GeneratedRegex(@"^((http|https)://)?(www\.)?[\w\d]+(\.[\w\d]+)+(/.*)?$")]
+    [GeneratedRegex(@"^((http|https)://)?(www\.)?([A-Za-z0-9]+(-[A-Za-z0-9]+)*)(\.([A-Za-z0-9]+(-[A-Za-z0-9]+)*))+(\/.*)?$")]
     private static partial Regex GetWebsiteUrlRegex();
 
     [GeneratedRegex(@"^\+?[0-9]+$")]

@@ -11,7 +11,7 @@
         transition: .2s linear, outline .1s linear;
         outline: 1px solid transparent;
         min-height: calc(var(--spacing) * var(--min-height-coeffecient));
-        flex: 1;
+        width: 100%;
 
         &:focus {
             border-color: var(--color-blue-500);
@@ -49,12 +49,12 @@
         }
 
         .form-field:has(.field-validation-error) &:not(:disabled) {
-            background: --alpha(var(--color-red-500) / 5%);
+            background-color: --alpha(var(--color-red-500) / 5%);
             color: var(--color-red-500);
-            border-color: --alpha(var(--color-red-500) / 70%);
+            border-color: --alpha(var(--color-red-500) / 100%);
 
             &:focus {
-                outline-color: --alpha(var(--color-red-500) / 15%);
+                outline-color: --alpha(var(--color-red-500) / 100%);
             }
         }
 

@@ -45,6 +45,9 @@ declare global {
     email: string | null;
     address: string | null;
     createdDateTime: string;
+    createdUser: UserBasicResponseDto;
+    lastUpdatedDateTime: string | null;
+    lastUpdatedUser: UserBasicResponseDto | null;
     country: CountryBasicResponseDto | null;
   };
 }

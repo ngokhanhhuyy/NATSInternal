@@ -5,6 +5,7 @@ const httpClient = useHttpClient();
 export type ProductCategoryApi = {
   getListAsync(requestDto?: ProductCategoryGetListRequestDto): Promise<ProductCategoryGetListResponseDto>;
   getAllAsync(): Promise<ProductCategoryBasicResponseDto[]>;
+  getDetailAsync(id: string): Promise<ProductCategoryGetDetailResponseDto>;
   updateAsync(id: string, requestDto: ProductCategoryUpdateRequestDto): Promise<void>;
 };
 
@@ -14,6 +15,9 @@ const productCategoryApi: ProductCategoryApi = {
   },
   async getAllAsync(): Promise<ProductCategoryBasicResponseDto[]> {
     return await httpClient.getAsync("/products/categories/all");
+  },
+  async getDetailAsync(id: string): Promise<ProductCategoryGetDetailResponseDto> {
+    return await httpClient.getAsync(`/products/categories/${id}`);
   },
   async updateAsync(id: string, requestDto: ProductCategoryUpdateRequestDto): Promise<void> {
     await httpClient.putAndIgnoreAsync(`/products/categories/${id}`, requestDto);

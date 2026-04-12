@@ -128,7 +128,8 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
       <MainContainer>
         {formUpsertingErrorMessages && (
           <div className={joinClassName(
-            "bg-red-500/5 border border-red-500 dark:border-red-400/50 text-red-500 dark:text-red-400",
+            "bg-red-500/15 border border-red-500 dark:bg-red-500/15 dark:border-red-400/50",
+            "text-red-500 dark:text-red-400",
             "flex items-center gap-3 rounded-lg px-4 py-2"
           )}>
             <ExclamationCircleIcon className="size-7" />

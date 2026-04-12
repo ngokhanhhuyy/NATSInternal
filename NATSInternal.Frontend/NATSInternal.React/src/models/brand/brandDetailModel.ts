@@ -1,3 +1,4 @@
+import { createUserBasicModel } from "../shared/userBasicModel";
 import { createBrandBasicModel } from "../shared/brandBasicModel";
 import { createCountryBasicModel } from "../shared/countryBasicModel";
 import { useDateTimeHelper, useRouteHelper } from "@/helpers";
@@ -12,6 +13,9 @@ declare global {
     email: string | null;
     address: string | null;
     createdDateTime: string;
+    createdUser: UserBasicModel;
+    lastUpdatedDateTime: string | null;
+    lastUpdatedUser: UserBasicModel | null;
     country: CountryBasicModel | null;
     updateRoutePath: string;
     toBasicModel(): BrandBasicModel;
@@ -27,6 +31,9 @@ export function createBrandDetailModel(responseDto: BrandGetDetailResponseDto): 
     website: responseDto.website?.replaceAll(/(,?)(\s+)/g, "-") ?? null,
     socialMediaUrl: responseDto.socialMediaUrl?.replaceAll(/(,?)(\s+)/g, "-")?? null,
     createdDateTime: getDisplayDateTimeString(responseDto.createdDateTime),
+    createdUser: createUserBasicModel(responseDto.createdUser),
+    lastUpdatedDateTime: responseDto.lastUpdatedDateTime && getDisplayDateTimeString(responseDto.lastUpdatedDateTime),
+    lastUpdatedUser: responseDto.lastUpdatedUser && createUserBasicModel(responseDto.lastUpdatedUser),
     country: responseDto.country && createCountryBasicModel(responseDto.country),
     updateRoutePath: getBrandUpdateRoutePath(responseDto.id),
     toBasicModel(): BrandBasicModel {

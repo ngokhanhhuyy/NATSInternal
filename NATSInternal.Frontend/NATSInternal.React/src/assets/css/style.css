@@ -45,7 +45,6 @@ body {
     justify-content: stretch;
     align-items: stretch;
     overflow-y: auto;
-    scrollbar-gutter: stable;
 }
 
 a:not(.hover\:underline):not(.hover\:overline):not(.hover\:line-through):not(.hover\:no-underline):hover {

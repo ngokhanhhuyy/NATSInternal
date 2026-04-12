@@ -23,6 +23,16 @@ declare global {
     countryName: string;
   }>;
 
+  type ProductCategoryGetDetailResponseDto = {
+    id: string;
+    name: string;
+    createdDateTime: string;
+    createdUser: UserBasicResponseDto;
+    lastUpdatedDateTime: string | null;
+    lastUpdatedUser: UserBasicResponseDto | null;
+    country: CountryBasicResponseDto | null;
+  };
+
   type ProductCategoryUpdateRequestDto = {
     name: string;
   };

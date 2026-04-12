@@ -118,19 +118,19 @@ Cookie: {{accessCookie}}
 
 ###
 # @name BrandGetDetail
-GET {{host}}/products/brands/ccd8adb7-afc9-40bb-a8e4-7bb855d47f80
+GET {{host}}/products/brands/6ab49293-12ad-4ada-8fb1-549dc55ba26f
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
 # @name BrandUpdate
-PUT {{host}}/products/brands/c8832e31-ddaa-40c7-97f3-aec094f8df37
+PUT {{host}}/products/brands/6ab49293-12ad-4ada-8fb1-549dc55ba26f
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
 {
-    "name": "Howe - Trantow",
-    "website": "https://howe  trantow.biz",
+    "name": "Abbott, Grant and Kuhn",
+    "website": "https://abbott--grant-and-kuhn.net",
     "socialMediaUrl": "https://facebook.com/howe  trantow",
     "phoneNumber": "021993280894",
     "email": "Tiana.Kihn52@yahoo.com",
