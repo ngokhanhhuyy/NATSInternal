@@ -20,5 +20,6 @@ internal class Photo : AbstractEntity
     public bool IsThumbnail { get; private set; }
     public Guid? BrandId { get; private set; }
     public Guid? ProductId { get; private set; }
+    public Guid? SupplyId { get; private set; }
     #endregion
 }

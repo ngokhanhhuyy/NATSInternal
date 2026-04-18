@@ -47,7 +47,7 @@ internal class Stock : AbstractAggregateRootEntity
 
         if (StockingQuantity - quantityToDecrement < 0)
         {
-            throw new DomainException("Quantity to decrement must be greater or equal to stocking quantity");
+            throw new DomainException("Quantity to decrement must be greater or equal to stocking quantity.");
         }
         
         StockingQuantity -= quantityToDecrement;

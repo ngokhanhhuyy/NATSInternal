@@ -133,6 +133,11 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
     {
         return CallerHasPermission(PermissionNames.CreateProductCategory);
     }
+
+    public bool CanCreateSupply()
+    {
+        return CallerHasPermission(PermissionNames.CreateSupply);
+    }
     #endregion
 
     #region PrivateMethods

@@ -48,6 +48,26 @@ export default function SearchablePageableListPage<TListModel extends ListModel<
         props.sideBarPanels != null ? "xl:grid-cols-[1fr_25rem]" : null
       )}>
         <div className="flex flex-col items-stretch gap-3">
+          <div className="flex justify-end gap-3">
+            <Paginator
+              page={props.model.page}
+              pageCount={props.model.pageCount}
+              onPageChanged={props.onPaginatorPageChanged}
+              getPageButtonClassName={(_, isActive) => isActive ? "btn-primary" : undefined}
+            />
+
+            {props.model.pageCount > 1 && (
+              <div className="border-r border-black/25 dark:border-white/25 w-px" />
+            )}
+            
+            {props.model.createRoutePath && (
+              <Link className="btn gap-1 shrink-0" to={props.model.createRoutePath}>
+                <PlusIcon className="size-4.5" />
+                <span>Tạo {displayName?.toLowerCase()} mới</span>
+              </Link>
+            )}
+          </div>
+          
           {props.children}
 
           <div className="flex justify-end gap-3">
@@ -62,10 +82,12 @@ export default function SearchablePageableListPage<TListModel extends ListModel<
               <div className="border-r border-black/25 dark:border-white/25 w-px" />
             )}
             
-            <Link className="btn gap-1 shrink-0" to={props.model.createRoutePath}>
-              <PlusIcon className="size-4.5" />
-              <span>Tạo {displayName?.toLowerCase()} mới</span>
-            </Link>
+            {props.model.createRoutePath && (
+              <Link className="btn gap-1 shrink-0" to={props.model.createRoutePath}>
+                <PlusIcon className="size-4.5" />
+                <span>Tạo {displayName?.toLowerCase()} mới</span>
+              </Link>
+            )}
           </div>
           
           {props.linkButtons}

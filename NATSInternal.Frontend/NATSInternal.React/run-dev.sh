@@ -25,4 +25,4 @@ pm2 start npm --name vite-dev -- run dev --max-memory-restart 1500MB
 # pm2 stop all
 
 # Lưu state để auto-start khi reboot.
-# pm2 save
+# pm2 savew

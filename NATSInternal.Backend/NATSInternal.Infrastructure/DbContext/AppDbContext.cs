@@ -7,6 +7,7 @@ using NATSInternal.Domain.Features.Customers;
 using NATSInternal.Domain.Features.Photos;
 using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Stocks;
+using NATSInternal.Domain.Features.Supplies;
 using NATSInternal.Domain.Features.Users;
 using NATSInternal.Infrastructure.DbContext.AuditLogs;
 using NATSInternal.Infrastructure.DbContext.Customers;
@@ -36,6 +37,9 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
 
     // Stock aggregate
     public DbSet<Stock> Stocks { get; private set; }
+
+    // Supply aggregate
+    public DbSet<Supply> Supplies { get; private set; }
 
     // Photo aggregate
     public DbSet<Photo> Photos { get; private set; }
