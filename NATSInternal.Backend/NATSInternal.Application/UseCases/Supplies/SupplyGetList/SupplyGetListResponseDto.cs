@@ -1,4 +1,6 @@
 using NATSInternal.Application.Authorization;
+using NATSInternal.Application.UseCases.Shared;
+using NATSInternal.Domain.Features.Photos;
 using NATSInternal.Domain.Features.Supplies;
 
 namespace NATSInternal.Application.UseCases.Supplies;
@@ -27,12 +29,17 @@ public class SupplyGetListResponseDto : IListResponseDto<SupplyGetListSupplyResp
 public class SupplyGetListSupplyResponseDto
 {
     #region Constructors
-    internal SupplyGetListSupplyResponseDto(Supply supply, SupplyExistingAuthorizationResponseDto authorization)
+    internal SupplyGetListSupplyResponseDto(
+        Supply supply,
+        long itemAmount,
+        Photo? thumbnail,
+        SupplyExistingAuthorizationResponseDto authorization)
     {
         Id = supply.Id;
         ShipmentFee = supply.ShipmentFee;
-        ItemAmount = supply.Items.Sum(i => i.Amount);
-        CreatedDateTime = supply.CreatedDateTime;
+        ItemAmount = itemAmount;
+        TransactionDateTime = supply.TransactionDateTime;
+        Thumbnail = thumbnail is not null ? new(thumbnail) : null;
         Authorization = authorization;
     }
     #endregion
@@ -41,7 +48,8 @@ public class SupplyGetListSupplyResponseDto
     public Guid Id { get; }
     public long ShipmentFee { get; }
     public long ItemAmount { get; }
-    public DateTime CreatedDateTime { get; }
+    public DateTime TransactionDateTime { get; }
+    public PhotoBasicResponseDto? Thumbnail { get; }
     public SupplyExistingAuthorizationResponseDto Authorization { get; }
     #endregion
 }

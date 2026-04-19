@@ -18,6 +18,7 @@ internal class UserCreateHandler : IRequestHandler<UserCreateRequestDto, Guid>
     private readonly IValidator<UserCreateRequestDto> _validator;
     private readonly IAuthorizationInternalService _authorizationInternalService;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly ICallerDetailProvider _callerDetailProvider;
     private readonly IClock _clock;
     #endregion
     
@@ -28,6 +29,7 @@ internal class UserCreateHandler : IRequestHandler<UserCreateRequestDto, Guid>
         IValidator<UserCreateRequestDto> validator,
         IAuthorizationInternalService authorizationInternalService,
         IPasswordHasher passwordHasher,
+        ICallerDetailProvider callerDetailProvider,
         IClock clock)
     {
         _unitOfWork = unitOfWork;
@@ -35,6 +37,7 @@ internal class UserCreateHandler : IRequestHandler<UserCreateRequestDto, Guid>
         _validator = validator;
         _passwordHasher = passwordHasher;
         _authorizationInternalService = authorizationInternalService;
+        _callerDetailProvider = callerDetailProvider;
         _clock = clock;
     }
     #endregion
@@ -54,7 +57,7 @@ internal class UserCreateHandler : IRequestHandler<UserCreateRequestDto, Guid>
 
         // Hash the provided password and create the entity.
         string passwordHash = _passwordHasher.HashPassword(requestDto.Password);
-        User user = new(requestDto.UserName, passwordHash, _clock.Now);
+        User user = new(requestDto.UserName, passwordHash, _callerDetailProvider.GetId(), _clock.Now);
         _repository.AddUser(user);
 
         // Add the user to the requested roles.

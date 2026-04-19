@@ -1,4 +1,6 @@
-namespace NATSInternal.Domain.Features.Products;
+using NATSInternal.Domain.Features.Products;
+
+namespace NATSInternal.Application.AuditLogs;
 
 public class BrandSnapshot
 {
@@ -11,7 +13,6 @@ public class BrandSnapshot
         PhoneNumber = brand.PhoneNumber;
         Email = brand.Email;
         Address = brand.Address;
-        CreatedDateTime = brand.CreatedDateTime;
         CountryName = brand.Country?.Name;
     }
     #endregion
@@ -23,7 +24,6 @@ public class BrandSnapshot
     public string? PhoneNumber { get; }
     public string? Email { get; }
     public string? Address { get; }
-    public DateTime CreatedDateTime { get; }
     public string? CountryName { get; }
     #endregion
 }

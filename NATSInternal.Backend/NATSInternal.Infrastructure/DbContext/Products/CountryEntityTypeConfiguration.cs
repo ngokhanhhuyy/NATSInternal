@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NATSInternal.Domain.Features.Products;
 
+namespace NATSInternal.Infrastructure.DbContext.Products;
+
 internal class CountryEntityTypeConfiguration : IEntityTypeConfiguration<Country>
 {
     #region Methods

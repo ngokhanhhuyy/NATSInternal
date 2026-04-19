@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using NATSInternal.Application.Security;
 using NATSInternal.Domain.Features.Customers;
 using NATSInternal.Domain.Features.Products;
+using NATSInternal.Domain.Features.Supplies;
 using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.Authorization;
@@ -66,6 +67,15 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
         {
             CanEdit = CallerHasPermission(PermissionNames.EditProductCategory),
             CanDelete = CallerHasPermission(PermissionNames.DeleteProductCategory)
+        };
+    }
+
+    public SupplyExistingAuthorizationResponseDto GetSupplyExistingAuthorization(Supply supply)
+    {
+        return new()
+        {
+            CanEdit = CallerHasPermission(PermissionNames.EditSupply),
+            CanDelete = CallerHasPermission(PermissionNames.DeleteSupply)
         };
     }
 

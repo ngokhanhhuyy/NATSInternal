@@ -5,15 +5,15 @@ namespace NATSInternal.Domain.Features.Users;
 public class UserAddedToRolesEvent : IDomainEvent
 {
     #region Constructors
-    public UserAddedToRolesEvent(UserSnapshot beforeAddingSnapshot, UserSnapshot afterAddingSnapshot)
+    public UserAddedToRolesEvent(Guid id, DateTime addedDateTime)
     {
-        BeforeAddingSnapshot = beforeAddingSnapshot;
-        AfterAddingSnapshot = afterAddingSnapshot;
+        Id = id;
+        AddedDateTime = addedDateTime;
     }
     #endregion
     
     #region Properties
-    public UserSnapshot BeforeAddingSnapshot { get; }
-    public UserSnapshot AfterAddingSnapshot { get; }
+    public Guid Id { get; }
+    public DateTime AddedDateTime { get; }
     #endregion
 }

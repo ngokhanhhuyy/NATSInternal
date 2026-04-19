@@ -36,14 +36,15 @@ internal abstract class AbstractUserGetDetailHandler<TRequestDto> : IRequestHand
         CancellationToken cancellationToken = default)
     {
         User user = await userGetter(_repository, cancellationToken) ?? throw new NotFoundException();
+        User? createdUser = await _repository.GetUserByIdAsync(user.CreatedUserId, cancellationToken);
         if (!includingAuthorization)
         {
-            return new(user);
+            return new(user, createdUser);
         }
 
         UserExistingAuthorizationResponseDto authorizationResponseDto = _authorizationInternalService
             .GetUserExistingAuthorization(user);
-        return new(user, authorizationResponseDto);
+        return new(user, createdUser, authorizationResponseDto);
     }
     #endregion
 }

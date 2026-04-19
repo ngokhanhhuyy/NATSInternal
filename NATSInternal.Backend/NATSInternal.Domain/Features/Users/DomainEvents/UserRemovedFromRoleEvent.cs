@@ -5,15 +5,15 @@ namespace NATSInternal.Domain.Features.Users;
 public class UserRemovedFromRoleEvent : IDomainEvent
 {
     #region Constructors
-    public UserRemovedFromRoleEvent(UserSnapshot beforeRemovalSnapshot, UserSnapshot afterRemovalSnapshot)
+    public UserRemovedFromRoleEvent(Guid id, DateTime removedDateTime)
     {
-        BeforeRemovalSnapshot = beforeRemovalSnapshot;
-        AfterRemovalSnapshot = afterRemovalSnapshot;
+        Id = id;
+        RemovedDateTime = removedDateTime;
     }
     #endregion
     
     #region Properties
-    public UserSnapshot BeforeRemovalSnapshot { get; }
-    public UserSnapshot AfterRemovalSnapshot { get; }
+    public Guid Id { get; }
+    public DateTime RemovedDateTime { get; }
     #endregion
 }

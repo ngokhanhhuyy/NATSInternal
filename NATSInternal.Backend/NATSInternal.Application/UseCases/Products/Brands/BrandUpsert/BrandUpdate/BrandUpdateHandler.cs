@@ -58,7 +58,7 @@ internal class BrandUpdateHandler : IRequestHandler<BrandUpdateRequestDto>
             }
         }
 
-        brand.Update(
+        brand.ApplyUpdate(
             name: requestDto.Name,
             website: requestDto.Website,
             socialMediaUrl: requestDto.SocialMediaUrl,

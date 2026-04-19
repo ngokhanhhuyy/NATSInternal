@@ -1,10 +1,8 @@
 using NATSInternal.Application.AuditLogs;
-using NATSInternal.Domain.Features.Users;
-using NATSInternal.Domain.Features.AuditLogs;
 using NATSInternal.Infrastructure.DbContext;
+using NATSInternal.Infrastructure.PersistenceModels;
 using NATSInternal.Application.Security;
 using System.Text.Json;
-using NATSInternal.Domain.Features.Products;
 
 namespace NATSInternal.Infrastructure.Services;
 
@@ -25,91 +23,122 @@ internal class AuditLogService : IAuditLogService
 
     #region Methods
     public async Task LogUserCreateActionAsync(
-        UserSnapshot targetUserSnapshot,
+        Guid id,
+        UserSnapshot snapshot,
         DateTime loggedDateTime,
-        CancellationToken cancellationToken = default)
+        CancellationToken token = default)
     {
-        AuditLog auditLog = new(
-            targetUserSnapshot.Id,
-            _performedUserId,
-            AuditLogActionNames.UserCreate,
-            null,
-            JsonSerializer.Serialize(targetUserSnapshot),
-            loggedDateTime
-        );
+        AuditLog auditLog = new()
+        {
+            TargetResourceId = id,
+            ActionName = AuditLogActionNames.UserResetPassword,
+            LoggedDateTime = loggedDateTime,
+            PerformedUserId = _performedUserId
+        };
 
-        await AddAndSaveAsync(auditLog, cancellationToken);
+        auditLog.SetSnapshot(snapshot);
+        await AddAndSaveAsync(auditLog, token);
     }
 
     public async Task LogUserResetPasswordActionAsync(
-        Guid targetUserId,
+        Guid id,
         DateTime loggedDateTime,
-        CancellationToken cancellationToken = default)
+        CancellationToken token = default)
     {
-        AuditLog auditLog = new(
-            targetUserId,
-            _performedUserId,
-            AuditLogActionNames.UserResetPassword,
-            null,
-            null,
-            loggedDateTime
-        );
+        AuditLog auditLog = new()
+        {
+            TargetResourceId = id,
+            ActionName = AuditLogActionNames.UserResetPassword,
+            LoggedDateTime = loggedDateTime,
+            PerformedUserId = _performedUserId
+        };
 
-        await AddAndSaveAsync(auditLog, cancellationToken);
-        
+        await AddAndSaveAsync(auditLog, token);
     }
 
     public async Task LogUserAddToRolesActionAsync(
-        UserSnapshot targetUserBeforeAddingSnapshot,
-        UserSnapshot targetUserAfterAddingSnapshot,
+        Guid id,
+        UserSnapshot snapshot,
         DateTime loggedDateTime,
         CancellationToken cancellationToken = default)
     {
-        AuditLog auditLog = new(
-            targetUserBeforeAddingSnapshot.Id,
-            _performedUserId,
-            AuditLogActionNames.UserAddToRoles,
-            JsonSerializer.Serialize(targetUserBeforeAddingSnapshot),
-            JsonSerializer.Serialize(targetUserAfterAddingSnapshot),
-            loggedDateTime
-        );
+        AuditLog auditLog = new()
+        {
+            TargetResourceId = id,
+            ActionName = AuditLogActionNames.UserAddToRoles,
+            LoggedDateTime = loggedDateTime,
+            PerformedUserId = _performedUserId
+        };
 
+        auditLog.SetSnapshot(snapshot);
         await AddAndSaveAsync(auditLog, cancellationToken);
     }
 
     public async Task LogUserRemoveFromRolesActionAsync(
-        UserSnapshot targetUserBeforeRemovalSnapshot,
-        UserSnapshot targetUserAfterRemovalSnapshot,
+        Guid id,
+        UserSnapshot snapshot,
         DateTime loggedDateTime,
-        CancellationToken cancellationToken = default)
+        CancellationToken token = default)
     {
-        AuditLog auditLog = new(
-            targetUserBeforeRemovalSnapshot.Id,
-            _performedUserId,
-            AuditLogActionNames.UserRemoveFromRoles,
-            JsonSerializer.Serialize(targetUserBeforeRemovalSnapshot),
-            JsonSerializer.Serialize(targetUserAfterRemovalSnapshot),
-            loggedDateTime
-        );
+        AuditLog auditLog = new()
+        {
+            TargetResourceId = id,
+            ActionName = AuditLogActionNames.UserRemoveFromRoles,
+            LoggedDateTime = loggedDateTime,
+            PerformedUserId = _performedUserId
+        };
 
-        await AddAndSaveAsync(auditLog, cancellationToken);
+        auditLog.SetSnapshot(snapshot);
+        await AddAndSaveAsync(auditLog, token);
+    }
+
+    public async Task LogUserRemoveActionAsync(Guid id, DateTime loggedDateTime, CancellationToken token = default)
+    {
+        AuditLog auditLog = new()
+        {
+            TargetResourceId = id,
+            ActionName = AuditLogActionNames.UserRemove,
+            LoggedDateTime = loggedDateTime,
+            PerformedUserId = _performedUserId
+        };
+
+        await AddAndSaveAsync(auditLog, token);
     }
 
     public async Task LogProductCreateActionAsync(
-        ProductSnapshot productSnapsnot,
+        Guid id,
+        ProductSnapshot snapshot,
         DateTime loggedDateTime,
-        CancellationToken cancellationToken)
+        CancellationToken token = default)
     {
-        AuditLog auditLog = new(
-            productSnapsnot.Id,
-            _performedUserId,
-            AuditLogActionNames.ProductCreate,
-            null,
-            JsonSerializer.Serialize(productSnapsnot),
-            loggedDateTime
-        );
+        AuditLog auditLog = new()
+        {
+            TargetResourceId = id,
+            ActionName = AuditLogActionNames.ProductCreate,
+            LoggedDateTime = loggedDateTime,
+            PerformedUserId = _performedUserId
+        };
 
-        await AddAndSaveAsync(auditLog, cancellationToken);
+        auditLog.SetSnapshot(snapshot);
+        await AddAndSaveAsync(auditLog, token);
+    }
+
+    public async Task LogProductUpdateActionAsync(
+        Guid id,
+        ProductSnapshot snapshot,
+        DateTime loggedDateTime,
+        CancellationToken token = default)
+    {
+        AuditLog auditLog = new()
+        {
+            TargetResourceId = id,
+            ActionName = AuditLogActionNames.ProductCreate,
+            LoggedDateTime = loggedDateTime,
+            PerformedUserId = _performedUserId
+        };
+
+        auditLog.SetSnapshot(snapshot);
+        await AddAndSaveAsync(auditLog, token);
     }
     #endregion
 

@@ -5,7 +5,7 @@ namespace NATSInternal.Application.Services;
 public interface ISupplyService
 {
     #region Methods
-    Task<SupplyGetListResponseDto> GetPaginatedCustomerListAsync(
+    Task<SupplyGetListResponseDto> GetPaginatedSupplyListAsync(
         SupplyGetListRequestDto requestDto,
         CancellationToken cancellationToken = default);
     #endregion

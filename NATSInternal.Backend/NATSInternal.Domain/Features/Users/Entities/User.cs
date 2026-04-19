@@ -14,14 +14,14 @@ internal class User : AbstractAggregateRootEntity
     private User() { }
     #nullable enable
 
-    public User(string userName, string passwordHash, DateTime createdDateTime)
+    public User(string userName, string passwordHash, Guid createdUserId, DateTime createdDateTime)
     {
         UserName = userName.ToLower();
         PasswordHash = passwordHash;
+        CreatedUserId = createdUserId;
         CreatedDateTime = createdDateTime;
 
-        UserSnapshot snapshot = new(this);
-        AddDomainEvent(new UserCreatedEvent(snapshot));
+        AddDomainEvent(new UserCreatedEvent(Id, createdDateTime));
     }
     #endregion
 
@@ -30,7 +30,14 @@ internal class User : AbstractAggregateRootEntity
     public string UserName { get; private set; }
     public string PasswordHash { get; private set; }
     public DateTime CreatedDateTime { get; private set; }
+    public DateTime? LastUpdatedDateTime { get; private set; }
     public DateTime? DeletedDateTime { get; private set; }
+    #endregion
+    
+    #region ForeignKeyProperties
+    public Guid CreatedUserId { get; private set; }
+    public Guid LastUpdatedUserId { get; private set; }
+    public Guid DeletedUserId { get; private set; }
     #endregion
 
     #region NavigationProperties
@@ -53,24 +60,29 @@ internal class User : AbstractAggregateRootEntity
 
     public void AddToRoles(ICollection<Role> roles)
     {
-        UserSnapshot beforeAddingSnapshot = new(this);
         foreach (Role role in roles)
         {
             if (_roles.Any(r => r.Name == role.Name))
             {
-                throw new DomainException($"User with id {Id} is already in role {role.Name}.");
+                throw new DomainException($"User with id \"{Id}\" is already in role \"{role.Name}\".");
             }
             
             _roles.Add(role);
         }
-        UserSnapshot afterAddingSnapshot = new(this);
-        
-        AddDomainEvent(new UserAddedToRolesEvent(beforeAddingSnapshot, afterAddingSnapshot));
     }
 
-    public void RemoveFromRoles(ICollection<Role> roles)
+    public void AddToRoles(ICollection<Role> roles, Guid addedUserId, DateTime addedDateTime)
     {
-        UserSnapshot beforeRemovalSnapshot = new(this);
+        AddToRoles(roles);
+        
+        LastUpdatedUserId = addedUserId;
+        LastUpdatedDateTime = addedDateTime;
+        
+        AddDomainEvent(new UserAddedToRolesEvent(Id, addedDateTime));
+    }
+
+    public void RemoveFromRoles(ICollection<Role> roles, Guid removedUserId, DateTime removedDateTime)
+    {
         foreach (Role role in roles)
         {
             if (!_roles.Remove(role))
@@ -78,9 +90,11 @@ internal class User : AbstractAggregateRootEntity
                 throw new DomainException($"User with id {Id} is not in role {role.Name}.");
             } 
         }
-        UserSnapshot afterRemovalSnapshot = new(this);
 
-        AddDomainEvent(new UserRemovedFromRoleEvent(beforeRemovalSnapshot, afterRemovalSnapshot));
+        LastUpdatedUserId = removedUserId;
+        LastUpdatedDateTime = removedDateTime;
+        
+        AddDomainEvent(new UserRemovedFromRoleEvent(Id, removedDateTime));
     }
 
     public void ChangePasswordHash(string newPasswordHash)
@@ -88,12 +102,11 @@ internal class User : AbstractAggregateRootEntity
         PasswordHash = newPasswordHash;
     }
 
-    public void ResetPasswordHash(string newPasswordHash)
+    public void ResetPasswordHash(string newPasswordHash, DateTime resettedDateTime)
     {
         PasswordHash = newPasswordHash;
         
-        UserSnapshot snapshot = new(this);
-        AddDomainEvent(new UserResetPasswordEvent(snapshot));
+        AddDomainEvent(new UserResetPasswordEvent(Id, resettedDateTime));
     }
 
     public void MarkAsDeleted(DateTime deletedDateTime)

@@ -1,4 +1,5 @@
 using NATSInternal.Application.Authorization;
+using NATSInternal.Application.UseCases.Shared;
 using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.UseCases.Users;
@@ -6,25 +7,34 @@ namespace NATSInternal.Application.UseCases.Users;
 public class UserGetDetailResponseDto
 {
     #region Constructors
-    internal UserGetDetailResponseDto(User user)
+    internal UserGetDetailResponseDto(User user, User? createdUser)
     {
         Id = user.Id;
         UserName = user.UserName;
         Roles = user.Roles.Select(r => new UserGetDetailRoleResponseDto(r)).ToList();
+        CreatedDateTime = user.CreatedDateTime;
+        CreatedUser = new(createdUser);
     }
 
     internal UserGetDetailResponseDto(
         User user,
-        UserExistingAuthorizationResponseDto authorizationResponseDto) : this(user)
+        User? createdUser,
+        UserExistingAuthorizationResponseDto authorizationResponseDto) : this(user, createdUser)
     {
         Authorization = authorizationResponseDto;
     }
     #endregion
 
     #region Properties
-    public Guid Id { get; set; }
-    public string UserName { get; set; }
-    public List<UserGetDetailRoleResponseDto> Roles { get; set; }
+    public Guid Id { get; }
+    public string UserName { get; }
+    public List<UserGetDetailRoleResponseDto> Roles { get; }
+    public DateTime CreatedDateTime { get; internal set; }
+    public UserBasicResponseDto CreatedUser { get; internal set; }
+    public DateTime? LastUpdatedDateTime { get; internal set; }
+    public UserBasicResponseDto? LastUpdatedUser { get; internal set; }
+    public DateTime? DeletedDateTime { get; internal set; }
+    public UserBasicResponseDto? DeletedUser { get; internal set; }
     public UserExistingAuthorizationResponseDto? Authorization { get; set; }
     #endregion
 }

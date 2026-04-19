@@ -8,6 +8,7 @@ using NATSInternal.Application.UseCases.Metadata;
 using NATSInternal.Application.UseCases.Photos;
 using NATSInternal.Application.UseCases.Products;
 using NATSInternal.Application.UseCases.Shared;
+using NATSInternal.Application.UseCases.Supplies;
 using NATSInternal.Application.UseCases.Users;
 using NATSInternal.Application.Validation;
 
@@ -105,6 +106,14 @@ public static class ApplicationConfiguration
         services.AddTransient<
             IRequestHandler<PhotoGetMultipleByProductIdsRequestDto, ICollection<PhotoBasicResponseDto>>,
             PhotoGetMultipleByProductIdsHandler>();
+        
+        // Supply UseCases.
+        services.AddTransient<
+            IRequestHandler<SupplyGetListRequestDto, SupplyGetListResponseDto>,
+            SupplyGetListHandler>();
+        services.AddTransient<
+            IRequestHandler<SupplyGetDetailRequestDto, SupplyGetDetailResponseDto>,
+            SupplyGetDetailHandler>();
 
         // Metadata UseCases.
         services.AddTransient<IRequestHandler<MetadataGetRequestDto, MetadataGetResponseDto>, MetadataGetHandler>();

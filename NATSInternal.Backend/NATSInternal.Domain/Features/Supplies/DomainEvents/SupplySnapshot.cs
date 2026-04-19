@@ -15,7 +15,7 @@ public class SupplySnapshot
     #region Properties
     public Guid Id { get; }
     public long ShipmentFee { get; set; }
-    public string BillCode { get; set; }
-    public List<SupplyItemSnapshot> Items { get; } = new();
+    public string? BillCode { get; set; }
+    public List<SupplyItemSnapshot> Items { get; }
     #endregion
 }

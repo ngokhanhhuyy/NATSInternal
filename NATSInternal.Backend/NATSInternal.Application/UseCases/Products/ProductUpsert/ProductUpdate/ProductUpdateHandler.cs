@@ -61,7 +61,7 @@ internal class ProductUpdateHandler : IRequestHandler<ProductUpdateRequestDto>
             category = await UpdateProductCategory(requestDto, cancellationToken);
         }
 
-        product.Update(
+        product.ApplyUpdate(
             requestDto.Name,
             requestDto.Description,
             requestDto.Unit,

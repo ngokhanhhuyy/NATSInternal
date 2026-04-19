@@ -3,7 +3,7 @@ using NATSInternal.Domain.Seedwork;
 
 namespace NATSInternal.Domain.Features.Supplies;
 
-internal class Supply : AbstractAggregateRootEntity
+internal class Supply : AbstractAggregateRootEntity, ITransactionEntity
 {
     #region Fields
     private readonly List<SupplyItem> _items = new();
@@ -34,8 +34,8 @@ internal class Supply : AbstractAggregateRootEntity
     #region Properties
     public Guid Id { get; private set; } = Guid.NewGuid();
     public long ShipmentFee { get; private set; }
-    public string BillCode { get; private set; }
-    public DateTime ModificationLockedDateTime { get; private set; }
+    public string? BillCode { get; private set; }
+    public DateTime TransactionDateTime { get; private set; }
     public DateTime CreatedDateTime { get; private set; }
     public DateTime? LastUpdatedDateTime { get; private set; }
     public DateTime? DeletedDateTime { get; private set; }
@@ -44,7 +44,7 @@ internal class Supply : AbstractAggregateRootEntity
     #region ForeignKeyProperties
     public Guid CreatedUserId { get; private set; }
     public Guid? LastUpdatedUserId { get; private set; }
-    public Guid DeletedUserId { get; private set; }
+    public Guid? DeletedUserId { get; private set; }
     #endregion
 
     #region NavigationProperties
@@ -92,7 +92,7 @@ internal class Supply : AbstractAggregateRootEntity
         LastUpdatedUserId = updatedUserId;
         LastUpdatedDateTime = updatedDateTime;
 
-        updatedEvent.AfterModificationSnapshot.Items.Add(new SupplyItemSnapshot(item));
+        updatedEvent.AfterModificationSnapshot.Items.Add(new(item));
     }
 
     public void UpdateItem(Guid itemId, long amountPerUnit, int quantity, Guid updatedUserId, DateTime updatedDateTime)

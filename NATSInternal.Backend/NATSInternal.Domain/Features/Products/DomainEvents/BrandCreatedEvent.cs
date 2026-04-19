@@ -5,15 +5,15 @@ namespace NATSInternal.Domain.Features.Products;
 public class BrandCreatedEvent : IDomainEvent
 {
     #region Constructors
-    public BrandCreatedEvent(Guid createdBrandId, string createdBrandName)
+    internal BrandCreatedEvent(Guid id, DateTime createdDateTime)
     {
-        CreatedBrandId = createdBrandId;
-        CreatedBrandName = createdBrandName;
+        Id = id;
+        CreatedDateTime = createdDateTime;
     }
     #endregion
     
     #region Properties
-    public Guid CreatedBrandId { get; }
-    public string CreatedBrandName { get; }
+    public Guid Id { get; }
+    public DateTime CreatedDateTime { get; }
     #endregion
 }

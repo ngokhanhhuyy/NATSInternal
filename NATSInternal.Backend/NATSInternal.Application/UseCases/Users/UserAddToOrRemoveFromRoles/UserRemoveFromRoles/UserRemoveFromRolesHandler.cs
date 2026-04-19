@@ -3,6 +3,8 @@ using MediatR;
 using NATSInternal.Application.Authorization;
 using NATSInternal.Application.Exceptions;
 using NATSInternal.Application.Localization;
+using NATSInternal.Application.Security;
+using NATSInternal.Application.Time;
 using NATSInternal.Application.UnitOfWork;
 using NATSInternal.Domain.Exceptions;
 using NATSInternal.Domain.Features.Users;
@@ -16,6 +18,8 @@ internal class UserRemoveFromRolesHandler : IRequestHandler<UserRemoveFromRolesR
     private readonly IValidator<UserRemoveFromRolesRequestDto> _validator;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuthorizationInternalService _authorizationInternalService;
+    private readonly ICallerDetailProvider _callerDetailProvider;
+    private readonly IClock _clock;
     #endregion
     
     #region Constructors
@@ -23,12 +27,16 @@ internal class UserRemoveFromRolesHandler : IRequestHandler<UserRemoveFromRolesR
         IUserRepository repository,
         IValidator<UserRemoveFromRolesRequestDto> validator,
         IUnitOfWork unitOfWork,
-        IAuthorizationInternalService authorizationInternalService)
+        IAuthorizationInternalService authorizationInternalService,
+        ICallerDetailProvider callerDetailProvider,
+        IClock clock)
     {
         _repository = repository;
         _validator = validator;
         _unitOfWork = unitOfWork;
         _authorizationInternalService = authorizationInternalService;
+        _callerDetailProvider = callerDetailProvider;
+        _clock = clock;
     }
     #endregion
     
@@ -79,7 +87,7 @@ internal class UserRemoveFromRolesHandler : IRequestHandler<UserRemoveFromRolesR
         }
 
         List<Role> rolesToBeRemoveFrom = user.Roles.Where(r => requestDto.RoleNames.Contains(r.Name)).ToList();
-        user.RemoveFromRoles(rolesToBeRemoveFrom);
+        user.RemoveFromRoles(rolesToBeRemoveFrom, _callerDetailProvider.GetId(), _clock.Now);
 
         try
         {

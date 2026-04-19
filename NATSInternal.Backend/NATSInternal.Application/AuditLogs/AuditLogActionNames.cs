@@ -19,5 +19,9 @@ public static class AuditLogActionNames
 
     public const string ProductCategoryUpdate = nameof(ProductCategoryUpdate);
     public const string ProductCategoryRemove = nameof(ProductCategoryRemove);
+
+    public const string SupplyCreate = nameof(SupplyCreate);
+    public const string SupplyUpdate = nameof(SupplyUpdate);
+    public const string SupplyRemove = nameof(SupplyRemove);
     #endregion
 }

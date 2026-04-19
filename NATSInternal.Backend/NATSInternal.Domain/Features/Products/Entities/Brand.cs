@@ -36,7 +36,7 @@ internal class Brand : AbstractEntity
         CreatedDateTime = createdDateTime;
         Country = country;
 
-        AddDomainEvent(new BrandCreatedEvent(Id, Name));
+        AddDomainEvent(new BrandCreatedEvent(Id, createdDateTime));
     }
     #endregion
 
@@ -68,7 +68,7 @@ internal class Brand : AbstractEntity
     #endregion
 
     #region Methods
-    public void Update(
+    public void ApplyUpdate(
         string name,
         string? website,
         string? socialMediaUrl,
@@ -88,6 +88,13 @@ internal class Brand : AbstractEntity
         LastUpdatedUserId = updatedUserId;
         LastUpdatedDateTime = updatedDateTime;
         Country = country;
+        
+        AddDomainEvent(new BrandUpdatedEvent(Id, updatedDateTime));
+    }
+
+    public void MarkAsDeleted(DateTime deletedDateTime)
+    {
+        AddDomainEvent(new BrandDeletedEvent(Id, deletedDateTime));
     }
     #endregion
 }

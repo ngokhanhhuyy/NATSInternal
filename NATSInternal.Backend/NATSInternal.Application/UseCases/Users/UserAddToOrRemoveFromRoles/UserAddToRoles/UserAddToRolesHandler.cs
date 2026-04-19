@@ -3,6 +3,8 @@ using MediatR;
 using NATSInternal.Application.Authorization;
 using NATSInternal.Application.Exceptions;
 using NATSInternal.Application.Localization;
+using NATSInternal.Application.Security;
+using NATSInternal.Application.Time;
 using NATSInternal.Application.UnitOfWork;
 using NATSInternal.Domain.Features.Users;
 
@@ -14,7 +16,9 @@ internal class UserAddToRolesHandler : IRequestHandler<UserAddToRolesRequestDto>
     private readonly IUserRepository _repository;
     private readonly IValidator<UserAddToRolesRequestDto> _validator;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICallerDetailProvider _callerDetailProvider;
     private readonly IAuthorizationInternalService _authorizationInternalService;
+    private readonly IClock _clock;
     #endregion
     
     #region Constructors
@@ -22,12 +26,16 @@ internal class UserAddToRolesHandler : IRequestHandler<UserAddToRolesRequestDto>
         IUserRepository repository,
         IValidator<UserAddToRolesRequestDto> validator,
         IUnitOfWork unitOfWork,
-        IAuthorizationInternalService authorizationInternalService)
+        ICallerDetailProvider callerDetailProvider,
+        IAuthorizationInternalService authorizationInternalService,
+        IClock clock)
     {
         _repository = repository;
         _validator = validator;
         _unitOfWork = unitOfWork;
+        _callerDetailProvider = callerDetailProvider;
         _authorizationInternalService = authorizationInternalService;
+        _clock = clock;
     }
     #endregion
     
@@ -81,7 +89,7 @@ internal class UserAddToRolesHandler : IRequestHandler<UserAddToRolesRequestDto>
             }
         }
 
-        user.AddToRoles(existingRoles);
+        user.AddToRoles(existingRoles, _callerDetailProvider.GetId(), _clock.Now);
 
         try
         {

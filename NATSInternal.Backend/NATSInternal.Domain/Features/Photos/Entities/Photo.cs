@@ -21,5 +21,7 @@ internal class Photo : AbstractEntity
     public Guid? BrandId { get; private set; }
     public Guid? ProductId { get; private set; }
     public Guid? SupplyId { get; private set; }
+    public Guid? ExpenseId { get; private set; }
+    public Guid? OrderId { get; private set; }
     #endregion
 }

@@ -1,6 +1,5 @@
 using MediatR;
 using NATSInternal.Application.AuditLogs;
-using NATSInternal.Application.Time;
 using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.EventHandlers.Users;
@@ -8,26 +7,30 @@ namespace NATSInternal.Application.EventHandlers.Users;
 internal class UserRemmovedFromRolesEventHandler : INotificationHandler<UserRemovedFromRoleEvent>
 {
     #region Fields
+    private readonly IUserRepository _repository;
     private readonly IAuditLogService _auditLogService;
-    private readonly IClock _clock;
     #endregion
 
     #region Constructors
-    public UserRemmovedFromRolesEventHandler(IAuditLogService auditLogService, IClock clock)
+    public UserRemmovedFromRolesEventHandler(IUserRepository repository, IAuditLogService auditLogService)
     {
+        _repository = repository;
         _auditLogService = auditLogService;
-        _clock = clock;
     }
     #endregion
     
     #region Methods
-    public async Task Handle(UserRemovedFromRoleEvent domainEvent, CancellationToken cancellationToken = default)
+    public async Task Handle(UserRemovedFromRoleEvent domainEvent, CancellationToken token = default)
     {
+        User user = await _repository
+            .GetUserByIdAsync(domainEvent.Id, token)
+            ?? throw new InvalidOperationException($"{nameof(User)} with id \"{domainEvent.Id}\" is not found.");
+        
         await _auditLogService.LogUserRemoveFromRolesActionAsync(
-            domainEvent.BeforeRemovalSnapshot,
-            domainEvent.AfterRemovalSnapshot,
-            _clock.Now,
-            cancellationToken
+            domainEvent.Id,
+            new(user),
+            domainEvent.RemovedDateTime,
+            token
         );
     }
     #endregion

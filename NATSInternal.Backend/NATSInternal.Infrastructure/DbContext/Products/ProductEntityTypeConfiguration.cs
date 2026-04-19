@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NATSInternal.Domain.Features.Products;
 using NATSInternal.Domain.Features.Users;
 
-namespace NATSInternal.Infrastructure.DbContext;
+namespace NATSInternal.Infrastructure.DbContext.Products;
 
 internal class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product>
 {

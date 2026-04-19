@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestingProject", "TestingProject\TestingProject.csproj", "{F6EF363E-0B8A-4611-BA06-4C3EEF38169A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal.Infrastructure", "NATSInternal.Infrastructure\NATSInternal.Infrastructure.csproj", "{E24EA330-7D24-4C7A-A6FB-787A68DFFB5A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal.Domain", "NATSInternal.Domain\NATSInternal.Domain.csproj", "{B6067EC1-43FA-41D3-AA90-6E896515F97F}"
@@ -12,8 +10,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal.Application", "NATSInternal.Application\NATSInternal.Application.csproj", "{B988EEFB-84CE-4DC7-982D-9C275667E136}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal.Api", "NATSInternal.Api\NATSInternal.Api.csproj", "{EBF4E54C-E996-4538-A4C0-094222DA4154}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NATSInternal.Web", "NATSInternal.Web\NATSInternal.Web.csproj", "{2B417699-E032-4320-AACE-F5CC8126054B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,18 +21,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F6EF363E-0B8A-4611-BA06-4C3EEF38169A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F6EF363E-0B8A-4611-BA06-4C3EEF38169A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F6EF363E-0B8A-4611-BA06-4C3EEF38169A}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{F6EF363E-0B8A-4611-BA06-4C3EEF38169A}.Debug|x64.Build.0 = Debug|Any CPU
-		{F6EF363E-0B8A-4611-BA06-4C3EEF38169A}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F6EF363E-0B8A-4611-BA06-4C3EEF38169A}.Debug|x86.Build.0 = Debug|Any CPU
-		{F6EF363E-0B8A-4611-BA06-4C3EEF38169A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F6EF363E-0B8A-4611-BA06-4C3EEF38169A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F6EF363E-0B8A-4611-BA06-4C3EEF38169A}.Release|x64.ActiveCfg = Release|Any CPU
-		{F6EF363E-0B8A-4611-BA06-4C3EEF38169A}.Release|x64.Build.0 = Release|Any CPU
-		{F6EF363E-0B8A-4611-BA06-4C3EEF38169A}.Release|x86.ActiveCfg = Release|Any CPU
-		{F6EF363E-0B8A-4611-BA06-4C3EEF38169A}.Release|x86.Build.0 = Release|Any CPU
 		{E24EA330-7D24-4C7A-A6FB-787A68DFFB5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E24EA330-7D24-4C7A-A6FB-787A68DFFB5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E24EA330-7D24-4C7A-A6FB-787A68DFFB5A}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -85,18 +69,6 @@ Global
 		{EBF4E54C-E996-4538-A4C0-094222DA4154}.Release|x64.Build.0 = Release|Any CPU
 		{EBF4E54C-E996-4538-A4C0-094222DA4154}.Release|x86.ActiveCfg = Release|Any CPU
 		{EBF4E54C-E996-4538-A4C0-094222DA4154}.Release|x86.Build.0 = Release|Any CPU
-		{2B417699-E032-4320-AACE-F5CC8126054B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2B417699-E032-4320-AACE-F5CC8126054B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2B417699-E032-4320-AACE-F5CC8126054B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{2B417699-E032-4320-AACE-F5CC8126054B}.Debug|x64.Build.0 = Debug|Any CPU
-		{2B417699-E032-4320-AACE-F5CC8126054B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{2B417699-E032-4320-AACE-F5CC8126054B}.Debug|x86.Build.0 = Debug|Any CPU
-		{2B417699-E032-4320-AACE-F5CC8126054B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2B417699-E032-4320-AACE-F5CC8126054B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2B417699-E032-4320-AACE-F5CC8126054B}.Release|x64.ActiveCfg = Release|Any CPU
-		{2B417699-E032-4320-AACE-F5CC8126054B}.Release|x64.Build.0 = Release|Any CPU
-		{2B417699-E032-4320-AACE-F5CC8126054B}.Release|x86.ActiveCfg = Release|Any CPU
-		{2B417699-E032-4320-AACE-F5CC8126054B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

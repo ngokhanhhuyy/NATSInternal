@@ -55,6 +55,7 @@ public static class InfrastructureConfiguration
         services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<ISupplyService, SupplyService>();
         services.AddScoped<IUserService, UserService>();
         
         // Seeders.

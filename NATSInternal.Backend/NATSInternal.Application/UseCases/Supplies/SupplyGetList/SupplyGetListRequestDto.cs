@@ -13,6 +13,8 @@ public class SupplyGetListRequestDto : IRequest<SupplyGetListResponseDto>, ITran
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
     public string? SearchContent { get; set; } = string.Empty;
+    public DateTime? TransactionRangeStartingDateTime { get; set; }
+    public DateTime? TransactionRangeEndingDateTime { get; set; }
     #endregion
 
     #region Methods

@@ -2,7 +2,6 @@ using System.Text.RegularExpressions;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using NATSInternal.Domain.Features.AuditLogs;
 using NATSInternal.Domain.Features.Customers;
 using NATSInternal.Domain.Features.Photos;
 using NATSInternal.Domain.Features.Products;
@@ -11,6 +10,10 @@ using NATSInternal.Domain.Features.Supplies;
 using NATSInternal.Domain.Features.Users;
 using NATSInternal.Infrastructure.DbContext.AuditLogs;
 using NATSInternal.Infrastructure.DbContext.Customers;
+using NATSInternal.Infrastructure.DbContext.Photos;
+using NATSInternal.Infrastructure.DbContext.Products;
+using NATSInternal.Infrastructure.DbContext.Supplies;
+using NATSInternal.Infrastructure.PersistenceModels;
 
 namespace NATSInternal.Infrastructure.DbContext;
 
@@ -60,12 +63,19 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
         
         // Customer entity cluster.
         modelBuilder.ApplyConfiguration(new CustomerEntityTypeConfiguration());
+        
+        // Photo entity cluster.
+        modelBuilder.ApplyConfiguration(new PhotoEntityConfiguration());
 
         // Product entity cluster.
         modelBuilder.ApplyConfiguration(new ProductEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new ProductCategoryEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new BrandEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new CountryEntityTypeConfiguration());
+        
+        // Supply entity cluster.
+        modelBuilder.ApplyConfiguration(new SupplyEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new SupplyItemEntityConfiguration());
 
         // Stock entity cluster.
         modelBuilder.ApplyConfiguration(new StockEntityTypeConfiguration());

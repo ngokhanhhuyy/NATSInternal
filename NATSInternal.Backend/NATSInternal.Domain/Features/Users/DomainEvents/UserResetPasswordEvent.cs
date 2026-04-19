@@ -5,13 +5,15 @@ namespace NATSInternal.Domain.Features.Users;
 public class UserResetPasswordEvent : IDomainEvent
 {
     #region Constructors
-    internal UserResetPasswordEvent(UserSnapshot userSnapshot)
+    internal UserResetPasswordEvent(Guid id, DateTime resettedDateTime)
     {
-        Snapshot = userSnapshot;
+        Id = id;
+        ResettedDateTime = resettedDateTime;
     }
     #endregion
     
     #region Properties
-    public UserSnapshot Snapshot { get; }
+    public Guid Id { get; }
+    public DateTime ResettedDateTime { get; }
     #endregion
 }

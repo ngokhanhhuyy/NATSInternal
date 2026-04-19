@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using NATSInternal.Application.AuditLogs;
-using NATSInternal.Application.Time;
 using NATSInternal.Domain.Features.Users;
 
 namespace NATSInternal.Application.EventHandlers.Users;
@@ -9,21 +8,23 @@ internal class UserResetPasswordEventHandler : INotificationHandler<UserResetPas
 {
     #region Fields
     private readonly IAuditLogService _auditLogService;
-    private readonly IClock _clock;
     #endregion
 
     #region Constructors
-    public UserResetPasswordEventHandler(IAuditLogService auditLogService, IClock clock)
+    public UserResetPasswordEventHandler(IAuditLogService auditLogService)
     {
         _auditLogService = auditLogService;
-        _clock = clock;
     }
     #endregion
 
     #region Methods
-    public async Task Handle(UserResetPasswordEvent domainEvent, CancellationToken cancellationToken = default)
+    public async Task Handle(UserResetPasswordEvent domainEvent, CancellationToken token = default)
     {
-        await _auditLogService.LogUserResetPasswordActionAsync(domainEvent.Snapshot.Id, _clock.Now, cancellationToken);
+        await _auditLogService.LogUserResetPasswordActionAsync(
+            domainEvent.Id,
+            domainEvent.ResettedDateTime,
+            token
+        );
     }
     #endregion
 }

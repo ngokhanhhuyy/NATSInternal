@@ -5,13 +5,15 @@ namespace NATSInternal.Domain.Features.Users;
 public class UserCreatedEvent : IDomainEvent
 {
     #region Constructors
-    internal UserCreatedEvent(UserSnapshot userSnapshot)
+    internal UserCreatedEvent(Guid id, DateTime createdDateTime)
     {
-        Snapshot = userSnapshot;
+        Id = id;
+        CreatedDateTime = createdDateTime;
     }
     #endregion
     
     #region Properties
-    public UserSnapshot Snapshot { get; }
+    public Guid Id { get; }
+    public DateTime CreatedDateTime { get; }
     #endregion
 }

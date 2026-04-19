@@ -38,6 +38,8 @@ internal class Product : AbstractAggregateRootEntity
         Category = category;
         CreatedUserId = createdUserId;
         CreatedDateTime = createdDateTime;
+
+        AddDomainEvent(new ProductCreatedEvent(Id, createdDateTime));
     }
     #endregion
 
@@ -86,7 +88,7 @@ internal class Product : AbstractAggregateRootEntity
     #endregion
 
     #region Methods
-    public void Update(
+    public void ApplyUpdate(
         string name,
         string? description,
         string unit,
@@ -94,8 +96,8 @@ internal class Product : AbstractAggregateRootEntity
         int defaultVatPercentage,
         bool isForRetail,
         bool isDiscontinued,
-        Guid lastUpdatedUserId,
-        DateTime lastUpdatedDateTime,
+        Guid updatedUserId,
+        DateTime updatedDateTime,
         Brand? brand,
         ProductCategory? category)
     {
@@ -108,14 +110,18 @@ internal class Product : AbstractAggregateRootEntity
         IsDiscontinued = isDiscontinued;
         Brand = brand;
         Category = category;
-        LastUpdatedUserId = lastUpdatedUserId;
-        LastUpdatedDateTime = lastUpdatedDateTime;
+        LastUpdatedUserId = updatedUserId;
+        LastUpdatedDateTime = updatedDateTime;
+        
+        AddDomainEvent(new ProductUpdatedEvent(Id, updatedDateTime));
     }
 
-    public void Delete(Guid deletedUserId, DateTime deletedDateTime)
+    public void MarkAsDeleted(Guid deletedUserId, DateTime deletedDateTime)
     {
         DeletedUserId = deletedUserId;
         DeletedDateTime = deletedDateTime;
+        
+        AddDomainEvent(new ProductUpdatedEvent(Id, deletedDateTime));
     }
     #endregion
 }

@@ -1,36 +1,40 @@
-using NATSInternal.Domain.Features.Products;
-using NATSInternal.Domain.Features.Users;
-
 namespace NATSInternal.Application.AuditLogs;
 
 internal interface IAuditLogService
 {
     #region Methods
     Task LogUserCreateActionAsync(
-        UserSnapshot targetUserSnapshot,
+        Guid id,
+        UserSnapshot snapshot,
         DateTime loggedDateTime,
         CancellationToken cancellationToken = default);
 
-    Task LogUserResetPasswordActionAsync(
-        Guid targetUserId,
-        DateTime loggedDateTime,
-        CancellationToken cancellationToken = default);
+    Task LogUserResetPasswordActionAsync(Guid id, DateTime loggedDateTime, CancellationToken token = default);
 
     Task LogUserAddToRolesActionAsync(
-        UserSnapshot targetUserBeforeAddingSnapshot,
-        UserSnapshot targetUserAfterAddingSnapshot,
+        Guid id,
+        UserSnapshot snapshot,
         DateTime loggedDateTime,
         CancellationToken cancellationToken = default);
 
     Task LogUserRemoveFromRolesActionAsync(
-        UserSnapshot targetUserBeforeRemovalSnapshot,
-        UserSnapshot targetUserAfterRemovalSnapshot,
+        Guid id,
+        UserSnapshot targetUserSnapshot,
         DateTime loggedDateTime,
         CancellationToken cancellationToken = default);
 
+    Task LogUserRemoveActionAsync(Guid id, DateTime loggedDateTime, CancellationToken token = default);
+
     Task LogProductCreateActionAsync(
-        ProductSnapshot productSnapsnot,
+        Guid id,
+        ProductSnapshot snapshot,
         DateTime loggedDateTime,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken = default);
+
+    Task LogProductUpdateActionAsync(
+        Guid id,
+        ProductSnapshot snapshot,
+        DateTime loggedDateTime,
+        CancellationToken cancellationToken = default);
     #endregion
 }
