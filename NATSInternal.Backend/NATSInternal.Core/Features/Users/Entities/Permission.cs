@@ -1,21 +1,24 @@
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace NATSInternal.Core.Features.Users;
 
-[PrimaryKey(nameof(UserId), nameof(RoleId))]
-internal class UserRole
+internal class Permission
 {
     #region Properties
-    [Required]
-    public int UserId { get; set; }
+    [Key]
+    public int Id { get; set; }
     
+    [Required]
+    [StringLength(PermissionContracts.NameMaxLength)]
+    public required string Name { get; set; }
+    #endregion
+    
+    #region ForeignKeyProperties
     [Required]
     public int RoleId { get; set; }
     #endregion
     
     #region NavigationProperties
-    public User User { get; set; } = null!;
     public Role Role { get; set; } = null!;
     #endregion
 }

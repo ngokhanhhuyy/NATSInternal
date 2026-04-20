@@ -1,6 +1,4 @@
-using NATSInternal.Core.Features.Users;
-
-namespace NATSInternal.Core.Common.Dtos;
+namespace NATSInternal.Core.Features.Users;
 
 public class RoleBasicResponseDto
 {

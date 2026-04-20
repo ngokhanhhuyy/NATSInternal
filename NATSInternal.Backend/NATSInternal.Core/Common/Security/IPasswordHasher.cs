@@ -1,4 +1,4 @@
-namespace NATSInternal.Core.Security;
+namespace NATSInternal.Core.Common.Security;
 
 internal interface IPasswordHasher
 {

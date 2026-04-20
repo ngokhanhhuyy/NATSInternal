@@ -1,9 +1,9 @@
-namespace NATSInternal.Core.Security;
+namespace NATSInternal.Core.Common.Security;
 
 public interface ICallerDetailProvider
 {
     #region Methods
-    Guid GetId();
+    int GetId();
     string GetUserName();
     ICollection<string> GetRoleNames();
     ICollection<string> GetPermissionNames();

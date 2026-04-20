@@ -1,5 +1,5 @@
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NATSInternal.Core.Features.Users;
 
@@ -16,6 +16,13 @@ internal class User
     [Required]
     [StringLength(UserContracts.PasswordHashMaxLength)]
     public required string PasswordHash { get; set; }
+    
+    [Required]
+    public required DateTime CreatedDateTime { get; set; }
+    
+    public DateTime? LastUpdatedDateTime { get; set; }
+    
+    public DateTime? DeletedDateTime { get; set; }
     #endregion
     
     #region ForeignKeyProperties
@@ -27,12 +34,17 @@ internal class User
     
     [Required]
     public int? DeletedUserId { get; set; }
-    
-    [Required]
-    public bool IsDeleted
     #endregion
     
     #region NavigationProperties
+    public User CreatedUser { get; set; } = null!;
+    public User? LastUpdatedUser { get; set; }
+    public User? DeletedUser { get; set; }
     public List<Role> Roles { get; set; } = new();
+    #endregion
+    
+    #region ComputedProperties
+    [NotMapped]
+    public int MaxRolePowerLevel => Roles.Max(r => r.PowerLevel);
     #endregion
 }

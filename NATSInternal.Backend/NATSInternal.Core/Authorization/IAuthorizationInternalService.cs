@@ -1,0 +1,20 @@
+using NATSInternal.Core.Features.Users;
+
+namespace NATSInternal.Core.Common.Authorization;
+
+internal interface IAuthorizationInternalService : IAuthorizationService
+{
+    #region Methods
+    UserExistingAuthorizationResponseDto GetUserExistingAuthorization(User targetUser);
+    // CustomerExistingAuthorizationResponseDto GetCustomerExistingAuthorization(Customer customer);
+    // ProductExistingAuthorizationResponseDto GetProductExistingAuthorization(Product product);
+    // BrandExistingAuthorizationResponseDto GetBrandExistingAuthorization(Brand brand);
+    // ProductCategoryExistingAuthorizationResponseDto GetProductCategoryExistingAuthorization(ProductCategory category);
+    // SupplyExistingAuthorizationResponseDto GetSupplyExistingAuthorization(Supply supply);
+    bool CanChangeUserPassword(User targetUser);
+    bool CanResetUserPassword(User targetUser);
+    bool CanDeleteUser(User targetUser);
+    bool CanAddUserToRole(User user, Role role);
+    bool CanRemoveUserFromRole(User user, Role role);
+    #endregion
+}

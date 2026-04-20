@@ -22,5 +22,6 @@ internal class Role
     
     #region NavigationProperties
     public List<User> Users { get; set; } = new();
+    public List<Permission> Permissions { get; set; } = new();
     #endregion
 }

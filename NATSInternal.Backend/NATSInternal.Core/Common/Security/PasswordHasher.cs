@@ -1,4 +1,4 @@
-namespace NATSInternal.Core.Security;
+namespace NATSInternal.Core.Common.Security;
 
 internal class PasswordHasher : IPasswordHasher
 {
