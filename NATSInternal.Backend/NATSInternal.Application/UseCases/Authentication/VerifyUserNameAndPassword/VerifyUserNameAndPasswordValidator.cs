@@ -11,10 +11,10 @@ internal class VerifyUserNameAndPasswordValidator : Validator<VerifyUserNameAndP
     {
         RuleFor(dto => dto.UserName)
             .NotEmpty()
-            .WithName(dto => DisplayNames.UserName);
+            .WithName(DisplayNames.UserName);
         RuleFor(dto => dto.Password)
             .NotEmpty()
-            .WithName(dto => DisplayNames.Password);
+            .WithName(DisplayNames.Password);
     }
     #endregion
 }
