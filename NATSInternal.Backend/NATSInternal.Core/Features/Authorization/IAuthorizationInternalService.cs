@@ -1,6 +1,6 @@
 using NATSInternal.Core.Features.Users;
 
-namespace NATSInternal.Core.Common.Authorization;
+namespace NATSInternal.Core.Features.Authorization;
 
 internal interface IAuthorizationInternalService : IAuthorizationService
 {

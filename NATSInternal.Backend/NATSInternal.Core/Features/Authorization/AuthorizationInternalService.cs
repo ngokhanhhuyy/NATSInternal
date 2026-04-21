@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using NATSInternal.Core.Common.Security;
 using NATSInternal.Core.Features.Users;
 
-namespace NATSInternal.Core.Common.Authorization;
+namespace NATSInternal.Core.Features.Authorization;
 
 [UsedImplicitly]
 internal class AuthorizationInternalService : IAuthorizationInternalService

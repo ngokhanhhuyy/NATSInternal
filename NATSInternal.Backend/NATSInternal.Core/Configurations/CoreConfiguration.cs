@@ -6,6 +6,8 @@ using NATSInternal.Core.Common.Time;
 using NATSInternal.Core.Common.Validation;
 using NATSInternal.Core.Persistence.DbContext;
 using NATSInternal.Core.Persistence.Handlers;
+using NATSInternal.Core.Features.Authentication;
+using NATSInternal.Core.Features.Authorization;
 using NATSInternal.Core.Features.Users;
 
 namespace NATSInternal.Core.Configrations;
@@ -29,6 +31,11 @@ public static class CoreConfiguration
             services.AddScoped<IDbExceptionHandler, PostgreSqlDbExceptionHandler>();
             
             // Services.
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<AuthorizationInternalService>();
+            services.AddScoped<IAuthorizationInternalService>(sp =>
+                sp.GetRequiredService<AuthorizationInternalService>());
+            services.AddScoped<IAuthorizationService>(sp => sp.GetRequiredService<AuthorizationInternalService>());
             services.AddScoped<IUserService, UserService>();
 
             // Security.

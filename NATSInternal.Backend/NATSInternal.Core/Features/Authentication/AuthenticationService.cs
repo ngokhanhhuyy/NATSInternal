@@ -1,10 +1,10 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using NATSInternal.Core.Common.Authorization;
 using NATSInternal.Core.Common.Exceptions;
 using NATSInternal.Core.Common.Extensions;
 using NATSInternal.Core.Common.Localization;
 using NATSInternal.Core.Common.Security;
+using NATSInternal.Core.Features.Authorization;
 using NATSInternal.Core.Features.Users;
 using NATSInternal.Core.Persistence.DbContext;
 using NATSInternal.Core.Persistence.Handlers;

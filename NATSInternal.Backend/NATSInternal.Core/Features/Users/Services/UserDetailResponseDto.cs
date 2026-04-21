@@ -1,4 +1,4 @@
-using NATSInternal.Core.Common.Authorization;
+using NATSInternal.Core.Features.Authorization;
 
 namespace NATSInternal.Core.Features.Users;
 
