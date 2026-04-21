@@ -5,6 +5,6 @@ public interface IAuthenticationService
     #region Methods
     Task VerifyUserNameAndPasswordAsync(VerifyUserNameAndPasswordRequestDto requestDto);
     Task ChangePasswordAsync(ChangePasswordRequestDto requestDto);
-    Task ResetPasswordAsync(int id);
+    Task ResetPasswordAsync(int id, ResetPasswordRequestDto requestDto);
     #endregion
 }
