@@ -62,8 +62,12 @@ internal class UserService : IUserService
         IQueryable<User> query = _context.Users
             .Include(u => u.Roles)
             .ThenInclude(r => r.Permissions)
-            .Where(u => u.DeletedDateTime != null)
-            .Where(u => u.Roles.Select(r => r.Id).Any(rid => requestDto.RoleIds.Contains(rid)));
+            .Where(u => u.DeletedDateTime == null);
+
+        if (requestDto.RoleIds.Count > 0)
+        {
+            query = query.Where(u => u.Roles.Select(r => r.Id).Any(rid => requestDto.RoleIds.Contains(rid)));
+        }
 
         if (!string.IsNullOrEmpty(requestDto.SearchContent))
         {
@@ -79,7 +83,9 @@ internal class UserService : IUserService
                 query = query.ApplySorting(u => u.CreatedDateTime, requestDto.SortByAscending);
                 break;
             case nameof(UserListRequestDto.FieldToSort.RoleMaxPowerLevel):
-                query = query.ApplySorting(u => u.Roles.Max(r => r.PowerLevel), requestDto.SortByAscending);
+                query = query
+                    .ApplySorting(u => u.Roles.Max(r => r.PowerLevel), requestDto.SortByAscending)
+                    .ThenApplySorting(u => u.UserName, requestDto.SortByAscending);
                 break;
             default:
                 throw new NotImplementedException();
@@ -98,7 +104,7 @@ internal class UserService : IUserService
         return new(userResponseDtos, queryResult.PageCount, queryResult.ItemCount);
     }
 
-    public async Task<UserDetailResponseDto> GetDetailAsync(int id)
+    public async Task<UserDetailResponseDto> GetDetailByIdAsync(int id)
     {
         return await _context.Users
             .Include(u => u.Roles)
@@ -107,6 +113,24 @@ internal class UserService : IUserService
             .Select(u => new UserDetailResponseDto(u, _authorizationService.GetUserExistingAuthorization(u)))
             .SingleOrDefaultAsync()
             ?? throw new NotFoundException();
+    }
+
+    public async Task<UserDetailResponseDto> GetDetailByUserNameAsync(
+        string userName,
+        bool includingAuthorization = false)
+    {
+        User user = await _context.Users
+            .Include(u => u.Roles)
+            .ThenInclude(r => r.Permissions)
+            .SingleOrDefaultAsync(u => u.UserName == userName)
+            ?? throw new NotFoundException();
+            
+        if (includingAuthorization)
+        {
+            return new(user, _authorizationService.GetUserExistingAuthorization(user));
+        }
+
+        return new(user);
     }
 
     public async Task<int> CreateAsync(UserCreateRequestDto requestDto)

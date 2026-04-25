@@ -5,12 +5,15 @@ namespace NATSInternal.Core.Features.Users;
 public class UserDetailResponseDto
 {
     #region Constructors
-    internal UserDetailResponseDto(User user, UserExistingAuthorizationResponseDto authorization)
+    internal UserDetailResponseDto(User user)
     {
         Id = user.Id;
         UserName = user.UserName;
         CreatedDateTime = user.CreatedDateTime;
-        CreatedUser = new(user.CreatedUser);
+        if (user.CreatedUser is not null)
+        {
+            CreatedUser = new(user.CreatedUser);
+        }
 
         LastUpdatedDateTime = user.LastUpdatedDateTime;
         if (user.LastUpdatedUser is not null)
@@ -25,6 +28,10 @@ public class UserDetailResponseDto
         }
 
         Roles = user.Roles.Select(r => new RoleDetailResponseDto(r)).ToList();
+    }
+
+    internal UserDetailResponseDto(User user, UserExistingAuthorizationResponseDto authorization) : this(user)
+    {
         Authorization = authorization;
     }
     #endregion
@@ -33,12 +40,12 @@ public class UserDetailResponseDto
     public int Id { get; }
     public string UserName { get; }
     public DateTime CreatedDateTime { get; }
-    public UserBasicResponseDto CreatedUser { get; }
+    public UserBasicResponseDto? CreatedUser { get; }
     public DateTime? LastUpdatedDateTime { get; }
     public UserBasicResponseDto? LastUpdatedUser { get; }
     public DateTime? DeletedDateTime { get; }
     public UserBasicResponseDto? DeletedUser { get; }
     public List<RoleDetailResponseDto> Roles { get; set; }
-    public UserExistingAuthorizationResponseDto Authorization { get; set; }
+    public UserExistingAuthorizationResponseDto? Authorization { get; set; }
     #endregion
 }

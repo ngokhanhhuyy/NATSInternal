@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Features.Customers;
 
-public static class CustomerContracts
+internal static class CustomerContracts
 {
     #region Constants
     public const int FirstNameMaxLength = 10;

@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Features.Users;
 
-public static class RoleContracts
+internal static class RoleContracts
 {
     #region Constants
     public const int NameMaxLength = 15;

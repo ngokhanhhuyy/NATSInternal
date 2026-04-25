@@ -4,91 +4,66 @@ public static class PermissionNames
 {
     #region Constants
     // Permissions to interact with users.
-    public const string CreateUser = "CreateUser";
-    public const string AddUserToOrRemoveUserFromRoles = "AddUserToOrRemoveUserFromRoles";
-    public const string ResetOtherUserPassword = "ResetOtherUserPassword";
-    public const string DeleteUser = "DeleteUser";
+    public const string CreateUser = nameof(CreateUser);
+    public const string UpdateAnotherUser = nameof(UpdateAnotherUser);
+    public const string ResetAnotherUserPassword = nameof(ResetAnotherUserPassword);
+    public const string DeleteAnotherUser = nameof(DeleteAnotherUser);
 
     // Permissions to interact with customers.
-    public const string GetCustomerDetail = "GetCustomerDetail";
-    public const string CreateCustomer = "CreateCustomer";
-    public const string EditCustomer = "EditCustomer";
-    public const string DeleteCustomer = "DeleteCustomer";
-
-    // Permissions to interact with brands.
-    public const string CreateBrand = "CreateBrand";
-    public const string EditBrand = "EditBrand";
-    public const string DeleteBrand = "DeleteBrand";
+    public const string GetCustomerDetail = nameof(GetCustomerDetail);
+    public const string CreateCustomer = nameof(CreateCustomer);
+    public const string EditCustomer = nameof(EditCustomer);
+    public const string DeleteCustomer = nameof(DeleteCustomer);
 
     // Permissions to interact with products
-    public const string CreateProduct = "CreateProduct";
-    public const string EditProduct = "EditProduct";
-    public const string DeleteProduct = "DeleteProduct";
+    public const string CreateProduct = nameof(CreateProduct);
+    public const string EditProduct = nameof(EditProduct);
+    public const string DeleteProduct = nameof(DeleteProduct);
 
     // Permissions to interact with product categories
-    public const string CreateProductCategory = "CreateProductCategory";
-    public const string EditProductCategory = "EditProductCategory";
-    public const string DeleteProductCategory = "DeleteProductCategory";
+    public const string CreateProductCategory = nameof(CreateProductCategory);
+    public const string EditProductCategory = nameof(EditProductCategory);
+    public const string DeleteProductCategory = nameof(DeleteProductCategory);
 
     // Permissions to interact with supplies.
-    public const string CreateSupply = "CreateSupply";
-    public const string EditSupply = "EditSupply";
-    public const string EditLockedSupply = "EditLockedSupply";
-    public const string DeleteSupply = "DeleteSupply";
-    public const string SetSupplyStatsDateTime = "SetSupplyStatsDateTime";
-    public const string AccessSupplyUpdateHistories = "AccessSupplyUpdateHistories";
+    public const string CreateSupply = nameof(CreateSupply);
+    public const string EditSupply = nameof(EditSupply);
+    public const string EditLockedSupply = nameof(EditLockedSupply);
+    public const string DeleteSupply = nameof(DeleteSupply);
+    public const string SetSupplyStatsDateTime = nameof(SetSupplyStatsDateTime);
+    public const string AccessSupplyUpdateHistories = nameof(AccessSupplyUpdateHistories);
 
     // Permissions to interact with expenses.
-    public const string CreateExpense = "CreateExpense";
-    public const string EditExpense = "EditExpense";
-    public const string EditLockedExpense = "EditLockedExpense";
-    public const string DeleteExpense = "DeleteExpense";
-    public const string SetExpenseStatsDateTime = "SetExpenseStatsDateTime";
-    public const string AccessExpenseUpdateHistories = "AccessExpenseUpdateHistories";
+    public const string CreateExpense = nameof(CreateExpense);
+    public const string EditExpense = nameof(EditExpense);
+    public const string EditLockedExpense = nameof(EditLockedExpense);
+    public const string DeleteExpense = nameof(DeleteExpense);
+    public const string SetExpenseStatsDateTime = nameof(SetExpenseStatsDateTime);
+    public const string AccessExpenseUpdateHistories = nameof(AccessExpenseUpdateHistories);
 
     // Permissions to interact with orders.
-    public const string CreateOrder = "CreateOrder";
-    public const string EditOrder = "EditOrder";
-    public const string EditLockedOrder = "EditLockedOrder";
-    public const string SetOrderStatsDateTime = "SetOrderStatsDateTime";
-    public const string DeleteOrder = "DeleteOrder";
-    public const string AccessOrderUpdateHistories = "AccessOrderUpdateHistories";
+    public const string CreateOrder = nameof(CreateOrder);
+    public const string EditOrder = nameof(EditOrder);
+    public const string EditLockedOrder = nameof(EditLockedOrder);
+    public const string SetOrderStatsDateTime = nameof(SetOrderStatsDateTime);
+    public const string DeleteOrder = nameof(DeleteOrder);
+    public const string AccessOrderUpdateHistories = nameof(AccessOrderUpdateHistories);
 
-    // Permissions to interact with treatments.
-    public const string CreateTreatment = "CreateTreatment";
-    public const string EditTreatment = "EditTreatment";
-    public const string EditLockedTreatment = "EditLockedTreatment";
-    public const string DeleteTreatment = "DeleteTreatment";
-    public const string SetTreatmentStatsDateTime = "SetTreatmentStatsDateTime";
-    public const string AccessTreatmentUpdateHistories = "AccessTreatmentUpdateHistories";
-
-    // Permissions to interact with debt incurrence.
-    public const string CreateDebtIncurrence = "CreateDebtIncurrence";
-    public const string EditDebtIncurrence = "EditDebtIncurrence";
-    public const string EditLockedDebtIncurrence = "EditLockedDebtIncurrence";
-    public const string SetDebtStatsDateTime = "SetDebtIncurrenceStatsDateTimeDateTime";
-    public const string DeleteDebtIncurrence = "DeleteDebtIncurrence";
-    public const string AccessDebtIncurrenceUpdateHistories = "AccessDebtIncurrenceUpdateHistories";
-
-    // Permissions to interact with debt payments.
-    public const string CreateDebtPayment = "CreateDebtPayment";
-    public const string EditDebtPayment = "EditDebtPayment";
-    public const string EditLockedDebtPayment = "EditLockedDebtPayment";
-    public const string SetDebtPaymentStatsDateTime = "SetDebtPaymentStatsDateTime";
-    public const string DeleteDebtPayment = "DeleteDebtPayment";
-    public const string AccessDebtPaymentUpdateHistories = "AccessDebtPaymentUpdateHistories";
-
-    // Permissions to interact with consultants.
-    public const string CreateConsultant = "CreateConsultant";
-    public const string EditConsultant = "EditConsultant";
-    public const string EditLockedConsultant = "EditLockedConsultant";
-    public const string DeleteConsultant = "DeleteConsultant";
-    public const string SetConsultantStatsDateTime = "SetConsultantStatsDateTime";
-    public const string AccessConsultantUpdateHistories = "AccessConsultantUpdateHistories";
+    // Permissions to interact with debts
+    public const string CreateDebt = nameof(CreateDebt);
+    public const string EditDebt = nameof(EditDebt);
+    public const string EditLockedDebt = nameof(EditLockedDebt);
+    public const string SetDebtStatsDateTime = nameof(SetDebtStatsDateTime);
+    public const string DeleteDebt = nameof(DeleteDebt);
+    public const string AccessDebtUpdateHistories = nameof(AccessDebtUpdateHistories);
 
     // Permissions to interact with announcements.
-    public const string CreateAnnouncement = "CreateAnnouncement";
-    public const string EditAnnouncement = "EditAnnouncement";
-    public const string DeleteAnnouncement = "DeleteAnnouncement";
+    public const string CreateAnnouncement = nameof(CreateAnnouncement);
+    public const string EditAnnouncement = nameof(EditAnnouncement);
+    public const string DeleteAnnouncement = nameof(DeleteAnnouncement);
+
+    // Permission to interact with reports.
+    public const string GetFinancialReport = nameof(GetFinancialReport);
+    public const string GetApplicationOperationReport = nameof(GetApplicationOperationReport);
     #endregion
 }

@@ -20,7 +20,7 @@ public class OperationException : ApplicationException
 
     public static OperationException Duplicated(object[] propertyPathElements, string displayName)
     {
-        string message = ErrorMessages.Duplicated.Replace("{ResourceName}", displayName);
+        string message = ErrorMessages.Duplicated.Replace("{PropertyName}", displayName);
         return new(propertyPathElements, message);
     }
 

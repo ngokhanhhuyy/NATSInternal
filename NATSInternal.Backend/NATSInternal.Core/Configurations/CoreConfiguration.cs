@@ -1,17 +1,20 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NATSInternal.Core.Common.Security;
+using NATSInternal.Core.Common.Services;
 using NATSInternal.Core.Common.Time;
 using NATSInternal.Core.Common.Validation;
 using NATSInternal.Core.Persistence.DbContext;
 using NATSInternal.Core.Persistence.Handlers;
+using NATSInternal.Core.Persistence.Seeders;
 using NATSInternal.Core.Features.Authentication;
 using NATSInternal.Core.Features.Authorization;
 using NATSInternal.Core.Features.Customers;
 using NATSInternal.Core.Features.Users;
 
-namespace NATSInternal.Core.Configrations;
+namespace NATSInternal.Core.Configurations;
 
 public static class CoreConfiguration
 {
@@ -32,6 +35,7 @@ public static class CoreConfiguration
             services.AddScoped<IDbExceptionHandler, PostgreSqlDbExceptionHandler>();
             
             // Services.
+            services.AddScoped<IListFetchingService, ListFetchingService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<AuthorizationInternalService>();
             services.AddScoped<IAuthorizationInternalService>(sp =>
@@ -39,6 +43,11 @@ public static class CoreConfiguration
             services.AddScoped<IAuthorizationService>(sp => sp.GetRequiredService<AuthorizationInternalService>());
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IUserService, UserService>();
+
+            // Seeders.
+            services.AddTransient<Seeder>();
+            services.AddTransient<UserSeeder>();
+            services.AddTransient<CustomerSeeder>();
 
             // Security.
             services.AddScoped<IPasswordHasher, PasswordHasher>();
@@ -54,5 +63,32 @@ public static class CoreConfiguration
                 Culture = new("vi")
             };
         }
+    }
+
+    extension(IServiceProvider serviceProvider)
+    {
+        public async Task EnsureDatabaseCreatedAsync()
+        {
+            
+            IServiceScopeFactory serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+            using IServiceScope serviceScope = serviceScopeFactory.CreateScope();
+            AppDbContext context = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+            ILogger<AppDbContext> logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<AppDbContext>>();
+
+            logger.LogInformation("Ensuring database created");
+
+            await context.Database.OpenConnectionAsync();
+            await context.Database.EnsureCreatedAsync();
+            await context.Database.CloseConnectionAsync();
+        }
+    }
+
+    public static async Task SeedDataAsync(this IServiceProvider serviceProvider, bool isDevelopment)
+    {
+        IServiceScopeFactory serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using IServiceScope serviceScope = serviceScopeFactory.CreateScope();
+        Seeder seeder = serviceScope.ServiceProvider.GetRequiredService<Seeder>();
+        
+        await seeder.SeedAsync(isDevelopment);
     }
 }

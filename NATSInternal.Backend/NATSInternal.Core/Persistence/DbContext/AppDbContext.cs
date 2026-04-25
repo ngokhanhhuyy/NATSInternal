@@ -3,18 +3,29 @@ using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Features.Photos;
+using NATSInternal.Core.Features.Products;
 using NATSInternal.Core.Features.Users;
+using NATSInternal.Infrastructure.DbContext;
 using System.Text.RegularExpressions;
 
 namespace NATSInternal.Core.Persistence.DbContext;
 
 internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
 {
+    #region Constructors
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+    #endregion
+    
     #region Properties
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<Permission> Permissions { get; set; }
     public DbSet<Customer> Customers { get; set; }
+    public DbSet<Product> Products { get; set; }
+    public DbSet<ProductCategory> ProductCategories { get; set; }
+    public DbSet<Stock> Stocks { get; set; }
+    public DbSet<Photo> Photos { get; set; }
     #endregion
     
     #region Methods
@@ -29,6 +40,13 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
 
         // Customer-cluster entities.
         modelBuilder.ApplyConfiguration(new CustomerEntityConfiguration());
+
+        // Product-cluster entities.
+        modelBuilder.ApplyConfiguration(new ProductEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new StockEntityTypeConfiguration());
+
+        // Configure identifiers' names.
+        ConfigureIdentifierNames(modelBuilder);
     }
     #endregion
     

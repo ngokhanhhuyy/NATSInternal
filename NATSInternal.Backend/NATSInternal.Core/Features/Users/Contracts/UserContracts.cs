@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Features.Users;
 
-public static class UserContracts
+internal static class UserContracts
 {
     #region Constants
     public const int UserNameMinLength = 6;

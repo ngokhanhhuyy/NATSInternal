@@ -105,6 +105,10 @@ internal class CustomerService : ICustomerService
     {
         return await _context.Customers
             .Where(c => c.Id == id)
+            .Include(c => c.CreatedUser)
+            .Include(c => c.LastUpdatedUser)
+            .Include(c => c.DeletedUser)
+            .Include(c => c.Introducer)
             .Select(c => new CustomerDetailResponseDto(c, _authorizationService.GetCustomerExistingAuthorization(c)))
             .SingleOrDefaultAsync()
             ?? throw new NotFoundException();
@@ -149,11 +153,12 @@ internal class CustomerService : ICustomerService
                 throw;
             }
 
+            object[] propertyPathElements;
             if (handledResult.IsForeignKeyConstraintViolation)
             {
                 if (handledResult.ViolatedPropertyName == nameof(Customer.IntroducerId))
                 {
-                    object[] propertyPathElements = new object[] { nameof(requestDto.IntroducerId) };
+                    propertyPathElements = new object[] { nameof(requestDto.IntroducerId) };
                     throw OperationException.NotFound(propertyPathElements, DisplayNames.Introducer);
                 }
 
@@ -161,6 +166,12 @@ internal class CustomerService : ICustomerService
                 {
                     throw new ConcurrencyException();
                 }
+            }
+
+            if (handledResult.IsUniqueConstraintViolation)
+            {
+                propertyPathElements = new object[] { nameof(requestDto.NickName) };
+                throw OperationException.Duplicated(propertyPathElements, DisplayNames.NickName);
             }
 
             throw;
@@ -175,6 +186,13 @@ internal class CustomerService : ICustomerService
         Customer customer = await _context.Customers
             .SingleOrDefaultAsync(c => c.Id == id && c.DeletedDateTime == null)
             ?? throw new NotFoundException();
+
+        CustomerExistingAuthorizationResponseDto authorization;
+        authorization = _authorizationService.GetCustomerExistingAuthorization(customer);
+        if (!authorization.CanEdit)
+        {
+            throw new AuthorizationException();
+        }
 
         customer.FirstName = requestDto.FirstName;
         customer.MiddleName = requestDto.MiddleName;
@@ -209,12 +227,13 @@ internal class CustomerService : ICustomerService
                 throw new ConcurrencyException();
             }
 
+            object[] propertyPathElements;
             if (handledResult.IsForeignKeyConstraintViolation && handledResult.ViolatedPropertyName is not null)
             {
                 string violatedPropertyName = handledResult.ViolatedPropertyName;
                 if (violatedPropertyName == nameof(Customer.IntroducerId))
                 {
-                    object[] propertyPathElements = new object[] { nameof(requestDto.IntroducerId) };
+                    propertyPathElements = new object[] { nameof(requestDto.IntroducerId) };
                     throw OperationException.NotFound(propertyPathElements, DisplayNames.Introducer);
                 }
 
@@ -222,6 +241,12 @@ internal class CustomerService : ICustomerService
                 {
                     throw new ConcurrencyException();
                 }
+            }
+
+            if (handledResult.IsUniqueConstraintViolation)
+            {
+                propertyPathElements = new object[] { nameof(requestDto.NickName) };
+                throw OperationException.Duplicated(propertyPathElements, DisplayNames.NickName);
             }
 
             throw;
@@ -233,6 +258,13 @@ internal class CustomerService : ICustomerService
         Customer customer = await _context.Customers
             .SingleOrDefaultAsync(c => c.Id == id && c.DeletedDateTime == null)
             ?? throw new NotFoundException();
+
+        CustomerExistingAuthorizationResponseDto authorization;
+        authorization = _authorizationService.GetCustomerExistingAuthorization(customer);
+        if (!authorization.CanDelete)
+        {
+            throw new AuthorizationException();
+        }
 
         customer.DeletedDateTime = _clock.Now;
         customer.DeletedUserId = _callerDetailProvider.GetId();

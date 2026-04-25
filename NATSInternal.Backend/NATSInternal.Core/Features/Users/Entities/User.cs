@@ -19,25 +19,18 @@ internal class User
     
     [Required]
     public required DateTime CreatedDateTime { get; set; }
-    
     public DateTime? LastUpdatedDateTime { get; set; }
-    
     public DateTime? DeletedDateTime { get; set; }
     #endregion
     
     #region ForeignKeyProperties
-    [Required]
-    public int CreatedUserId { get; set; }
-    
-    [Required]
+    public required int? CreatedUserId { get; set; }
     public int? LastUpdatedUserId { get; set; }
-    
-    [Required]
     public int? DeletedUserId { get; set; }
     #endregion
     
     #region NavigationProperties
-    public User CreatedUser { get; set; } = null!;
+    public User? CreatedUser { get; set; }
     public User? LastUpdatedUser { get; set; }
     public User? DeletedUser { get; set; }
     public List<Role> Roles { get; set; } = new();

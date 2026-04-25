@@ -13,7 +13,6 @@ internal class UserEntityConfiguration : IEntityTypeConfiguration<User>
         entityBuilder.HasOne(u => u.CreatedUser)
             .WithMany()
             .HasForeignKey(u => u.CreatedUserId)
-            .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
         entityBuilder.HasOne(u => u.LastUpdatedUser)
             .WithMany()

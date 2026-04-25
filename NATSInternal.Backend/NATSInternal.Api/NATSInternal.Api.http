@@ -1,0 +1,19 @@
+@host = http://localhost:5000/api
+###
+GET {{host}}/swagger/v1/swagger.json
+Accept: application/json
+
+###
+# @name GetAccessCookie
+POST {{host}}/authentication/getAccessCookie
+Content-Type: application/json
+Accept: application/json
+
+{
+  "userName": "ngokhanhhuyy",
+  "password": "Huyy47b1"
+}
+
+###
+# @name ClearAccessCookie
+POST {{host}}/authentication/clearAccessCookie

@@ -75,12 +75,19 @@ internal class CustomerSeeder
                 introducer = customers.MinBy(_ => Guid.NewGuid());
             }
 
+            string nickName;
+            do
+            {
+                nickName = GenerateNickName(lastName, _faker.Lorem.Word());
+            }
+            while (customers.Any(c => c.NickName == nickName));
+
             Customer customer = new()
             {
                 FirstName = lastName,
                 MiddleName = middleName,
                 LastName = firstName,
-                NickName = GenerateNickName(lastName, _faker.Lorem.Word()),
+                NickName = nickName,
                 Gender = genderInt == 0 ? Gender.Male : Gender.Female,
                 Birthday = DateOnly.FromDateTime(_faker.Date.Between(
                     _clock.Now.AddYears(-20),

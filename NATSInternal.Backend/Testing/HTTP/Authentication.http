@@ -14,7 +14,7 @@ Content-Type: application/json
 @accessCookie = {{GetAccessCookie.response.headers.Set-Cookie}}
 
 ###
-# @name UserGetList
+# @name UserList
 // @no-log
 GET {{host}}/users HTTP/2.0
 Content-Type: application/json
@@ -23,13 +23,13 @@ Cookie: {{accessCookie}}
 ###
 # @name CustomerList
 // @no-log
-GET {{host}}/customers?sortingByFieldName=LastName&sortingByAscending=False&page=1
+GET {{host}}/customers?sortByFieldName=CreatedDateTime&sortByAscending=False&page=1
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
 # @name CustomerDetail
-GET {{host}}/customers/3406641a-0005-43e8-a569-801ff90b76e7
+GET {{host}}/customers/102
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
@@ -57,17 +57,17 @@ Cookie: {{accessCookie}}
 
 ###
 # @name CustomerUpdate
-PUT {{host}}/customers/3406641a-0005-43e8-a569-801ff90b76e7
+PUT {{host}}/customers/102
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
 {
-    "firstName": "",
+    "firstName": "Ngô",
     "middleName": "Khánh",
     "lastName": "Huy",
-    "nickName": "Huy Nino 123",
+    "nickName": "Huy Nino",
     "gender": "Male",
-    "birthday": "1997-08-30",
+    "birthday": "2025-08-30",
     "phoneNumber": "09037632117",
     "zaloNumber": "09037632117",
     "facebookUrl": "https://facebook.com/huy.nino.97",
@@ -79,7 +79,7 @@ Cookie: {{accessCookie}}
 
 ###
 # @name CustomerDelete
-DELETE {{host}}/customers/3406641a-0005-43e8-a569-801ff90b76e7
+DELETE {{host}}/customers/235
 Content-Type: application/json
 Cookie: {{accessCookie}}
 

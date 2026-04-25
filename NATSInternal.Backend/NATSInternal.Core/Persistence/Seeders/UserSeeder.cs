@@ -34,7 +34,6 @@ internal class UserSeeder
     #region Methods
     public async Task<UserSeededResult> SeedAsync(bool isDevelopment)
     {
-        
         List<Role> roles = await SeedRolesAsync();
         List<User> users = await SeedUsersAsync(roles, isDevelopment);
 
@@ -65,6 +64,9 @@ internal class UserSeeder
                 DisplayName = "Nhà phát triển",
                 PowerLevel = 50,
                 Permissions = new()
+                {
+                    new() { Name = PermissionNames.GetApplicationOperationReport },
+                }
             },
             new()
             {
@@ -74,9 +76,12 @@ internal class UserSeeder
                 Permissions = new()
                 {
                     new() { Name = PermissionNames.CreateUser },
-                    new() { Name = PermissionNames.AddUserToOrRemoveUserFromRoles },
-                    new() { Name = PermissionNames.ResetOtherUserPassword },
-                    new() { Name = PermissionNames.DeleteUser }
+                    new() { Name = PermissionNames.UpdateAnotherUser },
+                    new() { Name = PermissionNames.ResetAnotherUserPassword },
+                    new() { Name = PermissionNames.DeleteAnotherUser },
+                    new() { Name = PermissionNames.CreateAnnouncement },
+                    new() { Name = PermissionNames.EditAnnouncement },
+                    new() { Name = PermissionNames.DeleteAnnouncement },
                 }
             },
             new()
@@ -84,14 +89,40 @@ internal class UserSeeder
                 Name = RoleNames.Accountant,
                 DisplayName = "Kế toán",
                 PowerLevel = 30,
-                Permissions = new(),
+                Permissions = new()
+                {
+                    new() { Name = PermissionNames.EditCustomer },
+                    new() { Name = PermissionNames.DeleteCustomer },
+                    new() { Name = PermissionNames.CreateProduct },
+                    new() { Name = PermissionNames.EditProduct },
+                    new() { Name = PermissionNames.DeleteProduct },
+                    new() { Name = PermissionNames.CreateProductCategory },
+                    new() { Name = PermissionNames.EditProductCategory },
+                    new() { Name = PermissionNames.DeleteProductCategory },
+                    new() { Name = PermissionNames.EditSupply },
+                    new() { Name = PermissionNames.DeleteSupply },
+                    new() { Name = PermissionNames.EditExpense },
+                    new() { Name = PermissionNames.DeleteExpense },
+                    new() { Name = PermissionNames.EditOrder },
+                    new() { Name = PermissionNames.DeleteOrder },
+                    new() { Name = PermissionNames.EditDebt },
+                    new() { Name = PermissionNames.DeleteDebt },
+                    new() { Name = PermissionNames.GetFinancialReport }
+                },
             },
             new()
             {
                 Name = RoleNames.Staff,
                 DisplayName = "Nhân viên",
                 PowerLevel = 30,
-                Permissions = new(),
+                Permissions = new()
+                {
+                    new() { Name = PermissionNames.CreateCustomer },
+                    new() { Name = PermissionNames.CreateSupply },
+                    new() { Name = PermissionNames.CreateExpense },
+                    new() { Name = PermissionNames.CreateOrder },
+                    new() { Name = PermissionNames.CreateDebt },
+                },
             }
         };
 
@@ -114,12 +145,12 @@ internal class UserSeeder
         users = new();
         Dictionary<string, Role> roleDictionary = roles.ToDictionary(r => r.Name);
 
-        users.Add(new()
+        User huyUser = new()
         {
             UserName = "ngokhanhhuyy",
             PasswordHash = _passwordHasher.HashPassword("Huyy47b1"),
             CreatedDateTime = _clock.Now,
-            CreatedUserId = 1,
+            CreatedUserId = null,
             Roles = new()
             {
                 roleDictionary[RoleNames.Developer],
@@ -127,21 +158,25 @@ internal class UserSeeder
                 roleDictionary[RoleNames.Accountant],
                 roleDictionary[RoleNames.Staff],
             },
-        });
+        };
 
-        users.Add(new()
+        User trangUser = new()
         {
             UserName = "nguyenthuytrang",
             PasswordHash = _passwordHasher.HashPassword("trang123"),
             CreatedDateTime = _clock.Now,
-            CreatedUserId = 1,
+            CreatedUserId = null,
             Roles = new()
             {
                 roleDictionary[RoleNames.Manager],
                 roleDictionary[RoleNames.Accountant],
                 roleDictionary[RoleNames.Staff],
             }
-        });
+        };
+
+        _context.Users.Add(huyUser);
+        _context.Users.Add(trangUser);
+        await _context.SaveChangesAsync();
 
         if (isDevelopment)
         {
@@ -163,7 +198,7 @@ internal class UserSeeder
                     UserName = userName,
                     PasswordHash = _passwordHasher.HashPassword(userName),
                     CreatedDateTime = _clock.Now,
-                    CreatedUserId = createdUserId,
+                    CreatedUserId = huyUser.Id,
                     Roles = new() { role }
                 };
 

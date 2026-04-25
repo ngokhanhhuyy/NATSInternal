@@ -35,7 +35,7 @@ internal class CustomerUpsertValidator : Validator<CustomerUpsertRequestDto>
             .WithMessage(ErrorMessages.Invalid)
             .WithName(DisplayNames.Gender);
         RuleFor(dto => dto.Birthday)
-            .LessThan(clock.Today)
+            .EarlierThanDate(clock.Today)
             .WithName(DisplayNames.Birthday);
         RuleFor(dto => dto.PhoneNumber)
             .MaximumLength(CustomerContracts.PhoneNumberMaxLength)

@@ -26,8 +26,8 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
         {
             CanChangePassword = CanChangeUserPassword(user),
             CanResetPassword = CanResetUserPassword(user),
-            CanDelete = CanDeleteUser(user),
-            CanAddToOrRemoveFromRoles = CanAddUserToOrRemoveUserFromRoles(user)
+            CanUpdate = CanUpdateUser(user),
+            CanDelete = CanDeleteUser(user)
         };
     }
 
@@ -91,33 +91,33 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
     {
         return user.DeletedDateTime is not null &&
             user.Id != _callerDetailProvider.GetId() &&
-            CallerHasPermission(PermissionNames.ResetOtherUserPassword);
+            CallerHasPermission(PermissionNames.ResetAnotherUserPassword);
     }
 
     public bool CanDeleteUser(User user)
     {
         return user.Id != _callerDetailProvider.GetId() &&
             user.DeletedDateTime is not null &&
-            CallerHasPermission(PermissionNames.DeleteUser);
+            CallerHasPermission(PermissionNames.DeleteAnotherUser);
     }
 
-    public bool CanAddUserToOrRemoveUserFromRoles(User user)
+    public bool CanUpdateUser(User user)
     {
         return user.Id != _callerDetailProvider.GetId() &&
             user.DeletedDateTime is not null &&
-            CallerHasPermission(PermissionNames.AddUserToOrRemoveUserFromRoles);
+            CallerHasPermission(PermissionNames.UpdateAnotherUser);
     }
 
     public bool CanAddUserToRole(User user, Role role)
     {
-        return CanAddUserToOrRemoveUserFromRoles(user)
+        return CanUpdateUser(user)
             && CallerPowerLevel() > user.MaxRolePowerLevel
             && CallerPowerLevel() >= role.PowerLevel;
     }
 
     public bool CanRemoveUserFromRole(User user, Role role)
     {
-        return CanAddUserToOrRemoveUserFromRoles(user)
+        return CanUpdateUser(user)
             && CallerPowerLevel() > user.MaxRolePowerLevel
             && CallerPowerLevel() > role.PowerLevel;
     }
@@ -130,11 +130,6 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
     public bool CanCreateProduct()
     {
         return CallerHasPermission(PermissionNames.CreateProduct);
-    }
-
-    public bool CanCreateBrand()
-    {
-        return CallerHasPermission(PermissionNames.CreateBrand);
     }
 
     public bool CanCreateProductCategory()

@@ -1,0 +1,43 @@
+using FluentValidation;
+using JetBrains.Annotations;
+using NATSInternal.Core.Common.Localization;
+using NATSInternal.Core.Common.Validation;
+using NATSInternal.Core.Features.Photos;
+
+namespace NATSInternal.Core.Features.Products;
+
+[UsedImplicitly]
+internal abstract class AbstractProductUpsertValidator<TRequestDto> : Validator<TRequestDto>
+    where TRequestDto : AbstractProductUpsertRequestDto
+{
+    #region Constructors
+    protected AbstractProductUpsertValidator()
+    {
+        RuleFor(dto => dto.Name)
+            .NotEmpty()
+            .MaximumLength(ProductContracts.NameMaxLength)
+            .WithName(DisplayNames.Name);
+        RuleFor(dto => dto.Description)
+            .MaximumLength(ProductContracts.DescriptionMaxLength)
+            .WithName(DisplayNames.Description);
+        RuleFor(dto => dto.Unit)
+            .NotEmpty()
+            .MaximumLength(ProductContracts.UnitMaxLength)
+            .WithName(DisplayNames.Unit);
+        RuleFor(dto => dto.DefaultAmountBeforeVatPerUnit)
+            .GreaterThanOrEqualTo(0)
+            .WithName(DisplayNames.DefaultAmountBeforeVatPerUnit);
+        RuleFor(dto => dto.DefaultVatPercentagePerUnit)
+            .GreaterThanOrEqualTo(0)
+            .LessThanOrEqualTo(100)
+            .WithName(DisplayNames.DefaultVatPercentagePerUnit);
+        RuleFor(dto => dto.Photos).ContainsNoOrOneThumbnail();
+
+        RuleSet("CreateAndUpdate", () =>
+        {
+            RuleForEach(dto => dto.Photos)
+                .SetValidator(new PhotoAddOrUpdateValidator(), ruleSets: "CreateAndUpdate");
+        });
+    }
+    #endregion
+}
