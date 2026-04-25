@@ -11,7 +11,7 @@ internal class UserUpdateValidator : Validator<UserUpdateRequestDto>
     #region Constructors
     public UserUpdateValidator()
     {
-        RuleFor(dto => dto.RoleNames)
+        RuleFor(dto => dto.RoleIds)
             .NotEmpty()
             .WithName(DisplayNames.Role);
     }

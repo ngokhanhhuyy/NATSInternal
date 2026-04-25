@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Folder Include="Features/Customers/Services/CustomerDetail/" />
       <Folder Include="Persistence\Seeders\" />
     </ItemGroup>
 

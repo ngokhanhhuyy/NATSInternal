@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using NATSInternal.Core.Common.Security;
+using NATSInternal.Core.Features.Customers;
 using NATSInternal.Core.Features.Users;
 
 namespace NATSInternal.Core.Features.Authorization;
@@ -30,15 +31,15 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
         };
     }
 
-    // public CustomerExistingAuthorizationResponseDto GetCustomerExistingAuthorization(Customer customer)
-    // {
-    //     return new()
-    //     {
-    //         CanEdit = CallerHasPermission(PermissionNames.EditCustomer),
-    //         CanDelete = CallerHasPermission(PermissionNames.DeleteCustomer)
-    //     };
-    // }
-    //
+    public CustomerExistingAuthorizationResponseDto GetCustomerExistingAuthorization(Customer customer)
+    {
+        return new()
+        {
+            CanEdit = CallerHasPermission(PermissionNames.EditCustomer),
+            CanDelete = CallerHasPermission(PermissionNames.DeleteCustomer)
+        };
+    }
+
     // public ProductExistingAuthorizationResponseDto GetProductExistingAuthorization(Product product)
     // {
     //     return new()

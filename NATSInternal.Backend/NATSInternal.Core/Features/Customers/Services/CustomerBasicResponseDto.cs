@@ -1,3 +1,5 @@
+using NATSInternal.Core.Features.Authorization;
+
 namespace NATSInternal.Core.Features.Customers;
 
 public class CustomerBasicResponseDto
@@ -12,6 +14,13 @@ public class CustomerBasicResponseDto
             NickName = customer.NickName;
         }
     }
+
+    internal CustomerBasicResponseDto(
+        Customer? customer,
+        CustomerExistingAuthorizationResponseDto authorization) : this(customer)
+    {
+        Authorization = authorization;
+    }
     #endregion
     
     #region Properties
@@ -19,5 +28,6 @@ public class CustomerBasicResponseDto
     public string FullName { get; } = string.Empty;
     public string? NickName { get; }
     public bool IsDeleted { get; } = true;
+    public CustomerExistingAuthorizationResponseDto? Authorization { get; }
     #endregion
 }

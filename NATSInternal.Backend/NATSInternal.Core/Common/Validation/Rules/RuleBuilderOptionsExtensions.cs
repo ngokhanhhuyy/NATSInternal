@@ -70,22 +70,37 @@ internal static partial class RuleBuilderOptionsExtensions
         }
     }
 
-    extension<T>(IRuleBuilder<T, DateOnly> ruleBuilder)
-    {
-        public IRuleBuilderOptions<T, DateOnly> LaterThanDate(DateOnly comparisonDate)
-        {
-            string errorMessage = ErrorMessages.GreaterThan
-                .ReplaceComparisonValue(comparisonDate.ToVietnameseString());
-            return ruleBuilder.GreaterThan(comparisonDate).WithMessage(errorMessage);
-        }
-    }
-
     extension<T>(IRuleBuilder<T, DateOnly?> ruleBuilder)
     {
+        public IRuleBuilderOptions<T, DateOnly?> EarlierThanDate(DateOnly comparisonDate)
+        {
+            string comparisonDateAsString = comparisonDate.ToVietnameseString();
+            string errorMessage = ErrorMessages.LessThan.ReplaceComparisonValue(comparisonDateAsString);
+            
+            return ruleBuilder.LessThan(comparisonDate).WithMessage(errorMessage);
+        }
+
+        public IRuleBuilderOptions<T, DateOnly?> EarlierOrEqualToDate(DateOnly comparisonDate)
+        {
+            string comparisonDateAsString = comparisonDate.ToVietnameseString();
+            string errorMessage = ErrorMessages.LessThanOrEqual.ReplaceComparisonValue(comparisonDateAsString);
+
+            return ruleBuilder.LessThanOrEqualTo(comparisonDate).WithMessage(errorMessage);
+        }
+
+        public IRuleBuilderOptions<T, DateOnly?> LaterThanDate(DateOnly comparisonDate)
+        {
+            string comparisonDateAsString = comparisonDate.ToVietnameseString();
+            string errorMessage = ErrorMessages.GreaterThan.ReplaceComparisonValue(comparisonDateAsString);
+
+            return ruleBuilder.GreaterThan(comparisonDate).WithMessage(errorMessage);
+        }
+
         public IRuleBuilderOptions<T, DateOnly?> LaterThanOrEqualToDate(DateOnly comparisonDate)
         {
-            string errorMessage = ErrorMessages.GreaterThanOrEqual
-                .ReplaceComparisonValue(comparisonDate.ToVietnameseString());
+            string comparisonDateAsString = comparisonDate.ToVietnameseString();
+            string errorMessage = ErrorMessages.GreaterThanOrEqual.ReplaceComparisonValue(comparisonDateAsString);
+
             return ruleBuilder.GreaterThanOrEqualTo(comparisonDate).WithMessage(errorMessage);
         }
     }

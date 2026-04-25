@@ -2,6 +2,7 @@
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using NATSInternal.Core.Features.Customers;
 using NATSInternal.Core.Features.Users;
 using System.Text.RegularExpressions;
 
@@ -12,6 +13,8 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
     #region Properties
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
+    public DbSet<Permission> Permissions { get; set; }
+    public DbSet<Customer> Customers { get; set; }
     #endregion
     
     #region Methods
@@ -19,9 +22,13 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // User-cluster entities.
         modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
         modelBuilder.ApplyConfiguration(new RoleEntityConfiguration());
         modelBuilder.ApplyConfiguration(new PermissionEntityConfiguration());
+
+        // Customer-cluster entities.
+        modelBuilder.ApplyConfiguration(new CustomerEntityConfiguration());
     }
     #endregion
     

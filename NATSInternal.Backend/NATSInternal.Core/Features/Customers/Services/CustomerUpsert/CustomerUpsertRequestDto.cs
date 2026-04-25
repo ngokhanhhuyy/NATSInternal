@@ -1,8 +1,9 @@
+using NATSInternal.Core.Common.Dtos;
 using NATSInternal.Core.Common.Extensions;
 
 namespace NATSInternal.Core.Features.Customers;
 
-public abstract class CustomerUpsertRequestDto
+public class CustomerUpsertRequestDto : IRequestDto
 {
     #region Properties
     public string FirstName { get; set; } = string.Empty;
@@ -17,7 +18,7 @@ public abstract class CustomerUpsertRequestDto
     public string? Email { get; set; }
     public string? Address { get; set; }
     public string? Note { get; set; }
-    public Guid? IntroducerId { get; set; }
+    public int? IntroducerId { get; set; }
     #endregion
 
     #region Methods
@@ -31,7 +32,11 @@ public abstract class CustomerUpsertRequestDto
         Email = Email?.ToNullIfEmptyOrWhiteSpace();
         Address = Address?.ToNullIfEmptyOrWhiteSpace();
         Note = Note?.ToNullIfEmptyOrWhiteSpace();
-        IntroducerId = IntroducerId == Guid.Empty ? null : IntroducerId;
+
+        if (IntroducerId == 0)
+        {
+            IntroducerId = null;
+        }
     }
     #endregion
 }

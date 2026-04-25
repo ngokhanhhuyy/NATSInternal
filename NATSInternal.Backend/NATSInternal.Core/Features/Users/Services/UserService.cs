@@ -19,8 +19,9 @@ internal class UserService : IUserService
     private readonly IListFetchingService _listFetchingService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IDbExceptionHandler _exceptionHandler;
+    private readonly IValidator<UserListRequestDto> _listValidator;
     private readonly IValidator<UserCreateRequestDto> _createValidator;
-    // private readonly IValidator<UserUpdateRequestDto> _updateValidator;
+    private readonly IValidator<UserUpdateRequestDto> _updateValidator;
     private readonly IPasswordHasher _passwordHasher;
     private readonly ICallerDetailProvider _callerDetailProvider;
     private readonly IClock _clock;
@@ -32,8 +33,9 @@ internal class UserService : IUserService
         IListFetchingService listFetchingService,
         IAuthorizationInternalService authorizationService,
         IDbExceptionHandler exceptionHandler,
+        IValidator<UserListRequestDto> listValidator,
         IValidator<UserCreateRequestDto> createValidator,
-        // IValidator<UserUpdateRequestDto> updateValidator,
+        IValidator<UserUpdateRequestDto> updateValidator,
         IPasswordHasher passwordHasher,
         ICallerDetailProvider callerDetailProvider,
         IClock clock)
@@ -42,8 +44,9 @@ internal class UserService : IUserService
         _listFetchingService = listFetchingService;
         _authorizationService = authorizationService;
         _exceptionHandler = exceptionHandler;
+        _listValidator = listValidator;
         _createValidator = createValidator;
-        // _updateValidator = updateValidator;
+        _updateValidator = updateValidator;
         _passwordHasher = passwordHasher;
         _callerDetailProvider = callerDetailProvider;
         _clock = clock;
@@ -53,6 +56,9 @@ internal class UserService : IUserService
     #region Methods
     public async Task<UserListResponseDto> GetListAsync(UserListRequestDto requestDto)
     {
+        requestDto.TransformValues();
+        _listValidator.ValidateAndThrow(requestDto);
+
         IQueryable<User> query = _context.Users
             .Include(u => u.Roles)
             .ThenInclude(r => r.Permissions)
@@ -238,40 +244,73 @@ internal class UserService : IUserService
         }
     }
 
-    // public async Task UpdateAsync(int id, UserUpdateRequestDto requestDto)
-    // {
-    //     requestDto.TransformValues();
-    //     _updateValidator.ValidateAndThrow(requestDto);
-    //     
-    //     User user = await _context.Users
-    //         .Include(u => u.Roles)
-    //         .Where(u => u.Id == id && u.DeletedDateTime == null)
-    //         .SingleOrDefaultAsync()
-    //         ?? throw new NotFoundException();
-    //
-    //     List<Role> existingRoles = await _context.Roles
-    //         .Where(r => requestDto.RoleNames.Contains(r.Name))
-    //         .ToListAsync();
-    //
-    //     List<string> existingRoleNames = existingRoles.Select(r => r.Name).ToList();
-    //
-    //     for (int index = 0; index < requestDto.RoleNames.Count; index += 1)
-    //     {
-    //         string requestedRoleName = requestDto.RoleNames[index];
-    //         if (!existingRoleNames.Contains(requestedRoleName))
-    //         {
-    //             throw OperationException.NotFound(
-    //                 new object[] { nameof(requestDto.RoleNames), index },
-    //                 DisplayNames.Role
-    //             );
-    //         }
-    //
-    //         Role existingRole = existingRoles[index];
-    //         
-    //         if ()
-    //     }
-    //     
-    //     
-    // }
+    public async Task UpdateAsync(int id, UserUpdateRequestDto requestDto)
+    {
+        requestDto.TransformValues();
+        _updateValidator.ValidateAndThrow(requestDto);
+        
+        User user = await _context.Users
+            .Include(u => u.Roles)
+            .Where(u => u.Id == id && u.DeletedDateTime == null)
+            .SingleOrDefaultAsync()
+            ?? throw new NotFoundException();
+    
+        List<int> alreadyAddedRoleIds = user.Roles.Select(u => u.Id).ToList();
+        List<Role> availableRoles = await _context.Roles.ToListAsync();
+        List<int> availableRoleIds = availableRoles.Select(r => r.Id).ToList();
+
+        for (int index = 0; index < requestDto.RoleIds.Count; index += 1)
+        {
+            if (alreadyAddedRoleIds.Contains(requestDto.RoleIds[index]))
+            {
+                continue;
+            }
+
+            Role requestedRole = availableRoles
+                .SingleOrDefault(r => r.Id == requestDto.RoleIds[index])
+                ?? throw OperationException.NotFound(
+                    new object[] { nameof(requestDto.RoleIds), index },
+                    DisplayNames.Role
+                );
+
+            if (!_authorizationService.CanAddUserToRole(user, requestedRole))
+            {
+                throw new AuthorizationException();
+            }
+
+            user.Roles.Add(requestedRole);
+        }
+    
+        List<Role> rolesToBeDeleted = user.Roles.Where(r => !requestDto.RoleIds.Contains(r.Id)).ToList();
+        foreach (Role role in rolesToBeDeleted)
+        {
+            user.Roles.Remove(role);
+        }
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException exception)
+        {
+            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+            if (handledResult is null)
+            {
+                throw;
+            }
+
+            if (handledResult.IsConcurrencyConflict)
+            {
+                throw new ConcurrencyException();
+            }
+
+            if (handledResult.IsForeignKeyConstraintViolation)
+            {
+                throw OperationException.NotFound(new object[] { nameof(requestDto.RoleIds) }, DisplayNames.Role);
+            }
+
+            throw;
+        }
+    }
     #endregion
 }
