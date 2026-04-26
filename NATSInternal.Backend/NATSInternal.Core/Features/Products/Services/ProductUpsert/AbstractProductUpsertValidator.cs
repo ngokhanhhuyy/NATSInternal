@@ -31,6 +31,9 @@ internal abstract class AbstractProductUpsertValidator<TRequestDto> : Validator<
             .GreaterThanOrEqualTo(0)
             .LessThanOrEqualTo(100)
             .WithName(DisplayNames.DefaultVatPercentagePerUnit);
+        RuleFor(dto => dto.ResupplyThresholdQuantity)
+            .GreaterThan(0)
+            .WithName(DisplayNames.ResupplyThresholdQuantity);
         RuleFor(dto => dto.Photos).ContainsNoOrOneThumbnail();
 
         RuleSet("CreateAndUpdate", () =>

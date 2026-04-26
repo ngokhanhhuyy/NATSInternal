@@ -12,6 +12,7 @@ using NATSInternal.Core.Persistence.Seeders;
 using NATSInternal.Core.Features.Authentication;
 using NATSInternal.Core.Features.Authorization;
 using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Features.Products;
 using NATSInternal.Core.Features.Users;
 
 namespace NATSInternal.Core.Configurations;
@@ -42,6 +43,7 @@ public static class CoreConfiguration
                 sp.GetRequiredService<AuthorizationInternalService>());
             services.AddScoped<IAuthorizationService>(sp => sp.GetRequiredService<AuthorizationInternalService>());
             services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IUserService, UserService>();
 
             // Seeders.
@@ -56,7 +58,7 @@ public static class CoreConfiguration
             services.AddScoped<IClock, Clock>();
             
             // Fluent validation.
-            services.AddValidatorsFromAssemblyContaining<VerifyUserNameAndPasswordValidator>(includeInternalTypes: true);
+            services.AddValidatorsFromAssemblyContaining<UserListRequestDto>(includeInternalTypes: true);
             ValidatorOptions.Global.LanguageManager.Enabled = true;
             ValidatorOptions.Global.LanguageManager = new ValidatorLanguageManager
             {

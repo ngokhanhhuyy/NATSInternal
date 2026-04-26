@@ -11,8 +11,8 @@ internal class StockEntityTypeConfiguration : IEntityTypeConfiguration<Stock>
     {
         // Relationship.
         builder
-            .HasOne<Product>()
-            .WithOne()
+            .HasOne(s => s.Product)
+            .WithOne(p => p.Stock)
             .HasForeignKey<Stock>(s => s.ProductId)
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();

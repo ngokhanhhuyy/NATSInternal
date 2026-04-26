@@ -1,3 +1,4 @@
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NATSInternal.Core.Features.Products;
@@ -15,20 +16,24 @@ internal class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product
         builder
             .HasMany(p => p.Categories)
             .WithMany(pc => pc.Products)
-            .UsingEntity<ProductAndProductCategoryJoiner>(
+            .UsingEntity<ProductProductCategory>(
                 joinerEntity => joinerEntity
-                    .HasOne(j => j.Category)
+                    .HasOne(ppc => ppc.Category)
                     .WithMany()
                     .HasForeignKey(j => j.CategoryId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .IsRequired(),
                 joinerEntity => joinerEntity
-                    .HasOne(j => j.Product)
+                    .HasOne(ppc => ppc.Product)
                     .WithMany()
-                    .HasForeignKey(j => j.ProductId)
+                    .HasForeignKey(ppc => ppc.ProductId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .IsRequired(),
-                joinerEntity => joinerEntity.HasKey(j => new { j.ProductId, j.CategoryId }));
+                joinerEntity =>
+                {
+                    joinerEntity.ToTable(nameof(ProductProductCategory).Pluralize());
+                    joinerEntity.HasKey(ppc => new { ppc.ProductId, ppc.CategoryId });
+                });
         builder
             .HasOne<User>()
             .WithMany()
@@ -50,7 +55,7 @@ internal class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product
     #endregion
 }
 
-file class ProductAndProductCategoryJoiner
+internal class ProductProductCategory
 {
     #region Properties
     [Required]

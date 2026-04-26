@@ -5,9 +5,9 @@ namespace NATSInternal.Core.Features.Products;
 public class ProductListResponseDto : IListResponseDto<ProductBasicResponseDto>
 {
     #region Constructors
-    public ProductListResponseDto(List<ProductBasicResponseDto> productResponseDtos, int pageCount, int itemCount)
+    internal ProductListResponseDto(IReadOnlyList<Product> products, int pageCount, int itemCount)
     {
-        Items = productResponseDtos;
+        Items = products.Select(p => new ProductBasicResponseDto(p)).ToList();
         PageCount = pageCount;
         ItemCount = itemCount;
     }

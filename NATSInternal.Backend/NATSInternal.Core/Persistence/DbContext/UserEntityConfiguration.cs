@@ -1,6 +1,8 @@
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NATSInternal.Core.Features.Users;
+using System.ComponentModel.DataAnnotations;
 
 namespace NATSInternal.Core.Persistence.DbContext;
 
@@ -37,10 +39,31 @@ internal class UserEntityConfiguration : IEntityTypeConfiguration<User>
                     .WithMany()
                     .HasForeignKey(ur => ur.UserId)
                     .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired());
+                    .IsRequired(),
+                userRole =>
+                {
+                    userRole.ToTable(nameof(UserRole).Pluralize());
+                    userRole.HasKey(ur => new { ur.UserId, ur.RoleId });
+                });
         
         // Index.
         entityBuilder.HasIndex(p => p.UserName).IsUnique();
     }
+    #endregion
+}
+
+file class UserRole
+{
+    #region Properties
+    [Required]
+    public int UserId { get; set; }
+    
+    [Required]
+    public int RoleId { get; set; }
+    #endregion
+    
+    #region NavigationProperties
+    public User User { get; set; } = null!;
+    public Role Role { get; set; } = null!;
     #endregion
 }

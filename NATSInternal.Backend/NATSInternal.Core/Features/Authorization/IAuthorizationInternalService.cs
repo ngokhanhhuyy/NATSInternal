@@ -1,4 +1,5 @@
 using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Features.Products;
 using NATSInternal.Core.Features.Users;
 
 namespace NATSInternal.Core.Features.Authorization;
@@ -8,7 +9,7 @@ internal interface IAuthorizationInternalService : IAuthorizationService
     #region Methods
     UserExistingAuthorizationResponseDto GetUserExistingAuthorization(User targetUser);
     CustomerExistingAuthorizationResponseDto GetCustomerExistingAuthorization(Customer customer);
-    // ProductExistingAuthorizationResponseDto GetProductExistingAuthorization(Product product);
+    ProductExistingAuthorizationResponseDto GetProductExistingAuthorization(Product product);
     // BrandExistingAuthorizationResponseDto GetBrandExistingAuthorization(Brand brand);
     // ProductCategoryExistingAuthorizationResponseDto GetProductCategoryExistingAuthorization(ProductCategory category);
     // SupplyExistingAuthorizationResponseDto GetSupplyExistingAuthorization(Supply supply);

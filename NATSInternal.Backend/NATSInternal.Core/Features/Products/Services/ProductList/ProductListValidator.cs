@@ -1,11 +1,9 @@
-using FluentValidation;
 using JetBrains.Annotations;
-using NATSInternal.Core.Common.Localization;
 using NATSInternal.Core.Common.Validation;
 
-namespace NATSInternal.Application.UseCases.Products;
+namespace NATSInternal.Core.Features.Products;
 
 [UsedImplicitly]
-internal class ProductGetListValidator : AbstractListValidator<
+internal class ProductListValidator : AbstractListValidator<
     ProductListRequestDto,
     ProductListRequestDto.FieldToSort>;

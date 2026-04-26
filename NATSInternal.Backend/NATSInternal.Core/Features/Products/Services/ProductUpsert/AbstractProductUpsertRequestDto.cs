@@ -14,7 +14,7 @@ public abstract class AbstractProductUpsertRequestDto : IRequestDto
     public int DefaultVatPercentagePerUnit { get; set; }
     public bool IsForRetail { get; set; }
     public List<int> CategoryIds { get; set; } = new();
-    public required StockBasicResponseDto Stock { get; set; }
+    public int? ResupplyThresholdQuantity { get; set; }
     public List<PhotoCreateOrUpdateRequestDto> Photos { get; set; } = new();
     #endregion
 
