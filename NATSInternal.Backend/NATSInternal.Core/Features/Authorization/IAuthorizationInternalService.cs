@@ -16,6 +16,7 @@ internal interface IAuthorizationInternalService : IAuthorizationService
     bool CanChangeUserPassword(User targetUser);
     bool CanResetUserPassword(User targetUser);
     bool CanDeleteUser(User targetUser);
+    bool CanRestoreUser(User targetUser);
     bool CanAddUserToRole(User user, Role role);
     bool CanRemoveUserFromRole(User user, Role role);
     #endregion

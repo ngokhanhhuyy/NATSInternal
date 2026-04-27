@@ -8,6 +8,7 @@ public static class PermissionNames
     public const string UpdateAnotherUser = nameof(UpdateAnotherUser);
     public const string ResetAnotherUserPassword = nameof(ResetAnotherUserPassword);
     public const string DeleteAnotherUser = nameof(DeleteAnotherUser);
+    public const string RestoreAnotherUser = nameof(RestoreAnotherUser);
 
     // Permissions to interact with customers.
     public const string GetCustomerDetail = nameof(GetCustomerDetail);

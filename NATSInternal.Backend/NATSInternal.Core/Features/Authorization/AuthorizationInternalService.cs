@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NATSInternal.Core.Common.Security;
 using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Features.Products;
 using NATSInternal.Core.Features.Users;
 
 namespace NATSInternal.Core.Features.Authorization;
@@ -40,33 +41,24 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
         };
     }
 
-    // public ProductExistingAuthorizationResponseDto GetProductExistingAuthorization(Product product)
-    // {
-    //     return new()
-    //     {
-    //         CanEdit = CallerHasPermission(PermissionNames.EditProduct),
-    //         CanDelete = CallerHasPermission(PermissionNames.DeleteProduct)
-    //     };
-    // }
-    //
-    // public BrandExistingAuthorizationResponseDto GetBrandExistingAuthorization(Brand brand)
-    // {
-    //     return new()
-    //     {
-    //         CanEdit = CallerHasPermission(PermissionNames.EditBrand),
-    //         CanDelete = CallerHasPermission(PermissionNames.DeleteBrand)
-    //     };
-    // }
-    //
-    // public ProductCategoryExistingAuthorizationResponseDto GetProductCategoryExistingAuthorization(
-    //     ProductCategory category)
-    // {
-    //     return new()
-    //     {
-    //         CanEdit = CallerHasPermission(PermissionNames.EditProductCategory),
-    //         CanDelete = CallerHasPermission(PermissionNames.DeleteProductCategory)
-    //     };
-    // }
+    public ProductExistingAuthorizationResponseDto GetProductExistingAuthorization(Product product)
+    {
+        return new()
+        {
+            CanEdit = CallerHasPermission(PermissionNames.EditProduct),
+            CanDelete = CallerHasPermission(PermissionNames.DeleteProduct)
+        };
+    }
+
+    public ProductCategoryExistingAuthorizationResponseDto GetProductCategoryExistingAuthorization(
+        ProductCategory category)
+    {
+        return new()
+        {
+            CanEdit = CallerHasPermission(PermissionNames.EditProductCategory),
+            CanDelete = CallerHasPermission(PermissionNames.DeleteProductCategory)
+        };
+    }
     //
     // public SupplyExistingAuthorizationResponseDto GetSupplyExistingAuthorization(Supply supply)
     // {
@@ -84,7 +76,7 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
 
     public bool CanChangeUserPassword(User user)
     {
-        return user.DeletedDateTime is not null && user.Id == _callerDetailProvider.GetId();
+        return user.DeletedDateTime is null && user.Id == _callerDetailProvider.GetId();
     }
 
     public bool CanResetUserPassword(User user)
@@ -94,18 +86,25 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
             CallerHasPermission(PermissionNames.ResetAnotherUserPassword);
     }
 
-    public bool CanDeleteUser(User user)
-    {
-        return user.Id != _callerDetailProvider.GetId() &&
-            user.DeletedDateTime is not null &&
-            CallerHasPermission(PermissionNames.DeleteAnotherUser);
-    }
-
     public bool CanUpdateUser(User user)
     {
         return user.Id != _callerDetailProvider.GetId() &&
-            user.DeletedDateTime is not null &&
+            user.DeletedDateTime is null &&
             CallerHasPermission(PermissionNames.UpdateAnotherUser);
+    }
+
+    public bool CanDeleteUser(User user)
+    {
+        return user.Id != _callerDetailProvider.GetId() &&
+            user.DeletedDateTime is null &&
+            CallerHasPermission(PermissionNames.DeleteAnotherUser);
+    }
+
+    public bool CanRestoreUser(User user)
+    {
+        return user.Id != _callerDetailProvider.GetId() &&
+            user.DeletedDateTime is not null &&
+            CallerHasPermission(PermissionNames.RestoreAnotherUser);
     }
 
     public bool CanAddUserToRole(User user, Role role)

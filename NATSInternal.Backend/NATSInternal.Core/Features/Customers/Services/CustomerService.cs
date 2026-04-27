@@ -50,7 +50,6 @@ internal class CustomerService : ICustomerService
     #region Methods
     public async Task<CustomerListResponseDto> GetListAsync(CustomerListRequestDto requestDto)
     {
-        requestDto.TransformValues();
         _listValidator.ValidateAndThrow(requestDto);
 
         IQueryable<Customer> query = _context.Customers.Where(c => c.DeletedDateTime == null);
@@ -116,7 +115,6 @@ internal class CustomerService : ICustomerService
     
     public async Task<int> CreateAsync(CustomerUpsertRequestDto requestDto)
     {
-        requestDto.TransformValues();
         _upsertValidator.ValidateAndThrow(requestDto);
 
         Customer customer = new()
@@ -180,7 +178,6 @@ internal class CustomerService : ICustomerService
 
     public async Task UpdateAsync(int id, CustomerUpsertRequestDto requestDto)
     {
-        requestDto.TransformValues();
         _upsertValidator.ValidateAndThrow(requestDto);
 
         Customer customer = await _context.Customers

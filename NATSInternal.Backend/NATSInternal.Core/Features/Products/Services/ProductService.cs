@@ -54,7 +54,6 @@ internal class ProductService : IProductService
     #region Methods
     public async Task<ProductListResponseDto> GetListAsync(ProductListRequestDto requestDto)
     {
-        requestDto.TransformValues();
         _listValidator.ValidateAndThrow(requestDto);
         
         IQueryable<Product> query = _context.Products
@@ -128,13 +127,11 @@ internal class ProductService : IProductService
 
     public async Task<int> CreateAsync(ProductCreateRequestDto requestDto)
     {
-        // TODO: Implement create authorization checking.
         if (!_authorizationService.CanCreateProduct())
         {
             throw new AuthorizationException();
         }
 
-        requestDto.TransformValues();
         _createValidator.ValidateAndThrow(requestDto);
 
         Dictionary<int, ProductCategory> productCategoryIdMap = new();
@@ -215,7 +212,6 @@ internal class ProductService : IProductService
 
     public async Task UpdateAsync(int id, ProductUpdateRequestDto requestDto)
     {
-        requestDto.TransformValues();
         _updateValidator.ValidateAndThrow(requestDto);
 
         Product product = await _context.Products

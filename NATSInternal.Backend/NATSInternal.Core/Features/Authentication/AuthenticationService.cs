@@ -49,7 +49,6 @@ internal class AuthenticationService : IAuthenticationService
     #region Methods
     public async Task VerifyUserNameAndPasswordAsync(VerifyUserNameAndPasswordRequestDto requestDto)
     {
-        requestDto.TransformValues();
         _verifyUserNameAndPasswordValidator.ValidateAndThrow(requestDto);
         
         User user = await _context.Users
@@ -73,7 +72,6 @@ internal class AuthenticationService : IAuthenticationService
 
     public async Task ChangePasswordAsync(ChangePasswordRequestDto requestDto)
     {
-        requestDto.TransformValues();
         _changePasswordValidator.ValidateAndThrow(requestDto);
 
         int callerId = _callerDetailProvider.GetId();
@@ -116,7 +114,6 @@ internal class AuthenticationService : IAuthenticationService
     
     public async Task ResetPasswordAsync(int id, ResetPasswordRequestDto requestDto)
     {
-        requestDto.TransformValues();
         _resetPasswordValidator.ValidateAndThrow(requestDto);
         
         User user = await _context.Users

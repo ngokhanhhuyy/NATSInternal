@@ -56,7 +56,6 @@ internal class UserService : IUserService
     #region Methods
     public async Task<UserListResponseDto> GetListAsync(UserListRequestDto requestDto)
     {
-        requestDto.TransformValues();
         _listValidator.ValidateAndThrow(requestDto);
 
         IQueryable<User> query = _context.Users
@@ -135,7 +134,6 @@ internal class UserService : IUserService
 
     public async Task<int> CreateAsync(UserCreateRequestDto requestDto)
     {
-        requestDto.TransformValues();
         _createValidator.ValidateAndThrow(requestDto);
 
         if (!_authorizationService.CanCreateUser())
@@ -200,77 +198,8 @@ internal class UserService : IUserService
         }
     }
 
-    public async Task DeleteAsync(int id)
-    {
-        User user = await _context.Users
-            .SingleOrDefaultAsync(u => u.Id == id && u.DeletedDateTime == null)
-            ?? throw new NotFoundException();
-
-        if (!_authorizationService.CanDeleteUser(user))
-        {
-            throw new AuthorizationException();
-        }
-
-        _context.Users.Remove(user);
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateException exception)
-        {
-            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
-            if (handledResult is null)
-            {
-                throw;
-            }
-
-            if (handledResult.IsConcurrencyConflict)
-            {
-                throw new ConcurrencyException();
-            }
-
-            throw;
-        }
-    }
-
-    public async Task RestoreAsync(int id)
-    {
-        User user = await _context.Users
-            .SingleOrDefaultAsync(u => u.Id == id && u.DeletedDateTime != null)
-            ?? throw new NotFoundException();
-
-        if (!_authorizationService.CanDeleteUser(user))
-        {
-            throw new AuthorizationException();
-        }
-
-        _context.Users.Remove(user);
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateException exception)
-        {
-            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
-            if (handledResult is null)
-            {
-                throw;
-            }
-
-            if (handledResult.IsConcurrencyConflict)
-            {
-                throw new ConcurrencyException();
-            }
-
-            throw;
-        }
-    }
-
     public async Task UpdateAsync(int id, UserUpdateRequestDto requestDto)
     {
-        requestDto.TransformValues();
         _updateValidator.ValidateAndThrow(requestDto);
         
         User user = await _context.Users
@@ -331,6 +260,74 @@ internal class UserService : IUserService
             if (handledResult.IsForeignKeyConstraintViolation)
             {
                 throw OperationException.NotFound(new object[] { nameof(requestDto.RoleIds) }, DisplayNames.Role);
+            }
+
+            throw;
+        }
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        User user = await _context.Users
+            .SingleOrDefaultAsync(u => u.Id == id && u.DeletedDateTime == null)
+            ?? throw new NotFoundException();
+
+        if (!_authorizationService.CanDeleteUser(user))
+        {
+            throw new AuthorizationException();
+        }
+
+        _context.Users.Remove(user);
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException exception)
+        {
+            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+            if (handledResult is null)
+            {
+                throw;
+            }
+
+            if (handledResult.IsConcurrencyConflict)
+            {
+                throw new ConcurrencyException();
+            }
+
+            throw;
+        }
+    }
+
+    public async Task RestoreAsync(int id)
+    {
+        User user = await _context.Users
+            .SingleOrDefaultAsync(u => u.Id == id && u.DeletedDateTime != null)
+            ?? throw new NotFoundException();
+
+        if (!_authorizationService.CanRestoreUser(user))
+        {
+            throw new AuthorizationException();
+        }
+
+        _context.Users.Remove(user);
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException exception)
+        {
+            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+            if (handledResult is null)
+            {
+                throw;
+            }
+
+            if (handledResult.IsConcurrencyConflict)
+            {
+                throw new ConcurrencyException();
             }
 
             throw;
