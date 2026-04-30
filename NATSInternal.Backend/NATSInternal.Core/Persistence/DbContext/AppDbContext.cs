@@ -43,6 +43,7 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
 
         // Product-cluster entities.
         modelBuilder.ApplyConfiguration(new ProductEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new ProductCategoryEntityConfiguration());
         modelBuilder.ApplyConfiguration(new StockEntityTypeConfiguration());
 
         // Configure identifiers' names.
