@@ -110,12 +110,20 @@ internal class ProductService : IProductService
         (int page, int resultPerPage) = (requestDto.Page, requestDto.ResultsPerPage);
         Page<Product> queryResult = await _listFetchingService.GetPagedListAsync(query, page, resultPerPage);
 
-        return new(queryResult.Items, queryResult.ItemCount, queryResult.PageCount);
+        List<ProductBasicResponseDto> productResponseDtos = queryResult.Items
+            .Select(p => new ProductBasicResponseDto(p, _authorizationService.GetProductExistingAuthorization(p)))
+            .ToList();
+
+        return new(productResponseDtos, queryResult.ItemCount, queryResult.PageCount);
     }
 
     public async Task<ProductDetailResponseDto> GetDetailAsync(int id)
     {
         return await _context.Products
+            .AsSplitQuery()
+            .Include(p => p.CreatedUser)
+            .Include(p => p.LastUpdatedUser)
+            .Include(p => p.DeletedUser)
             .Include(p => p.Categories)
             .Include(p => p.Stock)
             .Include(p => p.Photos)

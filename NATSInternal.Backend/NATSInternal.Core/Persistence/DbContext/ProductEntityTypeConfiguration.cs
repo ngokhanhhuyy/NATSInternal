@@ -35,16 +35,16 @@ internal class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product
                     joinerEntity.HasKey(ppc => new { ppc.ProductId, ppc.CategoryId });
                 });
         builder
-            .HasOne<User>()
+            .HasOne(p => p.CreatedUser)
             .WithMany()
             .HasForeignKey(p => p.CreatedUserId)
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
-        builder.HasOne<User>()
+        builder.HasOne(p => p.LastUpdatedUser)
             .WithMany()
             .HasForeignKey(p => p.LastUpdatedUserId)
             .OnDelete(DeleteBehavior.Restrict);
-        builder.HasOne<User>()
+        builder.HasOne(p => p.DeletedUser)
             .WithMany()
             .HasForeignKey(p => p.DeletedUserId)
             .OnDelete(DeleteBehavior.Restrict);

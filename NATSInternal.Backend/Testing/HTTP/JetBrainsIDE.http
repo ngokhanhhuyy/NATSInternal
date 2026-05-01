@@ -2,8 +2,7 @@
 
 ###
 # @name GetAccessCookie
-// no-log
-POST {{host}}/authentication/getAccessCookie
+POST {{host}}/authentication/get-access-cookie
 Content-Type: application/json
 
 {
@@ -11,18 +10,14 @@ Content-Type: application/json
     "password": "Huyy47b1"
 }
 
-> {%
-    if (response.status === 200) {
-        client.global.set("accessCookie", response.headers["Set-Cookie"]);
-    }
-%}
+{{
+    $global.authCookie = response.headers.
+}}
 
-###
 # @name UserList
-// @no-log
-GET {{host}}/user
+# @ref GetAccessCookie
+GET {{host}}/users
 Content-Type: application/json
-Cookie: {{accessCookie}}
 
 ###
 # @name CustomerList

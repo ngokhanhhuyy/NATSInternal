@@ -1,456 +1,186 @@
-// using System.Text.RegularExpressions;
-// using Bogus;
-// using Bogus.Extensions;
-// using Microsoft.EntityFrameworkCore;
-// using Microsoft.Extensions.Logging;
-// using NATSInternal.Application.Authorization;
-// using NATSInternal.Application.Time;
-// using NATSInternal.Domain.Features.Products;
-// using NATSInternal.Domain.Features.Users;
-// using NATSInternal.Infrastructure.DbContext;
+using System.Text.RegularExpressions;
+using Bogus;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using NATSInternal.Core.Features.Authorization;
+using NATSInternal.Core.Common.Time;
+using NATSInternal.Core.Features.Products;
+using NATSInternal.Core.Features.Users;
+using NATSInternal.Core.Persistence.DbContext;
 
-// namespace NATSInternal.Infrastructure.Seeders;
+namespace NATSInternal.Core.Persistence.Seeders;
 
-// internal partial class ProductSeeder
-// {
-//     #region Fields
-//     private readonly AppDbContext _context;
-//     private readonly IClock _clock;
-//     private readonly ILogger<ProductSeeder> _logger;
-//     private readonly Faker _viFaker;
-//     private readonly Faker _enFaker;
-//     private readonly Random _random;
-//     #endregion
+internal partial class ProductSeeder
+{
+    #region Fields
+    private readonly AppDbContext _context;
+    private readonly IClock _clock;
+    private readonly ILogger<ProductSeeder> _logger;
+    private readonly Faker _viFaker;
+    private readonly Faker _enFaker;
+    private readonly Random _random;
+    #endregion
     
-//     #region Constrcutors
-//     public ProductSeeder(AppDbContext context, IClock clock, ILogger<ProductSeeder> logger)
-//     {
-//         _context = context;
-//         _clock = clock;
-//         _logger = logger;
-//         _viFaker = new("vi");
-//         _enFaker = new();
-//         _random = new();
-//     }
-//     #endregion
+    #region Constrcutors
+    public ProductSeeder(AppDbContext context, IClock clock, ILogger<ProductSeeder> logger)
+    {
+        _context = context;
+        _clock = clock;
+        _logger = logger;
+        _viFaker = new("vi");
+        _enFaker = new();
+        _random = new();
+    }
+    #endregion
     
-//     #region Methods
-//     public async Task<ProductSeededResult> SeedAsync(List<User> users, bool isDevelopment)
-//     {
-//         List<Country> countries = await SeedCountriesAsync();
+    #region Methods
+    public async Task<ProductSeededResult> SeedAsync(List<User> users, bool isDevelopment)
+    {
+        if (isDevelopment)
+        {
+            List<int> userIds = users
+                .Where(u => u.Roles.Any(r => r.Permissions.Any(p => p.Name == PermissionNames.CreateProduct)))
+                .Select(u => u.Id)
+                .ToList();
 
-//         if (isDevelopment)
-//         {
-//             List<Guid> userIds = users
-//                 .Where(u => u.Roles.Any(r => r.Name == RoleNames.Developer))
-//                 .Select(u => u.Id)
-//                 .ToList();
-//             List<ProductCategory> categories = await SeedProductCategoriesAsync(userIds);
-//             List<Brand> brands = await SeedBrandsAsync(userIds, countries);
-//             return new()
-//             {
-//                 Products = await SeedProductsAsync(userIds, brands, categories)
-//             };
-//         }
+            foreach (int id in userIds)
+            {
+                _logger.LogWarning(id.ToString());
+            }
+            
+            List<ProductCategory> categories = await SeedProductCategoriesAsync(userIds);
+            List<Product> products = await SeedProductsAsync(userIds, categories);
+            await SeedStocksAsync(products);
+            
+            return new()
+            {
+                Products = await SeedProductsAsync(userIds, categories),
+                ProductCategories = categories 
+            };
+        }
 
-//         return new();
-//     }
-//     #endregion
+        return new();
+    }
+    #endregion
     
-//     #region PrivateMethods
-//     private async Task<List<Country>> SeedCountriesAsync()
-//     {
-//         List<Country> countries = await _context.Countries.ToListAsync();
-//         if (countries.Count > 0)
-//         {
-//             return countries;
-//         }
+    #region PrivateMethods
+    private async Task<List<ProductCategory>> SeedProductCategoriesAsync(List<int> _)
+    {
+        List<ProductCategory> categories = await _context.ProductCategories.ToListAsync();
+        if (categories.Count > 0)
+        {
+            return categories;
+        }
+
+        List<string> generatedNames = new();
+        _logger.LogInformation("Seeding product categories.");
+
+        for (int index = 0; index < 10; index += 1)
+        {
+            string name;
+            do
+            {
+                name = _viFaker.Commerce.Categories(1).Single();
+            }
+            while(generatedNames.Contains(name));
+            
+            ProductCategory category = new() { Name = name };
+            _context.ProductCategories.Add(category);
+            categories.Add(category);
+            generatedNames.Add(category.Name);
+        }
+
+        await _context.SaveChangesAsync();
         
-//         _logger.LogInformation("Seeding countries.");
+        return categories;
+    }
+
+    private async Task<List<Product>> SeedProductsAsync(List<int> userIds, List<ProductCategory> categories)
+    {
+        List<Product> products = await _context.Products.ToListAsync();
+        if (products.Count > 0)
+        {
+            return products;
+        }
         
-//         countries = new()
-//         {
-//             new("Aruba", "ABW"),
-//             new("Afghanistan", "AFG"),
-//             new("Angola", "AGO"),
-//             new("Anguilla", "AIA"),
-//             new("Quần đảo Åland", "ALA"),
-//             new("Albania", "ALB"),
-//             new("Andorra", "AND"),
-//             new("CTVQ Ả Rập Thống nhất", "ARE"),
-//             new("Argentina", "ARG"),
-//             new("Armenia", "ARM"),
-//             new("Samoa thuộc Mỹ", "ASM"),
-//             new("Nam Cực", "ATA"),
-//             new("Các vùng lãnh thổ phía Nam (Pháp)", "ATF"),
-//             new("Antigua và Barbuda", "ATG"),
-//             new("Úc", "AUS"),
-//             new("Áo", "AUT"),
-//             new("Azerbaijan", "AZE"),
-//             new("Burundi", "BDI"),
-//             new("Bỉ", "BEL"),
-//             new("Bénin", "BEN"),
-//             new("Bonaire, Sint Eustatius và Saba", "BES"),
-//             new("Burkina Faso", "BFA"),
-//             new("Bangladesh", "BGD"),
-//             new("Bulgaria", "BGR"),
-//             new("Bahrain", "BHR"),
-//             new("Bahamas", "BHS"),
-//             new("Bosna và Hercegovina", "BIH"),
-//             new("Saint-Barthélemy", "BLM"),
-//             new("Belarus", "BLR"),
-//             new("Belize", "BLZ"),
-//             new("Bermuda", "BMU"),
-//             new("Bolivia", "BOL"),
-//             new("Brasil", "BRA"),
-//             new("Barbados", "BRB"),
-//             new("Brunei", "BRN"),
-//             new("Bhutan", "BTN"),
-//             new("Đảo Bouvet", "BVT"),
-//             new("Botswana", "BWA"),
-//             new("Cộng hòa Trung Phi", "CAF"),
-//             new("Canada", "CAN"),
-//             new("Quần đảo Cocos (Keeling)", "CCK"),
-//             new("Thụy Sĩ", "CHE"),
-//             new("Chile", "CHL"),
-//             new("Trung Quốc", "CHN"),
-//             new("Bờ Biển Ngà", "CIV"),
-//             new("Cameroon", "CMR"),
-//             new("Cộng hòa Dân chủ Congo", "COD"),
-//             new("Cộng hòa Congo", "COG"),
-//             new("Quần đảo Cook", "COK"),
-//             new("Colombia", "COL"),
-//             new("Comoros", "COM"),
-//             new("Cabo Verde", "CPV"),
-//             new("Costa Rica", "CRI"),
-//             new("Cuba", "CUB"),
-//             new("Curaçao", "CUW"),
-//             new("Đảo Giáng Sinh", "CXR"),
-//             new("Quần đảo Cayman", "CYM"),
-//             new("Síp", "CYP"),
-//             new("Cộng hòa Séc", "CZE"),
-//             new("Đức", "DEU"),
-//             new("Djibouti", "DJI"),
-//             new("Dominica", "DMA"),
-//             new("Đan Mạch", "DNK"),
-//             new("Cộng hòa Dominica", "DOM"),
-//             new("Algérie", "DZA"),
-//             new("Ecuador", "ECU"),
-//             new("Ai Cập", "EGY"),
-//             new("Eritrea", "ERI"),
-//             new("Tây Sahara", "ESH"),
-//             new("Tây Ban Nha", "ESP"),
-//             new("Estonia", "EST"),
-//             new("Ethiopia", "ETH"),
-//             new("Phần Lan", "FIN"),
-//             new("Fiji", "FJI"),
-//             new("Quần đảo Falkland", "FLK"),
-//             new("Pháp", "FRA"),
-//             new("Quần đảo Faroe", "FRO"),
-//             new("Liên bang Micronesia", "FSM"),
-//             new("Gabon", "GAB"),
-//             new("Anh Quốc", "GBR"),
-//             new("Gruzia", "GEO"),
-//             new("Guernsey", "GGY"),
-//             new("Ghana", "GHA"),
-//             new("Gibraltar", "GIB"),
-//             new("Guinée", "GIN"),
-//             new("Guadeloupe", "GLP"),
-//             new("Gambia", "GMB"),
-//             new("Guiné-Bissau", "GNB"),
-//             new("Guinea Xích Đạo", "GNQ"),
-//             new("Hy Lạp", "GRC"),
-//             new("Grenada", "GRD"),
-//             new("Greenland", "GRL"),
-//             new("Guatemala", "GTM"),
-//             new("Guyane thuộc Pháp", "GUF"),
-//             new("Guam", "GUM"),
-//             new("Guyana", "GUY"),
-//             new("Hồng Kông", "HKG"),
-//             new("Đảo Heard và quần đảo McDonald", "HMD"),
-//             new("Honduras", "HND"),
-//             new("Croatia", "HRV"),
-//             new("Haiti", "HTI"),
-//             new("Hungary", "HUN"),
-//             new("Indonesia", "IDN"),
-//             new("Đảo Man", "IMN"),
-//             new("Ấn Độ", "IND"),
-//             new("Lãnh thổ Ấn Độ Dương thuộc Anh", "IOT"),
-//             new("Cộng hòa Ireland", "IRL"),
-//             new("Iran", "IRN"),
-//             new("Iraq", "IRQ"),
-//             new("Iceland", "ISL"),
-//             new("Israel", "ISR"),
-//             new("Ý", "ITA"),
-//             new("Jamaica", "JAM"),
-//             new("Jersey", "JEY"),
-//             new("Jordan", "JOR"),
-//             new("Nhật Bản", "JPN"),
-//             new("Kazakhstan", "KAZ"),
-//             new("Kenya", "KEN"),
-//             new("Kyrgyzstan", "KGZ"),
-//             new("Campuchia", "KHM"),
-//             new("Kiribati", "KIR"),
-//             new("Saint Kitts và Nevis", "KNA"),
-//             new("Hàn Quốc", "KOR"),
-//             new("Kuwait", "KWT"),
-//             new("Lào", "LAO"),
-//             new("Liban", "LBN"),
-//             new("Liberia", "LBR"),
-//             new("Libya", "LBY"),
-//             new("Saint Lucia", "LCA"),
-//             new("Liechtenstein", "LIE"),
-//             new("Sri Lanka", "LKA"),
-//             new("Lesotho", "LSO"),
-//             new("Litva", "LTU"),
-//             new("Luxembourg", "LUX"),
-//             new("Latvia", "LVA"),
-//             new("Ma Cao", "MAC"),
-//             new("Saint-Martin", "MAF"),
-//             new("Maroc", "MAR"),
-//             new("Monaco", "MCO"),
-//             new("Moldova", "MDA"),
-//             new("Madagascar", "MDG"),
-//             new("Maldives", "MDV"),
-//             new("México", "MEX"),
-//             new("Quần đảo Marshall", "MHL"),
-//             new("Bắc Macedonia", "MKD"),
-//             new("Mali", "MLI"),
-//             new("Malta", "MLT"),
-//             new("Myanmar", "MMR"),
-//             new("Montenegro", "MNE"),
-//             new("Mông Cổ", "MNG"),
-//             new("Quần đảo Bắc Mariana", "MNP"),
-//             new("Mozambique", "MOZ"),
-//             new("Mauritanie", "MRT"),
-//             new("Montserrat", "MSR"),
-//             new("Martinique", "MTQ"),
-//             new("Mauritius", "MUS"),
-//             new("Malawi", "MWI"),
-//             new("Malaysia", "MYS"),
-//             new("Mayotte", "MYT"),
-//             new("Namibia", "NAM"),
-//             new("Nouvelle-Calédonie", "NCL"),
-//             new("Niger", "NER"),
-//             new("Đảo Norfolk", "NFK"),
-//             new("Nigeria", "NGA"),
-//             new("Nicaragua", "NIC"),
-//             new("Niue", "NIU"),
-//             new("Hà Lan", "NLD"),
-//             new("Na Uy", "NOR"),
-//             new("Nepal", "NPL"),
-//             new("Nauru", "NRU"),
-//             new("New Zealand", "NZL"),
-//             new("Oman", "OMN"),
-//             new("Pakistan", "PAK"),
-//             new("Panama", "PAN"),
-//             new("Quần đảo Pitcairn", "PCN"),
-//             new("Peru", "PER"),
-//             new("Philippines", "PHL"),
-//             new("Palau", "PLW"),
-//             new("Papua New Guinea", "PNG"),
-//             new("Ba Lan", "POL"),
-//             new("Puerto Rico", "PRI"),
-//             new("Bắc Triều Tiên", "PRK"),
-//             new("Bồ Đào Nha", "PRT"),
-//             new("Paraguay", "PRY"),
-//             new("Palestine", "PSE"),
-//             new("Polynésie thuộc Pháp", "PYF"),
-//             new("Qatar", "QAT"),
-//             new("Réunion", "REU"),
-//             new("România", "ROU"),
-//             new("Nga", "RUS"),
-//             new("Rwanda", "RWA"),
-//             new("Ả Rập Xê Út", "SAU"),
-//             new("Sudan", "SDN"),
-//             new("Sénégal", "SEN"),
-//             new("Singapore", "SGP"),
-//             new("Nam Georgia và Q.đ. Nam Sandwich", "SGS"),
-//             new("Saint Helena, Ascension và T.d.C.", "SHN"),
-//             new("Svalbard và Jan Mayen", "SJM"),
-//             new("Quần đảo Solomon", "SLB"),
-//             new("Sierra Leone", "SLE"),
-//             new("El Salvador", "SLV"),
-//             new("San Marino", "SMR"),
-//             new("Somalia", "SOM"),
-//             new("Saint-Pierre và Miquelon", "SPM"),
-//             new("Serbia", "SRB"),
-//             new("Nam Sudan", "SSD"),
-//             new("São Tomé và Príncipe", "STP"),
-//             new("Suriname", "SUR"),
-//             new("Slovakia", "SVK"),
-//             new("Slovenia", "SVN"),
-//             new("Thụy Điển", "SWE"),
-//             new("Eswatini", "SWZ"),
-//             new("Sint Maarten", "SXM"),
-//             new("Seychelles", "SYC"),
-//             new("Syria", "SYR"),
-//             new("Quần đảo Turks và Caicos", "TCA"),
-//             new("Tchad", "TCD"),
-//             new("Togo", "TGO"),
-//             new("Thái Lan", "THA"),
-//             new("Tajikistan", "TJK"),
-//             new("Tokelau", "TKL"),
-//             new("Turkmenistan", "TKM"),
-//             new("Đông Timor", "TLS"),
-//             new("Tonga", "TON"),
-//             new("Trinidad và Tobago", "TTO"),
-//             new("Tunisia", "TUN"),
-//             new("Thổ Nhĩ Kỳ", "TUR"),
-//             new("Tuvalu", "TUV"),
-//             new("Đài Loan", "TWN"),
-//             new("Tanzania", "TZA"),
-//             new("Uganda", "UGA"),
-//             new("Ukraina", "UKR"),
-//             new("Các tiểu đảo xa của Hoa Kỳ", "UMI"),
-//             new("Uruguay", "URY"),
-//             new("Hoa Kỳ", "USA"),
-//             new("Uzbekistan", "UZB"),
-//             new("Thành Vatican", "VAT"),
-//             new("Saint Vincent và Grenadines", "VCT"),
-//             new("Venezuela", "VEN"),
-//             new("Quần đảo Virgin thuộc Anh", "VGB"),
-//             new("Quần đảo Virgin thuộc Mỹ", "VIR"),
-//             new("Việt Nam", "VNM"),
-//             new("Vanuatu", "VUT"),
-//             new("Wallis và Futuna", "WLF"),
-//             new("Samoa", "WSM"),
-//             new("Yemen", "YEM"),
-//             new("Cộng hòa Nam Phi", "ZAF"),
-//             new("Zambia", "ZMB"),
-//             new("Zimbabwe", "ZWE")
-//         };
-        
-//         _context.Countries.AddRange(countries);
-//         await _context.SaveChangesAsync();
+        _logger.LogInformation("Seeding products.");
 
-//         return countries;
-//     }
+        string[] units = new[] { "Chai", "Lọ", "Túi", "Hộp", "Vĩ" };
+        List<string> generatedNames = new();
 
-//     private async Task<List<ProductCategory>> SeedProductCategoriesAsync(List<Guid> userIds)
-//     {
-//         List<ProductCategory> categories = await _context.ProductCategories.ToListAsync();
-//         if (categories.Count > 0)
-//         {
-//             return categories;
-//         }
+        for (int _ = 0; _ < 30; _++)
+        {
+            string name = string.Empty;
+            do
+            {
+                name = _enFaker.Commerce.ProductName();
+            } while (generatedNames.Contains(name));
 
-//         _logger.LogInformation("Seeding product categories.");
+            Product product = new()
+            {
+                
+                Name = name,
+                Description = _viFaker.Commerce.ProductDescription(),
+                Unit = units[_random.Next(units.Length)],
+                DefaultAmountBeforeVatPerUnit = _random.Next(200, 1000) * 1000L,
+                DefaultVatPercentagePerUnit = 10,
+                IsForRetail = _random.Next(10) > 2,
+                IsDiscontinued = _random.Next(10) == 0,
+                CreatedUserId = userIds.OrderBy(_ => Guid.NewGuid()).First(),
+                CreatedDateTime = _clock.Now,
+            };
 
-//         foreach (string name in _viFaker.Commerce.Categories(5))
-//         {
-//             Guid createdUserId = userIds.Skip(_random.Next(userIds.Count)).Take(1).Single();
-//             ProductCategory category = new(name, createdUserId, _clock.Now);
-//             _context.ProductCategories.Add(category);
-//             categories.Add(category);
-//         }
+            int categoryCount = Math.Min(_random.Next(0, 4), categories.Count);
+            IEnumerable<ProductCategory> pickedCategories = categories
+                .OrderBy(_ => Guid.NewGuid())
+                .Take(categoryCount);
+            
+            product.Categories.AddRange(pickedCategories);
 
-//         await _context.SaveChangesAsync();
-        
-//         return categories;
-//     }
+            _context.Products.Add(product);
+            generatedNames.Add(product.Name);
+            products.Add(product);
+        }
 
-//     private async Task<List<Brand>> SeedBrandsAsync(List<Guid> userIds, List<Country> countries)
-//     {
-//         List<Brand> brands = await _context.Brands.ToListAsync();
-//         if (brands.Count > 0)
-//         {
-//             return brands;
-//         }
-        
-//         _logger.LogInformation("Seeding brands.");
-
-//         for (int _ = 0; _ < 10; _++)
-//         {
-//             string name = _enFaker.Company.CompanyName();
-//             string lowerNonDiacriticsName = name.RemoveDiacritics().ToLower();
-//             string normalizedName = GetBrandNameSpecialCharactersToBeRemovedRegex()
-//                 .Replace(lowerNonDiacriticsName, "-")
-//                 .Replace("'", "")
-//                 .Replace(" ", "-");
-//             Brand brand = new(
-//                 name: name,
-//                 website: $"https://{normalizedName}.{_enFaker.Internet.DomainSuffix()}",
-//                 socialMediaUrl: $"https://facebook.com/{normalizedName}",
-//                 email: $"{normalizedName}@{_enFaker.Internet.Email().Split("@")[1]}",
-//                 address: _enFaker.Address.StreetAddress(),
-//                 phoneNumber: GetPhoneNumberCountryCodeRegex()
-//                     .Replace(_viFaker.Phone.PhoneNumber(), "0")
-//                     .Replace(" ", ""),
-//                 createdDateTime: _clock.Now,
-//                 createdUserId: userIds[_random.Next(0, userIds.Count)],
-//                 country: countries[_random.Next(0, countries.Count)]
-//             );
-
-//             _context.Brands.Add(brand);
-//             brands.Add(brand);
-//         }
-
-//         await _context.SaveChangesAsync();
-
-//         return brands;
-//     }
-
-//     private async Task<List<Product>> SeedProductsAsync(
-//         List<Guid> userIds,
-//         List<Brand> brands,
-//         List<ProductCategory> categories)
-//     {
-//         List<Product> products = await _context.Products.ToListAsync();
-//         if (products.Count > 0)
-//         {
-//             return products;
-//         }
-        
-//         _logger.LogInformation("Seeding products.");
-
-//         string[] units = new[] { "Chai", "Lọ", "Túi", "Hộp", "Vĩ" };
-//         List<string> generatedNames = new();
-
-//         for (int _ = 0; _ < 30; _++)
-//         {
-//             string name = string.Empty;
-//             do
-//             {
-//                 name = _enFaker.Commerce.ProductName();
-//             } while (generatedNames.Contains(name));
-
-//             Product product = new(
-//                 name: name,
-//                 description: _viFaker.Commerce.ProductDescription(),
-//                 unit: units[_random.Next(units.Length)],
-//                 defaultAmountBeforeVatPerUnit: _random.Next(200, 1000) * 1000L,
-//                 defaultVatPercentage: 10,
-//                 isForRetail: _random.Next(10) > 2,
-//                 isDiscontinued: _random.Next(10) == 0,
-//                 createdUserId: userIds.OrderBy(_ => Guid.NewGuid()).First(),
-//                 createdDateTime: _clock.Now,
-//                 brand: _random.Next(2) == 0 ? brands[_random.Next(brands.Count)] : null,
-//                 category: _random.Next(2) == 0 ? categories[_random.Next(categories.Count)] : null
-//             );
-
-//             _context.Products.Add(product);
-//             generatedNames.Add(product.Name);
-//             products.Add(product);
-//         }
-
-//         await _context.SaveChangesAsync();
-//         return products;
-//     }
-//     #endregion
+        await _context.SaveChangesAsync();
+        return products;
+    }
     
-//     #region StaticMethods
-//     [GeneratedRegex(@"\.|&|_|,")]
-//     private static partial Regex GetBrandNameSpecialCharactersToBeRemovedRegex();
+    private async Task SeedStocksAsync(List<Product> products)
+    {
+        if (await _context.Stocks.AnyAsync())
+        {
+            return;
+        }
+        
+        _logger.LogInformation("Seeding stocks.");
 
-//     [GeneratedRegex(@"^\+\d+")]
-//     private static partial Regex GetPhoneNumberCountryCodeRegex();
-//     #endregion
-// }
+        foreach (Product product in products)
+        {
+            Stock stock = new()
+            {
+                StockingQuantity = _random.Next(20, 300),
+                ResupplyThresholdQuantity = _random.Next(5, 10) * 10,
+                Product = product
+            };
 
-// internal class ProductSeededResult
-// {
-//     #region Properties
-//     public List<Product> Products { get; init; } = new();
-//     #endregion
-// }
+            _context.Stocks.Add(stock);
+        }
+
+        await _context.SaveChangesAsync();
+    }
+    #endregion
+    
+    #region StaticMethods
+    [GeneratedRegex(@"^\+\d+")]
+    private static partial Regex GetPhoneNumberCountryCodeRegex();
+    #endregion
+}
+
+internal class ProductSeededResult
+{
+    #region Properties
+    public List<Product> Products { get; init; } = new();
+    public List<ProductCategory> ProductCategories { get; init; } = new();
+    #endregion
+}

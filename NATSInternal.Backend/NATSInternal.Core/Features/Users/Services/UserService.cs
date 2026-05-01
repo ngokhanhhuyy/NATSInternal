@@ -106,6 +106,9 @@ internal class UserService : IUserService
     public async Task<UserDetailResponseDto> GetDetailByIdAsync(int id)
     {
         return await _context.Users
+            .Include(u => u.CreatedUser)
+            .Include(u => u.LastUpdatedUser)
+            .Include(u => u.DeletedUser)
             .Include(u => u.Roles)
             .ThenInclude(r => r.Permissions)
             .Where(u => u.Id == id)
@@ -119,6 +122,11 @@ internal class UserService : IUserService
         bool includingAuthorization = false)
     {
         User user = await _context.Users
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(u => u.CreatedUser)
+            .Include(u => u.LastUpdatedUser)
+            .Include(u => u.DeletedUser)
             .Include(u => u.Roles)
             .ThenInclude(r => r.Permissions)
             .SingleOrDefaultAsync(u => u.UserName == userName)

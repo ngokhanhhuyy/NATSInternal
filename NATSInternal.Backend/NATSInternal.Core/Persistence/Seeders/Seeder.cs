@@ -10,8 +10,7 @@ internal class Seeder
     private readonly AppDbContext _context;
     private readonly UserSeeder _userSeeder;
     private readonly CustomerSeeder _customerSeeder;
-    // private readonly ProductSeeder _productSeeder;
-    // private readonly StockSeeder _stockSeeder;
+    private readonly ProductSeeder _productSeeder;
     private readonly ILogger<Seeder> _logger;
     #endregion
 
@@ -20,15 +19,13 @@ internal class Seeder
         AppDbContext context,
         UserSeeder userSeeder,
         CustomerSeeder customerSeeder,
-        // ProductSeeder productSeeder,
-        // StockSeeder stockSeeder,
+        ProductSeeder productSeeder,
         ILogger<Seeder> logger)
     {
         _context = context;
         _userSeeder = userSeeder;
         _customerSeeder = customerSeeder;
-        // _productSeeder = productSeeder;
-        // _stockSeeder = stockSeeder;
+        _productSeeder = productSeeder;
         _logger = logger;
     }
     #endregion
@@ -42,8 +39,7 @@ internal class Seeder
         UserSeededResult userSeededResult = await _userSeeder.SeedAsync(isDevelopment);
         CustomerSeededResult customerSeededResult = await _customerSeeder
             .SeedAsync(userSeededResult.Users, isDevelopment);
-        // ProductSeededResult productSeededResult = await _productSeeder.SeedAsync(userSeededResult.Users, isDevelopment);
-        // await _stockSeeder.SeedAsync(productSeededResult.Products);
+        ProductSeededResult productSeededResult = await _productSeeder.SeedAsync(userSeededResult.Users, isDevelopment);
         await transaction.CommitAsync();
         
         _logger.LogInformation("Seeding ended.");

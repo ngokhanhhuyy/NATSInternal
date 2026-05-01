@@ -91,62 +91,27 @@ Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
-# @name ProductGetList
+# @name ProductList
 // @no-log
-GET {{host}}/products?searchContent=Awesome
+GET {{host}}/products
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
 # @name ProductDetail
 // @no-log
-GET {{host}}/products/de91b603-a202-4adc-a684-2c646e3f2f8b
+GET {{host}}/products/1
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
-# @name BrandGetAll
-GET {{host}}/products/brands/all
+# @name ProductCategoryAll
+GET {{host}}/products/categories
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
-# @name BrandGetList
-GET {{host}}/products/brands
-Content-Type: application/json
-Cookie: {{accessCookie}}
-
-###
-# @name BrandGetDetail
-GET {{host}}/products/brands/6ab49293-12ad-4ada-8fb1-549dc55ba26f
-Content-Type: application/json
-Cookie: {{accessCookie}}
-
-###
-# @name BrandUpdate
-PUT {{host}}/products/brands/6ab49293-12ad-4ada-8fb1-549dc55ba26f
-Content-Type: application/json
-Cookie: {{accessCookie}}
-
-{
-    "name": "Abbott, Grant and Kuhn",
-    "website": "https://abbott--grant-and-kuhn.net",
-    "socialMediaUrl": "https://facebook.com/howe  trantow",
-    "phoneNumber": "021993280894",
-    "email": "Tiana.Kihn52@yahoo.com",
-    "address": "70813 Shemar Track",
-    "countryId": "23b26739-0000-4c79-b273-8fa843079691",
-    "createdDateTime": "2026-04-12T00:07:39.794355Z",
-}
-
-###
-# @name ProductCategoryGetAll
-GET {{host}}/products/categories/all
-Content-Type: application/json
-Cookie: {{accessCookie}}
-
-###
-# @name ProductCategoryGetDetail
+# @name ProductCategoryDetail
 GET {{host}}/products/categories/ac834dc6-1995-430a-b109-e04419c0026c
 Content-Type: application/json
 Cookie: {{accessCookie}}

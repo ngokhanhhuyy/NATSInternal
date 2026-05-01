@@ -44,12 +44,14 @@ public static class CoreConfiguration
             services.AddScoped<IAuthorizationService>(sp => sp.GetRequiredService<AuthorizationInternalService>());
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IProductCategoryService, ProductCategoryService>();
             services.AddScoped<IUserService, UserService>();
 
             // Seeders.
             services.AddTransient<Seeder>();
-            services.AddTransient<UserSeeder>();
             services.AddTransient<CustomerSeeder>();
+            services.AddTransient<ProductSeeder>();
+            services.AddTransient<UserSeeder>();
 
             // Security.
             services.AddScoped<IPasswordHasher, PasswordHasher>();

@@ -52,7 +52,7 @@ internal class UserEntityConfiguration : IEntityTypeConfiguration<User>
     #endregion
 }
 
-file class UserRole
+internal class UserRole
 {
     #region Properties
     [Required]
