@@ -2,7 +2,7 @@ using NATSInternal.Core.Common.Dtos;
 
 namespace NATSInternal.Core.Features.Photos;
 
-public class PhotoCreateOrUpdateRequestDto : IRequestDto
+public class PhotoUpsertRequestDto : IRequestDto
 {
     #region Properties
     public required int? Id { get; set; }

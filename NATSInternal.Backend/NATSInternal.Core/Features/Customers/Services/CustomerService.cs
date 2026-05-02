@@ -63,8 +63,7 @@ internal class CustomerService : ICustomerService
                 (c.ZaloNumber != null && c.ZaloNumber.Contains(lowercasedSearchContent)) ||
                 (c.FacebookUrl != null && c.FacebookUrl.Contains(lowercasedSearchContent)) ||
                 (c.Email != null && c.Email.Contains(lowercasedSearchContent)) ||
-                (c.Address != null && c.Address.Contains(lowercasedSearchContent))
-            ));
+                (c.Address != null && c.Address.Contains(lowercasedSearchContent))));
         }
 
         switch (requestDto.SortByFieldName)

@@ -4,7 +4,7 @@ using NATSInternal.Core.Features.Customers;
 
 namespace NATSInternal.Api.Controllers;
 
-[Route("api/customers")]
+[Route("api/[controller]")]
 [ApiController]
 [Authorize]
 public class CustomerController : ControllerBase
@@ -40,7 +40,7 @@ public class CustomerController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType<Guid>(StatusCodes.Status201Created)]
+    [ProducesResponseType<int>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]

@@ -31,6 +31,9 @@ internal class CustomerEntityConfiguration : IEntityTypeConfiguration<Customer>
         
         // Indexes.
         entityBuilder.HasIndex(c => c.NickName).IsUnique();
+
+        // RowVersion.
+        entityBuilder.Property<byte[]?>("RowVersion").IsRowVersion();
     }
     #endregion
 }

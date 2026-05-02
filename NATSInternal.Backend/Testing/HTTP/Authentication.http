@@ -57,7 +57,7 @@ Cookie: {{accessCookie}}
 
 ###
 # @name CustomerUpdate
-PUT {{host}}/customers/102
+PUT {{host}}/customers/101
 Content-Type: application/json
 Cookie: {{accessCookie}}
 

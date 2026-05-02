@@ -9,7 +9,11 @@ internal class ProductCategoryEntityConfiguration : IEntityTypeConfiguration<Pro
     #region Methods
     public void Configure(EntityTypeBuilder<ProductCategory> builder)
     {
+        // Indexes.
         builder.HasIndex(pc => pc.Name).IsUnique();
+
+        // RowVersion.
+        builder.Property<byte[]?>("RowVersion").IsRowVersion();
     }
     #endregion
 }

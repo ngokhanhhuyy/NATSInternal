@@ -15,7 +15,7 @@ public abstract class AbstractProductUpsertRequestDto : IRequestDto
     public bool IsForRetail { get; set; }
     public List<int> CategoryIds { get; set; } = new();
     public int? ResupplyThresholdQuantity { get; set; }
-    public List<PhotoCreateOrUpdateRequestDto> Photos { get; set; } = new();
+    public List<PhotoUpsertRequestDto> Photos { get; set; } = new();
     #endregion
 
     #region Methods

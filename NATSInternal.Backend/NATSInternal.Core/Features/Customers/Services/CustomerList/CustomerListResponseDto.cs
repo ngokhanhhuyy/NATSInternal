@@ -14,8 +14,8 @@ public class CustomerListResponseDto : IListResponseDto<CustomerBasicResponseDto
     #endregion
     
     #region Properties
-    public List<CustomerBasicResponseDto> Items { get; set; }
-    public int ItemCount { get; set; }
-    public int PageCount { get; set; }
+    public List<CustomerBasicResponseDto> Items { get; }
+    public int ItemCount { get; }
+    public int PageCount { get; }
     #endregion
 }

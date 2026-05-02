@@ -39,7 +39,7 @@ internal abstract class AbstractProductUpsertValidator<TRequestDto> : Validator<
         RuleSet("CreateAndUpdate", () =>
         {
             RuleForEach(dto => dto.Photos)
-                .SetValidator(new PhotoAddOrUpdateValidator(), ruleSets: "CreateAndUpdate");
+                .SetValidator(new PhotoUpsertValidator(), ruleSets: "CreateAndUpdate");
         });
     }
     #endregion

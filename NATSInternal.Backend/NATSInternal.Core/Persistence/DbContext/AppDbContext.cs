@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using NATSInternal.Core.Features.Customers;
 using NATSInternal.Core.Features.Photos;
 using NATSInternal.Core.Features.Products;
+using NATSInternal.Core.Features.Supplies;
 using NATSInternal.Core.Features.Users;
 using NATSInternal.Infrastructure.DbContext;
 using System.Text.RegularExpressions;
@@ -25,6 +26,8 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductCategory> ProductCategories { get; set; }
     public DbSet<Stock> Stocks { get; set; }
+    public DbSet<Supply> Supplies { get; set; }
+    public DbSet<SupplyItem> SupplyItems { get; set; }
     public DbSet<Photo> Photos { get; set; }
     #endregion
     
@@ -45,6 +48,13 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.ApplyConfiguration(new ProductEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new ProductCategoryEntityConfiguration());
         modelBuilder.ApplyConfiguration(new StockEntityTypeConfiguration());
+
+        // Supply-cluster entities.
+        modelBuilder.ApplyConfiguration(new SupplyEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new SupplyItemEntityConfiguration());
+
+        // Photo-cluster entities.
+        modelBuilder.ApplyConfiguration(new PhotoEntityConfiguration());
 
         // Configure identifiers' names.
         ConfigureIdentifierNames(modelBuilder);

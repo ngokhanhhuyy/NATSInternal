@@ -4,7 +4,7 @@ using NATSInternal.Core.Features.Products;
 
 namespace NATSInternal.Api.Controllers;
 
-[Route("api/products")]
+[Route("api/[controller]")]
 [ApiController]
 [Authorize]
 public class ProductController : ControllerBase
@@ -40,7 +40,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType<Guid>(StatusCodes.Status201Created)]
+    [ProducesResponseType<int>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
@@ -49,7 +49,6 @@ public class ProductController : ControllerBase
         int id = await _service.CreateAsync(requestDto);
         return CreatedAtAction(nameof(Detail), new { id }, id);
     }
-    #endregion
 
     [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -73,4 +72,5 @@ public class ProductController : ControllerBase
         await _service.DeleteAsync(id);
         return Ok();
     }
+    #endregion
 }

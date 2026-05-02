@@ -4,10 +4,10 @@ using NATSInternal.Core.Common.Validation;
 
 namespace NATSInternal.Core.Features.Photos;
 
-internal class PhotoAddOrUpdateValidator : Validator<PhotoCreateOrUpdateRequestDto>
+internal class PhotoUpsertValidator : Validator<PhotoUpsertRequestDto>
 {
     #region Constructors
-    public PhotoAddOrUpdateValidator()
+    public PhotoUpsertValidator()
     {
         RuleSet("Create", () =>
         {

@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using NATSInternal.Core.Common.Entities;
 
 namespace NATSInternal.Core.Common.Extensions;
 
@@ -37,6 +38,14 @@ internal static class EntityFrameworkExtensions
             return sortByAscending
                 ? query.ThenBy(propertySelector)
                 : query.ThenByDescending(propertySelector);
+        }
+    }
+
+    extension<TEntity>(IQueryable<TEntity> query) where TEntity : IHasStatsEntity
+    {
+        public IQueryable<TEntity> HasStatsMonthYear(int year, int month)
+        {
+            return query.Where(e => e.StatsDateTime.Year == year && e.StatsDateTime.Month == month);
         }
     }
     #endregion

@@ -8,9 +8,9 @@ namespace NATSInternal.Core.Common.Validation;
 internal static class PhotoRuleBuilderOptionsExtensions
 {
     #region ExtensionMethods
-    extension<T>(IRuleBuilder<T, List<PhotoCreateOrUpdateRequestDto>> ruleBuilder)
+    extension<T>(IRuleBuilder<T, List<PhotoUpsertRequestDto>> ruleBuilder)
     {
-        public IRuleBuilderOptions<T, List<PhotoCreateOrUpdateRequestDto>> ContainsNoOrOneThumbnail()
+        public IRuleBuilderOptions<T, List<PhotoUpsertRequestDto>> ContainsNoOrOneThumbnail()
         {
             return ruleBuilder
                 .Must((_, photos) => photos.Count(p => p.IsThumbnail) <= 1)

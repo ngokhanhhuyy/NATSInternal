@@ -2,7 +2,6 @@ using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NATSInternal.Core.Features.Products;
-using NATSInternal.Core.Features.Users;
 using System.ComponentModel.DataAnnotations;
 
 namespace NATSInternal.Infrastructure.DbContext;
@@ -51,6 +50,9 @@ internal class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product
         
         // Indexes.
         builder.HasIndex(p => p.Name).IsUnique();
+
+        // RowVersion.
+        builder.Property<byte[]?>("RowVersion").IsRowVersion();
     }
     #endregion
 }

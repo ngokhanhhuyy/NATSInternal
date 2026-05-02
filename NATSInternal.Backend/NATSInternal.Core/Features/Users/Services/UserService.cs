@@ -9,6 +9,8 @@ using NATSInternal.Core.Common.Time;
 using NATSInternal.Core.Features.Authorization;
 using NATSInternal.Core.Persistence.DbContext;
 using NATSInternal.Core.Persistence.Handlers;
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace NATSInternal.Core.Features.Users;
 
@@ -105,32 +107,15 @@ internal class UserService : IUserService
 
     public async Task<UserDetailResponseDto> GetDetailByIdAsync(int id)
     {
-        return await _context.Users
-            .Include(u => u.CreatedUser)
-            .Include(u => u.LastUpdatedUser)
-            .Include(u => u.DeletedUser)
-            .Include(u => u.Roles)
-            .ThenInclude(r => r.Permissions)
-            .Where(u => u.Id == id)
-            .Select(u => new UserDetailResponseDto(u, _authorizationService.GetUserExistingAuthorization(u)))
-            .SingleOrDefaultAsync()
-            ?? throw new NotFoundException();
+        User user = await GetUserWithRelatedEntities(u => u.Id == id) ?? throw new NotFoundException();
+            return new(user, _authorizationService.GetUserExistingAuthorization(user));
     }
 
     public async Task<UserDetailResponseDto> GetDetailByUserNameAsync(
         string userName,
         bool includingAuthorization = false)
     {
-        User user = await _context.Users
-            .AsNoTracking()
-            .AsSplitQuery()
-            .Include(u => u.CreatedUser)
-            .Include(u => u.LastUpdatedUser)
-            .Include(u => u.DeletedUser)
-            .Include(u => u.Roles)
-            .ThenInclude(r => r.Permissions)
-            .SingleOrDefaultAsync(u => u.UserName == userName)
-            ?? throw new NotFoundException();
+        User user = await GetUserWithRelatedEntities(u => u.UserName == userName) ?? throw new NotFoundException();
             
         if (includingAuthorization)
         {
@@ -340,6 +325,40 @@ internal class UserService : IUserService
 
             throw;
         }
+    }
+    #endregion
+
+    #region PrivateMethods
+    private async Task<User?> GetUserWithRelatedEntities(Expression<Func<User, bool>> conditionExpression)
+    {
+        IIncludableQueryable<User, List<Role>> query = _context.Users
+            .AsSingleQuery()
+            .Where(u => u.DeletedDateTime == null)
+            .Include(u => u.Roles);
+
+        User user = await query
+            .ThenInclude(r => r.Permissions)
+            .Where(conditionExpression)
+            .AsNoTracking()
+            .SingleOrDefaultAsync()
+            ?? throw new NotFoundException();
+
+        if (user.CreatedUserId.HasValue)
+        {
+            user.CreatedUser = await query.Where(u => u.Id == user.CreatedUserId.Value).SingleAsync();
+        }
+
+        if (user.LastUpdatedUserId.HasValue)
+        {
+            user.LastUpdatedUser = await query.Where(u => u.Id == user.LastUpdatedUserId.Value).SingleAsync();
+        }
+
+        if (user.DeletedUserId.HasValue)
+        {
+            user.DeletedUser = await query.Where(u => u.Id == user.DeletedUserId.Value).SingleAsync();
+        }
+
+        return user;
     }
     #endregion
 }

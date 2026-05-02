@@ -33,22 +33,22 @@ internal static class DateTimeRuleBuilderOptionsExtensions
             return ruleBuilder.LessThanOrEqualTo(currentDateTime).WithMessage(errorMessage);
         }
         
-        public IRuleBuilderOptions<T, DateTime?> IsValidStatsDateTime()
+        public IRuleBuilderOptions<T, DateTime?> IsValidStatsDateTime(DateTime currentDateTime)
         {
+            DateTime minimumStatsDateTime = GetMinimumStatsDateTime(currentDateTime);
             return ruleBuilder.Must(dateTime =>
                 {
                     if (dateTime != null)
                     {
-                        DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
                         if (dateTime > currentDateTime)
                         {
                             return false;
                         }
                     }
                     return true;
-                }).WithMessage(_ =>
+                })
+                .WithMessage(_ =>
                 {
-                    DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
                     return ErrorMessages.EarlierThanOrEqualToNow
                         .ReplaceComparisonValue(currentDateTime.ToVietnameseString());
                 })
@@ -56,7 +56,7 @@ internal static class DateTimeRuleBuilderOptionsExtensions
                 {
                     if (dateTime != null)
                     {
-                        if (dateTime < MinimumStatsDateTime)
+                        if (dateTime < minimumStatsDateTime)
                         {
                             return false;
                         }
@@ -64,19 +64,15 @@ internal static class DateTimeRuleBuilderOptionsExtensions
 
                     return true;
                 }).WithMessage(ErrorMessages.LaterThanOrEqual.ReplaceComparisonValue(
-                    MinimumStatsDateTime.ToVietnameseString()));
+                    minimumStatsDateTime.ToVietnameseString()));
         }
     }
     #endregion
 
     #region PrivateMethods
-    private static DateTime MinimumStatsDateTime
+    private static DateTime GetMinimumStatsDateTime(DateTime currentDateTime)
     {
-        get
-        {
-            DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
-            return new(currentDateTime.AddMonths(-1).Year, currentDateTime.AddMonths(-1).Month, 1, 0, 0, 0);
-        }
+        return new(currentDateTime.AddMonths(-1).Year, currentDateTime.AddMonths(-1).Month, 1, 0, 0, 0);
     }
     #endregion
 }

@@ -5,7 +5,7 @@ using NATSInternal.Core.Features.Users;
 namespace NATSInternal.Api.Controllers;
 
 [ApiController]
-[Route("api/users")]
+[Route("api/[controller]")]
 [Authorize]
 public class UserController : ControllerBase
 {
