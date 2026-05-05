@@ -11,6 +11,7 @@ public class SupplyDetailResponseDto
     {
         Id = supply.Id;
         ShipmentFee = supply.ShipmentFee;
+        StatsDate = supply.StatsDate;
         CreatedDateTime = supply.CreatedDateTime;
         CreatedUser = new(supply.CreatedUser);
         LastUpdatedDateTime = supply.LastUpdatedDateTime;
@@ -33,6 +34,7 @@ public class SupplyDetailResponseDto
     #region Properties
     public int Id { get; }
     public long ShipmentFee { get; }
+    public DateOnly StatsDate { get; }
     public DateTime CreatedDateTime { get; }
     public UserBasicResponseDto CreatedUser { get; }
     public DateTime? LastUpdatedDateTime { get; }

@@ -16,8 +16,8 @@ internal class OrderUpsertValidator : Validator<OrderUpsertRequestDto>
         IValidator<PhotoUpsertRequestDto> photoValidator,
         IClock clock)
     {
-        RuleFor(dto => dto.StatsDateTime)
-            .IsValidStatsDateTime(clock.Now)
+        RuleFor(dto => dto.StatsDate)
+            .IsValidStatsDate(clock.Today)
             .WithName(DisplayNames.StatsDateTime);
         RuleFor(dto => dto.Note)
             .MaximumLength(HasStatsContracts.NoteMaxLength);

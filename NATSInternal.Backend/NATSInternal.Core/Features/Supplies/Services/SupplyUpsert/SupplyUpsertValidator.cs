@@ -18,7 +18,7 @@ internal class SupplyUpsertValidator : Validator<SupplyUpsertRequestDto>
         IClock clock)
     {
         RuleFor(dto => dto.StatsDateTime)
-            .IsValidStatsDateTime(clock.Now)
+            .IsValidStatsDate(clock.Now)
             .WithName(DisplayNames.StatsDateTime);
         RuleFor(dto => dto.ShipmentFee)
             .GreaterThanOrEqualTo(0)

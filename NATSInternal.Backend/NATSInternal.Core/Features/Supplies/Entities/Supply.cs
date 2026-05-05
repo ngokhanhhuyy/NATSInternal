@@ -15,7 +15,7 @@ internal class Supply : IHasStatsEntity
     public int Id { get; private set; }
 
     [Required]
-    public DateTime StatsDateTime { get; set; }
+    public DateOnly StatsDate { get; set; }
 
     [Required]
     public long ShipmentFee { get; set; } = 0;

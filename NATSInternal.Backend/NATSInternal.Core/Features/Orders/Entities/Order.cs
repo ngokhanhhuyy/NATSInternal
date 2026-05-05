@@ -19,7 +19,7 @@ internal class Order : IHasStatsEntity
     public required OrderType Type { get; set; }
 
     [Required]
-    public required DateTime StatsDateTime { get; set; }
+    public required DateOnly StatsDate { get; set; }
 
     [StringLength(HasStatsContracts.NoteMaxLength)]
     public string? Note { get; set; }

@@ -9,7 +9,7 @@ public class OrderDetailResponseDto
     internal OrderDetailResponseDto(Order order, OrderExistingAuthorizationResponseDto authorization)
     {
         Id = order.Id;
-        StatsDateTime = order.StatsDateTime;
+        StatsDate = order.StatsDate;
         ProductItems = order.ProductItems.Select(pi => new OrderDetailProductItemResponseDto(pi)).ToList();
         ServiceItems = order.ServiceItems.Select(si => new OrderDetailServiceItemResponseDto(si)).ToList();
         Note = order.Note;
@@ -33,7 +33,7 @@ public class OrderDetailResponseDto
 
     #region Properties
     public int Id { get; }
-    public DateTime StatsDateTime { get; }
+    public DateOnly StatsDate { get; }
     public List<OrderDetailProductItemResponseDto> ProductItems { get; }
     public List<OrderDetailServiceItemResponseDto> ServiceItems { get; }
     public string? Note { get; }

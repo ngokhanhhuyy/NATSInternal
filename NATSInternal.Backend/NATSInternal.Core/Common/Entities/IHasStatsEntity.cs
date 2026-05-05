@@ -3,6 +3,6 @@ namespace NATSInternal.Core.Common.Entities;
 internal interface IHasStatsEntity
 {
     #region Properties
-    DateTime StatsDateTime { get; set; }
+    DateOnly StatsDate { get; set; }
     #endregion
 }

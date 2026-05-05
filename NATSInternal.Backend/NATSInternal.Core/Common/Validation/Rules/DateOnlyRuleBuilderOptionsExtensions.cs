@@ -40,6 +40,46 @@ internal static class DateOnlyRuleBuilderOptionsExtensions
 
             return ruleBuilder.GreaterThanOrEqualTo(comparisonDate).WithMessage(errorMessage);
         }
+        
+        public IRuleBuilderOptions<T, DateOnly?> IsValidStatsDate(DateOnly today)
+        {
+            DateOnly minimumStatsDate = GetMinimumStatsDate(today);
+            return ruleBuilder.Must(date =>
+                {
+                    if (date != null)
+                    {
+                        if (date > today)
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+                .WithMessage(_ =>
+                {
+                    return ErrorMessages.EarlierThanOrEqualToNow.ReplaceComparisonValue(today.ToVietnameseString());
+                })
+                .Must(dateTime =>
+                {
+                    if (dateTime != null)
+                    {
+                        if (dateTime < minimumStatsDate)
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }).WithMessage(ErrorMessages.LaterThanOrEqual.ReplaceComparisonValue(
+                    minimumStatsDate.ToVietnameseString()));
+        }
+    }
+    #endregion
+
+    #region PrivateMethods
+    private static DateOnly GetMinimumStatsDate(DateOnly today)
+    {
+        return new(today.AddMonths(-1).Year, today.AddMonths(-1).Month, 1);
     }
     #endregion
 }

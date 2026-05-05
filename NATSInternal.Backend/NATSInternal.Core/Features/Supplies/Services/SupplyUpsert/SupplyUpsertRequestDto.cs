@@ -8,7 +8,7 @@ public class SupplyUpsertRequestDto : IHasProductUpsertRequestDto<SupplyUpsertIt
 {
     #region Properties
     public List<SupplyUpsertItemRequestDto> Items { get; set; } = new();
-    public DateTime? StatsDateTime { get; set; }
+    public DateOnly? StatsDate { get; set; }
     public long ShipmentFee { get; set; }
     public string? Note { get; set; }
     public List<PhotoUpsertRequestDto> Photos { get; set; } = new();

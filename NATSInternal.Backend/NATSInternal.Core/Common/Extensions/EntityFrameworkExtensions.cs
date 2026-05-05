@@ -45,7 +45,7 @@ internal static class EntityFrameworkExtensions
     {
         public IQueryable<TEntity> HasStatsMonthYear(int year, int month)
         {
-            return query.Where(e => e.StatsDateTime.Year == year && e.StatsDateTime.Month == month);
+            return query.Where(e => e.StatsDate.Year == year && e.StatsDate.Month == month);
         }
     }
     #endregion
