@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NATSInternal.Core.Common.Contracts;
+using NATSInternal.Core.Common.Entities;
 using NATSInternal.Core.Features.Photos;
 using NATSInternal.Core.Features.Users;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NATSInternal.Core.Features.Supplies;
 
-internal class Supply
+internal class Supply : IHasStatsEntity
 {
     #region Properties
     [Key]

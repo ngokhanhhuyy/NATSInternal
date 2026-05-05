@@ -37,7 +37,7 @@ internal class SupplyUpsertValidator : Validator<SupplyUpsertRequestDto>
             RuleForEach(dto => dto.Photos).SetValidator(photoValidator, ruleSets: "Create");
         });
 
-        RuleSet("CreateAndUpdate", () =>
+        RuleSet("Update", () =>
         {
             RuleForEach(dto => dto.Photos).SetValidator(photoValidator, ruleSets: "CreateAndUpdate");
         });

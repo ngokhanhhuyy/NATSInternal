@@ -1,4 +1,5 @@
 using NATSInternal.Core.Common.Contracts;
+using NATSInternal.Core.Common.Entities;
 using NATSInternal.Core.Features.Customers;
 using NATSInternal.Core.Features.Photos;
 using NATSInternal.Core.Features.Users;
@@ -8,7 +9,7 @@ using System.Linq.Expressions;
 
 namespace NATSInternal.Core.Features.Orders;
 
-internal class Order
+internal class Order : IHasStatsEntity
 {
     #region Properties
     [Key]
@@ -45,16 +46,16 @@ internal class Order
 
     #region CachedProperties
     [Required]
-    public long CachedProductItemsAmountBeforeVat { get; protected set; }
+    public long CachedProductItemsAmountBeforeVat { get; private set; }
 
     [Required]
-    public long CachedProductItemsVatAmount { get; protected set; }
+    public long CachedProductItemsVatAmount { get; private set; }
 
     [Required]
-    public long CachedServiceItemsAmountBeforeVat { get; protected set; }
+    public long CachedServiceItemsAmountBeforeVat { get; private set; }
 
     [Required]
-    public long CachedServiceItemsVatAmount { get; protected set; }
+    public long CachedServiceItemsVatAmount { get; private set; }
     #endregion
 
     #region NavigationProperties
@@ -62,9 +63,9 @@ internal class Order
     public User CreatedUser { get; set; } = null!;
     public User? LastUpdatedUser { get; set; } = null!;
     public User? DeletedUser { get; set; } = null!;
-    public List<OrderProductItem> ProductItems { get; protected set; } = new();
-    public List<OrderServiceItem> ServiceItems { get; protected set; } = new();
-    public List<Photo> Photos { get; protected set; } = new();
+    public List<OrderProductItem> ProductItems { get; private set; } = new();
+    public List<OrderServiceItem> ServiceItems { get; private set; } = new();
+    public List<Photo> Photos { get; private set; } = new();
     #endregion
 
     #region ComputedProperties

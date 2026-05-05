@@ -24,8 +24,9 @@ public static class DisplayNames
     public const string SupplyPhoto = "Hình ảnh nhập hàng";
     public const string SupplyUpdateHistory = "Lịch sử cập nhập đơn đặt hàng";
     public const string Order = "Đơn hàng";
-    public const string OrderItem = "Mục đơn hàng";
-    public const string OrderPayment = "Thanh toán đơn hàng";
+    public const string OrderType = "Loại đơn hàng";
+    public const string OrderProductItem = "Mục sản phẩm đơn hàng";
+    public const string OrderServiceItem = "Mục dịch vụ đơn hàng";
     public const string OrderPhoto = "Hình ảnh đơn hàng";
     public const string Treatment = "Liệu trình";
     public const string TreatmentItem = "Mục sản phẩm liệu trình";

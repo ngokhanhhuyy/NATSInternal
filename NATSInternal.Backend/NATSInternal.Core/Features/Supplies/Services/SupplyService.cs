@@ -149,7 +149,11 @@ internal class SupplyService : ISupplyService
 
         _context.Supplies.Add(supply);
 
-        List<SupplyItem> supplyItems = await _hasProductService.CreateItemsAsync(requestDto.Items, MapItem);
+        List<SupplyItem> supplyItems = await _hasProductService.CreateItemsAsync(
+            requestDto.Items,
+            MapItem,
+            stock => stock.StockingQuantity += 1,
+            nameof(requestDto.Items));
 
         supply.Items.AddRange(supplyItems);
 
@@ -174,7 +178,7 @@ internal class SupplyService : ISupplyService
         _upsertValidator.Validate(requestDto, options =>
         {
             options.ThrowOnFailures();
-            options.IncludeRuleSets("CreateOrUpdate").IncludeRulesNotInRuleSet();
+            options.IncludeRuleSets("Update").IncludeRulesNotInRuleSet();
         });
 
         Supply supply = await _context.Supplies
@@ -196,7 +200,12 @@ internal class SupplyService : ISupplyService
         supply.LastUpdatedDateTime = _clock.Now;
         supply.LastUpdatedUserId = _callerDetailProvider.GetId();
 
-        await _hasProductService.UpdateItemsAsync(requestDto.Items, supply.Items, MapItem);
+        await _hasProductService.UpdateItemsAsync(
+            requestDto.Items,
+            supply.Items,
+            MapItem,
+            stock => stock.StockingQuantity += 1,
+            nameof(requestDto.Items));
 
         // TODO: Handle photo creation or updation.
 
@@ -216,6 +225,7 @@ internal class SupplyService : ISupplyService
     public async Task DeleteAsync(int id)
     {
         Supply supply = await _context.Supplies
+            .Include(s => s.Items).ThenInclude(si => si.Product).ThenInclude(p => p.Stock)
             .SingleOrDefaultAsync(s => s.Id == id && s.DeletedDateTime == null)
             ?? throw new NotFoundException();
 

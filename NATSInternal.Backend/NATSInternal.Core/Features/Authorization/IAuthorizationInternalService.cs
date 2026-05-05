@@ -1,5 +1,6 @@
 using NATSInternal.Core.Features.Customers;
 using NATSInternal.Core.Features.Products;
+using NATSInternal.Core.Features.Orders;
 using NATSInternal.Core.Features.Supplies;
 using NATSInternal.Core.Features.Users;
 
@@ -13,6 +14,7 @@ internal interface IAuthorizationInternalService : IAuthorizationService
     ProductExistingAuthorizationResponseDto GetProductExistingAuthorization(Product product);
     ProductCategoryExistingAuthorizationResponseDto GetProductCategoryExistingAuthorization(ProductCategory category);
     SupplyExistingAuthorizationResponseDto GetSupplyExistingAuthorization(Supply supply);
+    OrderExistingAuthorizationResponseDto GetOrderExistingAuthorization(Order order);
     bool CanChangeUserPassword(User targetUser);
     bool CanResetUserPassword(User targetUser);
     bool CanDeleteUser(User targetUser);

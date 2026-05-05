@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NATSInternal.Core.Common.Security;
 using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Features.Orders;
 using NATSInternal.Core.Features.Products;
 using NATSInternal.Core.Features.Supplies;
 using NATSInternal.Core.Features.Users;
@@ -67,6 +68,15 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
         {
             CanEdit = CallerHasPermission(PermissionNames.EditSupply),
             CanDelete = CallerHasPermission(PermissionNames.DeleteSupply)
+        };
+    }
+
+    public OrderExistingAuthorizationResponseDto GetOrderExistingAuthorization(Order order)
+    {
+        return new()
+        {
+            CanEdit = CallerHasPermission(PermissionNames.EditOrder),
+            CanDelete = CallerHasPermission(PermissionNames.DeleteOrder)
         };
     }
 
@@ -140,6 +150,11 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
     public bool CanCreateSupply()
     {
         return CallerHasPermission(PermissionNames.CreateSupply);
+    }
+
+    public bool CanCreateOrder()
+    {
+        return CallerHasPermission(PermissionNames.CreateOrder);
     }
     #endregion
 

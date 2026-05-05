@@ -3,6 +3,7 @@ using NATSInternal.Core.Common.Dtos;
 using NATSInternal.Core.Common.Entities;
 using NATSInternal.Core.Common.Exceptions;
 using NATSInternal.Core.Common.Localization;
+using NATSInternal.Core.Features.Products;
 using NATSInternal.Core.Persistence.DbContext;
 
 namespace NATSInternal.Core.Common.Services;
@@ -25,13 +26,15 @@ internal class HasProductService<TItemRequestDto, TItemEntity> : IHasProductServ
     #region Methods
     public async Task<List<TItemEntity>> CreateItemsAsync(
         List<TItemRequestDto> itemRequestDtos,
-        Action<TItemRequestDto, TItemEntity> mapper)
+        Action<TItemRequestDto, TItemEntity> mapper,
+        Action<Stock> stockAdjuster,
+        string itemsPropertyName)
     {
         List<TItemEntity> itemEntities = new();
         IEnumerable<int> requestProductIds = itemRequestDtos.Select(i => i.ProductId);
-        List<int> existingProductIds = await _context.Products
+        List<Product> existingProducts = await _context.Products
+            .Include(p => p.Stock)
             .Where(p => requestProductIds.Contains(p.Id) && p.DeletedDateTime == null)
-            .Select(p => p.Id)
             .ToListAsync();
 
         List<int> processedProductIds = new();
@@ -39,18 +42,18 @@ internal class HasProductService<TItemRequestDto, TItemEntity> : IHasProductServ
         for (int index = 0; index < itemRequestDtos.Count; index += 1)
         {
             TItemRequestDto itemRequestDto = itemRequestDtos[index];
-            if (!existingProductIds.Contains(itemRequestDto.ProductId))
-            {
-                throw OperationException.NotFound(
-                    new object[] { nameof(itemRequestDtos), index, nameof(itemRequestDto.ProductId) },
+            
+            Product product = existingProducts
+                .SingleOrDefault(p => p.Id == itemRequestDto.ProductId)
+                ?? throw OperationException.NotFound(
+                    new object[] { itemsPropertyName, index, nameof(itemRequestDto.ProductId) },
                     DisplayNames.Product
                 );
-            }
 
             if (processedProductIds.Contains(itemRequestDto.ProductId))
             {
                 throw OperationException.Duplicated(
-                    new object[] { nameof(itemRequestDtos), index, nameof(itemRequestDto.ProductId) },
+                    new object[] { itemsPropertyName, index, nameof(itemRequestDto.ProductId) },
                     DisplayNames.Product
                 );
             }
@@ -62,6 +65,17 @@ internal class HasProductService<TItemRequestDto, TItemEntity> : IHasProductServ
             };
 
             mapper(itemRequestDto, itemEntity);
+
+            product.Stock ??= new();
+            stockAdjuster(product.Stock);
+            if (product.Stock.StockingQuantity < 0)
+            {
+                throw new OperationException(
+                    new object[] { itemsPropertyName, index, nameof(itemRequestDto.Quantity) },
+                    ErrorMessages.NegativeProductStockingQuantity
+                );
+            }
+
             itemEntities.Add(itemEntity);
             processedProductIds.Add(itemRequestDto.ProductId);
         }
@@ -72,13 +86,15 @@ internal class HasProductService<TItemRequestDto, TItemEntity> : IHasProductServ
     public async Task UpdateItemsAsync(
         List<TItemRequestDto> itemRequestDtos,
         List<TItemEntity> existingItems,
-        Action<TItemRequestDto, TItemEntity> mapper)
+        Action<TItemRequestDto, TItemEntity> mapper,
+        Action<Stock> stockAdjuster,
+        string itemsPropertyName)
     {
         IEnumerable<int> requestItemIds = itemRequestDtos.Select(i => i.Id).OfType<int>();
         IEnumerable<int> requestProductIds = itemRequestDtos.Select(i => i.ProductId);
-        List<int> existingProductIds = await _context.Products
+        List<Product> existingProducts = await _context.Products
+            .Include(p => p.Stock)
             .Where(p => requestProductIds.Contains(p.Id) && p.DeletedDateTime == null)
-            .Select(p => p.Id)
             .ToListAsync();
 
         List<int> processedProductIds = new();
@@ -98,20 +114,20 @@ internal class HasProductService<TItemRequestDto, TItemEntity> : IHasProductServ
             if (processedProductIds.Contains(itemRequestDto.ProductId))
             {
                 throw OperationException.Duplicated(
-                    new object[] { nameof(itemRequestDtos), index, nameof(itemRequestDto.ProductId) },
+                    new object[] { itemsPropertyName, index, nameof(itemRequestDto.ProductId) },
                     DisplayNames.Product);
             }
+            
+            Product product = existingProducts
+                .SingleOrDefault(p => p.Id == itemRequestDto.ProductId)
+                ?? throw OperationException.NotFound(
+                    new object[] { itemsPropertyName, index, nameof(itemRequestDto.ProductId) },
+                    DisplayNames.Product
+                );
 
             TItemEntity itemEntity;
             if (!itemRequestDto.Id.HasValue)
             {
-                if (!existingProductIds.Contains(itemRequestDto.ProductId))
-                {
-                    throw OperationException.NotFound(
-                        new object[] { nameof(itemRequestDtos), index, nameof(itemRequestDto.ProductId) },
-                        DisplayNames.Product);
-                }
-
                 itemEntity = new()
                 {
                     Quantity = itemRequestDto.Quantity,
@@ -125,22 +141,49 @@ internal class HasProductService<TItemRequestDto, TItemEntity> : IHasProductServ
                 if (processedItemIds.Contains(itemRequestDto.Id.Value))
                 {
                     throw OperationException.Duplicated(
-                        new object[] { nameof(itemRequestDtos), index, nameof(itemRequestDto.ProductId) },
+                        new object[] { itemsPropertyName, index, nameof(itemRequestDto.ProductId) },
                         DisplayNames.Product);
                 }
 
                 itemEntity = existingItems
                     .SingleOrDefault(ie => ie.Id == itemRequestDto.Id.Value)
                     ?? throw OperationException.NotFound(
-                        new object[] { nameof(itemRequestDtos), index, nameof(itemRequestDto.Id) },
+                        new object[] { itemsPropertyName, index, nameof(itemRequestDto.Id) },
                         DisplayNames.SupplyItem);
 
                 processedItemIds.Add(itemEntity.Id);
             }
 
             mapper(itemRequestDto, itemEntity);
+            
+            product.Stock ??= new();
+            stockAdjuster(product.Stock);
+            if (product.Stock.StockingQuantity < 0)
+            {
+                throw new OperationException(
+                    new object[] { itemsPropertyName, index, nameof(itemRequestDto.Quantity) },
+                    ErrorMessages.NegativeProductStockingQuantity
+                );
+            }
 
             processedProductIds.Add(itemRequestDto.ProductId);
+        }
+    }
+
+    public void DeleteItemsAsync(List<TItemEntity> existingItems, Action<Stock> stockAdjuster)
+    {
+        for (int index = 0; index < existingItems.Count; index += 1)
+        {
+            TItemEntity itemEntity = existingItems[index];
+            if (itemEntity.Product?.Stock is not null)
+            {
+                stockAdjuster(itemEntity.Product.Stock);
+                {
+                    throw new OperationException(ErrorMessages.NegativeProductStockingQuantity);
+                }
+            }
+
+            _context.Remove(itemEntity);
         }
     }
     #endregion

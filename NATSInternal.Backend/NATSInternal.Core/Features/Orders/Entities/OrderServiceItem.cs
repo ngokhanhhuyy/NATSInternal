@@ -9,10 +9,14 @@ internal class OrderServiceItem
     public int Id { get; private set; }
 
     [Required]
+    [StringLength(OrderServiceItemContracts.NameMaxLength)]
+    public required string Name { get; set; }
+
+    [Required]
     public required long AmountBeforeVatPerUnit { get; set; }
 
     [Required]
-    public required long VatAmountBeforeVatPerUnit { get; set; }
+    public required long VatAmountPerUnit { get; set; }
 
     [Required]
     public required int Quantity { get; set; }
