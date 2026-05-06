@@ -17,6 +17,9 @@ internal class Seeder
     private readonly UserSeeder _userSeeder;
     private readonly CustomerSeeder _customerSeeder;
     private readonly ProductSeeder _productSeeder;
+    private readonly SupplySeeder _supplySeeder;
+    private readonly OrderSeeder _orderSeeder;
+    private readonly Random _random;
     private readonly ILogger<Seeder> _logger;
     private readonly IClock _clock;
     #endregion
@@ -27,6 +30,8 @@ internal class Seeder
         UserSeeder userSeeder,
         CustomerSeeder customerSeeder,
         ProductSeeder productSeeder,
+        SupplySeeder supplySeeder,
+        OrderSeeder orderSeeder,
         ILogger<Seeder> logger,
         IClock clock)
     {
@@ -34,7 +39,11 @@ internal class Seeder
         _userSeeder = userSeeder;
         _customerSeeder = customerSeeder;
         _productSeeder = productSeeder;
+        _supplySeeder = supplySeeder;
+        _orderSeeder = orderSeeder;
+        _random = new();
         _logger = logger;
+        _clock = clock;
     }
     #endregion
 
@@ -48,6 +57,8 @@ internal class Seeder
         CustomerSeededResult customerSeededResult = await _customerSeeder
             .SeedAsync(userSeededResult.Users, isDevelopment);
         ProductSeededResult productSeededResult = await _productSeeder.SeedAsync(userSeededResult.Users, isDevelopment);
+
+        await SeedFinancialTransactionsAsync(userSeededResult.Users, customerSeededResult.Customers);
         await transaction.CommitAsync();
         
         _logger.LogInformation("Seeding ended.");
@@ -81,6 +92,35 @@ internal class Seeder
         DateTime startingDateTime = _clock.Now.AddMonths(-6);
         DateTime generatingDateTime = startingDateTime;
         
+        while (generatingDateTime <= currentDateTime)
+        {
+            await _supplySeeder.SeedAsync(users, generatingDateTime);
+            await _orderSeeder.SeedAsync(users, customers, generatingDateTime);
+            
+            do
+            {
+                generatingDateTime = generatingDateTime.AddHours(_random.Next(2, 5));
+            }
+            while (IsDateTimeOutsideBusinessHours(generatingDateTime));
+        }
+    }
+
+    private static bool IsDateTimeOutsideBusinessHours(DateTime dateTime)
+    {
+        if (dateTime.Month == 1 && dateTime.Day <= 3 || dateTime.Month == 12 && dateTime.Day >= 28)
+        {
+            return true;
+        }
+
+        switch (dateTime.DayOfWeek)
+        {
+            case DayOfWeek.Sunday:
+                return true;
+            case DayOfWeek.Saturday:
+                return dateTime.Hour is < 9 or >= 12;
+            default:
+                return dateTime.Hour is < 9 or >= 18;
+        }
     }
     #endregion
 }

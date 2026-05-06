@@ -11,7 +11,7 @@ public class SupplyBasicResponseDto
         Id = supply.Id;
         ShipmentFee = supply.ShipmentFee;
         ItemAmount = supply.CachedItemsAmount;
-        StatsDateTime = supply.StatsDateTime;
+        StatsDate = supply.StatsDate;
 
         if (supply.Thumbnail is not null)
         {
@@ -31,7 +31,7 @@ public class SupplyBasicResponseDto
     public int Id { get; }
     public long ShipmentFee { get; }
     public long ItemAmount { get; }
-    public DateTime StatsDateTime { get; }
+    public DateOnly StatsDate { get; }
     public PhotoBasicResponseDto? Thumbnail { get; }
     public SupplyExistingAuthorizationResponseDto? Authorization { get; }
     #endregion

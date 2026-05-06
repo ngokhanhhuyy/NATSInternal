@@ -9,7 +9,7 @@ public class OrderBasicResponseDto
     internal OrderBasicResponseDto(Order order)
     {
         Id = order.Id;
-        StatsDateTime = order.StatsDateTime;
+        StatsDate = order.StatsDate;
         AmountAfterVat = order.CachedAmountAfterVat;
         Customer = new(order.Customer);
     }
@@ -22,7 +22,7 @@ public class OrderBasicResponseDto
 
     #region Properties
     public int Id { get; set; }
-    public DateTime StatsDateTime { get; set; }
+    public DateOnly StatsDate { get; set; }
     public long AmountAfterVat { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
     public OrderExistingAuthorizationResponseDto? Authorization { get; set; }

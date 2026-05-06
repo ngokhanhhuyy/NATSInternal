@@ -12,6 +12,7 @@ using NATSInternal.Core.Persistence.Seeders;
 using NATSInternal.Core.Features.Authentication;
 using NATSInternal.Core.Features.Authorization;
 using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Features.Expenses;
 using NATSInternal.Core.Features.Orders;
 using NATSInternal.Core.Features.Products;
 using NATSInternal.Core.Features.Supplies;
@@ -54,6 +55,7 @@ public static class CoreConfiguration
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductCategoryService, ProductCategoryService>();
+            services.AddScoped<IExpenseService, ExpenseService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<ISupplyService, SupplyService>();
             services.AddScoped<IUserService, UserService>();
@@ -62,6 +64,8 @@ public static class CoreConfiguration
             services.AddTransient<Seeder>();
             services.AddTransient<CustomerSeeder>();
             services.AddTransient<ProductSeeder>();
+            services.AddTransient<SupplySeeder>();
+            services.AddTransient<OrderSeeder>();
             services.AddTransient<UserSeeder>();
 
             // Security.

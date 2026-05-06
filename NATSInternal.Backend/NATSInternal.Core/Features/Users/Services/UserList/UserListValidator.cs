@@ -5,4 +5,4 @@ using NATSInternal.Core.Features.Users;
 namespace NATSInternal.Application.UseCases.Users;
 
 [UsedImplicitly]
-internal class UserGetListValidator : AbstractListValidator<UserListRequestDto, UserListRequestDto.FieldToSort>;
+internal class UserListValidator : AbstractListValidator<UserListRequestDto, UserListRequestDto.FieldToSort>;

@@ -1,10 +1,8 @@
-using System.Text.RegularExpressions;
 using Bogus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NATSInternal.Core.Features.Authorization;
-using NATSInternal.Core.Common.Time;
-using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Common.Contracts;
 using NATSInternal.Core.Features.Products;
 using NATSInternal.Core.Features.Supplies;
 using NATSInternal.Core.Features.Users;
@@ -16,35 +14,55 @@ internal class SupplySeeder
 {
     #region Fields
     private readonly AppDbContext _context;
-    private readonly IClock _clock;
     private readonly ILogger<SupplySeeder> _logger;
     private readonly Faker _viFaker;
-    private readonly Faker _enFaker;
     private readonly Random _random;
     #endregion
     
     #region Constructors
-    public SupplySeeder(AppDbContext context, IClock clock, ILogger<SupplySeeder> logger)
+    public SupplySeeder(AppDbContext context, ILogger<SupplySeeder> logger)
     {
-        
+        _context = context;
+        _logger = logger;
+        _viFaker = new("vi");
+        _random = new();
+    }
+    #endregion
+
+    #region Methods
+    public async Task SeedAsync(List<User> users, DateTime generatingDateTime)
+    {
+        await SeedSingleSupplyAsync(users, generatingDateTime);
     }
     #endregion
 
     #region PrivateMethods
-    private async Task SeedSingleSupplyAsync(List<User> users, List<Customer> customers, DateTime generatingDateTime)
+    private async Task SeedSingleSupplyAsync(List<User> users, DateTime generatingDateTime)
     {
         List<Product> products = await _context.Products
-            .Include(p => p.Stock)
-            .Where(p => p.Stock != null && p.Stock.StockingQuantity <= p.Stock.ResupplyThresholdQuantity)
+            .Where(p => p.DeletedDateTime == null)
+            .Where(p =>
+                (p.ResupplyThresholdQuantity == null && p.StockingQuantity <= 5) ||
+                (p.ResupplyThresholdQuantity != null && p.StockingQuantity <= p.ResupplyThresholdQuantity))
             .ToListAsync();
+            
+        if (products.Count == 0)
+        {
+            return;
+        }
+
+        User createdUser = users
+            .Where(u => u.Roles.Any(r => r.Permissions.Any(p => p.Name == PermissionNames.CreateSupply)))
+            .OrderBy(_ => Guid.NewGuid())
+            .First();
 
         List<SupplyItem> items = new();
         foreach (Product product in products)
         {
             int quantity;
-            if (product.Stock is not null && product.Stock.ResupplyThresholdQuantity.HasValue)
+            if (product.ResupplyThresholdQuantity.HasValue)
             {
-                quantity = product.Stock.ResupplyThresholdQuantity.Value * _random.Next(2, 5);
+                quantity = product.ResupplyThresholdQuantity.Value * _random.Next(2, 5);
             }
             else
             {
@@ -58,15 +76,36 @@ internal class SupplySeeder
                 ProductId = product.Id
             };
 
-            product.Stock ??= new();
-            product.Stock.StockingQuantity += quantity;
+            product.StockingQuantity += quantity;
+        }
+
+        string? note = null;
+        if (_random.Next(0, 2) == 1)
+        {
+            int sentenceCount = 10;
+            do
+            {
+                note = _viFaker.Lorem.Paragraph(sentenceCount);
+                sentenceCount -= 1;
+            }
+            while (note.Length >= HasStatsContracts.NoteMaxLength);
         }
         
         Supply supply = new()
         {
             StatsDate = DateOnly.FromDateTime(generatingDateTime),
-            ShipmentFee = s
-        }
+            ShipmentFee = (int)Math.Round((double)items.Sum(i => i.AmountPerUnit * i.Quantity) / 5),
+            Note = note,
+            CreatedDateTime = generatingDateTime,
+            CreatedUserId = createdUser.Id
+        };
+
+        supply.Items.AddRange(items);
+        supply.ComputeCachedProperties();
+
+        _context.Supplies.Add(supply);
+
+        await _context.SaveChangesAsync();
     }
     #endregion
 }

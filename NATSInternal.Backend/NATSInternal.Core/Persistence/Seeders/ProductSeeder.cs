@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using Bogus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -42,15 +41,9 @@ internal partial class ProductSeeder
                 .Where(u => u.Roles.Any(r => r.Permissions.Any(p => p.Name == PermissionNames.CreateProduct)))
                 .Select(u => u.Id)
                 .ToList();
-
-            foreach (int id in userIds)
-            {
-                _logger.LogWarning(id.ToString());
-            }
             
             List<ProductCategory> categories = await SeedProductCategoriesAsync(userIds);
             List<Product> products = await SeedProductsAsync(userIds, categories);
-            await SeedStocksAsync(products);
             
             return new()
             {
@@ -118,10 +111,11 @@ internal partial class ProductSeeder
 
             Product product = new()
             {
-                
                 Name = name,
                 Description = _viFaker.Commerce.ProductDescription(),
                 Unit = units[_random.Next(units.Length)],
+                StockingQuantity = _random.Next(20, 300),
+                ResupplyThresholdQuantity = _random.Next(5, 10) * 10,
                 DefaultAmountBeforeVatPerUnit = _random.Next(200, 1000) * 1000L,
                 DefaultVatPercentagePerUnit = 10,
                 IsForRetail = _random.Next(10) > 2,
@@ -145,35 +139,6 @@ internal partial class ProductSeeder
         await _context.SaveChangesAsync();
         return products;
     }
-    
-    private async Task SeedStocksAsync(List<Product> products)
-    {
-        if (await _context.Stocks.AnyAsync())
-        {
-            return;
-        }
-        
-        _logger.LogInformation("Seeding stocks.");
-
-        foreach (Product product in products)
-        {
-            Stock stock = new()
-            {
-                StockingQuantity = _random.Next(20, 300),
-                ResupplyThresholdQuantity = _random.Next(5, 10) * 10,
-                Product = product
-            };
-
-            _context.Stocks.Add(stock);
-        }
-
-        await _context.SaveChangesAsync();
-    }
-    #endregion
-    
-    #region StaticMethods
-    [GeneratedRegex(@"^\+\d+")]
-    private static partial Regex GetPhoneNumberCountryCodeRegex();
     #endregion
 }
 

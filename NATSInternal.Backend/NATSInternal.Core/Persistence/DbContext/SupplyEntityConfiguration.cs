@@ -26,7 +26,7 @@ internal class SupplyEntityConfiguration : IEntityTypeConfiguration<Supply>
             .OnDelete(DeleteBehavior.Restrict);
 
         // Indexes.
-        entityBuilder.HasIndex(s => s.StatsDateTime);
+        entityBuilder.HasIndex(s => s.StatsDate);
         entityBuilder.HasIndex(s => s.CreatedDateTime);
         entityBuilder.HasIndex(s => s.LastUpdatedDateTime);
         entityBuilder.HasIndex(s => s.CachedItemsAmount);

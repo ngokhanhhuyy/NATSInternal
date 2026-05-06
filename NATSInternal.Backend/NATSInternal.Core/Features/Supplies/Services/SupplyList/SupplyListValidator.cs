@@ -4,4 +4,4 @@ using NATSInternal.Core.Common.Validation;
 namespace NATSInternal.Core.Features.Supplies;
 
 [UsedImplicitly]
-internal class SupplyGetListValidator : AbstractListValidator<SupplyListRequestDto, SupplyListRequestDto.FieldToSort>;
+internal class SupplyListValidator : AbstractListValidator<SupplyListRequestDto, SupplyListRequestDto.FieldToSort>;

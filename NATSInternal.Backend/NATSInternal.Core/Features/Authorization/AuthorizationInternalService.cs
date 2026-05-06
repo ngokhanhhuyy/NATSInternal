@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NATSInternal.Core.Common.Security;
 using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Features.Expenses;
 using NATSInternal.Core.Features.Orders;
 using NATSInternal.Core.Features.Products;
 using NATSInternal.Core.Features.Supplies;
@@ -59,6 +60,15 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
         {
             CanEdit = CallerHasPermission(PermissionNames.EditProductCategory),
             CanDelete = CallerHasPermission(PermissionNames.DeleteProductCategory)
+        };
+    }
+
+    public ExpenseExistingAuthorizationResponseDto GetExpenseExistingAuthorization(Expense expense)
+    {
+        return new()
+        {
+            CanEdit = CallerHasPermission(PermissionNames.EditExpense),
+            CanDelete = CallerHasPermission(PermissionNames.DeleteExpense)
         };
     }
 
@@ -145,6 +155,11 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
     public bool CanCreateProductCategory()
     {
         return CallerHasPermission(PermissionNames.CreateProductCategory);
+    }
+
+    public bool CanCreateExpense()
+    {
+        return CallerHasPermission(PermissionNames.CreateExpense);
     }
 
     public bool CanCreateSupply()

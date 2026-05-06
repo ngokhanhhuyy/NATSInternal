@@ -27,13 +27,12 @@ internal class HasProductService<TItemRequestDto, TItemEntity> : IHasProductServ
     public async Task<List<TItemEntity>> CreateItemsAsync(
         List<TItemRequestDto> itemRequestDtos,
         Action<TItemRequestDto, TItemEntity> mapper,
-        Action<Stock> stockAdjuster,
+        Action<Product> stockingQuantityAdjuster,
         string itemsPropertyName)
     {
         List<TItemEntity> itemEntities = new();
         IEnumerable<int> requestProductIds = itemRequestDtos.Select(i => i.ProductId);
         List<Product> existingProducts = await _context.Products
-            .Include(p => p.Stock)
             .Where(p => requestProductIds.Contains(p.Id) && p.DeletedDateTime == null)
             .ToListAsync();
 
@@ -66,9 +65,8 @@ internal class HasProductService<TItemRequestDto, TItemEntity> : IHasProductServ
 
             mapper(itemRequestDto, itemEntity);
 
-            product.Stock ??= new();
-            stockAdjuster(product.Stock);
-            if (product.Stock.StockingQuantity < 0)
+            stockingQuantityAdjuster(product);
+            if (product.StockingQuantity < 0)
             {
                 throw new OperationException(
                     new object[] { itemsPropertyName, index, nameof(itemRequestDto.Quantity) },
@@ -87,13 +85,12 @@ internal class HasProductService<TItemRequestDto, TItemEntity> : IHasProductServ
         List<TItemRequestDto> itemRequestDtos,
         List<TItemEntity> existingItems,
         Action<TItemRequestDto, TItemEntity> mapper,
-        Action<Stock> stockAdjuster,
+        Action<Product> stockingQuantityAdjuster,
         string itemsPropertyName)
     {
         IEnumerable<int> requestItemIds = itemRequestDtos.Select(i => i.Id).OfType<int>();
         IEnumerable<int> requestProductIds = itemRequestDtos.Select(i => i.ProductId);
         List<Product> existingProducts = await _context.Products
-            .Include(p => p.Stock)
             .Where(p => requestProductIds.Contains(p.Id) && p.DeletedDateTime == null)
             .ToListAsync();
 
@@ -156,9 +153,8 @@ internal class HasProductService<TItemRequestDto, TItemEntity> : IHasProductServ
 
             mapper(itemRequestDto, itemEntity);
             
-            product.Stock ??= new();
-            stockAdjuster(product.Stock);
-            if (product.Stock.StockingQuantity < 0)
+            stockingQuantityAdjuster(product);
+            if (product.StockingQuantity < 0)
             {
                 throw new OperationException(
                     new object[] { itemsPropertyName, index, nameof(itemRequestDto.Quantity) },
@@ -170,17 +166,16 @@ internal class HasProductService<TItemRequestDto, TItemEntity> : IHasProductServ
         }
     }
 
-    public void DeleteItemsAsync(List<TItemEntity> existingItems, Action<Stock> stockAdjuster)
+    public void DeleteItemsAsync(List<TItemEntity> existingItems, Action<Product> stockingQuantityAdjuster)
     {
         for (int index = 0; index < existingItems.Count; index += 1)
         {
             TItemEntity itemEntity = existingItems[index];
-            if (itemEntity.Product?.Stock is not null)
+            stockingQuantityAdjuster(itemEntity.Product);
+
+            if (itemEntity.Product.StockingQuantity < 0)
             {
-                stockAdjuster(itemEntity.Product.Stock);
-                {
-                    throw new OperationException(ErrorMessages.NegativeProductStockingQuantity);
-                }
+                throw new OperationException(ErrorMessages.NegativeProductStockingQuantity);
             }
 
             _context.Remove(itemEntity);

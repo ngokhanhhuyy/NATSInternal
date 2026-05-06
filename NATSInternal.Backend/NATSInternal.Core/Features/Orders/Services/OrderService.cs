@@ -71,32 +71,32 @@ internal class OrderService : IOrderService
         {
             case nameof(OrderListRequestDto.FieldToSort.StatsDateTime):
                 query = query
-                    .ApplySorting(s => s.StatsDateTime, requestDto.SortByAscending)
+                    .ApplySorting(s => s.StatsDate, requestDto.SortByAscending)
                     .ThenApplySorting(s => s.CreatedDateTime, requestDto.SortByAscending);
                 break;
             case nameof(OrderListRequestDto.FieldToSort.CreatedDateTime):
                 query = query
                     .ApplySorting(s => s.CreatedDateTime, requestDto.SortByAscending)
-                    .ThenApplySorting(s => s.StatsDateTime, requestDto.SortByAscending);
+                    .ThenApplySorting(s => s.StatsDate, requestDto.SortByAscending);
                 break;
             case nameof(OrderListRequestDto.FieldToSort.LastUpdatedDateTime):
                 query = query
                     .ApplySorting(s => s.LastUpdatedDateTime, requestDto.SortByAscending)
-                    .ThenApplySorting(s => s.StatsDateTime, requestDto.SortByAscending);
+                    .ThenApplySorting(s => s.StatsDate, requestDto.SortByAscending);
                 break;
             case nameof(OrderListRequestDto.FieldToSort.ProductItemsAmount):
                 query = query
                     .ApplySorting(
                         s => s.CachedProductItemsAmountBeforeVat + s.CachedProductItemsVatAmount,
                         requestDto.SortByAscending)
-                    .ThenApplySorting(s => s.StatsDateTime, requestDto.SortByAscending);
+                    .ThenApplySorting(s => s.StatsDate, requestDto.SortByAscending);
                 break;
             case nameof(OrderListRequestDto.FieldToSort.ServiceItemsAmount):
                 query = query
                     .ApplySorting(
                         s => s.CachedServiceItemsAmountBeforeVat + s.CachedServiceItemsVatAmount,
                         requestDto.SortByAscending)
-                    .ThenApplySorting(s => s.StatsDateTime, requestDto.SortByAscending);
+                    .ThenApplySorting(s => s.StatsDate, requestDto.SortByAscending);
                 break;
             case nameof(OrderListRequestDto.FieldToSort.TotalAmount):
                 query = query
@@ -107,7 +107,7 @@ internal class OrderService : IOrderService
                             s.CachedServiceItemsAmountBeforeVat +
                             s.CachedServiceItemsVatAmount,
                         requestDto.SortByAscending)
-                    .ThenApplySorting(s => s.StatsDateTime, requestDto.SortByAscending);
+                    .ThenApplySorting(s => s.StatsDate, requestDto.SortByAscending);
                 break;
             default:
                 throw new NotImplementedException();
@@ -160,7 +160,7 @@ internal class OrderService : IOrderService
         Order order = new()
         {
             Type = requestDto.Type,
-            StatsDateTime = requestDto.StatsDateTime ?? currentDateTime,
+            StatsDate = requestDto.StatsDate ?? DateOnly.FromDateTime(currentDateTime),
             Note = requestDto.Note,
             CustomerId = requestDto.CustomerId,
             CreatedDateTime = currentDateTime,
@@ -174,7 +174,7 @@ internal class OrderService : IOrderService
             List<OrderProductItem> productItems = await _hasProductService.CreateItemsAsync(
                 requestDto.ProductItems,
                 MapProductItem,
-                stock => stock.StockingQuantity -= 1,
+                product => product.StockingQuantity -= 1,
                 nameof(requestDto.ProductItems));
 
             order.ProductItems.AddRange(productItems);
@@ -237,7 +237,7 @@ internal class OrderService : IOrderService
             .SingleOrDefaultAsync(o => o.Id == id && o.DeletedDateTime == null)
             ?? throw new NotFoundException();
 
-        order.StatsDateTime = requestDto.StatsDateTime ?? order.StatsDateTime;
+        order.StatsDate = requestDto.StatsDate ?? order.StatsDate;
         order.Note = requestDto.Note;
         order.LastUpdatedDateTime = _clock.Now;
         order.LastUpdatedUserId = _callerDetailProvider.GetId();
@@ -248,7 +248,7 @@ internal class OrderService : IOrderService
                 requestDto.ProductItems,
                 order.ProductItems,
                 MapProductItem,
-                stock => stock.StockingQuantity -= 1,
+                product => product.StockingQuantity -= 1,
                 nameof(requestDto.ProductItems));
         }
 
@@ -324,7 +324,7 @@ internal class OrderService : IOrderService
     public async Task DeleteAsync(int id)
     {
         Order order = await _context.Orders
-            .Include(o => o.ProductItems).ThenInclude(oi => oi.Product).ThenInclude(p => p.Stock)
+            .Include(o => o.ProductItems).ThenInclude(oi => oi.Product)
             .SingleOrDefaultAsync(o => o.Id == id && o.DeletedDateTime == null)
             ?? throw new NotFoundException();
 
@@ -338,7 +338,7 @@ internal class OrderService : IOrderService
         order.DeletedDateTime = _clock.Now;
         order.DeletedUserId = _callerDetailProvider.GetId();
         
-        _hasProductService.DeleteItemsAsync(order.ProductItems, (stock) => stock.StockingQuantity += 1);
+        _hasProductService.DeleteItemsAsync(order.ProductItems, (product) => product.StockingQuantity += 1);
 
         try
         {

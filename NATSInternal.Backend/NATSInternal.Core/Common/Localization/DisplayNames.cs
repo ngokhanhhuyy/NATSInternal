@@ -144,7 +144,6 @@ public static class DisplayNames
     public const string PurchasedAmount = "Số tiền đã mua";
     public const string PurchasedTransactionCount = "Số lượng giao dịch mua";
     public const string Quantity = "Số lượng";
-    public const string Stock = "Kho hàng";
     public const string StockingQuantity = "Số lượng trong kho";
     public const string ResupplyThresholdQuantity = "Số lượng ngưỡng cảnh báo hết hàng";
     public const string Default = "Mặc định";

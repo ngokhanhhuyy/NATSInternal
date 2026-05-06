@@ -1,13 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NATSInternal.Core.Features.Orders;
+using NATSInternal.Core.Features.Expenses;
 
 namespace NATSInternal.Core.Persistence.DbContext;
 
-internal class OrderEntityConfiguration : IEntityTypeConfiguration<Order>
+internal class ExpenseEntityConfiguration : IEntityTypeConfiguration<Expense>
 {
     #region Methods
-    public void Configure(EntityTypeBuilder<Order> entityBuilder)
+    public void Configure(EntityTypeBuilder<Expense> entityBuilder)
     {
         // Relationships.
         entityBuilder

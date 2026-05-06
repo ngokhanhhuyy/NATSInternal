@@ -68,28 +68,28 @@ internal class SupplyService : ISupplyService
         {
             case nameof(SupplyListRequestDto.FieldToSort.StatsDateTime):
                 query = query
-                    .ApplySorting(s => s.StatsDateTime, requestDto.SortByAscending)
+                    .ApplySorting(s => s.StatsDate, requestDto.SortByAscending)
                     .ThenApplySorting(s => s.CreatedDateTime, requestDto.SortByAscending);
                 break;
             case nameof(SupplyListRequestDto.FieldToSort.CreatedDateTime):
                 query = query
                     .ApplySorting(s => s.CreatedDateTime, requestDto.SortByAscending)
-                    .ThenApplySorting(s => s.StatsDateTime, requestDto.SortByAscending);
+                    .ThenApplySorting(s => s.StatsDate, requestDto.SortByAscending);
                 break;
             case nameof(SupplyListRequestDto.FieldToSort.LastUpdatedDateTime):
                 query = query
                     .ApplySorting(s => s.LastUpdatedDateTime, requestDto.SortByAscending)
-                    .ThenApplySorting(s => s.StatsDateTime, requestDto.SortByAscending);
+                    .ThenApplySorting(s => s.StatsDate, requestDto.SortByAscending);
                 break;
             case nameof(SupplyListRequestDto.FieldToSort.ItemAmount):
                 query = query
                     .ApplySorting(s => s.CachedItemsAmount, requestDto.SortByAscending)
-                    .ThenApplySorting(s => s.StatsDateTime, requestDto.SortByAscending);
+                    .ThenApplySorting(s => s.StatsDate, requestDto.SortByAscending);
                 break;
             case nameof(SupplyListRequestDto.FieldToSort.TotalAmount):
                 query = query
                     .ApplySorting(s => s.CachedAmount, requestDto.SortByAscending)
-                    .ThenApplySorting(s => s.StatsDateTime, requestDto.SortByAscending);
+                    .ThenApplySorting(s => s.StatsDate, requestDto.SortByAscending);
                 break;
             default:
                 throw new NotImplementedException();
@@ -140,7 +140,7 @@ internal class SupplyService : ISupplyService
         DateTime currentDateTime = _clock.Now;
         Supply supply = new()
         {
-            StatsDateTime = requestDto.StatsDateTime ?? currentDateTime,
+            StatsDate = requestDto.StatsDate ?? DateOnly.FromDateTime(currentDateTime),
             ShipmentFee = requestDto.ShipmentFee,
             Note = requestDto.Note,
             CreatedDateTime = currentDateTime,
@@ -152,7 +152,7 @@ internal class SupplyService : ISupplyService
         List<SupplyItem> supplyItems = await _hasProductService.CreateItemsAsync(
             requestDto.Items,
             MapItem,
-            stock => stock.StockingQuantity += 1,
+            (product) => product.StockingQuantity += 1,
             nameof(requestDto.Items));
 
         supply.Items.AddRange(supplyItems);
@@ -194,7 +194,7 @@ internal class SupplyService : ISupplyService
             throw new AuthorizationException();
         }
 
-        supply.StatsDateTime = requestDto.StatsDateTime ?? supply.StatsDateTime;
+        supply.StatsDate = requestDto.StatsDate ?? supply.StatsDate;
         supply.ShipmentFee = requestDto.ShipmentFee;
         supply.Note = requestDto.Note;
         supply.LastUpdatedDateTime = _clock.Now;
@@ -204,7 +204,7 @@ internal class SupplyService : ISupplyService
             requestDto.Items,
             supply.Items,
             MapItem,
-            stock => stock.StockingQuantity += 1,
+            (product) => product.StockingQuantity += 1,
             nameof(requestDto.Items));
 
         // TODO: Handle photo creation or updation.
@@ -225,7 +225,7 @@ internal class SupplyService : ISupplyService
     public async Task DeleteAsync(int id)
     {
         Supply supply = await _context.Supplies
-            .Include(s => s.Items).ThenInclude(si => si.Product).ThenInclude(p => p.Stock)
+            .Include(s => s.Items).ThenInclude(si => si.Product)
             .SingleOrDefaultAsync(s => s.Id == id && s.DeletedDateTime == null)
             ?? throw new NotFoundException();
 
@@ -238,6 +238,8 @@ internal class SupplyService : ISupplyService
 
         supply.DeletedDateTime = _clock.Now;
         supply.DeletedUserId = _callerDetailProvider.GetId();
+
+        _hasProductService.DeleteItemsAsync(supply.Items, (product) => product.StockingQuantity -= 1);
 
         try
         {

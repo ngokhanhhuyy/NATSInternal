@@ -27,6 +27,11 @@ internal class Product
     
     [Required]
     public required int DefaultVatPercentagePerUnit { get; set; }
+
+    [Required]
+    public required int StockingQuantity { get; set; }
+
+    public int? ResupplyThresholdQuantity { get; set; }
     
     [Required]
     public required bool IsForRetail { get; set; } = true; 
@@ -53,7 +58,6 @@ internal class Product
 
     #region NavigationProperties
     public List<ProductCategory> Categories { get; private set; } = new();
-    public Stock? Stock { get; set; }
     public User CreatedUser { get; set; } = null!;
     public User? LastUpdatedUser { get; set; }
     public User? DeletedUser { get; set; }

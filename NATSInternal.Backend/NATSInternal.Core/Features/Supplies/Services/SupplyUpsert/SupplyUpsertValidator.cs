@@ -17,8 +17,8 @@ internal class SupplyUpsertValidator : Validator<SupplyUpsertRequestDto>
         IValidator<PhotoUpsertRequestDto> photoValidator,
         IClock clock)
     {
-        RuleFor(dto => dto.StatsDateTime)
-            .IsValidStatsDate(clock.Now)
+        RuleFor(dto => dto.StatsDate)
+            .IsValidStatsDate(clock.Today)
             .WithName(DisplayNames.StatsDateTime);
         RuleFor(dto => dto.ShipmentFee)
             .GreaterThanOrEqualTo(0)
