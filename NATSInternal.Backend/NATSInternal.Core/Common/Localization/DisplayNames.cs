@@ -31,7 +31,7 @@ public static class DisplayNames
     public const string Treatment = "Liệu trình";
     public const string TreatmentItem = "Mục sản phẩm liệu trình";
     public const string Expense = "Chi phí";
-    public const string ExpenseCategory = "Phân loại chi phí";
+    public const string ExpenseType = "Phân loại chi phí";
     public const string ExpensePayee = "Người/tổ chức nhận thanh toán";
     public const string ExpensePhoto = "Hình ảnh chi phí";
     public const string Consultant = "Dịch vụ tư vấn";
@@ -135,7 +135,7 @@ public static class DisplayNames
     public const string RecordedYear = "Năm thống kê";
     public const string RecordedMonthAndYear = "Tháng và năm thông kê";
     public const string IntervalInMinutes = "Số phút hiệu lực";
-    public const string StatsDateTime = "Ngày thống kê";
+    public const string StatsDate = "Ngày thống kê";
     public const string Home = "Trang chủ";
     public const string Creteria = "Tiêu chí";
     public const string Count = "Số lượng";

@@ -18,7 +18,7 @@ internal class OrderUpsertValidator : Validator<OrderUpsertRequestDto>
     {
         RuleFor(dto => dto.StatsDate)
             .IsValidStatsDate(clock.Today)
-            .WithName(DisplayNames.StatsDateTime);
+            .WithName(DisplayNames.StatsDate);
         RuleFor(dto => dto.Note)
             .MaximumLength(HasStatsContracts.NoteMaxLength);
         RuleFor(dto => dto.CustomerId)
