@@ -77,6 +77,7 @@ internal class SupplySeeder
             };
 
             product.StockingQuantity += quantity;
+            items.Add(item);
         }
 
         string? note = null;
@@ -94,7 +95,7 @@ internal class SupplySeeder
         Supply supply = new()
         {
             StatsDate = DateOnly.FromDateTime(generatingDateTime),
-            ShipmentFee = (int)Math.Round((double)items.Sum(i => i.AmountPerUnit * i.Quantity) / 5),
+            ShipmentFee = (int)Math.Round((double)items.Sum(i => i.AmountPerUnit * i.Quantity) / 20),
             Note = note,
             CreatedDateTime = generatingDateTime,
             CreatedUserId = createdUser.Id

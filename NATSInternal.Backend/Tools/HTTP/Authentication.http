@@ -134,19 +134,21 @@ Cookie: {{accessCookie}}
 ###
 # @name SupplyList
 // @no-log
-GET {{host}}/supply
+GET {{host}}/supplies
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
-# @name TreatmentList
-GET {{host}}/treatment
+# @name OrderList
+GET {{host}}/orders?sortByAscending=False
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
-{
-    "ignoreMonthYear": true
-}
+###
+# @name OrderDetail
+GET {{host}}/orders/1
+Content-Type: application/json
+Cookie: {{accessCookie}}
 
 ###
 # @name DebtIncurrenceList

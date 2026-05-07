@@ -116,7 +116,7 @@ internal partial class ProductSeeder
                 Unit = units[_random.Next(units.Length)],
                 StockingQuantity = _random.Next(20, 300),
                 ResupplyThresholdQuantity = _random.Next(5, 10) * 10,
-                DefaultAmountBeforeVatPerUnit = _random.Next(200, 1000) * 1000L,
+                DefaultAmountBeforeVatPerUnit = _random.Next(20, 150) * 1000L,
                 DefaultVatPercentagePerUnit = 10,
                 IsForRetail = _random.Next(10) > 2,
                 IsDiscontinued = _random.Next(10) == 0,

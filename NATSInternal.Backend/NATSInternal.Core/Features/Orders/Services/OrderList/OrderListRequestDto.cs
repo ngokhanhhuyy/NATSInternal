@@ -6,7 +6,7 @@ namespace NATSInternal.Core.Features.Orders;
 public class OrderListRequestDto : IHasStatsListRequestDto
 {
     #region Properties
-    public bool SortByAscending { get; set; } = true;
+    public bool SortByAscending { get; set; } = false;
     public string SortByFieldName { get; set; } = nameof(FieldToSort.StatsDateTime);
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;

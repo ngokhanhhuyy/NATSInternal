@@ -4,7 +4,7 @@ using NATSInternal.Core.Features.Products;
 
 namespace NATSInternal.Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/products")]
 [ApiController]
 [Authorize]
 public class ProductController : ControllerBase

@@ -9,8 +9,6 @@ using NATSInternal.Api.Filters;
 using NATSInternal.Core.Configurations;
 using NATSInternal.Core.Common.Security;
 using System.Text.Json.Serialization;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
 
 namespace NATSInternal.Api;
 

@@ -9,6 +9,7 @@ public class OrderBasicResponseDto
     internal OrderBasicResponseDto(Order order)
     {
         Id = order.Id;
+        Type = order.Type;
         StatsDate = order.StatsDate;
         AmountAfterVat = order.CachedAmountAfterVat;
         Customer = new(order.Customer);
@@ -22,6 +23,7 @@ public class OrderBasicResponseDto
 
     #region Properties
     public int Id { get; set; }
+    public OrderType Type { get; set; }
     public DateOnly StatsDate { get; set; }
     public long AmountAfterVat { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
