@@ -22,7 +22,7 @@ public class CustomerUpsertRequestDto : IRequestDto
     #endregion
 
     #region Methods
-    public virtual void TransformValues()
+    public void TransformValues()
     {
         MiddleName = MiddleName?.ToNullIfEmptyOrWhiteSpace();
         NickName = NickName?.ToNullIfEmptyOrWhiteSpace();
