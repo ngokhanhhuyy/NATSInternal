@@ -32,51 +32,6 @@ internal static class DateTimeRuleBuilderOptionsExtensions
                 .ReplaceComparisonValue(currentDateTime.ToVietnameseString());
             return ruleBuilder.LessThanOrEqualTo(currentDateTime).WithMessage(errorMessage);
         }
-        
-        public IRuleBuilderOptions<T, DateTime?> IsValidStatsDateTime()
-        {
-            return ruleBuilder.Must(dateTime =>
-                {
-                    if (dateTime != null)
-                    {
-                        DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
-                        if (dateTime > currentDateTime)
-                        {
-                            return false;
-                        }
-                    }
-                    return true;
-                }).WithMessage(_ =>
-                {
-                    DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
-                    return ErrorMessages.EarlierThanOrEqualToNow
-                        .ReplaceComparisonValue(currentDateTime.ToVietnameseString());
-                })
-                .Must(dateTime =>
-                {
-                    if (dateTime != null)
-                    {
-                        if (dateTime < MinimumStatsDateTime)
-                        {
-                            return false;
-                        }
-                    }
-
-                    return true;
-                }).WithMessage(ErrorMessages.LaterThanOrEqual.ReplaceComparisonValue(
-                    MinimumStatsDateTime.ToVietnameseString()));
-        }
-    }
-    #endregion
-
-    #region PrivateMethods
-    private static DateTime MinimumStatsDateTime
-    {
-        get
-        {
-            DateTime currentDateTime = DateTime.UtcNow.ToApplicationTime();
-            return new(currentDateTime.AddMonths(-1).Year, currentDateTime.AddMonths(-1).Month, 1, 0, 0, 0);
-        }
     }
     #endregion
 }

@@ -48,11 +48,14 @@ internal class UserEntityConfiguration : IEntityTypeConfiguration<User>
         
         // Index.
         entityBuilder.HasIndex(p => p.UserName).IsUnique();
+
+        // RowVersion.
+        entityBuilder.Property<byte[]?>("RowVersion").IsRowVersion();
     }
     #endregion
 }
 
-file class UserRole
+internal class UserRole
 {
     #region Properties
     [Required]

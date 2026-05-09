@@ -23,12 +23,10 @@ internal class OrderUpsertValidator : Validator<OrderUpsertRequestDto>
             .WithName(DisplayNames.StatsDate);
         RuleFor(dto => dto.Note)
             .MaximumLength(HasStatsContracts.NoteMaxLength);
-            
         RuleFor(dto => dto.CustomerId)
             .GreaterThan(0)
             .WithMessage(ErrorMessages.Invalid)
             .WithName(DisplayNames.Customer);
-
         RuleFor(dto => dto.Customer)
             .SetValidator(customerValidator)
             .When(dto => dto.Customer is not null)
@@ -39,7 +37,6 @@ internal class OrderUpsertValidator : Validator<OrderUpsertRequestDto>
             .Unique(pi => pi.ProductId)
             .When(dto => dto.Type is OrderType.Retail)
             .WithName(DisplayNames.OrderProductItem);
-
         RuleForEach(dto => dto.ProductItems)
             .SetValidator(productItemValidator)
             .WithName(DisplayNames.OrderProductItem);

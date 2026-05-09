@@ -1,7 +1,10 @@
 using JetBrains.Annotations;
 using NATSInternal.Core.Common.Security;
 using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Features.Expenses;
+using NATSInternal.Core.Features.Orders;
 using NATSInternal.Core.Features.Products;
+using NATSInternal.Core.Features.Supplies;
 using NATSInternal.Core.Features.Users;
 
 namespace NATSInternal.Core.Features.Authorization;
@@ -59,15 +62,33 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
             CanDelete = CallerHasPermission(PermissionNames.DeleteProductCategory)
         };
     }
-    //
-    // public SupplyExistingAuthorizationResponseDto GetSupplyExistingAuthorization(Supply supply)
-    // {
-    //     return new()
-    //     {
-    //         CanEdit = CallerHasPermission(PermissionNames.EditSupply),
-    //         CanDelete = CallerHasPermission(PermissionNames.DeleteSupply)
-    //     };
-    // }
+
+    public ExpenseExistingAuthorizationResponseDto GetExpenseExistingAuthorization(Expense expense)
+    {
+        return new()
+        {
+            CanEdit = CallerHasPermission(PermissionNames.EditExpense),
+            CanDelete = CallerHasPermission(PermissionNames.DeleteExpense)
+        };
+    }
+
+    public SupplyExistingAuthorizationResponseDto GetSupplyExistingAuthorization(Supply supply)
+    {
+        return new()
+        {
+            CanEdit = CallerHasPermission(PermissionNames.EditSupply),
+            CanDelete = CallerHasPermission(PermissionNames.DeleteSupply)
+        };
+    }
+
+    public OrderExistingAuthorizationResponseDto GetOrderExistingAuthorization(Order order)
+    {
+        return new()
+        {
+            CanEdit = CallerHasPermission(PermissionNames.EditOrder),
+            CanDelete = CallerHasPermission(PermissionNames.DeleteOrder)
+        };
+    }
 
     public bool CanCreateUser()
     {
@@ -136,9 +157,19 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
         return CallerHasPermission(PermissionNames.CreateProductCategory);
     }
 
+    public bool CanCreateExpense()
+    {
+        return CallerHasPermission(PermissionNames.CreateExpense);
+    }
+
     public bool CanCreateSupply()
     {
         return CallerHasPermission(PermissionNames.CreateSupply);
+    }
+
+    public bool CanCreateOrder()
+    {
+        return CallerHasPermission(PermissionNames.CreateOrder);
     }
     #endregion
 

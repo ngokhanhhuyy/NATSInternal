@@ -9,6 +9,7 @@ internal class RoleEntityConfiguration : IEntityTypeConfiguration<Role>
     #region Methods
     public void Configure(EntityTypeBuilder<Role> entityBuilder)
     {
+        // Indexes.
         entityBuilder.HasIndex(r => r.Name).IsUnique();
     }
     #endregion

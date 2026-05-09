@@ -24,7 +24,7 @@ internal class User
     #endregion
     
     #region ForeignKeyProperties
-    public required int? CreatedUserId { get; set; }
+    public int? CreatedUserId { get; set; }
     public int? LastUpdatedUserId { get; set; }
     public int? DeletedUserId { get; set; }
     #endregion

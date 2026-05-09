@@ -58,7 +58,6 @@ internal class ProductService : IProductService
         
         IQueryable<Product> query = _context.Products
             .Include(p => p.Categories)
-            .Include(p => p.Stock)
             .Include(p => p.Photos.Where(photo => photo.IsThumbnail))
             .Where(c => c.DeletedDateTime == null);
 
@@ -82,9 +81,9 @@ internal class ProductService : IProductService
                 query = query
                     .ApplySorting(p => p.IsDiscontinued, requestDto.SortByAscending)
                     .ThenApplySorting(
-                        p => p.Stock != null
-                            ? p.Stock.StockingQuantity - p.Stock.ResupplyThresholdQuantity
-                            : int.MaxValue,
+                        p => p.ResupplyThresholdQuantity != null
+                            ? p.StockingQuantity - p.ResupplyThresholdQuantity
+                            : p.StockingQuantity - 0,
                         requestDto.SortByAscending)
                     .ThenApplySorting(p => p.Name, requestDto.SortByAscending);
                 break;
@@ -98,10 +97,7 @@ internal class ProductService : IProductService
                 query = query.ApplySorting(p => p.CreatedDateTime, requestDto.SortByAscending);
                 break;
             case nameof(ProductListRequestDto.FieldToSort.StockingQuantity):
-                query = query.ApplySorting(
-                    p => p.Stock != null ? p.Stock.StockingQuantity : 0,
-                    requestDto.SortByAscending
-                );
+                query = query.ApplySorting(p => p.StockingQuantity, requestDto.SortByAscending);
                 break;
             default:
                 throw new NotImplementedException();
@@ -110,14 +106,21 @@ internal class ProductService : IProductService
         (int page, int resultPerPage) = (requestDto.Page, requestDto.ResultsPerPage);
         Page<Product> queryResult = await _listFetchingService.GetPagedListAsync(query, page, resultPerPage);
 
-        return new(queryResult.Items, queryResult.ItemCount, queryResult.PageCount);
+        List<ProductBasicResponseDto> productResponseDtos = queryResult.Items
+            .Select(p => new ProductBasicResponseDto(p, _authorizationService.GetProductExistingAuthorization(p)))
+            .ToList();
+
+        return new(productResponseDtos, queryResult.ItemCount, queryResult.PageCount);
     }
 
     public async Task<ProductDetailResponseDto> GetDetailAsync(int id)
     {
         return await _context.Products
+            .AsSplitQuery()
+            .Include(p => p.CreatedUser)
+            .Include(p => p.LastUpdatedUser)
+            .Include(p => p.DeletedUser)
             .Include(p => p.Categories)
-            .Include(p => p.Stock)
             .Include(p => p.Photos)
             .Where(p => p.Id == id && p.DeletedDateTime == null)
             .Select(p => new ProductDetailResponseDto(p, _authorizationService.GetProductExistingAuthorization(p)))
@@ -149,13 +152,11 @@ internal class ProductService : IProductService
             Unit = requestDto.Unit,
             DefaultAmountBeforeVatPerUnit = requestDto.DefaultAmountBeforeVatPerUnit,
             DefaultVatPercentagePerUnit = requestDto.DefaultVatPercentagePerUnit,
+            StockingQuantity = requestDto.StockingQuantity,
+            ResupplyThresholdQuantity = requestDto.ResupplyThresholdQuantity,
             IsForRetail = requestDto.IsForRetail,
             CreatedDateTime = _clock.Now,
             CreatedUserId = _callerDetailProvider.GetId(),
-            Stock = new()
-            {
-                ResupplyThresholdQuantity = requestDto.ResupplyThresholdQuantity
-            },
         };
 
         for (int index = 0; index < requestDto.CategoryIds.Count; index += 1)
@@ -216,7 +217,6 @@ internal class ProductService : IProductService
 
         Product product = await _context.Products
             .Include(p => p.Categories)
-            .Include(p => p.Stock)
             .Include(p => p.Photos)
             .SingleOrDefaultAsync(p => p.Id == id && p.DeletedDateTime == null)
             ?? throw new NotFoundException();
@@ -233,11 +233,10 @@ internal class ProductService : IProductService
         product.Unit = requestDto.Unit;
         product.DefaultAmountBeforeVatPerUnit = requestDto.DefaultAmountBeforeVatPerUnit;
         product.DefaultVatPercentagePerUnit = requestDto.DefaultVatPercentagePerUnit;
+        product.StockingQuantity = requestDto.StockingQuantity;
+        product.ResupplyThresholdQuantity = requestDto.ResupplyThresholdQuantity;
         product.IsForRetail = requestDto.IsForRetail;
         product.IsDiscontinued = requestDto.IsDiscontinued;
-
-        product.Stock ??= new();
-        product.Stock.ResupplyThresholdQuantity = requestDto.ResupplyThresholdQuantity;
 
         product.LastUpdatedDateTime = _clock.Now;
         product.LastUpdatedUserId = _callerDetailProvider.GetId();

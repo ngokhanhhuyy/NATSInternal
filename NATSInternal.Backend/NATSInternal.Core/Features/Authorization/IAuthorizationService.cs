@@ -6,5 +6,7 @@ public interface IAuthorizationService
     bool CanCreateCustomer();
     bool CanCreateProduct();
     bool CanCreateProductCategory();
+    bool CanCreateExpense();
     bool CanCreateSupply();
+    bool CanCreateOrder();
 }

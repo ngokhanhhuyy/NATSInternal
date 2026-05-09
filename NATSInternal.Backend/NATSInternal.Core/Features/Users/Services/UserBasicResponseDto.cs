@@ -9,6 +9,7 @@ public class UserBasicResponseDto
     {
         Id = user.Id;
         UserName = user.UserName;
+        Roles = user.Roles.Select(r => new RoleBasicResponseDto(r)).ToList();
         IsDeleted = user.DeletedDateTime is not null;
     }
 
@@ -21,6 +22,7 @@ public class UserBasicResponseDto
     #region Properties
     public int Id { get; }
     public string UserName { get; }
+    List<RoleBasicResponseDto> Roles { get; }
     public bool IsDeleted { get; }
     public UserExistingAuthorizationResponseDto? Authorization { get; }
     #endregion

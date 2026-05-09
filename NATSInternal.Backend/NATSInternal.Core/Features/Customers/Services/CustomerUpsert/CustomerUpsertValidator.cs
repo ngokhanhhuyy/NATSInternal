@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using FluentValidation;
 using NATSInternal.Core.Common.Localization;
 using NATSInternal.Core.Common.Time;
@@ -5,6 +6,7 @@ using NATSInternal.Core.Common.Validation;
 
 namespace NATSInternal.Core.Features.Customers;
 
+[UsedImplicitly]
 internal class CustomerUpsertValidator : Validator<CustomerUpsertRequestDto>
 {
     #region Constructors

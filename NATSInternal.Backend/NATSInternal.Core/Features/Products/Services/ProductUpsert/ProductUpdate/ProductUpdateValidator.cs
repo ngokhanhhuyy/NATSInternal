@@ -8,6 +8,6 @@ internal class ProductUpdateValidator : AbstractProductUpsertValidator<ProductUp
 {
     public ProductUpdateValidator()
     {
-        RuleForEach(dto => dto.Photos).SetValidator(new PhotoAddOrUpdateValidator(), ruleSets: "CreateAndUpdate");
+        RuleForEach(dto => dto.Photos).SetValidator(new PhotoUpsertValidator(), ruleSets: "CreateAndUpdate");
     }
 }

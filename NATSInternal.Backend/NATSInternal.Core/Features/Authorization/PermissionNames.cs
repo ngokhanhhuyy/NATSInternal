@@ -32,7 +32,6 @@ public static class PermissionNames
     public const string EditLockedSupply = nameof(EditLockedSupply);
     public const string DeleteSupply = nameof(DeleteSupply);
     public const string SetSupplyStatsDateTime = nameof(SetSupplyStatsDateTime);
-    public const string AccessSupplyUpdateHistories = nameof(AccessSupplyUpdateHistories);
 
     // Permissions to interact with expenses.
     public const string CreateExpense = nameof(CreateExpense);
@@ -40,7 +39,6 @@ public static class PermissionNames
     public const string EditLockedExpense = nameof(EditLockedExpense);
     public const string DeleteExpense = nameof(DeleteExpense);
     public const string SetExpenseStatsDateTime = nameof(SetExpenseStatsDateTime);
-    public const string AccessExpenseUpdateHistories = nameof(AccessExpenseUpdateHistories);
 
     // Permissions to interact with orders.
     public const string CreateOrder = nameof(CreateOrder);
@@ -48,7 +46,6 @@ public static class PermissionNames
     public const string EditLockedOrder = nameof(EditLockedOrder);
     public const string SetOrderStatsDateTime = nameof(SetOrderStatsDateTime);
     public const string DeleteOrder = nameof(DeleteOrder);
-    public const string AccessOrderUpdateHistories = nameof(AccessOrderUpdateHistories);
 
     // Permissions to interact with debts
     public const string CreateDebt = nameof(CreateDebt);
@@ -56,15 +53,17 @@ public static class PermissionNames
     public const string EditLockedDebt = nameof(EditLockedDebt);
     public const string SetDebtStatsDateTime = nameof(SetDebtStatsDateTime);
     public const string DeleteDebt = nameof(DeleteDebt);
-    public const string AccessDebtUpdateHistories = nameof(AccessDebtUpdateHistories);
 
     // Permissions to interact with announcements.
     public const string CreateAnnouncement = nameof(CreateAnnouncement);
     public const string EditAnnouncement = nameof(EditAnnouncement);
     public const string DeleteAnnouncement = nameof(DeleteAnnouncement);
 
-    // Permission to interact with reports.
+    // Permissions to interact with reports.
     public const string GetFinancialReport = nameof(GetFinancialReport);
     public const string GetApplicationOperationReport = nameof(GetApplicationOperationReport);
+
+    // Permissions to interact with audit logs.
+    public const string AccessAuditLogs = nameof(AccessAuditLogs);
     #endregion
 }

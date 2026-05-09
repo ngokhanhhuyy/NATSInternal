@@ -12,7 +12,10 @@ using NATSInternal.Core.Persistence.Seeders;
 using NATSInternal.Core.Features.Authentication;
 using NATSInternal.Core.Features.Authorization;
 using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Features.Expenses;
+using NATSInternal.Core.Features.Orders;
 using NATSInternal.Core.Features.Products;
+using NATSInternal.Core.Features.Supplies;
 using NATSInternal.Core.Features.Users;
 
 namespace NATSInternal.Core.Configurations;
@@ -37,6 +40,13 @@ public static class CoreConfiguration
             
             // Services.
             services.AddScoped<IListFetchingService, ListFetchingService>();
+            services.AddScoped<
+                IHasProductService<SupplyUpsertItemRequestDto, SupplyItem>,
+                HasProductService<SupplyUpsertItemRequestDto, SupplyItem>>();
+            services.AddScoped<
+                IHasProductService<OrderUpsertProductItemRequestDto, OrderProductItem>,
+                HasProductService<OrderUpsertProductItemRequestDto, OrderProductItem>>();
+
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<AuthorizationInternalService>();
             services.AddScoped<IAuthorizationInternalService>(sp =>
@@ -44,12 +54,19 @@ public static class CoreConfiguration
             services.AddScoped<IAuthorizationService>(sp => sp.GetRequiredService<AuthorizationInternalService>());
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IProductCategoryService, ProductCategoryService>();
+            services.AddScoped<IExpenseService, ExpenseService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<ISupplyService, SupplyService>();
             services.AddScoped<IUserService, UserService>();
 
             // Seeders.
             services.AddTransient<Seeder>();
-            services.AddTransient<UserSeeder>();
             services.AddTransient<CustomerSeeder>();
+            services.AddTransient<ProductSeeder>();
+            services.AddTransient<SupplySeeder>();
+            services.AddTransient<OrderSeeder>();
+            services.AddTransient<UserSeeder>();
 
             // Security.
             services.AddScoped<IPasswordHasher, PasswordHasher>();

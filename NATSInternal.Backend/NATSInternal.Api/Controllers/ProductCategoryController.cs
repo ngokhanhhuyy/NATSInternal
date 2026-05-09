@@ -1,81 +1,62 @@
-// using MediatR;
-// using Microsoft.AspNetCore.Authorization;
-// using Microsoft.AspNetCore.Mvc;
-// using NATSInternal.Application.UseCases.Products;
-// using NATSInternal.Application.UseCases.Shared;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using NATSInternal.Core.Features.Products;
 
-// namespace NATSInternal.Api.Controllers;
+namespace NATSInternal.Api.Controllers;
 
-// [Route("api/products/categories")]
-// [ApiController]
-// [Authorize]
-// public class ProductCategoryController : ControllerBase
-// {
-//     #region Fields
-//     private readonly IMediator _mediator;
-//     #endregion
+[Route("api/products/categories")]
+[ApiController]
+[Authorize]
+public class ProductCategoryController : ControllerBase
+{
+    #region Fields
+    private readonly IProductCategoryService _service;
+    #endregion
 
-//     #region Constructors
-//     public ProductCategoryController(IMediator mediator)
-//     {
-//         _mediator = mediator;
-//     }
-//     #endregion
+    #region Constructors
+    public ProductCategoryController(IProductCategoryService service)
+    {
+        _service = service;
+    }
+    #endregion
 
-//     [HttpGet]
-//     [ProducesResponseType<ProductCategoryGetListResponseDto>(StatusCodes.Status200OK)]
-//     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-//     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-//     public async Task<IActionResult> GetList(
-//         [FromQuery] ProductCategoryGetListRequestDto requestDto,
-//         CancellationToken cancellationToken = default)
-//     {
-//         return Ok(await _mediator.Send(requestDto, cancellationToken));
-//     }
+    [ProducesResponseType<IEnumerable<ProductCategoryBasicResponseDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetAll()
+    {
+        return Ok(await _service.GetAllAsync());
+    }
 
-//     [HttpGet("all")]
-//     [ProducesResponseType<IEnumerable<ProductCategoryBasicResponseDto>>(StatusCodes.Status200OK)]
-//     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-//     public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
-//     {
-//         return Ok(await _mediator.Send(new ProductCategoryGetAllRequestDto(), cancellationToken));
-//     }
+    [HttpGet("{id:int}")]
+    [ProducesResponseType<ProductCategoryDetailResponseDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> GetDetail([FromRoute] int id)
+    {
+        return Ok(await _service.GetDetailAsync(id));
+    }
 
-//     [HttpGet("{id:guid}")]
-//     [ProducesResponseType<ProductCategoryGetDetailResponseDto>(StatusCodes.Status200OK)]
-//     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-//     [ProducesResponseType(StatusCodes.Status404NotFound)]
-//     [ProducesResponseType(StatusCodes.Status409Conflict)]
-//     public async Task<IActionResult> GetDetail([FromRoute] Guid id, CancellationToken cancellationToken = default)
-//     {
-//         return Ok(await _mediator.Send(new ProductCategoryGetDetailRequestDto { Id = id }, cancellationToken));
-//     }
+    [HttpPut("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] ProductCategoryUpsertRequestDto requestDto)
+    {
+        await _service.UpdateAsync(id, requestDto);
+        return Ok();
+    }
 
-//     [HttpPut("{id:guid}")]
-//     [ProducesResponseType(StatusCodes.Status200OK)]
-//     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-//     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-//     [ProducesResponseType(StatusCodes.Status404NotFound)]
-//     [ProducesResponseType(StatusCodes.Status409Conflict)]
-//     public async Task<IActionResult> Update(
-//         [FromRoute] Guid id,
-//         [FromBody] ProductCategoryUpdateRequestDto requestDto,
-//         CancellationToken cancellationToken = default)
-//     {
-//         requestDto.Id = id;
-//         await _mediator.Send(requestDto, cancellationToken);
-//         return Ok();
-//     }
-
-//     [HttpDelete("{id:guid}")]
-//     [ProducesResponseType(StatusCodes.Status200OK)]
-//     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-//     [ProducesResponseType(StatusCodes.Status404NotFound)]
-//     [ProducesResponseType(StatusCodes.Status409Conflict)]
-//     public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
-//     {
-//         ProductCategoryDeleteRequestDto requestDto = new() { Id = id };
-//         await _mediator.Send(requestDto, cancellationToken);
-//         return Ok();
-//     }
-// }
+    [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Delete([FromRoute] int id)
+    {
+        await _service.DeleteAsync(id);
+        return Ok();
+    }
+}

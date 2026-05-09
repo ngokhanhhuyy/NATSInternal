@@ -17,6 +17,8 @@ public class ProductDetailResponseDto
         Unit = product.Unit;
         DefaultAmountBeforeVatPerUnit = product.DefaultAmountBeforeVatPerUnit;
         DefaultVatPercentagePerUnit = product.DefaultVatPercentagePerUnit;
+        StockingQuantity = product.StockingQuantity;
+        ResupplyThresholdQuantity = product.ResupplyThresholdQuantity;
         IsForRetail = product.IsForRetail;
         IsDiscontinued = product.IsDiscontinued;
         CreatedDateTime = product.CreatedDateTime;
@@ -24,11 +26,6 @@ public class ProductDetailResponseDto
         LastUpdatedDateTime = product.LastUpdatedDateTime;
         Photos = product.Photos.Select(p => new PhotoBasicResponseDto(p));
         Authorization = authorizationResponseDto;
-
-        if (product.Stock is not null)
-        {
-            Stock = new(product.Stock);
-        }
 
         if (product.LastUpdatedUser is not null)
         {
@@ -46,13 +43,14 @@ public class ProductDetailResponseDto
     public string Unit { get; }
     public long DefaultAmountBeforeVatPerUnit { get; }
     public int DefaultVatPercentagePerUnit { get; }
+    public int StockingQuantity { get; }
+    public int? ResupplyThresholdQuantity { get; }
     public bool IsForRetail { get; }
     public bool IsDiscontinued { get; }
     public DateTime CreatedDateTime { get; }
     public UserBasicResponseDto CreatedUser { get;  }
     public DateTime? LastUpdatedDateTime { get; }
     public UserBasicResponseDto? LastUpdatedUser { get; }
-    public StockBasicResponseDto? Stock { get; }
     public IEnumerable<ProductCategoryBasicResponseDto> Categories { get; }
     public IEnumerable<PhotoBasicResponseDto> Photos { get; }
     public ProductExistingAuthorizationResponseDto Authorization { get; }

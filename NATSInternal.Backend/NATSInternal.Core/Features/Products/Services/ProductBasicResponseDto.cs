@@ -26,14 +26,13 @@ public class ProductBasicResponseDto
         Unit = product.Unit;
         DefaultAmountBeforeVatPerUnit = product.DefaultAmountBeforeVatPerUnit;
         DefaultVatPercentagePerUnit = product.DefaultVatPercentagePerUnit;
+        StockingQuantity = product.StockingQuantity;
         IsDiscontinued = product.IsDiscontinued;
         Categories = product.Categories.Select(pc => new ProductCategoryBasicResponseDto(pc)).ToList();
 
-        if (product.Stock is not null)
+        if (product.ResupplyThresholdQuantity.HasValue && !product.IsDiscontinued)
         {
-            Stock stock = product.Stock;
-            StockingQuantity = stock.StockingQuantity;
-            IsResupplyNeeded = !product.IsDiscontinued && stock.StockingQuantity <= stock.ResupplyThresholdQuantity;
+            IsResupplyNeeded = product.StockingQuantity <= product.ResupplyThresholdQuantity.Value;
         }
 
         if (product.Thumbnail is not null)

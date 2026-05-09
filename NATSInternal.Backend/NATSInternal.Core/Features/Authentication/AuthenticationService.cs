@@ -51,16 +51,16 @@ internal class AuthenticationService : IAuthenticationService
     {
         _verifyUserNameAndPasswordValidator.ValidateAndThrow(requestDto);
         
-        User user = await _context.Users
-            .Where(u => u.UserName == requestDto.UserName)
-            .Where(u => u.DeletedDateTime == null)
+        string passwordHash = await _context.Users
+            .Where(u => u.UserName == requestDto.UserName && u.DeletedDateTime == null)
+            .Select(u => u.PasswordHash)
             .SingleOrDefaultAsync()
             ?? throw new OperationException(
                new object[] { nameof(requestDto.UserName) },
                ErrorMessages.NotFound.ReplaceResourceName(DisplayNames.User)
             );
         
-        bool isPasswordCorrect = _passwordHasher.VerifyPassword(requestDto.Password, user.PasswordHash);
+        bool isPasswordCorrect = _passwordHasher.VerifyPassword(requestDto.Password, passwordHash);
         if (!isPasswordCorrect)
         {
             throw new OperationException(

@@ -24,13 +24,14 @@ public static class DisplayNames
     public const string SupplyPhoto = "Hình ảnh nhập hàng";
     public const string SupplyUpdateHistory = "Lịch sử cập nhập đơn đặt hàng";
     public const string Order = "Đơn hàng";
-    public const string OrderItem = "Mục đơn hàng";
-    public const string OrderPayment = "Thanh toán đơn hàng";
+    public const string OrderType = "Loại đơn hàng";
+    public const string OrderProductItem = "Mục sản phẩm đơn hàng";
+    public const string OrderServiceItem = "Mục dịch vụ đơn hàng";
     public const string OrderPhoto = "Hình ảnh đơn hàng";
     public const string Treatment = "Liệu trình";
     public const string TreatmentItem = "Mục sản phẩm liệu trình";
     public const string Expense = "Chi phí";
-    public const string ExpenseCategory = "Phân loại chi phí";
+    public const string ExpenseType = "Phân loại chi phí";
     public const string ExpensePayee = "Người/tổ chức nhận thanh toán";
     public const string ExpensePhoto = "Hình ảnh chi phí";
     public const string Consultant = "Dịch vụ tư vấn";
@@ -134,7 +135,7 @@ public static class DisplayNames
     public const string RecordedYear = "Năm thống kê";
     public const string RecordedMonthAndYear = "Tháng và năm thông kê";
     public const string IntervalInMinutes = "Số phút hiệu lực";
-    public const string StatsDateTime = "Ngày thống kê";
+    public const string StatsDate = "Ngày thống kê";
     public const string Home = "Trang chủ";
     public const string Creteria = "Tiêu chí";
     public const string Count = "Số lượng";
@@ -143,7 +144,6 @@ public static class DisplayNames
     public const string PurchasedAmount = "Số tiền đã mua";
     public const string PurchasedTransactionCount = "Số lượng giao dịch mua";
     public const string Quantity = "Số lượng";
-    public const string Stock = "Kho hàng";
     public const string StockingQuantity = "Số lượng trong kho";
     public const string ResupplyThresholdQuantity = "Số lượng ngưỡng cảnh báo hết hàng";
     public const string Default = "Mặc định";

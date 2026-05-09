@@ -8,6 +8,7 @@ using NATSInternal.Core.Features.Orders;
 using NATSInternal.Core.Features.Payments;
 using NATSInternal.Core.Features.Photos;
 using NATSInternal.Core.Features.Products;
+using NATSInternal.Core.Features.Supplies;
 using NATSInternal.Core.Features.Users;
 using NATSInternal.Infrastructure.DbContext;
 using System.Text.RegularExpressions;
@@ -67,7 +68,7 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.ApplyConfiguration(new OrderServiceItemEntityConfiguration());
 
         // Payment-cluster entities.
-        modelBuilder.ApplyConfiguration(new PaymentE)
+        modelBuilder.ApplyConfiguration(new PaymentEntityConfiguration());
 
         // Photo-cluster entities.
         modelBuilder.ApplyConfiguration(new PhotoEntityConfiguration());

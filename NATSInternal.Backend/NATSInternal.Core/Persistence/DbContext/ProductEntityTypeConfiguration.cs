@@ -2,7 +2,6 @@ using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NATSInternal.Core.Features.Products;
-using NATSInternal.Core.Features.Users;
 using System.ComponentModel.DataAnnotations;
 
 namespace NATSInternal.Infrastructure.DbContext;
@@ -35,22 +34,25 @@ internal class ProductEntityTypeConfiguration : IEntityTypeConfiguration<Product
                     joinerEntity.HasKey(ppc => new { ppc.ProductId, ppc.CategoryId });
                 });
         builder
-            .HasOne<User>()
+            .HasOne(p => p.CreatedUser)
             .WithMany()
             .HasForeignKey(p => p.CreatedUserId)
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
-        builder.HasOne<User>()
+        builder.HasOne(p => p.LastUpdatedUser)
             .WithMany()
             .HasForeignKey(p => p.LastUpdatedUserId)
             .OnDelete(DeleteBehavior.Restrict);
-        builder.HasOne<User>()
+        builder.HasOne(p => p.DeletedUser)
             .WithMany()
             .HasForeignKey(p => p.DeletedUserId)
             .OnDelete(DeleteBehavior.Restrict);
         
         // Indexes.
         builder.HasIndex(p => p.Name).IsUnique();
+
+        // RowVersion.
+        builder.Property<byte[]?>("RowVersion").IsRowVersion();
     }
     #endregion
 }

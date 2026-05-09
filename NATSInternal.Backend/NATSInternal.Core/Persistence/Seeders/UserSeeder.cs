@@ -134,7 +134,11 @@ internal class UserSeeder
 
     private async Task<List<User>> SeedUsersAsync(ICollection<Role> roles, bool isDevelopment)
     {
-        List<User> users = await _context.Users.ToListAsync();
+        List<User> users = await _context.Users
+            .Include(u => u.Roles).ThenInclude(r => r.Permissions)
+            .AsSplitQuery()
+            .ToListAsync();
+            
         if (users.Count > 0)
         {
             return users;
@@ -159,6 +163,8 @@ internal class UserSeeder
                 roleDictionary[RoleNames.Staff],
             },
         };
+        _context.Users.Add(huyUser);
+        users.Add(huyUser);
 
         User trangUser = new()
         {
@@ -173,9 +179,9 @@ internal class UserSeeder
                 roleDictionary[RoleNames.Staff],
             }
         };
-
-        _context.Users.Add(huyUser);
         _context.Users.Add(trangUser);
+        users.Add(trangUser);
+
         await _context.SaveChangesAsync();
 
         if (isDevelopment)

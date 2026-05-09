@@ -46,7 +46,7 @@ public static class ErrorMessages
     public const string PaymentAlreadyCompleted = "{ResourceName} đã được thanh toán đầy đủ, Không thể thanh toán thêm.";
     public const string ModificationTimeExpired = "{ResourceName} đã bị khoá do quá hạn chỉnh sửa/xoá.";
     public const string NegativeDebtRemainingAmount = "Với giá trị đã nhập, khoản nợ còn lại của khách hàng này sẽ trở thành số âm.";
-    public const string NegativeProductStockingQuantity = "Với giá trị đã nhập, số lượng còn lại trong kho của sản phẩm sẽ trở thành số âm.";
+    public const string NegativeProductStockingQuantity = "Không đủ số lượng hàng trong kho.";
     public const string CannotSetDateTimeAfterLocked = "{ResourceName} đã bị khoá, không thể chỉnh sửa {PropertyName}.";
     #endregion
     
