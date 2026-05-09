@@ -41,7 +41,9 @@ public static class Program
                 options.SlidingExpiration = false;
                 options.Cookie.Name = "NATSInternalAuthenticationCookie";
                 options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+                    ? CookieSecurePolicy.None
+                    : CookieSecurePolicy.Always;
                 options.LoginPath = "/SignIn";
                 options.LogoutPath = "/Logout";
                 

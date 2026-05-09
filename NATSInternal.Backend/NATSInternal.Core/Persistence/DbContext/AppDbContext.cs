@@ -3,6 +3,9 @@ using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Features.Expenses;
+using NATSInternal.Core.Features.Orders;
+using NATSInternal.Core.Features.Payments;
 using NATSInternal.Core.Features.Photos;
 using NATSInternal.Core.Features.Products;
 using NATSInternal.Core.Features.Users;
@@ -24,7 +27,13 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductCategory> ProductCategories { get; set; }
-    public DbSet<Stock> Stocks { get; set; }
+    public DbSet<Expense> Expenses { get; set; }
+    public DbSet<Supply> Supplies { get; set; }
+    public DbSet<SupplyItem> SupplyItems { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderProductItem> OrderProductItems { get; set; }
+    public DbSet<OrderServiceItem> OrderServiceItems { get; set; }
+    public DbSet<Payment> Paymenets { get; set; }
     public DbSet<Photo> Photos { get; set; }
     #endregion
     
@@ -44,7 +53,24 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
         // Product-cluster entities.
         modelBuilder.ApplyConfiguration(new ProductEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new ProductCategoryEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new StockEntityTypeConfiguration());
+
+        // Expense-cluster entities.
+        modelBuilder.ApplyConfiguration(new ExpenseEntityConfiguration());
+
+        // Supply-cluster entities.
+        modelBuilder.ApplyConfiguration(new SupplyEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new SupplyItemEntityConfiguration());
+
+        // Order-cluster entities.
+        modelBuilder.ApplyConfiguration(new OrderEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new OrderProductItemEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new OrderServiceItemEntityConfiguration());
+
+        // Payment-cluster entities.
+        modelBuilder.ApplyConfiguration(new PaymentE)
+
+        // Photo-cluster entities.
+        modelBuilder.ApplyConfiguration(new PhotoEntityConfiguration());
 
         // Configure identifiers' names.
         ConfigureIdentifierNames(modelBuilder);
