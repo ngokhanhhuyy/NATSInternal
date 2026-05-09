@@ -11,6 +11,19 @@ internal class PaymentEntityConfiguration : IEntityTypeConfiguration<Payment>
     {
         // Relationships.
         entityBuilder
+            .HasOne(p => p.Order)
+            .WithOne(p => p.Payment)
+            .HasForeignKey<Payment>(p => p.OrderId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        entityBuilder
+            .HasOne(p => p.Customer)
+            .WithMany()
+            .HasForeignKey(p => p.CustomerId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired();
+
+        entityBuilder
             .HasOne(p => p.CreatedUser)
             .WithMany()
             .HasForeignKey(p => p.CreatedUserId)
@@ -26,9 +39,9 @@ internal class PaymentEntityConfiguration : IEntityTypeConfiguration<Payment>
             .OnDelete(DeleteBehavior.Restrict);
 
         // Indexes.
-        entityBuilder.HasIndex(s => s.StatsDate);
-        entityBuilder.HasIndex(s => s.CreatedDateTime);
-        entityBuilder.HasIndex(s => s.LastUpdatedDateTime);
+        entityBuilder.HasIndex(p => p.StatsDate);
+        entityBuilder.HasIndex(p => p.CreatedDateTime);
+        entityBuilder.HasIndex(p => p.LastUpdatedDateTime);
 
         // RowVersion.
         entityBuilder.Property<byte[]?>("RowVersion").IsRowVersion();

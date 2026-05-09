@@ -5,6 +5,12 @@ using NATSInternal.Core.Features.Customers;
 namespace NATSInternal.Application.UseCases.Customers;
 
 [UsedImplicitly]
-internal class CustomerListValidator : AbstractListValidator<
-    CustomerListRequestDto,
-    CustomerListRequestDto.FieldToSort>;
+internal class CustomerListValidator : Validator<CustomerListRequestDto>
+{
+    #region Constructors
+    public CustomerListValidator()
+    {
+        Include(new SearchableListValidator<CustomerListRequestDto, CustomerListRequestDto.FieldToSort>());
+    }
+    #endregion
+}

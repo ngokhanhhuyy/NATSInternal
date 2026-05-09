@@ -1,7 +1,8 @@
 using NATSInternal.Core.Features.Customers;
 using NATSInternal.Core.Features.Expenses;
-using NATSInternal.Core.Features.Products;
 using NATSInternal.Core.Features.Orders;
+using NATSInternal.Core.Features.Payments;
+using NATSInternal.Core.Features.Products;
 using NATSInternal.Core.Features.Supplies;
 using NATSInternal.Core.Features.Users;
 
@@ -17,6 +18,7 @@ internal interface IAuthorizationInternalService : IAuthorizationService
     ExpenseExistingAuthorizationResponseDto GetExpenseExistingAuthorization(Expense expense);
     SupplyExistingAuthorizationResponseDto GetSupplyExistingAuthorization(Supply supply);
     OrderExistingAuthorizationResponseDto GetOrderExistingAuthorization(Order order);
+    PaymentExistingAuthorizationResponseDto GetPaymentExistingAuthorization(Payment payment);
     bool CanChangeUserPassword(User targetUser);
     bool CanResetUserPassword(User targetUser);
     bool CanDeleteUser(User targetUser);

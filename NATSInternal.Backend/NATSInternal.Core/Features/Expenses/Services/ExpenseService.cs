@@ -65,7 +65,7 @@ internal class ExpenseService : IExpenseService
 
         switch (requestDto.SortByFieldName)
         {
-            case nameof(ExpenseListRequestDto.FieldToSort.StatsDateTime):
+            case nameof(ExpenseListRequestDto.FieldToSort.StatsDate):
                 query = query
                     .ApplySorting(e => e.StatsDate, requestDto.SortByAscending)
                     .ThenApplySorting(e => e.CreatedDateTime, requestDto.SortByAscending);

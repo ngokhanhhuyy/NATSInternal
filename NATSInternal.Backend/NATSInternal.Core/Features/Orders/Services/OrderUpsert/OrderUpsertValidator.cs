@@ -21,12 +21,24 @@ internal class OrderUpsertValidator : Validator<OrderUpsertRequestDto>
         RuleFor(dto => dto.StatsDate)
             .IsValidStatsDate(clock.Today)
             .WithName(DisplayNames.StatsDate);
+
+        RuleFor(dto => dto.PaidAmount)
+            .GreaterThanOrEqualTo(0)
+            .Must((dto, paidAmount, context) =>
+            {
+                context.MessageFormatter.AppendArgument("ComparisonValue", dto.Amount);
+                return paidAmount <= dto.Amount;
+            })
+            .WithMessage(ErrorMessages.LessThanOrEqual);
+
         RuleFor(dto => dto.Note)
             .MaximumLength(HasStatsContracts.NoteMaxLength);
+
         RuleFor(dto => dto.CustomerId)
             .GreaterThan(0)
             .WithMessage(ErrorMessages.Invalid)
             .WithName(DisplayNames.Customer);
+
         RuleFor(dto => dto.Customer)
             .SetValidator(customerValidator)
             .When(dto => dto.Customer is not null)

@@ -19,6 +19,7 @@ internal class Seeder
     private readonly ProductSeeder _productSeeder;
     private readonly SupplySeeder _supplySeeder;
     private readonly OrderSeeder _orderSeeder;
+    private readonly PaymentSeeder _paymentSeeder;
     private readonly Random _random;
     private readonly ILogger<Seeder> _logger;
     private readonly IClock _clock;
@@ -32,6 +33,7 @@ internal class Seeder
         ProductSeeder productSeeder,
         SupplySeeder supplySeeder,
         OrderSeeder orderSeeder,
+        PaymentSeeder paymentSeeder,
         ILogger<Seeder> logger,
         IClock clock)
     {
@@ -41,6 +43,7 @@ internal class Seeder
         _productSeeder = productSeeder;
         _supplySeeder = supplySeeder;
         _orderSeeder = orderSeeder;
+        _paymentSeeder = paymentSeeder;
         _random = new();
         _logger = logger;
         _clock = clock;
@@ -95,7 +98,8 @@ internal class Seeder
         while (generatingDateTime <= currentDateTime)
         {
             await _supplySeeder.SeedAsync(users, generatingDateTime);
-            await _orderSeeder.SeedAsync(users, customers, generatingDateTime);
+            Order order = await _orderSeeder.SeedSingleOrderAsync(users, customers, generatingDateTime);
+            await _paymentSeeder.SeedSinglePaymentAsync(order);
             
             do
             {

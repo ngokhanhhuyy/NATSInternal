@@ -4,6 +4,12 @@ using NATSInternal.Core.Common.Validation;
 namespace NATSInternal.Core.Features.Products;
 
 [UsedImplicitly]
-internal class ProductListValidator : AbstractListValidator<
-    ProductListRequestDto,
-    ProductListRequestDto.FieldToSort>;
+internal class ProductListValidator : Validator<ProductListRequestDto>
+{
+    #region Constructors
+    public ProductListValidator()
+    {
+        Include(new SearchableListValidator<ProductListRequestDto, ProductListRequestDto.FieldToSort>());
+    }
+    #endregion
+}

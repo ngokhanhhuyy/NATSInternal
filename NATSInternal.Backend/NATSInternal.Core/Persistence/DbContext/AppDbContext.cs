@@ -34,7 +34,7 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderProductItem> OrderProductItems { get; set; }
     public DbSet<OrderServiceItem> OrderServiceItems { get; set; }
-    public DbSet<Payment> Paymenets { get; set; }
+    public DbSet<Payment> Payments { get; set; }
     public DbSet<Photo> Photos { get; set; }
     #endregion
     

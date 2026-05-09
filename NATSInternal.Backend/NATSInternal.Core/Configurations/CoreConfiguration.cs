@@ -14,6 +14,7 @@ using NATSInternal.Core.Features.Authorization;
 using NATSInternal.Core.Features.Customers;
 using NATSInternal.Core.Features.Expenses;
 using NATSInternal.Core.Features.Orders;
+using NATSInternal.Core.Features.Payments;
 using NATSInternal.Core.Features.Products;
 using NATSInternal.Core.Features.Supplies;
 using NATSInternal.Core.Features.Users;
@@ -58,6 +59,9 @@ public static class CoreConfiguration
             services.AddScoped<IExpenseService, ExpenseService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<ISupplyService, SupplyService>();
+            services.AddScoped<PaymentInternalService>();
+            services.AddScoped<IPaymentInternalService>(sp => sp.GetRequiredService<PaymentInternalService>());
+            services.AddScoped<IPaymentService>(sp => sp.GetRequiredService<PaymentInternalService>());
             services.AddScoped<IUserService, UserService>();
 
             // Seeders.
@@ -66,6 +70,7 @@ public static class CoreConfiguration
             services.AddTransient<ProductSeeder>();
             services.AddTransient<SupplySeeder>();
             services.AddTransient<OrderSeeder>();
+            services.AddTransient<PaymentSeeder>();
             services.AddTransient<UserSeeder>();
 
             // Security.

@@ -96,6 +96,11 @@ internal class Customer
     public DateTime? DeletedDateTime { get; set; }
     #endregion
 
+    #region CachedProperties
+    [Required]
+    public long CachedDebtRemainingAmount { get; set; }
+    #endregion
+
     #region ForeignKeyProperties
     public int? IntroducerId { get; set; }
     

@@ -22,7 +22,7 @@ public class UserBasicResponseDto
     #region Properties
     public int Id { get; }
     public string UserName { get; }
-    List<RoleBasicResponseDto> Roles { get; }
+    public List<RoleBasicResponseDto> Roles { get; }
     public bool IsDeleted { get; }
     public UserExistingAuthorizationResponseDto? Authorization { get; }
     #endregion

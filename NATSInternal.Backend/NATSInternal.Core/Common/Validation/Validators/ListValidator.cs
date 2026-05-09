@@ -4,12 +4,12 @@ using NATSInternal.Core.Common.Localization;
 
 namespace NATSInternal.Core.Common.Validation;
 
-internal abstract class AbstractListValidator<TListRequestDto, TFieldToSort> : Validator<TListRequestDto>
-        where TListRequestDto : IListRequestDto
-        where TFieldToSort : struct, Enum
+internal class ListValidator<TListRequestDto, TFieldToSort> : Validator<TListRequestDto>
+    where TListRequestDto : IListRequestDto
+    where TFieldToSort : struct, Enum
 {
     #region Constructors
-    protected AbstractListValidator(
+    public ListValidator(
         int pageMinValue = 1,
         int resultsPerPageMinValue = 5,
         int resultsPerPageMaxValue = 50)

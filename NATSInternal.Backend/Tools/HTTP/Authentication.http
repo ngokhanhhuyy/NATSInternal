@@ -146,9 +146,48 @@ Cookie: {{accessCookie}}
 
 ###
 # @name OrderDetail
-GET {{host}}/orders/1
+GET {{host}}/orders/401
 Content-Type: application/json
 Cookie: {{accessCookie}}
+
+###
+# @name PaymentList
+GET {{host}}/payments?sortingByFieldName=StatsDate&sortByAscending=False
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name PaymentDetail
+GET {{host}}/payments/37
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name PaymentCreate
+POST {{host}}/payments
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+{
+    "amount": 2000000,  
+    "note": null,
+    "statsDateTime": null,
+    "customersId": 10
+}
+
+###
+# @name PaymentUpdate
+PUT {{host}}/payments/39
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+{
+    "amount": 1900000,
+    "note": null,
+    "statsDateTime": null,
+    "customersId": 2,
+    "updatedReason": "Removed note"
+}
 
 ###
 # @name DebtIncurrenceList
@@ -167,46 +206,6 @@ Cookie: {{accessCookie}}
     "note": null,
     "incurredDateTime": null,
     "customersId": 8
-}
-
-###
-# @name DebtPaymentList
-GET {{host}}/debtPayment?sortingByField=StatsDateTime&sortingByAscending=False
-Content-Type: application/json
-Cookie: {{accessCookie}}
-
-###
-# @name DebtPaymentDetail
-GET {{host}}/debtPayment/37
-Content-Type: application/json
-Cookie: {{accessCookie}}
-
-
-###
-# @name DebtPaymentCreate
-POST {{host}}/debtPayment
-Content-Type: application/json
-Cookie: {{accessCookie}}
-
-{
-    "amount": 2000000,  
-    "note": null,
-    "statsDateTime": null,
-    "customersId": 10
-}
-
-###
-# @name DebtPaymentUpdate
-PUT {{host}}/debtPayment/39
-Content-Type: application/json
-Cookie: {{accessCookie}}
-
-{
-    "amount": 1900000,  
-    "note": null,
-    "statsDateTime": null,
-    "customersId": 2,
-    "updatedReason": "Removed note"
 }
 
 ###

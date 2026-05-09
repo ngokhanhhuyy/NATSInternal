@@ -10,10 +10,10 @@ using NATSInternal.Core.Common.Services;
 using NATSInternal.Core.Common.Time;
 using NATSInternal.Core.Features.Authorization;
 using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Features.Payments;
 // using NATSInternal.Core.Features.Photos;
 using NATSInternal.Core.Persistence.DbContext;
 using NATSInternal.Core.Persistence.Handlers;
-using System.Data;
 
 namespace NATSInternal.Core.Features.Orders;
 
@@ -23,6 +23,7 @@ internal class OrderService : IOrderService
     #region Fields
     private readonly AppDbContext _context;
     private readonly ICustomerService _customerService;
+    private readonly IPaymentInternalService _paymentService;
     private readonly IListFetchingService _listFetchingService;
     private readonly IHasProductService<OrderUpsertProductItemRequestDto, OrderProductItem> _hasProductService;
     private readonly IAuthorizationInternalService _authorizationService;
@@ -37,6 +38,7 @@ internal class OrderService : IOrderService
     public OrderService(
         AppDbContext context,
         ICustomerService customerService,
+        IPaymentInternalService paymentService,
         IListFetchingService listFetchingService,
         IHasProductService<OrderUpsertProductItemRequestDto, OrderProductItem> hasProductService,
         IAuthorizationInternalService authorizationService,
@@ -48,6 +50,7 @@ internal class OrderService : IOrderService
     {
         _context = context;
         _customerService = customerService;
+        _paymentService = paymentService;
         _listFetchingService = listFetchingService;
         _hasProductService = hasProductService;
         _authorizationService = authorizationService;
@@ -75,7 +78,7 @@ internal class OrderService : IOrderService
 
         switch (requestDto.SortByFieldName)
         {
-            case nameof(OrderListRequestDto.FieldToSort.StatsDateTime):
+            case nameof(OrderListRequestDto.FieldToSort.StatsDate):
                 query = query
                     .ApplySorting(s => s.StatsDate, requestDto.SortByAscending)
                     .ThenApplySorting(s => s.CreatedDateTime, requestDto.SortByAscending);
@@ -218,19 +221,24 @@ internal class OrderService : IOrderService
             }
         }
 
+        order.ComputeCachedProperties();
+
         // TODO: Handle photo creation.
 
         try
         {
             await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
-            return order.Id;
         }
         catch (DbUpdateException exception)
         {
             ThrowDbUpdateHandledException(exception);
             throw;
         }
+
+        await CreatePaymentAsync(requestDto, order);
+        await transaction.CommitAsync();
+        
+        return order.Id;
     }
 
     public async Task UpdateAsync(int id, OrderUpsertRequestDto requestDto)
@@ -323,11 +331,19 @@ internal class OrderService : IOrderService
             }
         }
 
+        order.ComputeCachedProperties();
+
         // TODO: Handle photo creation and updation.
 
         try
         {
             await _context.SaveChangesAsync();
+
+            if (order.Payment is not null)
+            {
+                await UpdatePaymentAsync(order.Payment, requestDto);
+            }
+        
             await transaction.CommitAsync();
         }
         catch (DbUpdateException exception)
@@ -385,6 +401,31 @@ internal class OrderService : IOrderService
             exception.AddPropertyPathElementToTheBeginning(new object[] { nameof(requestDto.Customer) });
             throw;
         }
+    }
+
+    private async Task CreatePaymentAsync(OrderUpsertRequestDto orderRequestDto, Order order)
+    {
+        PaymentCreateRequestDto paymentRequestDto = new()
+        {
+            StatsDate = order.StatsDate,
+            Type = PaymentType.OrderPayment,
+            Amount = orderRequestDto.PaidAmount,
+            CustomerId = order.CustomerId,
+            OrderId = order.Id
+        };
+
+        await _paymentService.CreateWithoutValidationAsync(paymentRequestDto);
+    }
+
+    private async Task UpdatePaymentAsync(Payment payment, OrderUpsertRequestDto orderRequestDto)
+    {
+        PaymentUpdateRequestDto paymentRequestDto = new()
+        {
+            StatsDate = orderRequestDto.StatsDate,
+            Amount = orderRequestDto.PaidAmount,
+        };
+
+        await _paymentService.UpdateWithoutValidationAsync(payment, paymentRequestDto);
     }
 
     private void ThrowDbUpdateHandledException(DbUpdateException exception)

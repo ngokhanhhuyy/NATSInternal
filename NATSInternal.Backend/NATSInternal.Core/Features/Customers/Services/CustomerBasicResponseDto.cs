@@ -5,18 +5,16 @@ namespace NATSInternal.Core.Features.Customers;
 public class CustomerBasicResponseDto
 {
     #region Constructors
-    internal CustomerBasicResponseDto(Customer? customer)
+    internal CustomerBasicResponseDto(Customer customer)
     {
-        if (customer is not null && customer.DeletedDateTime is null)
-        {
-            Id = customer.Id;
-            FullName = customer.FullName;
-            NickName = customer.NickName;
-        }
+        Id = customer.Id;
+        FullName = customer.FullName;
+        NickName = customer.NickName;
+        IsDeleted = customer.DeletedDateTime is not null;
     }
 
     internal CustomerBasicResponseDto(
-        Customer? customer,
+        Customer customer,
         CustomerExistingAuthorizationResponseDto authorization) : this(customer)
     {
         Authorization = authorization;
@@ -25,9 +23,9 @@ public class CustomerBasicResponseDto
     
     #region Properties
     public int Id { get; }
-    public string FullName { get; } = string.Empty;
+    public string FullName { get; }
     public string? NickName { get; }
-    public bool IsDeleted { get; } = true;
+    public bool IsDeleted { get; }
     public CustomerExistingAuthorizationResponseDto? Authorization { get; }
     #endregion
 }

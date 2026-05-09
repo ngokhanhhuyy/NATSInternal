@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using Bogus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -37,15 +36,10 @@ internal class OrderSeeder
     #endregion
 
     #region Methods
-    public async Task SeedAsync(List<User> users, List<Customer> customers, DateTime generatingDateTime)
-    {
-        _logger.LogInformation($"Seeding order at dateTime {generatingDateTime:o}.");
-        await SeedSingleOrderAsync(users, customers, generatingDateTime);
-    }
-    #endregion
-
-    #region PrivateMethods
-    private async Task SeedSingleOrderAsync(List<User> users, List<Customer> customers, DateTime generatingDateTime)
+    public async Task<Order> SeedSingleOrderAsync(
+        List<User> users,
+        List<Customer> customers,
+        DateTime generatingDateTime)
     {
         OrderType orderType;
         int randomRatio = _random.Next(0, 10);
@@ -148,6 +142,8 @@ internal class OrderSeeder
 
         _context.Orders.Add(order);
         await _context.SaveChangesAsync();
+
+        return order;
     }
     #endregion
 }

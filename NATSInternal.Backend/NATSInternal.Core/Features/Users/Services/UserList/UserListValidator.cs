@@ -4,5 +4,15 @@ using NATSInternal.Core.Features.Users;
 
 namespace NATSInternal.Application.UseCases.Users;
 
+using SearchableListValidator = SearchableListValidator<UserListRequestDto, UserListRequestDto.FieldToSort>;
+
 [UsedImplicitly]
-internal class UserListValidator : AbstractListValidator<UserListRequestDto, UserListRequestDto.FieldToSort>;
+internal class UserListValidator : Validator<UserListRequestDto>
+{
+    #region Constructors
+    public UserListValidator()
+    {
+        Include(new SearchableListValidator());
+    }
+    #endregion
+}

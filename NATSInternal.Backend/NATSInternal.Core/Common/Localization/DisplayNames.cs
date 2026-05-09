@@ -19,6 +19,7 @@ public static class DisplayNames
     public const string ProductId = "Mã số sản phẩm";
     public const string ProductPhoto = "Hình ảnh sản phẩm";
     public const string Payment = "Thanh toán";
+    public const string PaymentType = "Loại thanh toán";
     public const string Supply = "Đơn nhập hàng";
     public const string SupplyItem = "Mục nhập hàng";
     public const string SupplyPhoto = "Hình ảnh nhập hàng";

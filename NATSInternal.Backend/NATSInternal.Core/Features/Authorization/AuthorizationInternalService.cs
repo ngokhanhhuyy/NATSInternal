@@ -3,6 +3,7 @@ using NATSInternal.Core.Common.Security;
 using NATSInternal.Core.Features.Customers;
 using NATSInternal.Core.Features.Expenses;
 using NATSInternal.Core.Features.Orders;
+using NATSInternal.Core.Features.Payments;
 using NATSInternal.Core.Features.Products;
 using NATSInternal.Core.Features.Supplies;
 using NATSInternal.Core.Features.Users;
@@ -90,6 +91,15 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
         };
     }
 
+    public PaymentExistingAuthorizationResponseDto GetPaymentExistingAuthorization(Payment order)
+    {
+        return new()
+        {
+            CanEdit = CallerHasPermission(PermissionNames.EditPayment),
+            CanDelete = CallerHasPermission(PermissionNames.DeletePayment)
+        };
+    }
+
     public bool CanCreateUser()
     {
         return CallerHasPermission(PermissionNames.CreateUser);
@@ -170,6 +180,11 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
     public bool CanCreateOrder()
     {
         return CallerHasPermission(PermissionNames.CreateOrder);
+    }
+
+    public bool CanCreatePayment()
+    {
+        return CallerHasPermission(PermissionNames.CreatePayment);
     }
     #endregion
 

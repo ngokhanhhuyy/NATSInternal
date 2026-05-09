@@ -7,7 +7,7 @@ public class OrderListRequestDto : IHasStatsListRequestDto
 {
     #region Properties
     public bool SortByAscending { get; set; } = false;
-    public string SortByFieldName { get; set; } = nameof(FieldToSort.StatsDateTime);
+    public string SortByFieldName { get; set; } = nameof(FieldToSort.StatsDate);
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
     public ListMonthYearRequestDto? StatsMonthYear { get; set; }
@@ -24,7 +24,7 @@ public class OrderListRequestDto : IHasStatsListRequestDto
     #region Enums
     public enum FieldToSort
     {
-        StatsDateTime,
+        StatsDate,
         CreatedDateTime,
         LastUpdatedDateTime,
         ProductItemsAmount,

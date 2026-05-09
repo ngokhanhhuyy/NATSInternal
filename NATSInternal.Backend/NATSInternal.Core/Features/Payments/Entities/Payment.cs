@@ -1,7 +1,7 @@
-using Microsoft.EntityFrameworkCore;
 using NATSInternal.Core.Common.Contracts;
 using NATSInternal.Core.Common.Entities;
 using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Features.Orders;
 using NATSInternal.Core.Features.Users;
 using System.ComponentModel.DataAnnotations;
 
@@ -35,6 +35,9 @@ internal class Payment : IHasStatsEntity
 
     #region ForeignKeyProperties
     [Required]
+    public int? OrderId { get; set; }
+
+    [Required]
     public required int CustomerId { get; set; }
 
     [Required]
@@ -46,9 +49,10 @@ internal class Payment : IHasStatsEntity
     #endregion
 
     #region NavigationProperties
+    public Order? Order { get; set; }
     public Customer Customer { get; set; } = null!;
     public User CreatedUser { get; set; } = null!;
-    public User? LastUpdatedUser { get; set; } = null!;
-    public User? DeletedUser { get; set; } = null!;
+    public User? LastUpdatedUser { get; set; }
+    public User? DeletedUser { get; set; }
     #endregion
 }

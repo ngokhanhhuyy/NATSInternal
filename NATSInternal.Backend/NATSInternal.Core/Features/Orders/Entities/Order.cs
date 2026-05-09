@@ -1,6 +1,7 @@
 using NATSInternal.Core.Common.Contracts;
 using NATSInternal.Core.Common.Entities;
 using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Features.Payments;
 using NATSInternal.Core.Features.Photos;
 using NATSInternal.Core.Features.Users;
 using System.ComponentModel.DataAnnotations;
@@ -60,6 +61,7 @@ internal class Order : IHasStatsEntity
 
     #region NavigationProperties
     public Customer Customer { get; set; } = null!;
+    public Payment? Payment { get; set; }
     public User CreatedUser { get; set; } = null!;
     public User? LastUpdatedUser { get; set; } = null!;
     public User? DeletedUser { get; set; } = null!;

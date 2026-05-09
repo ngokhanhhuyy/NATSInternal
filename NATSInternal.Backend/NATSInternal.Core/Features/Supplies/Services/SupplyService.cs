@@ -66,7 +66,7 @@ internal class SupplyService : ISupplyService
 
         switch (requestDto.SortByFieldName)
         {
-            case nameof(SupplyListRequestDto.FieldToSort.StatsDateTime):
+            case nameof(SupplyListRequestDto.FieldToSort.StatsDate):
                 query = query
                     .ApplySorting(s => s.StatsDate, requestDto.SortByAscending)
                     .ThenApplySorting(s => s.CreatedDateTime, requestDto.SortByAscending);

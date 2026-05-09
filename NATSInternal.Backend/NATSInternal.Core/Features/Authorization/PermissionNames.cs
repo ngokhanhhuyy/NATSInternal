@@ -31,27 +31,34 @@ public static class PermissionNames
     public const string EditSupply = nameof(EditSupply);
     public const string EditLockedSupply = nameof(EditLockedSupply);
     public const string DeleteSupply = nameof(DeleteSupply);
-    public const string SetSupplyStatsDateTime = nameof(SetSupplyStatsDateTime);
+    public const string SetSupplyStatsDate = nameof(SetSupplyStatsDate);
 
     // Permissions to interact with expenses.
     public const string CreateExpense = nameof(CreateExpense);
     public const string EditExpense = nameof(EditExpense);
     public const string EditLockedExpense = nameof(EditLockedExpense);
     public const string DeleteExpense = nameof(DeleteExpense);
-    public const string SetExpenseStatsDateTime = nameof(SetExpenseStatsDateTime);
+    public const string SetExpenseStatsDate = nameof(SetExpenseStatsDate);
 
     // Permissions to interact with orders.
     public const string CreateOrder = nameof(CreateOrder);
     public const string EditOrder = nameof(EditOrder);
     public const string EditLockedOrder = nameof(EditLockedOrder);
-    public const string SetOrderStatsDateTime = nameof(SetOrderStatsDateTime);
+    public const string SetOrderStatsDate = nameof(SetOrderStatsDate);
     public const string DeleteOrder = nameof(DeleteOrder);
+
+    // Permissions to interact with payments.
+    public const string CreatePayment = nameof(CreatePayment);
+    public const string EditPayment = nameof(EditPayment);
+    public const string EditLockedPayment = nameof(EditLockedPayment);
+    public const string SetPaymentStatsDate = nameof(SetPaymentStatsDate);
+    public const string DeletePayment = nameof(DeletePayment);
 
     // Permissions to interact with debts
     public const string CreateDebt = nameof(CreateDebt);
     public const string EditDebt = nameof(EditDebt);
     public const string EditLockedDebt = nameof(EditLockedDebt);
-    public const string SetDebtStatsDateTime = nameof(SetDebtStatsDateTime);
+    public const string SetDebtStatsDate = nameof(SetDebtStatsDate);
     public const string DeleteDebt = nameof(DeleteDebt);
 
     // Permissions to interact with announcements.
