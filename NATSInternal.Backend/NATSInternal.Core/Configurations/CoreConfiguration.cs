@@ -53,7 +53,9 @@ public static class CoreConfiguration
             services.AddScoped<IAuthorizationInternalService>(sp =>
                 sp.GetRequiredService<AuthorizationInternalService>());
             services.AddScoped<IAuthorizationService>(sp => sp.GetRequiredService<AuthorizationInternalService>());
-            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<CustomerInternalService>();
+            services.AddScoped<ICustomerService>(sp => sp.GetRequiredService<CustomerInternalService>());
+            services.AddScoped<ICustomerInternalService>(sp => sp.GetRequiredService<CustomerInternalService>());
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductCategoryService, ProductCategoryService>();
             services.AddScoped<IExpenseService, ExpenseService>();
@@ -63,6 +65,7 @@ public static class CoreConfiguration
             services.AddScoped<IPaymentInternalService>(sp => sp.GetRequiredService<PaymentInternalService>());
             services.AddScoped<IPaymentService>(sp => sp.GetRequiredService<PaymentInternalService>());
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRoleService, RoleService>();
 
             // Seeders.
             services.AddTransient<Seeder>();

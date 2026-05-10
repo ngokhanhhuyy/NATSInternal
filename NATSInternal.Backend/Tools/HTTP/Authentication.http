@@ -146,6 +146,12 @@ Cookie: {{accessCookie}}
 
 ###
 # @name OrderDetail
+GET {{host}}/orders/1
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name OrderDetail
 GET {{host}}/orders/401
 Content-Type: application/json
 Cookie: {{accessCookie}}

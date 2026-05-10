@@ -29,6 +29,9 @@ internal class HasStatsListValidator<TListRequestDto, TFieldToSort> : Validator<
                     .GreaterThanOrEqualTo(1)
                     .LessThanOrEqualTo(today.Month)
                     .When(dto => dto.Year == today.Year)
+                    .WithName(DisplayNames.Month);
+                    
+                cr.RuleFor(my => my.Month)
                     .GreaterThanOrEqualTo(1)
                     .LessThanOrEqualTo(12)
                     .When(dto => dto.Year < today.Year)

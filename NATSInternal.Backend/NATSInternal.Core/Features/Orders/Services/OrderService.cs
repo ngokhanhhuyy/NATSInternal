@@ -22,7 +22,7 @@ internal class OrderService : IOrderService
 {
     #region Fields
     private readonly AppDbContext _context;
-    private readonly ICustomerService _customerService;
+    private readonly ICustomerInternalService _customerService;
     private readonly IPaymentInternalService _paymentService;
     private readonly IListFetchingService _listFetchingService;
     private readonly IHasProductService<OrderUpsertProductItemRequestDto, OrderProductItem> _hasProductService;
@@ -37,7 +37,7 @@ internal class OrderService : IOrderService
     #region Constructors
     public OrderService(
         AppDbContext context,
-        ICustomerService customerService,
+        ICustomerInternalService customerService,
         IPaymentInternalService paymentService,
         IListFetchingService listFetchingService,
         IHasProductService<OrderUpsertProductItemRequestDto, OrderProductItem> hasProductService,
@@ -68,8 +68,9 @@ internal class OrderService : IOrderService
         _listValidator.ValidateAndThrow(requestDto);
 
         IQueryable<Order> query = _context.Orders
-            .Include(s => s.Photos.Where(photo => photo.IsThumbnail))
-            .Where(s => s.DeletedDateTime == null);
+            .Include(o => o.Customer)
+            .Include(o => o.Photos.Where(photo => photo.IsThumbnail))
+            .Where(o => o.DeletedDateTime == null);
 
         if (requestDto.StatsMonthYear is not null)
         {
@@ -80,43 +81,43 @@ internal class OrderService : IOrderService
         {
             case nameof(OrderListRequestDto.FieldToSort.StatsDate):
                 query = query
-                    .ApplySorting(s => s.StatsDate, requestDto.SortByAscending)
-                    .ThenApplySorting(s => s.CreatedDateTime, requestDto.SortByAscending);
+                    .ApplySorting(o => o.StatsDate, requestDto.SortByAscending)
+                    .ThenApplySorting(o => o.CreatedDateTime, requestDto.SortByAscending);
                 break;
             case nameof(OrderListRequestDto.FieldToSort.CreatedDateTime):
                 query = query
-                    .ApplySorting(s => s.CreatedDateTime, requestDto.SortByAscending)
-                    .ThenApplySorting(s => s.StatsDate, requestDto.SortByAscending);
+                    .ApplySorting(o => o.CreatedDateTime, requestDto.SortByAscending)
+                    .ThenApplySorting(o => o.StatsDate, requestDto.SortByAscending);
                 break;
             case nameof(OrderListRequestDto.FieldToSort.LastUpdatedDateTime):
                 query = query
-                    .ApplySorting(s => s.LastUpdatedDateTime, requestDto.SortByAscending)
-                    .ThenApplySorting(s => s.StatsDate, requestDto.SortByAscending);
+                    .ApplySorting(o => o.LastUpdatedDateTime, requestDto.SortByAscending)
+                    .ThenApplySorting(o => o.StatsDate, requestDto.SortByAscending);
                 break;
             case nameof(OrderListRequestDto.FieldToSort.ProductItemsAmount):
                 query = query
                     .ApplySorting(
-                        s => s.CachedProductItemsAmountBeforeVat + s.CachedProductItemsVatAmount,
+                        o => o.CachedProductItemsAmountBeforeVat + o.CachedProductItemsVatAmount,
                         requestDto.SortByAscending)
-                    .ThenApplySorting(s => s.StatsDate, requestDto.SortByAscending);
+                    .ThenApplySorting(o => o.StatsDate, requestDto.SortByAscending);
                 break;
             case nameof(OrderListRequestDto.FieldToSort.ServiceItemsAmount):
                 query = query
                     .ApplySorting(
-                        s => s.CachedServiceItemsAmountBeforeVat + s.CachedServiceItemsVatAmount,
+                        o => o.CachedServiceItemsAmountBeforeVat + o.CachedServiceItemsVatAmount,
                         requestDto.SortByAscending)
-                    .ThenApplySorting(s => s.StatsDate, requestDto.SortByAscending);
+                    .ThenApplySorting(o => o.StatsDate, requestDto.SortByAscending);
                 break;
             case nameof(OrderListRequestDto.FieldToSort.TotalAmount):
                 query = query
                     .ApplySorting(
-                        s =>
-                            s.CachedProductItemsAmountBeforeVat +
-                            s.CachedProductItemsVatAmount +
-                            s.CachedServiceItemsAmountBeforeVat +
-                            s.CachedServiceItemsVatAmount,
+                        o =>
+                            o.CachedProductItemsAmountBeforeVat +
+                            o.CachedProductItemsVatAmount +
+                            o.CachedServiceItemsAmountBeforeVat +
+                            o.CachedServiceItemsVatAmount,
                         requestDto.SortByAscending)
-                    .ThenApplySorting(s => s.StatsDate, requestDto.SortByAscending);
+                    .ThenApplySorting(o => o.StatsDate, requestDto.SortByAscending);
                 break;
             default:
                 throw new NotImplementedException();
@@ -137,13 +138,13 @@ internal class OrderService : IOrderService
         Order order = await _context.Orders
             .AsNoTracking()
             .AsSplitQuery()
-            .Include(s => s.ProductItems).ThenInclude(si => si.Product)
-            .Include(s => s.ServiceItems)
-            .Include(s => s.Photos)
-            .Include(s => s.CreatedUser)
-            .Include(s => s.LastUpdatedUser)
-            .Include(s => s.DeletedUser)
-            .SingleOrDefaultAsync(s => s.Id == id)
+            .Include(o => o.ProductItems).ThenInclude(si => si.Product)
+            .Include(o => o.ServiceItems)
+            .Include(o => o.Photos)
+            .Include(o => o.CreatedUser)
+            .Include(o => o.LastUpdatedUser)
+            .Include(o => o.DeletedUser)
+            .SingleOrDefaultAsync(o => o.Id == id)
             ?? throw new NotFoundException();
 
         OrderExistingAuthorizationResponseDto authorization;
@@ -167,7 +168,7 @@ internal class OrderService : IOrderService
 
         using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
 
-        int customerId = await CreateCustomerIfNeededAndGetCustomerIdAsync(requestDto);
+        Customer customer = await GetCustomerOrCreateAsync(requestDto);
 
         DateTime currentDateTime = _clock.Now;
         Order order = new()
@@ -175,7 +176,7 @@ internal class OrderService : IOrderService
             Type = requestDto.Type,
             StatsDate = requestDto.StatsDate ?? DateOnly.FromDateTime(currentDateTime),
             Note = requestDto.Note,
-            CustomerId = customerId,
+            CustomerId = customer.Id,
             CreatedDateTime = currentDateTime,
             CreatedUserId = _callerDetailProvider.GetId(),
         };
@@ -235,7 +236,25 @@ internal class OrderService : IOrderService
             throw;
         }
 
-        await CreatePaymentAsync(requestDto, order);
+        if (requestDto.PaidAmount > 0)
+        {
+            await CreatePaymentAsync(requestDto, order);
+        }
+
+        long debtAmount = order.CachedAmountAfterVat - requestDto.PaidAmount;
+        if (debtAmount > 0)
+        {
+            long NewDebtAmountComputer(long amount) => amount + debtAmount;
+            try
+            {
+                await _customerService.UpdateCachedRemaningDebtAmountAsync(customer, NewDebtAmountComputer);
+            }
+            catch (NotFoundException)
+            {
+                throw new ConcurrencyException();
+            }
+        }
+
         await transaction.CommitAsync();
         
         return order.Id;
@@ -258,7 +277,8 @@ internal class OrderService : IOrderService
 
         using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
 
-        int customerId = await CreateCustomerIfNeededAndGetCustomerIdAsync(requestDto);
+        Customer customer = await GetCustomerOrCreateAsync(requestDto);
+        long oldDebtAmount = order.CachedAmountAfterVat - (order.Payment?.Amount ?? 0);
 
         order.StatsDate = requestDto.StatsDate ?? order.StatsDate;
         order.Note = requestDto.Note;
@@ -338,19 +358,27 @@ internal class OrderService : IOrderService
         try
         {
             await _context.SaveChangesAsync();
-
-            if (order.Payment is not null)
-            {
-                await UpdatePaymentAsync(order.Payment, requestDto);
-            }
-        
-            await transaction.CommitAsync();
         }
         catch (DbUpdateException exception)
         {
             ThrowDbUpdateHandledException(exception);
             throw;
         }
+
+        if (order.Payment is null && requestDto.PaidAmount > 0)
+        {
+            await CreatePaymentAsync(requestDto, order);
+        }
+        else if (order.Payment is not null)
+        {
+            await UpdateOrDeletePaymentAsync(order.Payment, requestDto);
+        }
+
+        long newDebtAmount = order.CachedAmountAfterVat - (order.Payment?.Amount ?? 0);
+        long ComputeNewCachedRemainingDebtAmount(long amount) => amount + (newDebtAmount - oldDebtAmount);
+        await _customerService.UpdateCachedRemaningDebtAmountAsync(customer, ComputeNewCachedRemainingDebtAmount);
+    
+        await transaction.CommitAsync();
     }
 
     public async Task DeleteAsync(int id)
@@ -385,16 +413,11 @@ internal class OrderService : IOrderService
     #endregion
 
     #region PrivateMethods
-    private async Task<int> CreateCustomerIfNeededAndGetCustomerIdAsync(OrderUpsertRequestDto requestDto)
+    private async Task<Customer> GetCustomerOrCreateAsync(OrderUpsertRequestDto requestDto)
     {
-        if (requestDto.CustomerId.HasValue)
-        {
-            return requestDto.CustomerId.Value;
-        }
-        
         try
         {
-            return await _customerService.CreateAsync(requestDto.Customer);
+            return await _customerService.GetOrCreateAsync(requestDto.CustomerId, requestDto.Customer);
         }
         catch (OperationException exception)
         {
@@ -417,8 +440,14 @@ internal class OrderService : IOrderService
         await _paymentService.CreateWithoutValidationAsync(paymentRequestDto);
     }
 
-    private async Task UpdatePaymentAsync(Payment payment, OrderUpsertRequestDto orderRequestDto)
+    private async Task UpdateOrDeletePaymentAsync(Payment payment, OrderUpsertRequestDto orderRequestDto)
     {
+        if (orderRequestDto.PaidAmount is 0)
+        {
+            await _paymentService.DeleteAsync(payment.Id);
+            return;
+        }
+
         PaymentUpdateRequestDto paymentRequestDto = new()
         {
             StatsDate = orderRequestDto.StatsDate,

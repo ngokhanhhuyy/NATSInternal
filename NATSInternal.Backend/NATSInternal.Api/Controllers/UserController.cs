@@ -35,7 +35,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetDetailById([FromRoute] int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetDetailById([FromRoute] int id)
     {
         return Ok(await _service.GetDetailByIdAsync(id));
     }

@@ -11,14 +11,10 @@ public class OrderListRequestDto : IHasStatsListRequestDto
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
     public ListMonthYearRequestDto? StatsMonthYear { get; set; }
-    public string? SearchContent { get; set; }
     #endregion
 
     #region Methods
-    public void TransformValues()
-    {
-        SearchContent = SearchContent.ToNullIfEmptyOrWhiteSpace();
-    }
+    public void TransformValues() { }
     #endregion
 
     #region Enums

@@ -69,7 +69,7 @@ public class CustomerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Delete([FromRoute] int id)
     {
         await _service.DeleteAsync(id);
         return Ok();

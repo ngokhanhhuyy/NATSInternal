@@ -1,4 +1,5 @@
 using FluentValidation;
+using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using NATSInternal.Core.Common.Exceptions;
 using NATSInternal.Core.Common.Extensions;
@@ -12,7 +13,8 @@ using NATSInternal.Core.Persistence.Handlers;
 
 namespace NATSInternal.Core.Features.Customers;
 
-internal class CustomerService : ICustomerService
+[UsedImplicitly]
+internal class CustomerInternalService : ICustomerInternalService
 {
     #region Fields
     private readonly AppDbContext _context;
@@ -26,7 +28,7 @@ internal class CustomerService : ICustomerService
     #endregion
 
     #region Constructors
-    public CustomerService(
+    public CustomerInternalService(
         AppDbContext context,
         IListFetchingService listFetchingService,
         IAuthorizationInternalService authorizationService,
@@ -112,68 +114,25 @@ internal class CustomerService : ICustomerService
             .SingleOrDefaultAsync()
             ?? throw new NotFoundException();
     }
+
+    public async Task<Customer> GetOrCreateAsync(int? id, CustomerUpsertRequestDto requestDto)
+    {
+        if (id.HasValue)
+        {
+            return await _context.Customers
+                .SingleOrDefaultAsync(c => c.Id == id && c.DeletedDateTime == null)
+                ?? throw new NotFoundException();
+        }
+        
+        return await CreateWithoutValidationAsync(requestDto);
+    }
     
     public async Task<int> CreateAsync(CustomerUpsertRequestDto requestDto)
     {
         _upsertValidator.ValidateAndThrow(requestDto);
 
-        Customer customer = new()
-        {
-            FirstName = requestDto.FirstName,
-            MiddleName = requestDto.MiddleName,
-            LastName = requestDto.LastName,
-            NickName = requestDto.NickName,
-            Gender = requestDto.Gender,
-            Birthday = requestDto.Birthday,
-            PhoneNumber = requestDto.PhoneNumber,
-            ZaloNumber = requestDto.ZaloNumber,
-            FacebookUrl = requestDto.FacebookUrl,
-            Email = requestDto.Email,
-            Address = requestDto.Email,
-            Note = requestDto.Note,
-            IntroducerId = requestDto.IntroducerId,
-            CreatedDateTime = _clock.Now,
-            CreatedUserId = _callerDetailProvider.GetId()
-        };
-
-        _context.Customers.Add(customer);
-
-        try
-        {
-            await _context.SaveChangesAsync();
-            return customer.Id;
-        }
-        catch (DbUpdateException exception)
-        {
-            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
-            if (handledResult is null)
-            {
-                throw;
-            }
-
-            object[] propertyPathElements;
-            if (handledResult.IsForeignKeyConstraintViolation)
-            {
-                if (handledResult.ViolatedPropertyName == nameof(Customer.IntroducerId))
-                {
-                    propertyPathElements = new object[] { nameof(requestDto.IntroducerId) };
-                    throw OperationException.NotFound(propertyPathElements, DisplayNames.Introducer);
-                }
-
-                if (handledResult.ViolatedPropertyName == nameof(Customer.CreatedUserId))
-                {
-                    throw new ConcurrencyException();
-                }
-            }
-
-            if (handledResult.IsUniqueConstraintViolation)
-            {
-                propertyPathElements = new object[] { nameof(requestDto.NickName) };
-                throw OperationException.Duplicated(propertyPathElements, DisplayNames.NickName);
-            }
-
-            throw;
-        }
+        Customer customer = await CreateWithoutValidationAsync(requestDto);
+        return customer.Id;
     }
 
     public async Task UpdateAsync(int id, CustomerUpsertRequestDto requestDto)
@@ -250,6 +209,35 @@ internal class CustomerService : ICustomerService
         }
     }
 
+    public async Task UpdateCachedRemaningDebtAmountAsync(Customer customer, Func<long, long> getAmount)
+    {
+        long newAmount = getAmount(customer.CachedDebtRemainingAmount);
+        if (newAmount < 0)
+        {
+            throw new OperationException(ErrorMessages.NegativeRemainingDebtAmount);
+        }
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException exception)
+        {
+            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+            if (handledResult is null)
+            {
+                throw;
+            }
+
+            if (handledResult.IsConcurrencyConflict || handledResult.IsForeignKeyConstraintViolation)
+            {
+                throw new ConcurrencyException();
+            }
+
+            throw;
+        }
+    }
+
     public async Task DeleteAsync(int id)
     {
         Customer customer = await _context.Customers
@@ -281,6 +269,69 @@ internal class CustomerService : ICustomerService
             if (handledResult.IsConcurrencyConflict || handledResult.IsForeignKeyConstraintViolation)
             {
                 throw new ConcurrencyException();
+            }
+
+            throw;
+        }
+    }
+    #endregion
+
+    #region PrivateMethods
+    private async Task<Customer> CreateWithoutValidationAsync(CustomerUpsertRequestDto requestDto)
+    {
+        Customer customer = new()
+        {
+            FirstName = requestDto.FirstName,
+            MiddleName = requestDto.MiddleName,
+            LastName = requestDto.LastName,
+            NickName = requestDto.NickName,
+            Gender = requestDto.Gender,
+            Birthday = requestDto.Birthday,
+            PhoneNumber = requestDto.PhoneNumber,
+            ZaloNumber = requestDto.ZaloNumber,
+            FacebookUrl = requestDto.FacebookUrl,
+            Email = requestDto.Email,
+            Address = requestDto.Email,
+            Note = requestDto.Note,
+            IntroducerId = requestDto.IntroducerId,
+            CreatedDateTime = _clock.Now,
+            CreatedUserId = _callerDetailProvider.GetId()
+        };
+
+        _context.Customers.Add(customer);
+
+        try
+        {
+            await _context.SaveChangesAsync();
+            return customer;
+        }
+        catch (DbUpdateException exception)
+        {
+            DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
+            if (handledResult is null)
+            {
+                throw;
+            }
+
+            object[] propertyPathElements;
+            if (handledResult.IsForeignKeyConstraintViolation)
+            {
+                if (handledResult.ViolatedPropertyName == nameof(Customer.IntroducerId))
+                {
+                    propertyPathElements = new object[] { nameof(requestDto.IntroducerId) };
+                    throw OperationException.NotFound(propertyPathElements, DisplayNames.Introducer);
+                }
+
+                if (handledResult.ViolatedPropertyName == nameof(Customer.CreatedUserId))
+                {
+                    throw new ConcurrencyException();
+                }
+            }
+
+            if (handledResult.IsUniqueConstraintViolation)
+            {
+                propertyPathElements = new object[] { nameof(requestDto.NickName) };
+                throw OperationException.Duplicated(propertyPathElements, DisplayNames.NickName);
             }
 
             throw;
