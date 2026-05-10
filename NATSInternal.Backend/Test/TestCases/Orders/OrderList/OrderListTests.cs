@@ -4,11 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using NATSInternal.Core.Common.Dtos;
 using NATSInternal.Core.Features.Authorization;
 using NATSInternal.Core.Features.Orders;
+using NATSInternal.Test.Common;
 using NATSInternal.Test.Extensions;
 using NATSInternal.Test.Fixtures;
 using NATSInternal.Test.Mock;
 using System.Reflection;
-using ValidationException = FluentValidation.ValidationException;
 
 namespace NATSInternal.Test.TestCases;
 
@@ -16,6 +16,8 @@ public class OrderListTests : IClassFixture<Fixture>
 {
     #region Fields
     private readonly Fixture _fixture;
+    private static readonly Faker _faker = new();
+    private static readonly Random _random = new();
     private static readonly IEnumerable<string> _roleNames;
     private static readonly IEnumerable<string> _fieldNames;
     #endregion
@@ -38,15 +40,18 @@ public class OrderListTests : IClassFixture<Fixture>
     #endregion
 
     #region StaticProperties
-    public static IEnumerable<object[]> CombinatedTestData
+    public static TheoryData<OrderListRequestDto> CombinatedTestData
     {
         get
         {
-            IEnumerable<string> sortByFieldNameData = ;
-            IEnumerable<int> pageData = Enumerable.Range(-100, 1000);
-            IEnumerable<int> resultsPerPageData = Enumerable.Range(-100, 100);
+            IEnumerable<string> sortByFieldNameData = Enumerable
+                .Range(1, 100)
+                .Select(length => _faker.Random.String(length))
+                .Concat(_fieldNames);
+            IEnumerable<int> pageData = Enumerable.Range(-1, 3);
+            IEnumerable<int> resultsPerPageData = new[] { -1, 0, 5, 50, 51 };
             IEnumerable<int> monthData = Enumerable.Range(-1, 13);
-            IEnumerable<int> yearData = Enumerable.Range(2020, 2030);
+            IEnumerable<int> yearData = Enumerable.Range(2025, 3);
             IEnumerable<ListMonthYearRequestDto?> statsMonthYearData =
                 (
                     from month in monthData
@@ -55,197 +60,31 @@ public class OrderListTests : IClassFixture<Fixture>
                 )
                 .Prepend(null);
 
-            return
+            IEnumerable<OrderListRequestDto> requestDtoData =
                 from name in sortByFieldNameData
                 from page in pageData
                 from resultsPerPage in resultsPerPageData
                 from statsMonthYear in statsMonthYearData
-                select new object[]
+                select new OrderListRequestDto
                 {
-                    new OrderListRequestDto
-                    {
-                        SortByFieldName = name,
-                        Page = page,
-                        ResultsPerPage = resultsPerPage,
-                        StatsMonthYear = statsMonthYear
-                    }
+                    SortByFieldName = name,
+                    Page = page,
+                    ResultsPerPage = resultsPerPage,
+                    StatsMonthYear = statsMonthYear
                 };
+
+            TheoryData<OrderListRequestDto> requestDtos = new();
+            foreach (OrderListRequestDto requestDto in requestDtoData)
+            {
+                requestDtos.Add(requestDto);
+            }
+
+            return requestDtos;
         }
     }
     #endregion
 
     #region Methods
-    [Fact]
-    public async Task GetOrderList_NoParameter_ShouldWork()
-    {
-        await InitializeAndRunTestAsync(async (requestDto, _, getListAsync) =>
-        {
-            await getListAsync();
-        });
-    }
-
-    [Theory]
-    [InlineData(nameof(OrderListRequestDto.FieldToSort.StatsDate))]
-    [InlineData(nameof(OrderListRequestDto.FieldToSort.CreatedDateTime))]
-    [InlineData(nameof(OrderListRequestDto.FieldToSort.LastUpdatedDateTime))]
-    [InlineData(nameof(OrderListRequestDto.FieldToSort.ProductItemsAmount))]
-    [InlineData(nameof(OrderListRequestDto.FieldToSort.ServiceItemsAmount))]
-    [InlineData(nameof(OrderListRequestDto.FieldToSort.TotalAmount))]
-    public async Task GetOrderList_ValidSortByFieldName_ShouldWork(string sortByFieldName)
-    {
-        await InitializeAndRunTestAsync(async (requestDto, _, getListAsync) =>
-        {
-            requestDto.SortByFieldName = sortByFieldName;
-            await getListAsync();
-        });
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData("abc")]
-    [InlineData("___")]
-    [InlineData("123")]
-    public async Task GetOrderList_InvalidSortByFieldName_ShouldThrowValidationException(string sortByFieldName)
-    {
-        await InitializeAndRunTestAsync(async (requestDto, _, getListAsync) =>
-        {
-            requestDto.SortByFieldName = sortByFieldName;
-
-            ValidationException exception = await Assert.ThrowsAsync<ValidationException>(async () =>
-            {
-                await getListAsync();
-            });
-
-            List<string> propertyNames = exception.Errors.Select(f => f.PropertyName).ToList();
-            Assert.Single(propertyNames);
-            Assert.Contains(nameof(OrderListRequestDto.SortByFieldName), propertyNames);
-        });
-    }
-
-    [Theory]
-    [InlineData(1)]
-    [InlineData(10)]
-    [InlineData(30)]
-    public async Task GetOrderList_ValidPage_ShouldWork(int page)
-    {
-        await InitializeAndRunTestAsync(async (requestDto, _, getListAsync) =>
-        {
-            requestDto.Page = page;
-            await getListAsync();
-        });
-    }
-
-    [Theory]
-    [InlineData(-100)]
-    [InlineData(-1.5)]
-    [InlineData(0)]
-    public async Task GetOrderList_InvalidPage_ShouldThrowValidationException(int page)
-    {
-        await InitializeAndRunTestAsync(async (requestDto, _, getListAsync) =>
-        {
-            requestDto.Page = page;
-
-            ValidationException exception = await Assert.ThrowsAsync<ValidationException>(async () =>
-            {
-                await getListAsync();
-            });
-
-            List<string> propertyNames = exception.Errors.Select(f => f.PropertyName).ToList();
-            Assert.Single(propertyNames);
-            Assert.Contains(nameof(OrderListRequestDto.Page), propertyNames);
-        });
-    }
-    
-    [Theory]
-    [InlineData(5)]
-    [InlineData(6)]
-    [InlineData(10)]
-    [InlineData(49)]
-    [InlineData(50)]
-    public async Task GetOrderList_ValidResultsPerPage_ShouldWork(int resultsPerPage)
-    {
-        await InitializeAndRunTestAsync(async (requestDto, _, getListAsync) =>
-        {
-            requestDto.ResultsPerPage = resultsPerPage;
-            await getListAsync();
-        });
-    }
-
-    [Theory]
-    [InlineData(4)]
-    [InlineData(0)]
-    [InlineData(-1)]
-    [InlineData(60)]
-    [InlineData(51)]
-    [InlineData(100)]
-    public async Task GetOrderList_InvalidResultsPerPage_ShouldThrowValidationException(int resultsPerPage)
-    {
-        await InitializeAndRunTestAsync(async (requestDto, _, getListAsync) =>
-        {
-            requestDto.ResultsPerPage = resultsPerPage;
-
-            ValidationException exception = await Assert.ThrowsAsync<ValidationException>(async () =>
-            {
-                await getListAsync();
-            });
-
-            List<string> propertyNames = exception.Errors.Select(f => f.PropertyName).ToList();
-            Assert.Single(propertyNames);
-            Assert.Contains(nameof(OrderListRequestDto.ResultsPerPage), propertyNames);
-        });
-    }
-
-    [Theory]
-    [InlineData(2026, 5)]
-    [InlineData(2025, 12)]
-    [InlineData(1995, 2)]
-    [InlineData(1000, 9)]
-    [InlineData(0, 1)]
-    public async Task GetOrderList_ValidStatsMonthYear_ShouldWork(int year, int month)
-    {
-        await InitializeAndRunTestAsync(async (requestDto, _, getListAsync) =>
-        {
-            requestDto.StatsMonthYear = new()
-            {
-                Year = year,
-                Month = month
-            };
-
-            await getListAsync();
-        });
-    }
-
-    [Theory]
-    [InlineData(0, 0)]
-    [InlineData(2030, 5)]
-    [InlineData(9990, 0)]
-    [InlineData(-1, 12)]
-    [InlineData(2026, -1)]
-    [InlineData(2026, 0)]
-    public async Task GetOrderList_InvalidStatsMonthYear_ShouldThrowValidationException(int year, int month)
-    {
-        await InitializeAndRunTestAsync(async (requestDto, _, getListAsync) =>
-        {
-            requestDto.StatsMonthYear = new()
-            {
-                Year = year,
-                Month = month
-            };
-
-            ValidationException exception = await Assert.ThrowsAsync<ValidationException>(async () =>
-            {
-                await getListAsync();
-            });
-
-            List<string> propertyNames = exception.Errors.Select(f => f.PropertyName).ToList();
-            Assert.Contains(
-                propertyNames,
-                name => name is
-                    $"{nameof(requestDto.StatsMonthYear)}.{nameof(requestDto.StatsMonthYear.Month)}" or
-                    $"{nameof(requestDto.StatsMonthYear)}.{nameof(requestDto.StatsMonthYear.Year)}");
-        });
-    }
-
     [Theory]
     [MemberData(nameof(CombinatedTestData))]
     public async Task GetOrderList_CombinatedParameters(OrderListRequestDto requestDto)
@@ -258,21 +97,93 @@ public class OrderListTests : IClassFixture<Fixture>
 
         IOrderService orderService = scope.ServiceProvider.GetRequiredService<IOrderService>();
 
-        bool isValid = false;
-        if (!requestDto.SortByFieldName)
+        ExecutionResult<OrderListResponseDto> result = new();
 
-        ValidationException exception = await Assert.ThrowsAsync<ValidationException>(async () =>
+        try
         {
-            await getListAsync();
-        });
+            result.ResponseDto = await orderService.GetListAsync(requestDto);
+        }
+        catch (Exception exception)
+        {
+            result.Exception = exception;
+        }
 
-        List<string> propertyNames = exception.Errors.Select(f => f.PropertyName).ToList();
-        Assert.Contains(
-            propertyNames,
-            name => name is
-                $"{nameof(originalRequestDto.StatsMonthYear)}.{nameof(originalRequestDto.StatsMonthYear.Month)}" or
-                $"{nameof(originalRequestDto.StatsMonthYear)}.{nameof(originalRequestDto.StatsMonthYear.Year)}");
-        });
+        AssertFieldName(result, requestDto.SortByFieldName);
+        AssertPage(result, requestDto.Page);
+        AssertResultsPerPage(result, requestDto.ResultsPerPage);
+        AssertStatsMonthYear(result, requestDto.StatsMonthYear, clock);
+    }
+    #endregion
+
+    #region PrivateStaticMethods
+    private static void AssertFieldName(ExecutionResult<OrderListResponseDto> result, string sortByFieldName)
+    {
+        if (_fieldNames.Contains(sortByFieldName))
+        {
+            return;
+        }
+        
+        Assert.Null(result.ResponseDto);
+        Assert.IsValidationExceptionAndErrorsContainFieldName(result, nameof(OrderListRequestDto.SortByFieldName));
+    }
+
+    private static void AssertPage(ExecutionResult<OrderListResponseDto> result, int page)
+    {
+        if (page >= 1)
+        {
+            return;
+        }
+        
+        Assert.Null(result.ResponseDto);
+        Assert.IsValidationExceptionAndErrorsContainFieldName(result, nameof(OrderListRequestDto.SortByFieldName));
+    }
+    
+    private static void AssertResultsPerPage(ExecutionResult<OrderListResponseDto> result, int resultsPerPage)
+    {
+        if (resultsPerPage is >= 5 and <= 50)
+        {
+            Assert.Null(result.ResponseDto);
+            Assert.IsValidationExceptionAndErrorsContainFieldName(result, nameof(OrderListRequestDto.ResultsPerPage));
+        }
+    }
+
+    private static void AssertStatsMonthYear(
+        ExecutionResult<OrderListResponseDto> result,
+        ListMonthYearRequestDto? statsMonthYear,
+        Clock clock)
+    {
+        if (statsMonthYear is null)
+        {
+            return;
+        }
+
+        DateOnly today = clock.Today;
+        bool isValid = true;
+        if (statsMonthYear.Year <= 0 || statsMonthYear.Year >= today.Year)
+        {
+            isValid = false;
+        }
+
+        if (statsMonthYear.Month < 1 || statsMonthYear.Month > 12)
+        {
+            isValid = false;
+        }
+
+        if (statsMonthYear.Year == today.Year && statsMonthYear.Month > today.Month)
+        {
+            isValid = false;
+        }
+
+        if (!isValid)
+        {
+            string[] fieldNames = new[]
+            {
+                $"{nameof(OrderListRequestDto.StatsMonthYear)}.{nameof(OrderListRequestDto.StatsMonthYear.Month)}",
+                $"{nameof(OrderListRequestDto.StatsMonthYear)}.{nameof(OrderListRequestDto.StatsMonthYear.Year)}"
+            };
+
+            Assert.IsValidationExceptionAndErrorsContainOneOfFieldNames(result, fieldNames);
+        }
     }
     #endregion
 
