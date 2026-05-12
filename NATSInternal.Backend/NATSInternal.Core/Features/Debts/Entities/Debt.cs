@@ -34,7 +34,7 @@ internal class Debt : IHasStatsEntity
     public required int CustomerId { get; set; }
 
     [Required]
-    public required int UserId { get; set; }
+    public required int CreatedUserId { get; set; }
 
     public int? LastUpdatedUserId { get; set; }
 

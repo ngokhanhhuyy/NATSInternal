@@ -3,6 +3,7 @@ using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Features.Debts;
 using NATSInternal.Core.Features.Expenses;
 using NATSInternal.Core.Features.Orders;
 using NATSInternal.Core.Features.Payments;
@@ -35,6 +36,7 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<OrderProductItem> OrderProductItems { get; set; }
     public DbSet<OrderServiceItem> OrderServiceItems { get; set; }
     public DbSet<Payment> Payments { get; set; }
+    public DbSet<Debt> Debts { get; set; }
     public DbSet<Photo> Photos { get; set; }
     #endregion
     
@@ -69,6 +71,9 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
 
         // Payment-cluster entities.
         modelBuilder.ApplyConfiguration(new PaymentEntityConfiguration());
+
+        // Payment-cluster entities.
+        modelBuilder.ApplyConfiguration(new DebtEntityConfiguration());
 
         // Photo-cluster entities.
         modelBuilder.ApplyConfiguration(new PhotoEntityConfiguration());
