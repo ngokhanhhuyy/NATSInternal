@@ -1,5 +1,4 @@
 using NATSInternal.Core.Features.Authorization;
-using NATSInternal.Core.Features.Customers;
 
 namespace NATSInternal.Core.Features.Payments;
 
@@ -12,13 +11,13 @@ public class PaymentBasicResponseDto
         Type = payment.Type;
         StatsDate = payment.StatsDate;
         Amount = payment.Amount;
+        CustomerId = payment.CustomerId;
     }
 
     internal PaymentBasicResponseDto(
         Payment payment,
         PaymentExistingAuthorizationResponseDto authorization) : this(payment)
     {
-        Customer = new(payment.Customer);
         Authorization = authorization;
     }
     #endregion
@@ -28,7 +27,7 @@ public class PaymentBasicResponseDto
     public PaymentType Type { get; }
     public DateOnly StatsDate { get; }
     public long Amount { get; }
-    public CustomerBasicResponseDto? Customer { get; }
+    public int CustomerId { get; }
     public PaymentExistingAuthorizationResponseDto? Authorization { get; }
     #endregion
 }

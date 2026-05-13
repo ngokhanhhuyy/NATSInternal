@@ -3,7 +3,7 @@ using NATSInternal.Core.Common.Extensions;
 
 namespace NATSInternal.Core.Features.Debts;
 
-public abstract class DebtUpsertRequestDto : IHasStatsUpsertRequestDto
+public abstract class AbstractDebtUpsertRequestDto : IHasStatsUpsertRequestDto
 {
     #region Properties
     public DateOnly? StatsDate { get; set; }

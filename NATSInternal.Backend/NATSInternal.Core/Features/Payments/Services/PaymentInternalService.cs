@@ -8,6 +8,7 @@ using NATSInternal.Core.Common.Security;
 using NATSInternal.Core.Common.Services;
 using NATSInternal.Core.Common.Time;
 using NATSInternal.Core.Features.Authorization;
+using NATSInternal.Core.Features.Customers;
 using NATSInternal.Core.Persistence.DbContext;
 using NATSInternal.Core.Persistence.Handlers;
 
@@ -145,6 +146,23 @@ internal class PaymentInternalService : IPaymentInternalService
             throw new AuthorizationException();
         }
 
+        Customer? customer = await _context.Customers
+            .Where(c => c.Id == requestDto.CustomerId)
+            .Where(c => c.DeletedDateTime != null)
+            .SingleOrDefaultAsync();
+
+        if (customer is null)
+        {
+            object[] propertyPathElements = new object[] { nameof(requestDto.CustomerId) };
+            throw OperationException.NotFound(propertyPathElements, DisplayNames.Customer);
+        }
+
+        if (customer.CachedDebtRemainingAmount - requestDto.Amount < 0)
+        {
+            object[] propertyPathElements = new object[] { nameof(requestDto.Amount) };
+            throw new OperationException(propertyPathElements, ErrorMessages.PaidAmountIsGreaterThanRemainingDebtAmount);
+        }
+
         DateTime currentDateTime = _clock.Now;
         Payment payment = new()
         {
@@ -152,7 +170,8 @@ internal class PaymentInternalService : IPaymentInternalService
             Type = requestDto.Type,
             Amount = requestDto.Amount,
             Note = requestDto.Note,
-            CustomerId = requestDto.CustomerId,
+            CustomerId = customer.Id,
+            Customer = customer,
             OrderId = requestDto.OrderId,
             CreatedDateTime = currentDateTime,
             CreatedUserId = _callerDetailProvider.GetId()
@@ -190,6 +209,14 @@ internal class PaymentInternalService : IPaymentInternalService
         if (!authorization.CanEdit)
         {
             throw new AuthorizationException();
+        }
+
+        long amountDiff = requestDto.Amount - payment.Amount;
+        if (payment.Customer.CachedDebtRemainingAmount - amountDiff < 0)
+        {
+            object[] propertyPathElements = new object[] { nameof(requestDto.Amount) };
+            string errorMessage = ErrorMessages.PaidAmountIsGreaterThanRemainingDebtAmount;
+            throw new OperationException(propertyPathElements, errorMessage);
         }
 
         payment.StatsDate = requestDto.StatsDate ?? payment.StatsDate;
@@ -246,7 +273,7 @@ internal class PaymentInternalService : IPaymentInternalService
     #endregion
 
     #region PrivateMethods
-    public void ThrowDbUpdateException(DbUpdateException exception, bool isForCreating)
+    private void ThrowDbUpdateException(DbUpdateException exception, bool isForCreating)
     {
         DbExceptionHandledResult? handledResult = _exceptionHandler.Handle(exception);
         if (handledResult is null)

@@ -45,6 +45,7 @@ public static class ErrorMessages
     public const string UserNotInRole = $"{DisplayNames.User} không thuộc về vị trí {{RoleName}} từ trước.";
     public const string PaymentAlreadyCompleted = "{ResourceName} đã được thanh toán đầy đủ, Không thể thanh toán thêm.";
     public const string ModificationTimeExpired = "{ResourceName} đã bị khoá do quá hạn chỉnh sửa/xoá.";
+    public const string PaidAmountIsGreaterThanRemainingDebtAmount = "Số tiền thanh toán phải nhỏ hơn số tiền nợ của khách hàng.";
     public const string NegativeRemainingDebtAmount = "Với giá trị đã nhập, khoản nợ còn lại của khách hàng này sẽ trở thành số âm.";
     public const string NegativeProductStockingQuantity = "Không đủ số lượng hàng trong kho.";
     public const string CannotSetDateTimeAfterLocked = "{ResourceName} đã bị khoá, không thể chỉnh sửa {PropertyName}.";
