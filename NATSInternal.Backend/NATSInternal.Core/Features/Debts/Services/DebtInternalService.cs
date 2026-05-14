@@ -135,6 +135,8 @@ internal class DebtInternalService : IDebtInternalService
             throw new AuthorizationException();
         }
 
+        _createValidator.ValidateAndThrow(requestDto);
+
         await using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
 
         DateTime currentDateTime = _clock.Now;
@@ -149,7 +151,87 @@ internal class DebtInternalService : IDebtInternalService
         };
 
         _context.Debts.Add(debt);
-        _customerService.UpdateCachedRemaningDebtAmountAsync()
+
+        try
+        {
+            await _context.SaveChangesAsync();
+
+            long UpdateCachedDebtAmount(long currentAmount) => currentAmount + requestDto.Amount;
+            await _customerService.UpdateCachedRemaningDebtAmountAsync(requestDto.CustomerId, UpdateCachedDebtAmount);
+
+            return debt.Id;
+        }
+        catch (DbUpdateException exception)
+        {
+            ThrowFromDbUpdateException(exception, isWhenCreating: true);
+            throw;
+        }
+        catch (NotFoundException)
+        {
+            throw new ConcurrencyException();
+        }
+    }
+
+    public async Task UpdateAsync(int id, DebtUpdateRequestDto requestDto)
+    {
+        _updateValidator.ValidateAndThrow(requestDto);
+
+        Debt debt = await _context.Debts
+            .Include(d => d.Customer)
+            .Where(d => d.Id == id)
+            .Where(d => d.DeletedDateTime == null)
+            .SingleOrDefaultAsync()
+            ?? throw new NotFoundException();
+
+        DebtExistingAuthorizationResponseDto authorization;
+        authorization = _authorizationService.GetDebtExistingAuthorization(debt);
+        if (!authorization.CanEdit)
+        {
+            throw new AuthorizationException();
+        }
+
+        long amountDiff = requestDto.Amount - debt.Amount;
+        if (debt.Customer.CachedDebtRemainingAmount + amountDiff < 0)
+        {
+            object[] propertyPathElements = new object[] { nameof(requestDto.Amount) };
+            string errorMessage = ErrorMessages.NegativeRemainingDebtAmount;
+            throw new OperationException(propertyPathElements, errorMessage);
+        }
+
+        debt.StatsDate = requestDto.StatsDate ?? debt.StatsDate;
+        debt.Amount = requestDto.Amount;
+        debt.Note = requestDto.Note;
+        debt.LastUpdatedDateTime = _clock.Now;
+        debt.LastUpdatedUserId = _callerDetailProvider.GetId();
+
+        await using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
+        
+        try
+        {
+            await _context.SaveChangesAsync();
+
+            long UpdateCachedDebtAmount(long currentAmount) => currentAmount + amountDiff;
+            await _customerService.UpdateCachedRemaningDebtAmountAsync(debt.Customer, UpdateCachedDebtAmount);
+        }
+        catch (DbUpdateException exception)
+        {
+            ThrowFromDbUpdateException(exception, isWhenCreating: false);
+            throw;
+        }
+        catch (NotFoundException)
+        {
+            throw new ConcurrencyException();
+        }
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        Debt debt = await _context.Debts
+            .Include(d => d.Customer)
+            .SingleOrDefaultAsync(d => d.Id == id && d.DeletedDateTime == null)
+            ?? throw new NotFoundException();
+
+            
     }
     #endregion
 

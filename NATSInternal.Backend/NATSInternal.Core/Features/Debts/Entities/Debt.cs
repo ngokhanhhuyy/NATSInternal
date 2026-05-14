@@ -1,6 +1,7 @@
 using NATSInternal.Core.Common.Contracts;
 using NATSInternal.Core.Common.Entities;
 using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Features.Orders;
 using NATSInternal.Core.Features.Users;
 using System.ComponentModel.DataAnnotations;
 
@@ -34,6 +35,9 @@ internal class Debt : IHasStatsEntity
     public required int CustomerId { get; set; }
 
     [Required]
+    public required int OrderId { get; set; }
+
+    [Required]
     public required int CreatedUserId { get; set; }
 
     public int? LastUpdatedUserId { get; set; }
@@ -43,6 +47,7 @@ internal class Debt : IHasStatsEntity
 
     #region NavigationProperties
     public Customer Customer { get; set; } = null!;
+    public Order Order { get; set; } = null!;
     public User CreatedUser { get; set; } = null!;
     public User? LastUpdatedUser { get; set; }
     public User? DeletedUser { get; set; }

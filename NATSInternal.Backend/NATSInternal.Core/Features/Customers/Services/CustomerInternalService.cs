@@ -238,6 +238,15 @@ internal class CustomerInternalService : ICustomerInternalService
         }
     }
 
+    public async Task UpdateCachedRemaningDebtAmountAsync(int id, Func<long, long> getAmount)
+    {
+        Customer customer = await _context.Customers
+            .SingleOrDefaultAsync(c => c.Id == id)
+            ?? throw new NotFoundException();
+
+        await UpdateCachedRemaningDebtAmountAsync(customer, getAmount);
+    }
+
     public async Task DeleteAsync(int id)
     {
         Customer customer = await _context.Customers

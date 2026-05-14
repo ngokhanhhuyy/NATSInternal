@@ -1,5 +1,6 @@
 using NATSInternal.Core.Features.Authorization;
 using NATSInternal.Core.Features.Customers;
+using NATSInternal.Core.Features.Orders;
 using NATSInternal.Core.Features.Users;
 
 namespace NATSInternal.Core.Features.Debts;
@@ -14,6 +15,7 @@ public class DebtDetailResponseDto
         Amount = payment.Amount;
         Note = payment.Note;
         Customer = new(payment.Customer);
+        Order = new(payment.Order);
         CreatedDateTime = payment.CreatedDateTime;
         CreatedUser = new(payment.CreatedUser);
 
@@ -39,6 +41,7 @@ public class DebtDetailResponseDto
     public long Amount { get; }
     public string? Note { get; }
     public CustomerBasicResponseDto Customer { get; }
+    public OrderBasicResponseDto Order { get; }
     public DateTime CreatedDateTime { get; }
     public UserBasicResponseDto CreatedUser { get; }
     public DateTime? LastUpdateDateTime { get; }

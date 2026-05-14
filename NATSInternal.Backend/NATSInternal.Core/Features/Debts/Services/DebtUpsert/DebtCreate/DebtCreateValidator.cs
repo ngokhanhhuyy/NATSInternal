@@ -14,6 +14,9 @@ internal class DebtCreateValidator : AbstractDebtUpsertValidator<DebtCreateReque
         RuleFor(dto => dto.CustomerId)
             .NotEmpty()
             .WithName(DisplayNames.Customer);
+        RuleFor(dto => dto.OrderId)
+            .NotEmpty()
+            .WithName(DisplayNames.Order);
     }
     #endregion
 }
