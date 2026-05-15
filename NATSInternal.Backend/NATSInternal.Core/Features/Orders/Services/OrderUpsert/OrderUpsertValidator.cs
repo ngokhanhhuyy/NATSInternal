@@ -49,6 +49,7 @@ internal class OrderUpsertValidator : Validator<OrderUpsertRequestDto>
             .Unique(pi => pi.ProductId)
             .When(dto => dto.Type is OrderType.Retail)
             .WithName(DisplayNames.OrderProductItem);
+
         RuleForEach(dto => dto.ProductItems)
             .SetValidator(productItemValidator)
             .WithName(DisplayNames.OrderProductItem);
@@ -67,6 +68,7 @@ internal class OrderUpsertValidator : Validator<OrderUpsertRequestDto>
             RuleFor(dto => dto.Type)
                 .IsInEnum()
                 .WithName(DisplayNames.OrderType);
+                
             RuleForEach(dto => dto.Photos)
                 .SetValidator(photoValidator, ruleSets: "Create")
                 .WithName(DisplayNames.Photo);

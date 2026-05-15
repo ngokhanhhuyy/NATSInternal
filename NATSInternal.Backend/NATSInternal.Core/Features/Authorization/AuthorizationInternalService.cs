@@ -1,7 +1,6 @@
 using JetBrains.Annotations;
 using NATSInternal.Core.Common.Security;
 using NATSInternal.Core.Features.Customers;
-using NATSInternal.Core.Features.Debts;
 using NATSInternal.Core.Features.Expenses;
 using NATSInternal.Core.Features.Orders;
 using NATSInternal.Core.Features.Payments;
@@ -101,15 +100,6 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
         };
     }
 
-    public DebtExistingAuthorizationResponseDto GetDebtExistingAuthorization(Debt debt)
-    {
-        return new()
-        {
-            CanEdit = CallerHasPermission(PermissionNames.EditDebt),
-            CanDelete = CallerHasPermission(PermissionNames.DeleteDebt)
-        };
-    }
-
     public bool CanCreateUser()
     {
         return CallerHasPermission(PermissionNames.CreateUser);
@@ -195,11 +185,6 @@ internal class AuthorizationInternalService : IAuthorizationInternalService
     public bool CanCreatePayment()
     {
         return CallerHasPermission(PermissionNames.CreatePayment);
-    }
-
-    public bool CanCreateDebt()
-    {
-        return CallerHasPermission(PermissionNames.CreateDebt);
     }
     #endregion
 

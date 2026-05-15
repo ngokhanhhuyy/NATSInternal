@@ -1,5 +1,4 @@
 using NATSInternal.Core.Common.Dtos;
-using NATSInternal.Core.Common.Extensions;
 
 namespace NATSInternal.Core.Features.Supplies;
 

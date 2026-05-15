@@ -211,11 +211,7 @@ internal class CustomerInternalService : ICustomerInternalService
 
     public async Task UpdateCachedRemaningDebtAmountAsync(Customer customer, Func<long, long> getAmount)
     {
-        long newAmount = getAmount(customer.CachedDebtRemainingAmount);
-        if (newAmount < 0)
-        {
-            throw new OperationException(ErrorMessages.NegativeRemainingDebtAmount);
-        }
+        customer.CachedDebtRemainingAmount = getAmount(customer.CachedDebtRemainingAmount);
 
         try
         {

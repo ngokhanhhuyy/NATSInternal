@@ -9,10 +9,10 @@ using NATSInternal.Core.Features.Photos;
 namespace NATSInternal.Core.Features.Supplies;
 
 [UsedImplicitly]
-internal class SupplyUpsertValidator : Validator<SupplyUpsertRequestDto>
+internal abstract class AbstractSupplyUpsertValidator : Validator<AbstractSupplyUpsertRequestDto>
 {
     #region Constructors
-    public SupplyUpsertValidator(
+    public AbstractSupplyUpsertValidator(
         IValidator<SupplyUpsertItemRequestDto> itemValidator,
         IValidator<PhotoUpsertRequestDto> photoValidator,
         IClock clock)

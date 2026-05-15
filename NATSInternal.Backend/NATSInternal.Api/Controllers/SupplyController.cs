@@ -44,7 +44,7 @@ public class SupplyController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> Create([FromBody] SupplyUpsertRequestDto requestDto)
+    public async Task<IActionResult> Create([FromBody] AbstractSupplyUpsertRequestDto requestDto)
     {
         int id = await _service.CreateAsync(requestDto);
         return CreatedAtAction(nameof(Detail), new { id }, id);
@@ -56,7 +56,7 @@ public class SupplyController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] SupplyUpsertRequestDto requestDto)
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] AbstractSupplyUpsertRequestDto requestDto)
     {
         await _service.UpdateAsync(id, requestDto);
         return Ok();

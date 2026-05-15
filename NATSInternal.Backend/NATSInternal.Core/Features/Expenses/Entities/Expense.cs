@@ -42,7 +42,7 @@ internal class Expense : IHasStatsEntity
     public User CreatedUser { get; set; } = null!;
     public User? LastUpdatedUser { get; set; }
     public User? DeletedUser { get; set; }
-    public List<Photo> Photos { get; set; } = new();
+    public List<Photo> Photos { get; private set; } = new();
     #endregion
 
     #region ComputedProperties

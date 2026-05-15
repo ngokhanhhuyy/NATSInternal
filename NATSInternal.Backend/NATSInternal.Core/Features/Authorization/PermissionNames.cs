@@ -54,13 +54,6 @@ public static class PermissionNames
     public const string SetPaymentStatsDate = nameof(SetPaymentStatsDate);
     public const string DeletePayment = nameof(DeletePayment);
 
-    // Permissions to interact with debts
-    public const string CreateDebt = nameof(CreateDebt);
-    public const string EditDebt = nameof(EditDebt);
-    public const string EditLockedDebt = nameof(EditLockedDebt);
-    public const string SetDebtStatsDate = nameof(SetDebtStatsDate);
-    public const string DeleteDebt = nameof(DeleteDebt);
-
     // Permissions to interact with announcements.
     public const string CreateAnnouncement = nameof(CreateAnnouncement);
     public const string EditAnnouncement = nameof(EditAnnouncement);

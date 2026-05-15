@@ -20,7 +20,7 @@ internal class SupplyService : ISupplyService
     private readonly IHasProductService<SupplyUpsertItemRequestDto, SupplyItem> _hasProductService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IValidator<SupplyListRequestDto> _listValidator;
-    private readonly IValidator<SupplyUpsertRequestDto> _upsertValidator;
+    private readonly IValidator<AbstractSupplyUpsertRequestDto> _upsertValidator;
     private readonly IDbExceptionHandler _exceptionHandler;
     private readonly ICallerDetailProvider _callerDetailProvider;
     private readonly IClock _clock;
@@ -33,7 +33,7 @@ internal class SupplyService : ISupplyService
         IHasProductService<SupplyUpsertItemRequestDto, SupplyItem> hasProductService,
         IAuthorizationInternalService authorizationService,
         IValidator<SupplyListRequestDto> listValidator,
-        IValidator<SupplyUpsertRequestDto> upsertValidator,
+        IValidator<AbstractSupplyUpsertRequestDto> upsertValidator,
         IDbExceptionHandler exceptionHandler,
         ICallerDetailProvider callerDetailProvider,
         IClock clock)
@@ -124,7 +124,7 @@ internal class SupplyService : ISupplyService
         return new(supply, authorization);
     }
 
-    public async Task<int> CreateAsync(SupplyUpsertRequestDto requestDto)
+    public async Task<int> CreateAsync(AbstractSupplyUpsertRequestDto requestDto)
     {
         if (!_authorizationService.CanCreateSupply())
         {
@@ -173,7 +173,7 @@ internal class SupplyService : ISupplyService
         }
     }
 
-    public async Task UpdateAsync(int id, SupplyUpsertRequestDto requestDto)
+    public async Task UpdateAsync(int id, AbstractSupplyUpsertRequestDto requestDto)
     {
         _upsertValidator.Validate(requestDto, options =>
         {

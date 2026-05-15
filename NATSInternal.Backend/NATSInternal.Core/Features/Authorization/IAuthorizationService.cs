@@ -10,5 +10,4 @@ public interface IAuthorizationService
     bool CanCreateSupply();
     bool CanCreateOrder();
     bool CanCreatePayment();
-    bool CanCreateDebt();
 }

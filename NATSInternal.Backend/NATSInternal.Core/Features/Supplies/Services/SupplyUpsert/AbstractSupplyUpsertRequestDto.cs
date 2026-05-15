@@ -4,7 +4,7 @@ using NATSInternal.Core.Features.Photos;
 
 namespace NATSInternal.Core.Features.Supplies;
 
-public class SupplyUpsertRequestDto : IHasProductUpsertRequestDto<SupplyUpsertItemRequestDto>
+public class AbstractSupplyUpsertRequestDto : IHasProductUpsertRequestDto<SupplyUpsertItemRequestDto>
 {
     #region Properties
     public List<SupplyUpsertItemRequestDto> Items { get; set; } = new();

@@ -105,8 +105,6 @@ internal class UserSeeder
                     new() { Name = PermissionNames.DeleteExpense },
                     new() { Name = PermissionNames.EditOrder },
                     new() { Name = PermissionNames.DeleteOrder },
-                    new() { Name = PermissionNames.EditDebt },
-                    new() { Name = PermissionNames.DeleteDebt },
                     new() { Name = PermissionNames.GetFinancialReport }
                 },
             },
@@ -121,7 +119,6 @@ internal class UserSeeder
                     new() { Name = PermissionNames.CreateSupply },
                     new() { Name = PermissionNames.CreateExpense },
                     new() { Name = PermissionNames.CreateOrder },
-                    new() { Name = PermissionNames.CreateDebt },
                 },
             }
         };

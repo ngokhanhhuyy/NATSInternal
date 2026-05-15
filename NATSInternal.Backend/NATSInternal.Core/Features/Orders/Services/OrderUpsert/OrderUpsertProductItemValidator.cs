@@ -9,18 +9,22 @@ internal class OrderUpsertProductItemValidator : Validator<OrderUpsertProductIte
     #region Constructors
     public OrderUpsertProductItemValidator()
     {
-        RuleFor(dto => dto.AmountBeforeVatPerUnit)
-            .GreaterThan(0)
-            .WithName(DisplayNames.AmountBeforeVat);
-        RuleFor(dto => dto.VatAmountPerUnit)
-            .GreaterThanOrEqualTo(0)
-            .WithName(DisplayNames.VatAmount);
-        RuleFor(dto => dto.Quantity)
-            .GreaterThan(0)
-            .WithName(DisplayNames.Quantity);
         RuleFor(dto => dto.ProductId)
             .GreaterThan(0)
             .WithName(DisplayNames.ProductId);
+
+        RuleSet("OfficialCreateOrUpdate", () =>
+        {
+            RuleFor(dto => dto.AmountBeforeVatPerUnit)
+                .GreaterThan(0)
+                .WithName(DisplayNames.AmountBeforeVat);
+            RuleFor(dto => dto.VatAmountPerUnit)
+                .GreaterThanOrEqualTo(0)
+                .WithName(DisplayNames.VatAmount);
+            RuleFor(dto => dto.Quantity)
+                .GreaterThan(0)
+                .WithName(DisplayNames.Quantity);
+        });
     }
     #endregion
 }

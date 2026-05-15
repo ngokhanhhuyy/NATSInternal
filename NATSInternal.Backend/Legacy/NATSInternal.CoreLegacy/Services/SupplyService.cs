@@ -200,7 +200,7 @@ internal class SupplyService
         await using IDbContextTransaction transaction = await _context.Database
             .BeginTransactionAsync();
 
-        // Storing the old data for update history logging and stats adjustments.
+        // Storing the old data for update history logging and stats Corrections.
         SupplyUpdateHistoryDataDto oldData = new SupplyUpdateHistoryDataDto(supply);
         long oldItemAmount = supply.ItemsAmount;
         long oldShipmentFee = supply.ShipmentFee;
