@@ -258,7 +258,7 @@ internal class OrderService : IOrderService
             long NewDebtAmountComputer(long amount) => amount + debtAmount;
             try
             {
-                await _customerService.UpdateCachedRemaningDebtAmountAsync(customer, NewDebtAmountComputer);
+                await _customerService.UpdateCachedDebtAmount(customer, NewDebtAmountComputer);
             }
             catch (NotFoundException)
             {
@@ -387,8 +387,8 @@ internal class OrderService : IOrderService
         }
 
         long newDebtAmount = order.CachedAmountAfterVat - (order.Payment?.Amount ?? 0);
-        long ComputeNewCachedRemainingDebtAmount(long amount) => amount + (newDebtAmount - oldDebtAmount);
-        await _customerService.UpdateCachedRemaningDebtAmountAsync(customer, ComputeNewCachedRemainingDebtAmount);
+        long ComputeNewCachedDebtAmount(long amount) => amount + (newDebtAmount - oldDebtAmount);
+        await _customerService.UpdateCachedDebtAmount(customer, ComputeNewCachedDebtAmount);
     
         await transaction.CommitAsync();
     }

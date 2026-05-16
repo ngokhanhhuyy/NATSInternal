@@ -71,7 +71,9 @@ export default function CustomerPersonalInformation(props: CustomerPersonalInfor
         {/* FacebookUrl */}
         {props.model.facebookUrl && (
           <Field name="facebookUrl">
-            <NewTabWebsiteLink href={props.model.facebookUrl}>123</NewTabWebsiteLink>
+            <NewTabWebsiteLink href={props.model.facebookUrl}>
+              {props.model.facebookUrl}
+            </NewTabWebsiteLink>
           </Field>
         )}
 

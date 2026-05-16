@@ -23,6 +23,8 @@ declare global {
     createdDateTime: string;
     lastUpdatedUser: UserBasicModel | null;
     lastUpdatedDateTime: string | null;
+    deletedUser: UserBasicModel | null;
+    deletedDateTime: string | null;
     debtAmount: number;
     introducer: CustomerBasicModel | null;
     authorization: CustomerExistingAuthorizationResponseDto;
@@ -43,6 +45,8 @@ export function createCustomerDetailModel(responseDto: CustomerDetailResponseDto
     lastUpdatedUser: responseDto.lastUpdatedUser && createUserBasicModel(responseDto.lastUpdatedUser),
     lastUpdatedDateTime: responseDto.lastUpdatedDateTime &&
       getDisplayDateTimeString(responseDto.lastUpdatedDateTime),
+    deletedUser: responseDto.deletedUser && createUserBasicModel(responseDto.deletedUser),
+    deletedDateTime: responseDto.deletedDateTime && getDisplayDateTimeString(responseDto.deletedDateTime),
     debtAmount: responseDto.debtAmount,
     introducer: responseDto.introducer && createCustomerBasicModel(responseDto.introducer),
     get avatarUrl(): string {

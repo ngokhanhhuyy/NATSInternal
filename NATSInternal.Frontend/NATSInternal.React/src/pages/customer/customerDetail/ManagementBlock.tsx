@@ -12,20 +12,28 @@ type ManagementBlockProps = { model: CustomerDetailModel };
 // Component.
 export default function ManagementBlock(props: ManagementBlockProps): React.ReactNode {
   // Template.
+  function renderUser(user: UserBasicModel): React.ReactNode {
+    if (user.isDeleted) {
+      return (
+        <span className="line-through">
+          @{user.userName}
+        </span>
+      );
+    }
+
+    return (
+      <Link to={user.detailRoute}>
+        @{user.userName}
+      </Link>
+    );
+  }
+
   return (
     <Block title="Quản lý" bodyClassName="p-3">
       <FieldContainer>
         {/* CreatedUser */}
         <Field name="createdUser">
-          {!props.model.createdUser.isDeleted ? (
-            <Link to={props.model.createdUser.detailRoute}>
-              @{props.model.createdUser.userName}
-            </Link>
-          ) : (
-            <span className="line-through">
-              Tài khoản đã bị xoá
-            </span>
-          )}
+            {renderUser(props.model.createdUser)}
         </Field>
 
         {/* CreatedDateTime */}
@@ -36,15 +44,7 @@ export default function ManagementBlock(props: ManagementBlockProps): React.Reac
         {/* LastUpdatedUser */}
         {props.model.lastUpdatedUser && (
           <Field name="lastUpdatedUser">
-            {(props.model.lastUpdatedUser && !props.model.createdUser.isDeleted) ? (
-              <Link to={props.model.lastUpdatedUser.detailRoute}>
-                @{props.model.lastUpdatedUser.userName}
-              </Link>
-            ) : (
-              <span className="line-through">
-                Tài khoản đã bị xoá
-              </span>
-            )}
+            {renderUser(props.model.lastUpdatedUser)}
           </Field>
         )}
 
@@ -52,6 +52,19 @@ export default function ManagementBlock(props: ManagementBlockProps): React.Reac
         {props.model.lastUpdatedDateTime && (
           <Field name="lastUpdatedDateTime">
             {props.model.lastUpdatedDateTime}
+          </Field>
+        )}
+
+        {/* DeletedUser */}
+        {props.model.deletedUser && (
+          <Field name="deletedUser">
+            {renderUser(props.model.deletedUser)}
+          </Field>
+        )}
+
+        {props.model.deletedDateTime && (
+          <Field name="deletedDateTime">
+            {props.model.deletedDateTime}
           </Field>
         )}
       </FieldContainer>

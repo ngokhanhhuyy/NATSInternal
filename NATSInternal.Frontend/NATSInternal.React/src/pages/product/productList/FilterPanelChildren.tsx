@@ -30,7 +30,7 @@ export default function FilterPanelChildren(props: Props): React.ReactNode {
   }, []);
 
   // Callback.
-  function handleBrandChanged(id: string): void {
+  function handleBrandChanged(id: number): void {
     if (id) {
       props.onModelUpdated({ brand: initialModels.brandOptions.find(b => b.id === id) ?? null });
       return;

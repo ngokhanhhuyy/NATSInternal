@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router";
-import { useApi } from "@/api";
+import { api } from "@/api";
 import { createCustomerUpsertModel } from "@/models/customer/customerUpsertModel";
 
 // Child components.
@@ -10,18 +10,17 @@ import CustomerUpsertPage from "./CustomerUpsertPage";
 export default function CustomerCreatePage(): React.ReactNode {
   // Dependencies.
   const navigate = useNavigate();
-  const api = useApi();
 
   // States.
   const [model, setModel] = useState(() => createCustomerUpsertModel());
 
   // Callbacks.
-  const handleCreate = async (): Promise<string> => {
+  const handleCreate = async (): Promise<number> => {
     return await api.customer.createAsync(model.toRequestDto());
   };
 
-  const handleCreatingSucceeded = useCallback((createdId: string): void => {
-    navigate(createdId);
+  const handleCreatingSucceeded = useCallback((id: number): void => {
+    navigate(id);
   }, []);
 
   // Template.

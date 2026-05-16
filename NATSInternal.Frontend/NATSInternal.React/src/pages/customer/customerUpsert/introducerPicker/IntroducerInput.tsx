@@ -9,24 +9,25 @@ import { TextInput, type TextInputProps } from "@/components/form";
 export type IntroducerInputProps = {
   value: CustomerBasicModel | null;
   onValueChanged(changedModel: CustomerBasicModel | null): any;
+  excludedId: number | null;
 } & Omit<TextInputProps, "value" | "onValueChanged">;
 
 // Component.
 export default function IntroducerInput(props: IntroducerInputProps): React.ReactNode {
   // Props.
-  const { value, onValueChanged: onModelChanged, ...domProps } = props;
+  const { value, onValueChanged, excludedId, ...domProps } = props;
 
   // States.
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   // Callbacks.
   const handlePicked = useCallback((customer: CustomerBasicModel) => {
-    setTimeout(() => onModelChanged(customer), 110);
+    setTimeout(() => onValueChanged(customer), 110);
     setIsModalVisible(false);
-  }, [onModelChanged]);
+  }, [onValueChanged]);
 
   const handleUnpicked = useCallback(() => {
-    setTimeout(() => onModelChanged(null), 110);
+    setTimeout(() => onValueChanged(null), 110);
     setIsModalVisible(false);
   }, []);
 
@@ -47,6 +48,7 @@ export default function IntroducerInput(props: IntroducerInputProps): React.Reac
 
       <Modal
         model={value}
+        excludedId={excludedId}
         isVisible={isModalVisible}
         onPicked={handlePicked}
         onUnpicked={handleUnpicked}

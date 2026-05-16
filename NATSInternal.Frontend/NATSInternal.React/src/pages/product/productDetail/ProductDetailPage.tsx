@@ -16,7 +16,7 @@ import { PencilSquareIcon } from "@heroicons/react/24/outline";
 const api = useApi();
 
 // Data loader.
-export async function loadDataAsync(id: string): Promise<ProductDetailModel> {
+export async function loadDataAsync(id: number): Promise<ProductDetailModel> {
   const responseDto = await api.product.getDetailAsync(id as string);
   return createProductDetailModel(responseDto);
 }

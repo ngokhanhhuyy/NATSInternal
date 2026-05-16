@@ -11,12 +11,13 @@ import { CheckIcon } from "@heroicons/react/24/solid";
 // Props.
 type ListProps = {
   onPicked(customer: CustomerBasicModel): any;
+  excludedId: number | null;
 } & React.ComponentPropsWithoutRef<"div">;
 
 // Component.
 export default function List(props: ListProps): React.ReactNode {
   // Props.
-  const { onPicked, ...domProps } = props;
+  const { onPicked, excludedId, ...domProps } = props;
 
   // States.
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -25,6 +26,7 @@ export default function List(props: ListProps): React.ReactNode {
   const [model, setModel] = useState<CustomerListModel>(() => {
     const model = createCustomerListModel();
     model.resultsPerPage = 8;
+    model.excludedId = props.excludedId;
     return model;
   });
 
@@ -59,6 +61,7 @@ export default function List(props: ListProps): React.ReactNode {
         isLoading && "opacity-50 cursor-wait"
       )}
     >
+      {excludedId ?? "null"}
       {/* Search */}
       <div className="flex justify-between gap-3">
         <TextInput

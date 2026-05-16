@@ -11,13 +11,14 @@ public class CustomerListRequestDto : ISearchableListRequestDto
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
     public string? SearchContent { get; set; }
-    public List<int> ExcludedIds { get; set; } = new();
+    public int? ExcludedId { get; set; } = new();
     #endregion
     
     #region Methods
     public void TransformValues()
     {
         SearchContent = SearchContent.ToNullIfEmptyOrWhiteSpace();
+        ExcludedId = ExcludedId == 0 ? null : ExcludedId;
     }
     #endregion
     

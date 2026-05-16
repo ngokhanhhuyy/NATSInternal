@@ -14,7 +14,7 @@ internal class Customer
     [StringLength(CustomerContracts.FirstNameMaxLength)]
     public required string FirstName
     {
-        get => field;
+        get;
         set
         {
             field = value;
@@ -25,7 +25,7 @@ internal class Customer
     [StringLength(CustomerContracts.MiddleNameMaxLength)]
     public required string? MiddleName
     {
-        get => field;
+        get;
         set
         {
             field = value;
@@ -37,7 +37,7 @@ internal class Customer
     [StringLength(CustomerContracts.LastNameMaxLength)]
     public required string LastName
     {
-        get => field;
+        get;
         set
         {
             field = value;
@@ -49,7 +49,7 @@ internal class Customer
     [StringLength(CustomerContracts.FullNameMaxLength)]
     public string FullName
     {
-        get => field;
+        get;
         private set
         {
             field = value;
@@ -98,7 +98,7 @@ internal class Customer
 
     #region CachedProperties
     [Required]
-    public long CachedDebtRemainingAmount { get; set; }
+    public long CachedDebtAmount { get; set; }
     #endregion
 
     #region ForeignKeyProperties
@@ -113,7 +113,6 @@ internal class Customer
     #region NavigationProperties
     public Customer? Introducer { get; set; }
     public List<Customer> IntroducedCustomers { get; set; } = new();
-
     public User CreatedUser { get; set; } = null!;
     public User? LastUpdatedUser { get; set; }
     public User? DeletedUser { get; set; }

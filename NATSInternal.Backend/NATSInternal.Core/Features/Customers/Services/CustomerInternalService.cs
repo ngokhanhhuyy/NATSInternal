@@ -68,9 +68,9 @@ internal class CustomerInternalService : ICustomerInternalService
                 (c.Address != null && c.Address.Contains(lowercasedSearchContent))));
         }
         
-        if (requestDto.ExcludedIds.Count > 0)
+        if (requestDto.ExcludedId.HasValue)
         {
-            query = query.Where(c => !requestDto.ExcludedIds.Contains(c.Id));
+            query = query.Where(c => c.Id != requestDto.ExcludedId.Value);
         }
 
         switch (requestDto.SortByFieldName)
@@ -89,7 +89,7 @@ internal class CustomerInternalService : ICustomerInternalService
                 break;
             case nameof(CustomerListRequestDto.FieldToSort.DebtRemainingAmount):
                query = query
-                   .ApplySorting(c => c.CachedDebtRemainingAmount, requestDto.SortByAscending)
+                   .ApplySorting(c => c.CachedDebtAmount, requestDto.SortByAscending)
                    .ThenApplySorting(c => c.LastName, requestDto.SortByAscending);
                 break;
             default:
@@ -217,9 +217,9 @@ internal class CustomerInternalService : ICustomerInternalService
         }
     }
 
-    public async Task UpdateCachedRemaningDebtAmountAsync(Customer customer, Func<long, long> getAmount)
+    public async Task UpdateCachedDebtAmount(Customer customer, Func<long, long> getAmount)
     {
-        customer.CachedDebtRemainingAmount = getAmount(customer.CachedDebtRemainingAmount);
+        customer.CachedDebtAmount = getAmount(customer.CachedDebtAmount);
 
         try
         {
@@ -248,7 +248,7 @@ internal class CustomerInternalService : ICustomerInternalService
             .SingleOrDefaultAsync(c => c.Id == id)
             ?? throw new NotFoundException();
 
-        await UpdateCachedRemaningDebtAmountAsync(customer, getAmount);
+        await UpdateCachedDebtAmount(customer, getAmount);
     }
 
     public async Task DeleteAsync(int id)

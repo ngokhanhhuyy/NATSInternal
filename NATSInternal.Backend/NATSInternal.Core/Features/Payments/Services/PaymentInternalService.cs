@@ -157,7 +157,7 @@ internal class PaymentInternalService : IPaymentInternalService
             throw OperationException.NotFound(propertyPathElements, DisplayNames.Customer);
         }
 
-        if (customer.CachedDebtRemainingAmount - requestDto.Amount < 0)
+        if (customer.CachedDebtAmount - requestDto.Amount < 0)
         {
             object[] propertyPathElements = new object[] { nameof(requestDto.Amount) };
             throw new OperationException(propertyPathElements, ErrorMessages.PaidAmountIsGreaterThanRemainingDebtAmount);
@@ -212,7 +212,7 @@ internal class PaymentInternalService : IPaymentInternalService
         }
 
         long amountDiff = requestDto.Amount - payment.Amount;
-        if (payment.Customer.CachedDebtRemainingAmount - amountDiff < 0)
+        if (payment.Customer.CachedDebtAmount - amountDiff < 0)
         {
             object[] propertyPathElements = new object[] { nameof(requestDto.Amount) };
             string errorMessage = ErrorMessages.PaidAmountIsGreaterThanRemainingDebtAmount;

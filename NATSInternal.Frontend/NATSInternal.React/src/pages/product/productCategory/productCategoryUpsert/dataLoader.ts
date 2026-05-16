@@ -1,7 +1,7 @@
 import { useApi } from "@/api";
 import { createProductCategoryUpsertModel } from "@/models";
 
-export async function loadUpdateDataAsync(id: string): Promise<ProductCategoryUpsertModel> {
+export async function loadUpdateDataAsync(id: number): Promise<ProductCategoryUpsertModel> {
   const api = useApi();
   const responseDto = await api.productCategory.getDetailAsync(id);
   return createProductCategoryUpsertModel(responseDto);

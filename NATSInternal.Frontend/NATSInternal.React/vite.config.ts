@@ -24,7 +24,7 @@ export default defineConfig({
   server: {
     allowedHosts: ["frontend.khanhhuy.dev", "frontend-workstation.khanhhuy.dev", "frontend-wsl.khanhhuy.dev"],
     strictPort: true,
-    port: 5174,
+    port: 5173,
     host: "0.0.0.0",
     headers: {
       "Allow-Control-Allow-Origin": "*",

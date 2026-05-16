@@ -1,6 +1,6 @@
 import React from "react";
 import { useJSONDirtyModelChecker } from "@/hooks";
-import { useValidationHelper } from "@/helpers";
+import { validatePhoneNumber } from "@/helpers";
 
 // Child components.
 import { FormContainer } from "@/components/layouts";
@@ -23,16 +23,12 @@ type CustomerUpsertPageProps<T> = {
 
 // Component.
 export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>): React.ReactNode {
-  // Dependencies.
-  const { validatePhoneNumber } = useValidationHelper();
-
   // States.
   const isModelDirty = useJSONDirtyModelChecker(props.model.toRequestDto());
 
   // Template;
   return (
     <FormContainer
-      description={props.description}
       upsertAction={props.upsertAction}
       onUpsertingSucceeded={props.onUpsertingSucceeded}
       isModelDirty={isModelDirty}
@@ -139,6 +135,15 @@ export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>)
               />
             </FormField>
 
+            {/* FacebookURL */}
+            <FormField path="facebookUrl" className="sm:col-span-3">
+              <TextInput
+                placeholder="https://facebook.com/nguyenvana"
+                value={props.model.facebookUrl}
+                onValueChanged={(facebookUrl) => props.onModelChanged({ facebookUrl })}
+              />
+            </FormField>
+
             {/* Address */}
             <FormField path="address" className="sm:col-span-3">
               <TextInput
@@ -149,10 +154,11 @@ export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>)
             </FormField>
 
             {/* Introducer */}
-            <FormField path="introducer" className="sm:col-span-3">
+            <FormField path="introducer" className="sm:col-span-6">
               <IntroducerInput
                 value={props.model.introducer}
                 onValueChanged={introducer => props.onModelChanged({ introducer })}
+                excludedId={props.isForCreating ? null : props.model.id}
               />
             </FormField>
 

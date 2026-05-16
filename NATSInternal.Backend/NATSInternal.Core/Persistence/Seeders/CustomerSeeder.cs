@@ -20,10 +20,7 @@ internal class CustomerSeeder
     #endregion
 
     #region Constructors
-    public CustomerSeeder(
-        AppDbContext context,
-        IClock clock,
-        ILogger<CustomerSeeder> logger)
+    public CustomerSeeder(AppDbContext context, IClock clock, ILogger<CustomerSeeder> logger)
     {
         _context = context;
         _clock = clock;
@@ -98,7 +95,7 @@ internal class CustomerSeeder
                     .Take(1)
                     .SingleOrDefault()
                     ?.Replace(" ", string.Empty),
-                FacebookUrl = "https =//facebook.com/" + _faker.Internet.UserName().ToLower(),
+                FacebookUrl = "https://facebook.com/" + _faker.Internet.UserName().ToLower(),
                 Email = _faker.Internet.Email(),
                 Address = _faker.Address.StreetAddress(),
                 Note = SliceNoteIfLong(_faker.Lorem.Paragraph()),

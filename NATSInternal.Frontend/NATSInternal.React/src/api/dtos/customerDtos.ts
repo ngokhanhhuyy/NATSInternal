@@ -7,7 +7,7 @@ declare global {
     page: number;
     resultsPerPage: number;
     searchContent: string;
-    excludedIds: number[];
+    excludedId: number;
   }>;
 
   type CustomerListResponseDto = Implements<IListResponseDto<CustomerBasicResponseDto>, {

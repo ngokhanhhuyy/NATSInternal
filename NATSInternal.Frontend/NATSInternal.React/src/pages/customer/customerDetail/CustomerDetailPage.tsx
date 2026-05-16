@@ -12,7 +12,7 @@ import RecentTransactionsBlock from "./RecentTransactions";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 // Data loder.
-export async function loadDataAsync(id: string): Promise<CustomerDetailModel> {
+export async function loadDataAsync(id: number): Promise<CustomerDetailModel> {
   const responseDto = await api.customer.getDetailAsync(id);
   return createCustomerDetailModel(responseDto);
 }

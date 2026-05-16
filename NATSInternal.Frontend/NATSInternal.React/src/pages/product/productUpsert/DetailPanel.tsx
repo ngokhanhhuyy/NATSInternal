@@ -37,7 +37,7 @@ export default function DetailPanel(props: DetailPanelProps): React.ReactNode {
   }, []);
 
   // Callbacks.
-  function handleBrandChanged(id: string): void {
+  function handleBrandChanged(id: number): void {
     if (id) {
       props.onModelUpdated({ brand: brandOptionModels.find(b => b.id === id) });
     }

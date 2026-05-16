@@ -11,6 +11,7 @@ declare global {
     page: number;
     resultsPerPage: number;
     searchContent: string;
+    excludedId: number | null;
     items: CustomerBasicModel[];
     pageCount: number;
     itemCount: number;
@@ -29,6 +30,7 @@ export function createCustomerListModel(responseDto?: CustomerListResponseDto): 
     page: 1,
     resultsPerPage:  customerListOptions.defaultResultsPerPage,
     searchContent: "",
+    excludedId: null,
     items: [],
     pageCount: 0,
     itemCount: 0,
@@ -50,7 +52,7 @@ export function createCustomerListModel(responseDto?: CustomerListResponseDto): 
       const requestDto: CustomerListRequestDto = {
         sortByAscending: this.sortByAscending,
         sortByFieldName: this.sortByFieldName,
-        page: this.page,
+        page: this.page
       };
 
       if (this.resultsPerPage) {
@@ -59,6 +61,10 @@ export function createCustomerListModel(responseDto?: CustomerListResponseDto): 
 
       if (this.searchContent) {
         requestDto.searchContent = this.searchContent;
+      }
+
+      if (this.excludedId) {
+        requestDto.excludedId = this.excludedId;
       }
 
       return requestDto;

@@ -8,8 +8,9 @@ import { Button, BaseModal } from "@/components/ui";
 // Props.
 export type ModalProps = {
   model: CustomerBasicModel | null;
+  excludedId: number | null;
   isVisible: boolean;
-  onPicked(customer: CustomerListCustomerModel): any;
+  onPicked(customer: CustomerBasicModel): any;
   onUnpicked(): any;
   onCancel(): any;
 };
@@ -31,7 +32,7 @@ export default function Modal(props: ModalProps): React.ReactNode {
           onUnpicked={props.onUnpicked}
         />
       ) : (
-        <List onPicked={props.onPicked} />
+        <List onPicked={props.onPicked} excludedId={props.excludedId} />
       )}
     </BaseModal>
   );

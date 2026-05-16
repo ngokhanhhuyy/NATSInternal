@@ -9,7 +9,7 @@ import { loadBrandAndCategoryOptionsAsync, type ProductUpsertInitialLoadedModels
 
 // Data loader.
 type ProductUpdateInitialLoadedModels = ProductUpsertInitialLoadedModels & { updateModel: ProductUpsertModel; }; 
-export async function loadDataAsync(id: string): Promise<ProductUpdateInitialLoadedModels> {
+export async function loadDataAsync(id: number): Promise<ProductUpdateInitialLoadedModels> {
   const api = useApi();
   const [responseDto, optionModels] = await Promise.all([
     api.product.getDetailAsync(id),

@@ -18,7 +18,6 @@ public class SupplyBasicResponseDto
     {
         Authorization = authorization;
     }
-
     #endregion
 
     #region Properties
