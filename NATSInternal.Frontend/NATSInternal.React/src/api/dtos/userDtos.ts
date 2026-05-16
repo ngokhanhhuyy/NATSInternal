@@ -26,9 +26,9 @@ declare global {
     password: string;
     confirmationPassword: string;
     roleNames: string[];
-  }
+  };
   
   type UserUpdateRequestDto = {
     roleIds: number[];
-  }
+  };
 }

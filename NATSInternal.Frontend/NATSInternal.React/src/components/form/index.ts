@@ -3,7 +3,7 @@ export { default as FormField } from "./FormField";
 export { default as DateTimeInput } from "./DateTimeInput";
 export { default as SelectInput, type SelectInputOption } from "./SelectInput";
 export { default as BooleanSelectInput, type BooleanSelectInputOption } from "./BooleanSelectInput";
-export { default as TextInput } from "./TextInput";
+export { default as TextInput, type TextInputProps } from "./TextInput";
 export { default as TextAreaInput } from "./TextAreaInput";
 export { default as NumberInput } from "./NumberInput";
 export { default as ButtonGroupInput, type ButtonGroupInputOption } from "./ButtonGroupInput";

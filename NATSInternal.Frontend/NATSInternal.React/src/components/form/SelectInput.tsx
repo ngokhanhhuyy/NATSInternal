@@ -1,4 +1,4 @@
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Child component.
 import Input from "./Input";
@@ -20,9 +20,6 @@ export type SelectInputProps = {
 
 // Component.
 export default function SelectInput(props: SelectInputProps): React.ReactNode {
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
-
   // Template.
   function renderInput(className?: string, path?: string) {
     return (

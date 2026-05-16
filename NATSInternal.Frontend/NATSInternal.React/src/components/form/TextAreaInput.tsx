@@ -1,5 +1,5 @@
 import React from "react";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 import Input from "./Input";
 
 // Props.
@@ -9,12 +9,9 @@ export type TextAreaInputProps = {
 } & React.ComponentPropsWithoutRef<"textarea">;
 
 // Component.
-export default function TextAreaInputProps(props: TextAreaInputProps): React.ReactNode {
+export default function TextAreaInput(props: TextAreaInputProps): React.ReactNode {
   // Props.
   const { value, onValueChanged, ...domProps } = props;
-
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
 
   // Template.
   function renderInput(className?: string, path?: string, displayName?: string) {

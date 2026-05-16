@@ -1,6 +1,6 @@
 import React, { useMemo, createContext, useContext } from "react";
 import { getDisplayName } from "@/metadata";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName, compute } from "@/helpers";
 
 // Shared components.
 import { FormContext } from "@/components/form/Form";
@@ -26,7 +26,6 @@ export type FormFieldProps = {
 export default function FormField(props: FormFieldProps) {
   // Dependencies.
   const formContext = useContext(FormContext);
-  const { joinClassName, compute } = useTsxHelper();
 
   // Computed.
   const errorMessage = useMemo(() => {

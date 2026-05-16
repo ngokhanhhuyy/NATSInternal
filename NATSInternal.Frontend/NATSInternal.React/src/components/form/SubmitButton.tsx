@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { useTsxHelper } from "@/helpers";
+import { compute } from "@/helpers";
 
 // Child component.
 import { FormContext } from "@/components/form/Form";
@@ -13,7 +13,6 @@ type SubmitButtonProps = Omit<React.ComponentPropsWithoutRef<"button">, "type">;
 export default function SubmitButton(props: SubmitButtonProps): React.ReactNode {
   // Dependencies.
   const formContext = useContext(FormContext);
-  const { compute } = useTsxHelper();
   
   // Computed.
   const shouldDisable = compute(() => {
@@ -25,7 +24,7 @@ export default function SubmitButton(props: SubmitButtonProps): React.ReactNode 
       return false;
     }
 
-    return formContext.submissionState === "submitting" && formContext.submissionType === "upsert";
+    return formContext.submissionState === "submitting";
   });
   
   // Template.

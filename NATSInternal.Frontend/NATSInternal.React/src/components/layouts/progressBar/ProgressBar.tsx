@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigation } from "react-router";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 import styles from "./ProgressBar.module.css";
 
 type State = "idle" | "loading" | "hiding";
@@ -8,7 +8,6 @@ type State = "idle" | "loading" | "hiding";
 export default function ProgressBar(): React.ReactNode {
   // Dependencies.
   const navigation = useNavigation();
-  const { joinClassName } = useTsxHelper();
 
   // States.
   const [state, setState] = useState<State>("loading");

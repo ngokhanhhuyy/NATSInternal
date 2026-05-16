@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { flushSync } from "react-dom";
 import { getDisplayName } from "@/metadata";
 import { useDirtyModelChecker } from "@/hooks";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Child component.
 import { Button } from "@/components/ui";
@@ -12,11 +12,7 @@ import { BarsArrowUpIcon, BarsArrowDownIcon } from "@heroicons/react/24/outline"
 
 // Props.
 type Props<
-    TListModel extends
-      ISearchableListModel<TItemModel> &
-      ISortableListModel<TItemModel> &
-      IPageableListModel<TItemModel> &
-      IUpsertableListModel<TItemModel>,
+    TListModel extends ISearchableListModel<TItemModel> & IUpsertableListModel<TItemModel>,
     TItemModel extends object> = {
   model: TListModel;
   onModelUpdated(updatedData: Partial<TListModel>): any;
@@ -27,16 +23,9 @@ type Props<
 
 // Component.
 function DisplayOptionsPanel<
-      TListModel extends
-        ISearchableListModel<TItemModel> &
-        ISortableListModel<TItemModel> &
-        IPageableListModel<TItemModel> &
-        IUpsertableListModel<TItemModel>,
+      TListModel extends ISearchableListModel<TItemModel> & IUpsertableListModel<TItemModel>,
       TItemModel extends object>
     (props: Props<TListModel, TItemModel>): React.ReactNode {
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
-
   // States.
   const [isModelDirty, setModelDirtyCheckerOriginalModel] = useDirtyModelChecker(props.model, (om, m) => {
     return (

@@ -1,7 +1,7 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider, useRouteError, Navigate } from "react-router";
 import { AuthenticationError } from "@/api";
-import { routeHelper } from "@/helpers";
+import { getSignInRoutePath, getDashboardRoutePath } from "@/helpers";
 
 // Layouts.
 import { RootLayout, MainPageLayout } from "@/components/layouts";
@@ -19,7 +19,7 @@ function AuthenticationErrorBoundary(): React.ReactNode | null {
 
   // Template.
   if (error instanceof AuthenticationError) {
-    return <Navigate to={routeHelper.getSignInRoutePath()} />;
+    return <Navigate to={getSignInRoutePath()} />;
   }
 
   throw error;
@@ -39,7 +39,7 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Navigate to={routeHelper.getDashboardRoutePath()} replace />
+            element: <Navigate to={getDashboardRoutePath()} replace />
           },
           homeRoutes,
           customerRoutes,
@@ -53,7 +53,7 @@ const router = createBrowserRouter([
   },
   {
     path: "*",
-    element: <Navigate to={routeHelper.getDashboardRoutePath()} replace />
+    element: <Navigate to={getDashboardRoutePath()} replace />
   }
 ]);
 

@@ -106,7 +106,7 @@ internal class CustomerInternalService : ICustomerInternalService
             .Select(u => new CustomerBasicResponseDto(u, _authorizationService.GetCustomerExistingAuthorization(u)))
             .ToList();
             
-        return new(customerResponseDtos, queryResult.PageCount, queryResult.ItemCount);
+        return new(customerResponseDtos, queryResult.ItemCount, queryResult.PageCount);
     }
     
     public async Task<CustomerDetailResponseDto> GetDetailAsync(int id)

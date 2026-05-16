@@ -27,19 +27,14 @@ const roleBorderColorClassNameMap: Record<RoleName, string> = {
   "Staff": "border-primary/15"
 };
 
-const roleHelper: RoleHelper = {
-  getRoleBackgroundColorClassName(roleName: string): string | null {
-    return roleBackgroundColorClassNameMap[roleName as RoleName] ?? null;
-  },
-  getRoleForegroundColorClassName(roleName: string): string | null {
-    return roleForegroundColorClassNameMap[roleName as RoleName] ?? null;
-  },
+export function getRoleBackgroundColorClassName(roleName: string): string | null {
+  return roleBackgroundColorClassNameMap[roleName as RoleName] ?? null;
+}
 
-  getRoleBorderColorClassName(roleName: string): string | null {
-    return roleBorderColorClassNameMap[roleName as RoleName] ?? null;
-  },
-};
+export function getRoleForegroundColorClassName(roleName: string): string | null {
+  return roleForegroundColorClassNameMap[roleName as RoleName] ?? null;
+}
 
-export function useRoleHelper(): RoleHelper {
-  return roleHelper;
+export function getRoleBorderColorClassName(roleName: string): string | null {
+  return roleBorderColorClassNameMap[roleName as RoleName] ?? null;
 }

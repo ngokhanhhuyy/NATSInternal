@@ -19,7 +19,7 @@ declare global {
   type ProductCategoryExistingAuthorizationResponseDto = {
     canEdit: boolean;
     canDelete: boolean;
-  }
+  };
 }
 
 export { };

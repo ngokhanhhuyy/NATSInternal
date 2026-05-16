@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Props.
 type ResultsPanelProps = {
@@ -10,9 +10,6 @@ type ResultsPanelProps = {
 
 // Components.
 export default function ResultsPanel(props: ResultsPanelProps): React.ReactNode {
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
-
   // Templates.
   return (
     <div className="panel">
@@ -37,7 +34,7 @@ export default function ResultsPanel(props: ResultsPanelProps): React.ReactNode 
   );
 }
 
-function ResultItem(props: { model: CustomerListCustomerModel }): React.ReactNode {
+function ResultItem(props: { model: CustomerBasicModel }): React.ReactNode {
   // Template.
   return (
     <li className="list-group-item items-center px-3 py-1.5">

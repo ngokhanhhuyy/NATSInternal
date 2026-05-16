@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { createCustomerBasicModelFromCustomerListCustomerModel } from "@/models";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Child component.
 import Modal from "./Modal";
@@ -17,16 +16,12 @@ export default function IntroducerInput(props: IntroducerInputProps): React.Reac
   // Props.
   const { value, onValueChanged: onModelChanged, ...domProps } = props;
 
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
-
   // States.
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   // Callbacks.
-  const handlePicked = useCallback((customer: CustomerListCustomerModel) => {
-    const basicModel = createCustomerBasicModelFromCustomerListCustomerModel(customer);
-    setTimeout(() => onModelChanged(basicModel), 110);
+  const handlePicked = useCallback((customer: CustomerBasicModel) => {
+    setTimeout(() => onModelChanged(customer), 110);
     setIsModalVisible(false);
   }, [onModelChanged]);
 

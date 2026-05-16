@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useTransition } from "react";
 import { useLoaderData } from "react-router";
-import { useApi } from "@/api";
+import { api } from "@/api";
 import { createCustomerListModel } from "@/models";
 import { useRerendingTrigger } from "@/hooks";
 
@@ -10,7 +10,6 @@ import ListPage from "@/pages/shared/searchablePageableList";
 
 // Loader
 export async function loadDataAsync(model?: CustomerListModel): Promise<CustomerListModel> {
-  const api = useApi();
   if (model) {
     const responseDto = await api.customer.getListAsync(model.toRequestDto());
     return model.mapFromResponseDto(responseDto);

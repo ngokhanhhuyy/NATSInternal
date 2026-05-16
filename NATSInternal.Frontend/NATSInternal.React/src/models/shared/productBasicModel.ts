@@ -1,5 +1,5 @@
 import { createProductCategoryBasicModel } from "@/models";
-import { currencyHelper, routeHelper } from "@/helpers";
+import { getAmountDisplayText, getProductDetailRoutePath } from "@/helpers";
 
 declare global {
   type ProductBasicModel = {
@@ -23,9 +23,8 @@ export function createProductBasicModel(responseDto: ProductBasicResponseDto): P
   return {
     ...responseDto,
     thumbnailUrl: responseDto.thumbnailUrl,
-    formattedDefaultAmountBeforeVatPerUnit: currencyHelper
-      .getAmountDisplayText(responseDto.defaultAmountBeforeVatPerUnit),
+    formattedDefaultAmountBeforeVatPerUnit: getAmountDisplayText(responseDto.defaultAmountBeforeVatPerUnit),
     categories: responseDto.categories.map(createProductCategoryBasicModel),
-    detailRoutePath: routeHelper.getProductDetailRoutePath(responseDto.id)
+    detailRoutePath: getProductDetailRoutePath(responseDto.id)
   };
 }

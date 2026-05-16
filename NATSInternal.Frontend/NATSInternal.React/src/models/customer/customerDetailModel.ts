@@ -23,7 +23,7 @@ declare global {
     createdDateTime: string;
     lastUpdatedUser: UserBasicModel | null;
     lastUpdatedDateTime: string | null;
-    debtRemainingAmount: number;
+    debtAmount: number;
     introducer: CustomerBasicModel | null;
     authorization: CustomerExistingAuthorizationResponseDto;
     get avatarUrl(): string;
@@ -43,12 +43,13 @@ export function createCustomerDetailModel(responseDto: CustomerDetailResponseDto
     lastUpdatedUser: responseDto.lastUpdatedUser && createUserBasicModel(responseDto.lastUpdatedUser),
     lastUpdatedDateTime: responseDto.lastUpdatedDateTime &&
       getDisplayDateTimeString(responseDto.lastUpdatedDateTime),
+    debtAmount: responseDto.debtAmount,
     introducer: responseDto.introducer && createCustomerBasicModel(responseDto.introducer),
     get avatarUrl(): string {
       return getDefaultAvatarUrlByFullName(this.fullName);
     },
     get displayDebtRemainingAmountText(): string{
-      return getAmountDisplayText(this.debtRemainingAmount);
+      return getAmountDisplayText(this.debtAmount);
     },
     get updateRoutePath(): string {
       return getCustomerUpdateRoutePath(this.id);

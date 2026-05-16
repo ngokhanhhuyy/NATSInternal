@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router";
-import { useApi } from "@/api";
+import { api } from "@/api";
 import { useAuthenticationStore } from "@/stores";
-import { useRouteHelper } from "@/helpers";
+import { getSignInRoutePath } from "@/helpers";
 
 // Child components.
 import MainContainer from "@/components/layouts/MainContainer";
@@ -13,8 +13,6 @@ export default function TestingPage() {
   // Dependencies.
   const navigate = useNavigate();
   const setIsAuthenticated = useAuthenticationStore(store => store.setIsAuthenticated);
-  const api = useApi();
-  const { getSignInRoutePath } = useRouteHelper();
 
   // Callbacks.
   const signOut = useCallback(async () => {

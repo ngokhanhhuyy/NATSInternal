@@ -1,5 +1,5 @@
 import React from "react";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Child components.
 import { Button } from "../ui";
@@ -22,9 +22,6 @@ export type ButtonGroupInputProps<T> = {
 export default function ButtonGroupInput<T>(props: ButtonGroupInputProps<T>): React.ReactNode {
   // Props.
   const { options, value, onValueChanged, buttonClassName, ...domProps } = props;
-
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
 
   // Template.
   return (

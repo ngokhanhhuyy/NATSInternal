@@ -62,6 +62,7 @@ public class CustomerDetailResponseDto
     public string? Email { get; }
     public string? Address { get; }
     public string? Note { get; }
+    public long DebtAmount { get; set; }
     public UserBasicResponseDto CreatedUser { get; }
     public DateTime CreatedDateTime { get; }
     public UserBasicResponseDto? LastUpdatedUser { get; }

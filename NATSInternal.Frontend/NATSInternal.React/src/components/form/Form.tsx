@@ -1,7 +1,7 @@
 import React, { useState, useMemo, createContext } from "react";
 import { ValidationError, OperationError } from "@/api";
 import { createErrorCollectionModel } from "@/models";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName, compute } from "@/helpers";
 
 // Type.
 export type SubmissionState = "notSubmitting" | "submitting" | "submissionSucceeded";
@@ -28,9 +28,6 @@ type FormProps<TUpsertResult> = {
 export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
   // Props.
   const { upsertAction, onUpsertingSucceeded, onUpsertingFailed, isModelDirty, ...domProps } = props;
-  
-  // Dependencies.
-  const { compute, joinClassName } = useTsxHelper();
 
   // States.
   const [errorCollection, setErrorCollection] = useState(createErrorCollectionModel);

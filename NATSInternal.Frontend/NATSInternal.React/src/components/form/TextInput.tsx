@@ -1,4 +1,4 @@
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 import Input from "./Input";
 
 // Props.
@@ -12,9 +12,6 @@ export type TextInputProps = {
 export default function TextInput(props: TextInputProps) {
   // Props.
   const { value, onValueChanged, ...domProps } = props;
-
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
 
   // Template.
   function renderInput(className?: string, path?: string, displayName?: string) {

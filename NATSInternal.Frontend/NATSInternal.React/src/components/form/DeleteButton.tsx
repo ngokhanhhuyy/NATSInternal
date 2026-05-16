@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { useTsxHelper } from "@/helpers";
+import { compute } from "@/helpers";
 
 // Child component.
 import { FormContainerContext } from "@/components/layouts";
@@ -15,7 +15,6 @@ export default function DeleteButton(props: DeleteButtonProps): React.ReactNode 
   // Dependencies.
   const formContainerContext = useContext(FormContainerContext);
   const formContext = useContext(FormContext);
-  const { compute } = useTsxHelper();
   
   // Computed.
   const isSubmittingOrDeleting = compute<boolean>(() => {

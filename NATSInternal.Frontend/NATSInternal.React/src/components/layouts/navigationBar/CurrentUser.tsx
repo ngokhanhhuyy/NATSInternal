@@ -1,29 +1,30 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { Link } from "react-router";
-import { useApi } from "@/api";
+import { api } from "@/api";
 import { useNavigationBarStore } from "@/stores";
-import { useRouteHelper, useRoleHelper, useTsxHelper } from "@/helpers";
+import { getUserDetailRoutePath, joinClassName } from "@/helpers";
+import {
+  getRoleBackgroundColorClassName,
+  getRoleForegroundColorClassName,
+  getRoleBorderColorClassName } from "@/helpers";
 
 // Child component.
 import { UserIcon } from "@heroicons/react/24/solid";
 
 // Type.
-type CurrentUser = UserDetailResponseDto & { avatarUrl: string };
+type CurrentUserModel = UserDetailResponseDto & { avatarUrl: string };
 
 // Props.
 export default function CurrentUser(): React.ReactNode {
   // Dependencies.
   const isNavigationBarExpanded = useNavigationBarStore(store => store.isExpanded);
-  const api = useApi();
-  const { getUserProfileRoutePath } = useRouteHelper();
-  const { joinClassName } = useTsxHelper();
 
   // State.
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const [currentUser, setCurrentUser] = useState<CurrentUserModel | null>(null);
   const [isAvatarLoadingFailed, setIsAvatarLoadingFailed] = useState<boolean>(false);
 
   // Computed.
-  const maxPowerLevelRole = useMemo<UserGetDetailRoleResponseDto | null>(() => {
+  const maxPowerLevelRole = useMemo<RoleBasicResponseDto | null>(() => {
     if (!currentUser) {
       return null;
     }
@@ -61,7 +62,7 @@ export default function CurrentUser(): React.ReactNode {
         "flex justify-center items-end gap-2 ms-1 mt-auto relative w-fit overflow-hidden",
         "hover:no-underline hover:opacity-50 hover:cursor-pointer"
       )}
-      to={getUserProfileRoutePath(currentUser.id)}
+      to={getUserDetailRoutePath(currentUser.id)}
     >
       <div className="w-10 h-10 rounded-[50%] overflow-hidden shrink-0">
         {!isAvatarLoadingFailed ? (
@@ -96,14 +97,7 @@ export default function CurrentUser(): React.ReactNode {
   );
 }
 
-function Role(props: { role: UserGetDetailRoleResponseDto; remainingCount?: number }): React.ReactNode {
-  // Dependencies.
-  const {
-    getRoleBackgroundColorClassName,
-    getRoleForegroundColorClassName,
-    getRoleBorderColorClassName } = useRoleHelper();
-  const { joinClassName } = useTsxHelper();
-
+function Role(props: { role: RoleBasicResponseDto; remainingCount?: number }): React.ReactNode {
   // Template.
   return (
     <span

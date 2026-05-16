@@ -1,5 +1,5 @@
 import React from "react";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Child component.
 import Input from "./Input";
@@ -15,9 +15,6 @@ type DateTimeInputProps = Omit<React.ComponentPropsWithoutRef<"input">, "value" 
 export default function DateTimeInput(props: DateTimeInputProps): React.ReactNode {
   // Props.
   const { onValueChanged, ...domProps } = props;
-
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
   
   // Template.
   function renderInputElement(className?: string, path?: string, _?: string): React.ReactNode {

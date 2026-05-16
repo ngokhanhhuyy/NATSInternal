@@ -1,4 +1,4 @@
-import { avatarHelper, routeHelper } from "@/helpers";
+import { getDefaultAvatarUrlByFullName, getCustomerDetailRoutePath } from "@/helpers";
 
 declare global {
   type CustomerBasicModel = Readonly<{
@@ -10,9 +10,6 @@ declare global {
     detailRoute: string;
   }>;
 }
-
-const { getDefaultAvatarUrlByFullName } = avatarHelper;
-const { getCustomerDetailRoutePath } = routeHelper;
 
 export function createCustomerBasicModel(responseDto: CustomerBasicResponseDto): CustomerBasicModel {
   return {

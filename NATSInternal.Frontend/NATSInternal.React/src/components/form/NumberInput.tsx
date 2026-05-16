@@ -1,5 +1,5 @@
 import React from "react";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 import Input from "./Input";
 
 // Props.
@@ -12,9 +12,6 @@ export type NumberInputProps = {
 export default function NumberInput(props: NumberInputProps) {
   // Props.
   const { value, onValueChanged, ...domProps } = props;
-
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
 
   // Callbacks.
   function handleInput(event: React.FormEvent<HTMLInputElement>): void {

@@ -1,9 +1,6 @@
 import { redirect, type MiddlewareFunction } from "react-router";
-import { useApi, AuthenticationError } from "@/api";
-import { useRouteHelper } from "@/helpers";
-
-const api = useApi();
-const { getSignInRoutePath, getHomeRoutePath } = useRouteHelper();
+import { api, AuthenticationError } from "@/api";
+import { getSignInRoutePath, getHomeRoutePath } from "@/helpers";
 
 let isAuthenticated: boolean | null = null;
 

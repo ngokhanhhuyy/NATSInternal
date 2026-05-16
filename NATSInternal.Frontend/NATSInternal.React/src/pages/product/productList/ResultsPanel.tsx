@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "react-router";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName, compute } from "@/helpers";
 
 // Child components.
-import { BuildingStorefrontIcon, CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { ExclamationTriangleIcon, MinusCircleIcon, TagIcon, ArchiveBoxIcon } from "@heroicons/react/24/outline";
 
 // Props.
@@ -14,9 +14,6 @@ type ResultsPanelProps = {
 
 // Components.
 export default function ResultsPanel(props: ResultsPanelProps): React.ReactNode {
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
-
   // Templates.
   return (
     <div className="panel">
@@ -41,10 +38,7 @@ export default function ResultsPanel(props: ResultsPanelProps): React.ReactNode 
   );
 }
 
-function ResultItem(props: { model: ProductListProductModel }): React.ReactNode {
-  // Dependencies.
-  const { joinClassName, compute } = useTsxHelper();
-
+function ResultItem(props: { model: ProductBasicModel }): React.ReactNode {
   // Computed.
   const alertClassName = compute<string>(() => {
     if (props.model.stockingQuantity === 0) {
@@ -109,19 +103,12 @@ function ResultItem(props: { model: ProductListProductModel }): React.ReactNode 
         </div>
 
         <div className="text-sm">
-          {props.model.brand && (
-            <div className="flex justify-start items-center gap-1">
-              <BuildingStorefrontIcon className="size-4" />
-              <span>{props.model.brand.name}</span>
-            </div>
-          )}
-
-          {props.model.category && (
-            <div className="flex justify-start items-center gap-1">
+          {props.model.categories.map((category, index) => (
+            <div className="flex justify-start items-center gap-1" key={index}>
               <TagIcon className="size-4" />
-              <span>{props.model.category.name}</span>
+              <span>{category.name}</span>
             </div>
-          )}
+          ))}
         </div>
       </div>
     </li>

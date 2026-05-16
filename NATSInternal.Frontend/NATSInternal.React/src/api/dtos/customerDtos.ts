@@ -37,7 +37,7 @@ declare global {
     lastUpdatedUser: UserBasicResponseDto | null;
     deletedDateTime: string | null;
     deletedUser: UserBasicResponseDto | null;
-    debtRemainingAmount: number;
+    debtAmount: number;
     introducer: CustomerBasicResponseDto | null;
     authorization: CustomerExistingAuthorizationResponseDto;
   };

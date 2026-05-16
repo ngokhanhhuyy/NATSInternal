@@ -38,7 +38,7 @@ public static class Program
                 options.ExpireTimeSpan = TimeSpan.FromDays(30);
                 options.SlidingExpiration = false;
                 options.Cookie.Name = "NATSInternalAuthenticationCookie";
-                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SameSite = SameSiteMode.Strict;
                 options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
                     ? CookieSecurePolicy.None
                     : CookieSecurePolicy.Always;

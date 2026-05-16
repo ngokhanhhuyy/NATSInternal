@@ -1,26 +1,22 @@
 import React, { useState, useEffect, useTransition } from "react";
-import { useApi } from "@/api";
+import { api } from "@/api";
 import { createCustomerListModel } from "@/models";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Child components.
-import { Button, NewTabWebsiteLink, MainPaginator } from "@/components/ui";
+import { Button, NewTabWebsiteLink, Paginator } from "@/components/ui";
 import { TextInput } from "@/components/form";
 import { CheckIcon } from "@heroicons/react/24/solid";
 
 // Props.
 type ListProps = {
-  onPicked(customer: CustomerListCustomerModel): any;
+  onPicked(customer: CustomerBasicModel): any;
 } & React.ComponentPropsWithoutRef<"div">;
 
 // Component.
 export default function List(props: ListProps): React.ReactNode {
   // Props.
   const { onPicked, ...domProps } = props;
-
-  // Dependencies.
-  const api = useApi();
-  const { joinClassName } = useTsxHelper();
 
   // States.
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -100,11 +96,10 @@ export default function List(props: ListProps): React.ReactNode {
       </ul>
 
       {/* Paginator */}
-      <MainPaginator
+      <Paginator
         page={model.page}
         pageCount={model.pageCount}
         onPageChanged={page => setModel(m => ({ ...m, page }))}
-        isReloading={isLoading}
         getPageButtonClassName={(_, isActive) => isActive ? "btn-primary" : undefined}
       />
     </div>
