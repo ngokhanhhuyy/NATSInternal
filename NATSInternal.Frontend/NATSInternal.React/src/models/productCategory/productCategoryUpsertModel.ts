@@ -1,24 +1,24 @@
-import { useRouteHelper } from "@/helpers";
+import { getProductCategoryDetailRoutePath } from "@/helpers";
+
+type DetailResponseDto = ProductCategoryDetailResponseDto;
 
 declare global {
   type ProductCategoryUpsertModel = Readonly<{
-    id: string;
+    id: number;
     name: string;
     get detailRoutePath(): string;
-    toUpdateRequestDto(): ProductCategoryUpdateRequestDto;
+    toUpdateRequestDto(): ProductCategoryUpsertRequestDto;
   }>;
 }
 
-const { getProductCategoryDetailRoutePath } = useRouteHelper();
-
-export function createProductCategoryUpsertModel(responseDto?: ProductCategoryGetDetailResponseDto): ProductCategoryUpsertModel {
+export function createProductCategoryUpsertModel(responseDto?: DetailResponseDto): ProductCategoryUpsertModel {
   return {
-    id: responseDto?.id ?? "",
+    id: responseDto?.id ?? 0,
     name: responseDto?.name ?? "",
     get detailRoutePath(): string {
       return getProductCategoryDetailRoutePath(this.id);
     },
-    toUpdateRequestDto(): ProductCategoryUpdateRequestDto {
+    toUpdateRequestDto(): ProductCategoryUpsertRequestDto {
       return {
         name: this.name
       };

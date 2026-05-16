@@ -1,19 +1,17 @@
 import React from "react";
-import { useTsxHelper } from "@/helpers";
+import { compute } from "@/helpers";
 
 // Child components
 import FieldContainer from "./FieldContainer";
 import Field from "./Field";
 import { Block, NewTabWebsiteLink, NewTabEmailLink, NewTabPhoneLink } from "@/components/ui";
 
+
 // Props.
 type CustomerPersonalInformationProps = { model: CustomerDetailModel };
 
 // Component.
 export default function CustomerPersonalInformation(props: CustomerPersonalInformationProps): React.ReactNode {
-  // Dependencies.
-  const { compute } = useTsxHelper();
-
   // Computed.
   const genderClassName = compute<string>(() => {
     if (props.model.gender === "Male") {

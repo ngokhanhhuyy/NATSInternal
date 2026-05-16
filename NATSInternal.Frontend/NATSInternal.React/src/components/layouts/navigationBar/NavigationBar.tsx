@@ -2,7 +2,9 @@ import React, { useState, useRef, useEffect, createContext } from "react";
 import { useLocation } from "react-router";
 import { useScreenBreakpoints } from "@/hooks";
 import { useNavigationBarStore } from "@/stores";
-import { useRouteHelper, useTsxHelper } from "@/helpers";
+import { joinClassName, getHomeRoutePath, getCustomerListRoutePath } from "@/helpers";
+import { getProductListRoutePath, getExpenseListRoutePath, getSupplyListRoutePath } from "@/helpers";
+import { getOrderListRoutePath, getDebtOverviewRoutePath, getReportRoutePath, getUserListRoutePath } from "@/helpers";
 
 // Child components.
 import NavigationBarItem from "./NavigationBarItem";
@@ -38,7 +40,6 @@ export default function NavigationBar(): React.ReactNode {
   // Dependencies.
   const location = useLocation();
   const navigationBarStore = useNavigationBarStore();
-  const { joinClassName } = useTsxHelper();
 
   // States.
   const breakpoints = useScreenBreakpoints();
@@ -124,12 +125,11 @@ export default function NavigationBar(): React.ReactNode {
 }
 
 // Static variables.
-const routeHelper = useRouteHelper();
 const navigationBarItems: NavigationBarItemData[] = [
   {
     name: "home",
     fallbackDisplayName: "Trang chủ",
-    routePath: routeHelper.getHomeRoutePath(),
+    routePath: getHomeRoutePath(),
     Icon: ({ isActive, className, title }) => {
       const Component = isActive ? HomeSolidIcon : HomeOutlineIcon;
       return <Component className={className} title={title} />;
@@ -137,7 +137,7 @@ const navigationBarItems: NavigationBarItemData[] = [
   },
   {
     name: "customer",
-    routePath: routeHelper.getCustomerListRoutePath(),
+    routePath: getCustomerListRoutePath(),
     Icon: ({ isActive, className, title }) => {
       const Component = isActive ? CustomerSolidIcon : CustomerOutlineIcon;
       return <Component className={className} title={title} />;
@@ -145,7 +145,7 @@ const navigationBarItems: NavigationBarItemData[] = [
   },
   {
     name: "product",
-    routePath: routeHelper.getProductListRoutePath(),
+    routePath: getProductListRoutePath(),
     Icon: ({ isActive, className, title }) => {
       const Component = isActive ? ProductSolidIcon : ProductOutlineIcon;
       return <Component className={className} title={title} />;
@@ -153,7 +153,7 @@ const navigationBarItems: NavigationBarItemData[] = [
   },
   {
     name: "supply",
-    routePath: routeHelper.getSupplyListRoutePath(),
+    routePath: getSupplyListRoutePath(),
     Icon: ({ isActive, className, title }) => {
       const Component = isActive ? SupplySolidIcon : SupplyOutlineIcon;
       return <Component className={className} title={title} />;
@@ -161,7 +161,7 @@ const navigationBarItems: NavigationBarItemData[] = [
   },
   {
     name: "order",
-    routePath: routeHelper.getOrderListRoutePath(),
+    routePath: getOrderListRoutePath(),
     Icon: ({ isActive, className, title }) => {
       const Component = isActive ? OrderSolidIcon : OrderOutlineIcon;
       return <Component className={className} title={title} />;
@@ -169,7 +169,7 @@ const navigationBarItems: NavigationBarItemData[] = [
   },
   {
     name: "debt",
-    routePath: routeHelper.getDebtOverviewRoutePath(),
+    routePath: getDebtOverviewRoutePath(),
     Icon: ({ isActive, className, title }) => {
       const Component = isActive ? DebtSolidIcon : DebtOutlineIcon;
       return <Component className={className} title={title} />;
@@ -177,7 +177,7 @@ const navigationBarItems: NavigationBarItemData[] = [
   },
   {
     name: "expense",
-    routePath: routeHelper.getExpenseListRoutePath(),
+    routePath: getExpenseListRoutePath(),
     Icon: ({ isActive, className, title }) => {
       const Component = isActive ? ExpenseSolidIcon : ExpenseOutlineIcon;
       return <Component className={className} title={title} />;
@@ -185,7 +185,7 @@ const navigationBarItems: NavigationBarItemData[] = [
   },
   {
     name: "report",
-    routePath: routeHelper.getReportRoutePath(),
+    routePath: getReportRoutePath(),
     fallbackDisplayName: "Báo cáo",
     Icon: ({ isActive, className, title }) => {
       const Component = isActive ? ReportSolidIcon : ReportOutlineIcon;
@@ -194,7 +194,7 @@ const navigationBarItems: NavigationBarItemData[] = [
   },
   {
     name: "user",
-    routePath: routeHelper.getUserListRoutePath(),
+    routePath: getUserListRoutePath(),
     Icon: ({ isActive, className, title }) => {
       const Component = isActive ? UserSolidIcon : UserOutlineIcon;
       return <Component className={className} title={title} />;

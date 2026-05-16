@@ -57,6 +57,9 @@ internal class Order : IHasStatsEntity
 
     [Required]
     public long CachedServiceItemsVatAmount { get; private set; }
+    
+    [Required]
+    public long CachedAmountAfterVat  { get; private set; }
     #endregion
 
     #region NavigationProperties
@@ -93,18 +96,6 @@ internal class Order : IHasStatsEntity
     public long VatAmount => ProductVatAmount;
 
     [NotMapped]
-    public long CachedAmountAfterVat
-    {
-        get
-        {
-            long productAmount = CachedProductItemsAmountBeforeVat + CachedProductItemsVatAmount;
-            long serviceAmount = CachedServiceItemsAmountBeforeVat + CachedServiceItemsVatAmount;
-
-            return productAmount + serviceAmount;
-        }
-    }
-
-    [NotMapped]
     public static Expression<Func<Order, long>> AmountAfterVatExpression => (order) =>
         order.ProductItems.Sum(oi => (oi.AmountBeforeVatPerUnit + oi.VatAmountPerUnit) * oi.Quantity);
     #endregion
@@ -127,6 +118,12 @@ internal class Order : IHasStatsEntity
             CachedServiceItemsAmountBeforeVat += serviceItem.AmountBeforeVatPerUnit * serviceItem.Quantity;
             CachedServiceItemsVatAmount += serviceItem.AmountBeforeVatPerUnit * serviceItem.Quantity;
         }
+        
+        CachedAmountAfterVat =
+            CachedProductItemsAmountBeforeVat +
+            CachedProductItemsVatAmount +
+            CachedServiceItemsAmountBeforeVat +
+            CachedServiceItemsVatAmount;
     }
     #endregion
 }

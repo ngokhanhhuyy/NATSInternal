@@ -1,30 +1,21 @@
-import { createUserBasicModel } from "../shared/userBasicModel";
-import { createProductCategoryBasicModel } from "../shared/productCategoryBasicModel";
-import { useDateTimeHelper, useRouteHelper } from "@/helpers";
+import { createProductCategoryBasicModel } from "@/models";
+import { getProductCategoryUpdateRoutePath } from "@/helpers";
 
 declare global {
   type ProductCategoryDetailModel = Readonly<{
-    id: string;
+    id: number;
     name: string;
-    createdDateTime: string;
-    createdUser: UserBasicModel;
-    lastUpdatedDateTime: string | null;
-    lastUpdatedUser: UserBasicModel | null;
+    authorization: ProductCategoryExistingAuthorizationResponseDto | null;
     updateRoutePath: string;
     toBasicModel(): ProductCategoryBasicModel;
   }>;
 }
 
-const { getDisplayDateTimeString }  = useDateTimeHelper();
-const { getProductCategoryUpdateRoutePath } = useRouteHelper();
-
-export function createProductCategoryDetailModel(responseDto: ProductCategoryGetDetailResponseDto): ProductCategoryDetailModel {
+export function createProductCategoryDetailModel(responseDto: ProductCategoryDetailResponseDto): ProductCategoryDetailModel {
   return {
-    ...responseDto,
-    createdDateTime: getDisplayDateTimeString(responseDto.createdDateTime),
-    createdUser: createUserBasicModel(responseDto.createdUser),
-    lastUpdatedDateTime: responseDto.lastUpdatedDateTime && getDisplayDateTimeString(responseDto.lastUpdatedDateTime),
-    lastUpdatedUser: responseDto.lastUpdatedUser && createUserBasicModel(responseDto.lastUpdatedUser),
+    id: responseDto.id,
+    name: responseDto.name,
+    authorization: responseDto.authorization,
     updateRoutePath: getProductCategoryUpdateRoutePath(responseDto.id),
     toBasicModel(): ProductCategoryBasicModel {
       return createProductCategoryBasicModel(this);

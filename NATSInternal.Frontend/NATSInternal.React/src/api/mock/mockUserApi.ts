@@ -7,7 +7,7 @@ import { NotFoundError } from "../errors";
 const mockDatabase = useMockDatabase();
 
 const mockUserApi: UserApi = {
-  async getListAsync(requestDto: UserGetListRequestDto): Promise<UserGetListResponseDto> {
+  async getListAsync(requestDto: UserListRequestDto): Promise<UserListResponseDto> {
     await throttleAsync();
     const filteredUsers: User[] = [];
     for (const user of mockDatabase.users) {
@@ -81,7 +81,7 @@ const mockUserApi: UserApi = {
       items: paginatedUsers.map(createUserBasicResponseDto)
     };
   },
-  async getDetailByIdAsync(id: string): Promise<UserGetDetailResponseDto> {
+  async getDetailByIdAsync(id: string): Promise<UserDetailResponseDto> {
     await throttleAsync();
     const user = mockDatabase.users.find((u) => u.id === id);
     if (!user) {
@@ -90,7 +90,7 @@ const mockUserApi: UserApi = {
 
     return createUserGetDetailResponseDto(user);
   },
-  async getDetailByUserNameAsync(userName: string): Promise<UserGetDetailResponseDto> {
+  async getDetailByUserNameAsync(userName: string): Promise<UserDetailResponseDto> {
     await throttleAsync();
     const user = mockDatabase.users.find((u) => u.userName === userName);
     if (!user) {
@@ -127,7 +127,7 @@ export function createRoleBasicResponseDto(role: Role): RoleBasicResponseDto {
   };
 }
 
-export function createUserGetDetailResponseDto(user: User): UserGetDetailResponseDto {
+export function createUserGetDetailResponseDto(user: User): UserDetailResponseDto {
   return {
     ...user,
     roles: user.roles.map(role => ({

@@ -1,6 +1,3 @@
-namespace NATSInternal.Core.Features.Supplies.SupplyUpdate;
+namespace NATSInternal.Core.Features.Supplies;
 
-public class SupplyUpdateRequestDto
-{
-    
-}
+public class SupplyUpdateRequestDto : AbstractSupplyUpsertRequestDto;

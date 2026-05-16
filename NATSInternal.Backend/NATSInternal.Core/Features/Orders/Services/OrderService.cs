@@ -69,12 +69,23 @@ internal class OrderService : IOrderService
 
         IQueryable<Order> query = _context.Orders
             .Include(o => o.Customer)
+            .Include(o => o.Payment)
             .Include(o => o.Photos.Where(photo => photo.IsThumbnail))
             .Where(o => o.DeletedDateTime == null);
 
         if (requestDto.StatsMonthYear is not null)
         {
             query = query.HasStatsMonthYear(requestDto.StatsMonthYear.Year, requestDto.StatsMonthYear.Month);
+        }
+        
+        if (requestDto.CustomerIds.Count > 0)
+        {
+            query = query.Where(o => requestDto.CustomerIds.Contains(o.Id));
+        }
+        
+        if (requestDto.DebtOrdersOnly)
+        {
+            query = query.Where(o => o.Payment == null || o.CachedAmountAfterVat > o.Payment.Amount);
         }
 
         switch (requestDto.SortByFieldName)
@@ -166,7 +177,7 @@ internal class OrderService : IOrderService
             options.IncludeRuleSets("Create").IncludeRulesNotInRuleSet();
         });
 
-        using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
+        await using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
 
         Customer customer = await GetCustomerOrCreateAsync(requestDto);
 
@@ -271,11 +282,12 @@ internal class OrderService : IOrderService
         Order order = await _context.Orders
             .Include(o => o.ProductItems).ThenInclude(o => o.Product)
             .Include(o => o.ServiceItems)
+            .Include(o => o.Payment)
             .AsSplitQuery()
             .SingleOrDefaultAsync(o => o.Id == id && o.DeletedDateTime == null)
             ?? throw new NotFoundException();
 
-        using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
+        await using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
 
         Customer customer = await GetCustomerOrCreateAsync(requestDto);
         long oldDebtAmount = order.CachedAmountAfterVat - (order.Payment?.Amount ?? 0);

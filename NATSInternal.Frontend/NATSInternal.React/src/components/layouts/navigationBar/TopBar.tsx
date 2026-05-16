@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigationBarStore, useThemeStore } from "@/stores";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Child component.
 import MainLogo from "./MainLogo";
@@ -16,7 +16,6 @@ type TopBarProps = {
 export default function TopBar(props: TopBarProps): React.ReactNode {
   // Dependencies.
   const navigationBarStore = useNavigationBarStore(); 
-  const { joinClassName } = useTsxHelper();
 
   // States.
   const [isScrolled, setIsScrolled] = useState<boolean>(false);

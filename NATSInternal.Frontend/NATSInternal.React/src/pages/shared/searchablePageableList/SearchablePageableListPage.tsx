@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router";
 import { getDisplayName } from "@/metadata";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Child components.
 import FilterOptionsPanel from "./FilterOptionsPanel";
@@ -10,11 +10,7 @@ import { Paginator } from "@/components/ui";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
 // Props.
-type ListModel<TItemModel extends object> =
-  ISearchableListModel<TItemModel> &
-  ISortableListModel<TItemModel> &
-  IPageableListModel<TItemModel> &
-  IUpsertableListModel<TItemModel>;
+type ListModel<TItemModel extends object> = ISearchableListModel<TItemModel> & IUpsertableListModel<TItemModel>;
 
 type Props<TListModel extends ListModel<TItemModel>, TItemModel extends object> = {
   resourceName: string;
@@ -34,8 +30,6 @@ type Props<TListModel extends ListModel<TItemModel>, TItemModel extends object> 
 export default function SearchablePageableListPage<TListModel extends ListModel<TItemModel>,  TItemModel extends object>
   (props: Props<TListModel, TItemModel>): React.ReactNode
 {
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
 
   // Computed.
   const displayName = useMemo(() => getDisplayName(props.resourceName), []);

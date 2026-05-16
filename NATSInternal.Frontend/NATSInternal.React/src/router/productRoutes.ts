@@ -1,6 +1,5 @@
 import { lazy } from "react";
 import type { RouteObject } from "react-router";
-import { brandRoutes } from "./brandRoutes";
 import { productCategoryRoutes } from "./productCategoryRoutes";
 
 const ProductListPage = lazy(() => import("@/pages/product/productList/ProductListPage"));
@@ -63,7 +62,6 @@ export const productRoutes: RouteObject = {
         },
       ]
     },
-    brandRoutes,
     productCategoryRoutes
   ],
   handle: {

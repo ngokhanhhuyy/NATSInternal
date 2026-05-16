@@ -1,31 +1,29 @@
-// using MediatR;
-// using Microsoft.AspNetCore.Mvc;
-// using NATSInternal.Application.UseCases.Metadata;
+using Microsoft.AspNetCore.Mvc;
+using NATSInternal.Core.Features.Metadata;
 
-// namespace NATSInternal.Api.Controllers;
+namespace NATSInternal.Api.Controllers;
 
-// [ApiController]
-// [Route("api/[controller]")]
-// public class MetadataController : ControllerBase
-// {
-//     #region Fields
-//     private readonly IMediator _mediator;
-//     #endregion
+[ApiController]
+[Route("api/metadata")]
+public class MetadataController : ControllerBase
+{
+    #region Fields
+    private readonly IMetadataService _service;
+    #endregion
     
-//     #region Constructors
-//     public MetadataController(IMediator mediator)
-//     {
-//         _mediator = mediator;
-//     }
-//     #endregion
+    #region Constructors
+    public MetadataController(IMetadataService service)
+    {
+        _service = service;
+    }
+    #endregion
     
-//     #region Methods
-//     [HttpGet]
-//     [ProducesResponseType<MetadataGetResponseDto>(StatusCodes.Status200OK)]
-//     public async Task<IActionResult> Index(CancellationToken cancellationToken = default)
-//     {
-//         MetadataGetRequestDto requestDto = new();
-//         return Ok(await _mediator.Send(requestDto, cancellationToken));
-//     }
-//     #endregion
-// }
+    #region Methods
+    [HttpGet]
+    [ProducesResponseType<MetadataResponseDto>(StatusCodes.Status200OK)]
+    public IActionResult Index()
+    {
+        return Ok(_service.GetMetadata());
+    }
+    #endregion
+}

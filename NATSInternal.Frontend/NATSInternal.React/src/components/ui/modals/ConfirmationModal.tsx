@@ -1,5 +1,5 @@
 import React, { useState, useRef, useImperativeHandle, forwardRef } from "react";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Child components.
 import { BaseModal, Button } from "@/components/ui";
@@ -21,9 +21,6 @@ export type ConfirmationModalHandler = {
 
 // Components.
 const ConfirmationModal = forwardRef<ConfirmationModalHandler, ConfirmationModalProps>((props, ref) => {
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
-
   // States.
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const confirmationPromise = useRef<((value: void | PromiseLike<void>) => void) | null>(null);

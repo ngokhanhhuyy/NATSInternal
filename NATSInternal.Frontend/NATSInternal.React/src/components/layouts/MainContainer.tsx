@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Props.
 type MainContainerProps = {
@@ -8,8 +8,6 @@ type MainContainerProps = {
 
 // Component.
 export default function MainContainer({ isLoading, children, ...domProps }: MainContainerProps): React.ReactNode {
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
   // Effect.
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });

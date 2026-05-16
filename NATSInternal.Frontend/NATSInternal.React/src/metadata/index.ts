@@ -1,15 +1,6 @@
-import { useApi } from "@/api";
+import { api } from "@/api";
 
-const api = useApi();
-const metadata = await api.metadata.getMetadataAsync();
-
-export function getMetadata(): MetadataGetResponseDto {
-  if (metadata == null) {
-    throw new Error("Metadata has not been loaded.");
-  }
-
-  return metadata;
-}
+export const metadata = await api.metadata.getMetadataAsync();
 
 export function getDisplayName(key: string): string | null {
   let camelCaseKey: string = key;
@@ -17,9 +8,9 @@ export function getDisplayName(key: string): string | null {
     camelCaseKey = camelCaseKey[0].toLowerCase() + camelCaseKey.substring(1);
   }
 
-  return getMetadata().displayNameList[camelCaseKey];
+  return metadata.displayNameList[camelCaseKey];
 }
 
-export function getFieldToSortOptions(): MetadataGetListOptionsListResponseDto {
-  return getMetadata().listOptionsList;
+export function getFieldToSortOptions(): MetadataListOptionsListResponseDto {
+  return metadata.listOptionsList;
 }

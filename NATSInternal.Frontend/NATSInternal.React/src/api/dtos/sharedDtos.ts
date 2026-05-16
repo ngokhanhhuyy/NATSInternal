@@ -1,65 +1,56 @@
 declare global {
   type UserBasicResponseDto = {
-    id: string;
+    id: number;
     userName: string;
+    roles: RoleBasicResponseDto[];
     isDeleted: boolean;
+    authorization: UserExistingAuthorizationResponseDto | null;
   };
 
   type RoleBasicResponseDto = {
-    id: string;
+    id: number;
     name: string;
     displayName: string;
-    powerLevel: number;
   };
 
   type CustomerBasicResponseDto = {
-    id: string;
+    id: number;
     fullName: string;
     nickName: string | null;
     isDeleted: boolean;
+    authorization: CustomerExistingAuthorizationResponseDto | null;
   };
   
   type ProductBasicResponseDto = {
-    id: string;
+    id: number;
     name: string;
     unit: string;
+    defaultAmountBeforeVatPerUnit: number;
+    defaultVatPercentagePerUnit: number;
+    stockingQuantity: number;
+    isResupplyNeeded: boolean;
+    isDiscontinued: boolean;
+    thumbnailUrl: string | null;
     isDeleted: boolean;
-  };
-  
-  type BrandBasicResponseDto = {
-    id: string;
-    name: string;
+    categories: ProductCategoryBasicResponseDto[];
+    authorization: ProductExistingAuthorizationResponseDto | null;
   };
   
   type ProductCategoryBasicResponseDto = {
-    id: string;
+    id: number;
     name: string;
-  };
-
-  type CountryBasicResponseDto = {
-    id: string;
-    code: string;
-    name: string;
-  };
-
-  type StockBasicResponseDto = {
-    id: string;
-    stockingQuantity: number;
-    resupplyThresholdQuantity: number;
+    authorization: ProductCategoryExistingAuthorizationResponseDto | null;
   };
   
   type PhotoBasicResponseDto = {
-    id: string;
+    id: number;
     url: string;
     isThumbnail: boolean;
   };
   
-  type PhotoCreateOrUpdateRequestDto = {
-    id: string | null;
-    file: string;
-    isThumbnail: boolean;
-    isChanged: boolean;
-    isDeleted: boolean;
+  type ListMonthYearRequestDto = {
+    month: number;
+    year: number;
   };
 }
 

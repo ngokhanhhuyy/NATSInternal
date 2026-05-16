@@ -1,37 +1,23 @@
 declare global {
   type Gender = "Male" | "Female";
 
-  type CustomerGetListRequestDto = ImplementsPartial<
-      ISearchableListRequestDto &
-      IPageableListRequestDto &
-      ISortableListRequestDto, {
+  type CustomerListRequestDto = ImplementsPartial<ISearchableListRequestDto, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
     resultsPerPage: number;
     searchContent: string;
-    excludedIds: string[];
+    excludedIds: number[];
   }>;
 
-  type CustomerGetListResponseDto = Implements<IPageableListResponseDto<CustomerGetListCustomerResponseDto>, {
-    items: CustomerGetListCustomerResponseDto[];
+  type CustomerListResponseDto = Implements<IListResponseDto<CustomerBasicResponseDto>, {
+    items: CustomerBasicResponseDto[];
     pageCount: number;
     itemCount: number;
   }>;
 
-  type CustomerGetListCustomerResponseDto = {
-    id: string;
-    fullName: string;
-    nickName: string | null;
-    gender: Gender;
-    birthday: string | null;
-    phoneNumber: string | null;
-    debtRemainingAmount: number;
-    authorization: CustomerExistingAuthorizationResponseDto;
-  };
-
-  type CustomerGetDetailResponseDto = {
-    id: string;
+  type CustomerDetailResponseDto = {
+    id: number;
     firstName: string;
     middleName: string | null;
     lastName: string;
@@ -45,10 +31,12 @@ declare global {
     email: string | null;
     address: string | null;
     note: string | null;
-    createdUser: UserBasicResponseDto;
     createdDateTime: string;
-    lastUpdatedUser: UserBasicResponseDto | null;
+    createdUser: UserBasicResponseDto;
     lastUpdatedDateTime: string | null;
+    lastUpdatedUser: UserBasicResponseDto | null;
+    deletedDateTime: string | null;
+    deletedUser: UserBasicResponseDto | null;
     debtRemainingAmount: number;
     introducer: CustomerBasicResponseDto | null;
     authorization: CustomerExistingAuthorizationResponseDto;
@@ -67,6 +55,6 @@ declare global {
     email: string | null;
     address: string | null;
     note: string | null;
-    introducerId: string | null;
+    introducerId: number | null;
   };
 }

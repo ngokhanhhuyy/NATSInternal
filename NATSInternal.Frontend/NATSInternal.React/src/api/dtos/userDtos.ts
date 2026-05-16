@@ -1,38 +1,34 @@
 declare global {
-  type UserGetListRequestDto = ImplementsPartial<
-      ISearchableListRequestDto &
-      IPageableListRequestDto &
-      ISortableListRequestDto, {
+  type UserListRequestDto = ImplementsPartial<ISearchableListRequestDto, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
     resultsPerPage: number;
     searchContent: string;
-    roleId: string;
+    roleIds: number[];
   }>;
 
-  type UserGetListResponseDto = Implements<IPageableListResponseDto<UserGetListUserResponseDto>, {
-    items: UserGetListUserResponseDto[];
+  type UserListResponseDto = Implements<IListResponseDto<UserBasicResponseDto>, {
+    items: UserBasicResponseDto[];
     pageCount: number;
     itemCount: number;
   }>;
 
-  type UserGetListUserResponseDto = UserBasicResponseDto & {
-    authorization: UserExistingAuthorizationResponseDto;
-  };
-
-  type UserGetDetailResponseDto = {
-    id: string;
+  type UserDetailResponseDto = {
+    id: number;
     userName: string;
-    roles: UserGetDetailRoleResponseDto[];
+    roles: RoleDetailResponseDto[];
     authorization: UserExistingAuthorizationResponseDto
   };
-
-  type UserGetDetailRoleResponseDto = {
-    id: string;
-    name: string;
-    displayName: string;
-    powerLevel: number;
-    permissionNames: string[];
-  };
+  
+  type UserCreateRequestDto = {
+    userName: string;
+    password: string;
+    confirmationPassword: string;
+    roleNames: string[];
+  }
+  
+  type UserUpdateRequestDto = {
+    roleIds: number[];
+  }
 }

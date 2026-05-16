@@ -1,5 +1,5 @@
 import React from "react";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Child components.
 import Spinner from "./Spinner";
@@ -10,9 +10,6 @@ export type ButtonProps = { showSpinner?: boolean } & React.ComponentPropsWithou
 export default function Button(props: ButtonProps) {
   // Props.
   const { type = "button", showSpinner, ...domProps } = props;
-
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
 
   // Template.
   return (

@@ -2,8 +2,8 @@ declare global {
   type UserExistingAuthorizationResponseDto = {
     canChangePassword: boolean;
     canResetPassword: boolean;
+    canUpdate: boolean;
     canDelete: boolean;
-    canAddToOrRemoveFromRoles: boolean;
   };
 
   type CustomerExistingAuthorizationResponseDto = {
@@ -15,6 +15,11 @@ declare global {
     canEdit: boolean;
     canDelete: boolean;
   };
+  
+  type ProductCategoryExistingAuthorizationResponseDto = {
+    canEdit: boolean;
+    canDelete: boolean;
+  }
 }
 
 export { };

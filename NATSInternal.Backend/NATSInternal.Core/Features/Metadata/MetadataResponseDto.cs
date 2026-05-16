@@ -1,19 +1,10 @@
-using JetBrains.Annotations;
-
 namespace NATSInternal.Core.Features.Metadata;
 
-public class MetadataGetResponseDto
+public class MetadataResponseDto
 {
     #region Properties
-    public required IDictionary<string, string> DisplayNameList { [UsedImplicitly] get; init; }
-    public required MetadataListOptionsListResponseDto ListOptionsList { [UsedImplicitly] get; init; }
-    public required MetadataCreatingAuthorizationListResponseDto CreatingAuthorization
-    {
-        [UsedImplicitly]
-        get;
-        init;
-    }
+    public required IDictionary<string, string> DisplayNameList { get; init; }
+    public required MetadataListOptionsListResponseDto ListOptionsList { get; init; }
+    public required MetadataCreatingAuthorizationListResponseDto CreatingAuthorization { get; init; }
     #endregion
 }
-
-

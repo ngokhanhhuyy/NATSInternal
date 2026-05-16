@@ -1,39 +1,11 @@
 declare global {
-  type ProductCategoryGetListRequestDto = ImplementsPartial<
-      ISearchableListRequestDto &
-      IPageableListRequestDto &
-      ISortableListRequestDto, {
-    sortByAscending: boolean;
-    sortByFieldName: string;
-    page: number;
-    resultsPerPage: number;
-    searchContent: string;
-  }>;
-
-  type ProductCategoryGetListResponseDto = Implements<
-      IPageableListResponseDto<ProductCategoryGetListProductCategoryResponseDto>, {
-    items: ProductCategoryGetListProductCategoryResponseDto[];
-    pageCount: number;
-    itemCount: number;
-  }>;
-
-  type ProductCategoryGetListProductCategoryResponseDto = Readonly<{
-    id: string;
+  type ProductCategoryDetailResponseDto = {
+    id: number;
     name: string;
-    countryName: string;
-  }>;
-
-  type ProductCategoryGetDetailResponseDto = {
-    id: string;
-    name: string;
-    createdDateTime: string;
-    createdUser: UserBasicResponseDto;
-    lastUpdatedDateTime: string | null;
-    lastUpdatedUser: UserBasicResponseDto | null;
-    country: CountryBasicResponseDto | null;
+    authorization: ProductCategoryExistingAuthorizationResponseDto | null;
   };
 
-  type ProductCategoryUpdateRequestDto = {
+  type ProductCategoryUpsertRequestDto = {
     name: string;
   };
 }

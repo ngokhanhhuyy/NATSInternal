@@ -11,6 +11,7 @@ public class CustomerListRequestDto : ISearchableListRequestDto
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
     public string? SearchContent { get; set; }
+    public List<int> ExcludedIds { get; set; } = new();
     #endregion
     
     #region Methods

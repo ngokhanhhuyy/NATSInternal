@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLoaderData } from "react-router";
-import { useApi } from "@/api";
+import { api } from "@/api";
 import { createCustomerDetailModel } from "@/models/customer/customerDetailModel";
 
 // Child components.
@@ -13,7 +13,6 @@ import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 // Data loder.
 export async function loadDataAsync(id: string): Promise<CustomerDetailModel> {
-  const api = useApi();
   const responseDto = await api.customer.getDetailAsync(id);
   return createCustomerDetailModel(responseDto);
 }

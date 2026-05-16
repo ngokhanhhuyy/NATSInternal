@@ -1,61 +1,37 @@
-import { createBrandBasicModel } from "../shared/brandBasicModel";
-import { createProductCategoryBasicModel } from "../shared/productCategoryBasicModel";
-import { getMetadata } from "@/metadata";
-import { useCurrencyHelper, useRouteHelper } from "@/helpers";
+import { createProductBasicModel } from "@/models";
+import { metadata } from "@/metadata";
+import { getProductCreateRoutePath } from "@/helpers";
 
 declare global {
   type ProductListModel = Implements<
-      ISearchableListModel<ProductListProductModel> &
-      ISortableListModel<ProductListProductModel> &
-      IPageableListModel<ProductListProductModel> &
-      IUpsertableListModel<ProductListProductModel>, {
+      ISearchableListModel<ProductBasicModel> &
+      IUpsertableListModel<ProductBasicModel>, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
     resultsPerPage: number;
     searchContent: string;
-    brand: BrandBasicModel | null;
-    category: ProductCategoryBasicModel | null;
-    items: ProductListProductModel[];
+    categories: ProductCategoryBasicModel[];
+    items: ProductBasicModel[];
     pageCount: number;
     itemCount: number;
     get sortByFieldNameOptions(): string[];
     get createRoutePath(): string;
-    mapFromResponseDto(responseDto: ProductGetListResponseDto): ProductListModel;
-    toRequestDto(): ProductGetListRequestDto;
-  }>;
-
-  type ProductListProductModel = Readonly<{
-    id: string;
-    name: string;
-    unit: string;
-    defaultAmountBeforeVatPerUnit: number;
-    defaultVatPercentagePerUnit: number;
-    stockingQuantity: number;
-    isResupplyNeeded: boolean;
-    isDiscontinued: boolean;
-    thumbnailUrl: string | null;
-    authorization: ProductExistingAuthorizationResponseDto;
-    category: ProductCategoryBasicModel | null;
-    brand: BrandBasicModel | null;
-    formattedDefaultAmountBeforeVatPerUnit: string;
-    detailRoutePath: string;
+    mapFromResponseDto(responseDto: ProductListResponseDto): ProductListModel;
+    toRequestDto(): ProductListRequestDto;
   }>;
 }
 
-const { getAmountDisplayText } = useCurrencyHelper();
-const { getProductCreateRoutePath, getProductDetailRoutePath } = useRouteHelper();
-const productListOptions = getMetadata().listOptionsList.product;
+const productListOptions = metadata.listOptionsList.product;
 
-export function createProductListModel(responseDto?: ProductGetListResponseDto): ProductListModel {
+export function createProductListModel(responseDto?: ProductListResponseDto): ProductListModel {
   const model: ProductListModel = {
     sortByAscending: productListOptions.defaultSortByAscending ?? true,
     sortByFieldName: productListOptions.defaultSortByFieldName ?? "",
     page: 1,
     resultsPerPage:  productListOptions.defaultResultsPerPage,
     searchContent: "",
-    brand: null,
-    category: null,
+    categories: [],
     items: [],
     pageCount: 0,
     itemCount: 0,
@@ -65,19 +41,20 @@ export function createProductListModel(responseDto?: ProductGetListResponseDto):
     get createRoutePath(): string {
       return getProductCreateRoutePath();
     },
-    mapFromResponseDto(responseDto: ProductGetListResponseDto): ProductListModel {
+    mapFromResponseDto(responseDto: ProductListResponseDto): ProductListModel {
       return {
         ...this,
-        items: responseDto.items.map(createProductListProductModel),
+        items: responseDto.items.map(createProductBasicModel),
         pageCount: responseDto.pageCount,
         itemCount: responseDto.itemCount
       };
     },
-    toRequestDto(): ProductGetListRequestDto {
-      const requestDto: ProductGetListRequestDto = {
+    toRequestDto(): ProductListRequestDto {
+      const requestDto: ProductListRequestDto = {
         sortByAscending: this.sortByAscending,
         sortByFieldName: this.sortByFieldName,
         page: this.page,
+        categoryIds: this.categories.map(pc => pc.id)
       };
 
       if (this.resultsPerPage) {
@@ -86,14 +63,6 @@ export function createProductListModel(responseDto?: ProductGetListResponseDto):
 
       if (this.searchContent) {
         requestDto.searchContent = this.searchContent;
-      }
-
-      if (this.brand) {
-        requestDto.brandId = this.brand.id;
-      }
-
-      if (this.category) {
-        requestDto.categoryId = this.category.id;
       }
 
       return requestDto;
@@ -105,15 +74,4 @@ export function createProductListModel(responseDto?: ProductGetListResponseDto):
   }
 
   return model;
-}
-
-export function createProductListProductModel(responseDto: ProductGetListProductResponseDto): ProductListProductModel {
-  return {
-    ...responseDto,
-    thumbnailUrl: responseDto.thumbnailUrl,
-    formattedDefaultAmountBeforeVatPerUnit: getAmountDisplayText(responseDto.defaultAmountBeforeVatPerUnit),
-    category: responseDto.category && createProductCategoryBasicModel(responseDto.category),
-    brand: responseDto.brand && createBrandBasicModel(responseDto.brand),
-    detailRoutePath: getProductDetailRoutePath(responseDto.id)
-  };
 }

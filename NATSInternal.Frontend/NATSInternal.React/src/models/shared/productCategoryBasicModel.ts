@@ -1,14 +1,12 @@
-import { useRouteHelper } from "@/helpers";
+import { getProductCategoryDetailRoutePath } from "@/helpers";
 
 declare global {
   type ProductCategoryBasicModel = {
-    id: string;
+    id: number;
     name: string;
     detailRoutePath: string;
   };
 }
-
-const { getProductCategoryDetailRoutePath } = useRouteHelper();
 
 function createProductCategoryBasicModel(responseDto: ProductCategoryBasicResponseDto): ProductCategoryBasicModel {
   return {

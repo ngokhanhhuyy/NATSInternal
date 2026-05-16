@@ -1,5 +1,5 @@
 import React from "react";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Props.
 export type PanelProps = {
@@ -23,9 +23,6 @@ export default function Panel(props: PanelProps): React.ReactNode {
     children,
     ...domProps
   } = props;
-
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
 
   // Template.
   return (

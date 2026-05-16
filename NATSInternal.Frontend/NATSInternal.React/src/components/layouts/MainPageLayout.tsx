@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, Fragment } from "react";
 import { useMatches, Outlet, Link, useNavigation, useNavigate } from "react-router";
 import { useAuthenticationStore, useNavigationBarStore } from "@/stores";
 import { useMatchedRouteHandles } from "@/hooks";
-import { useRouteHelper, useTsxHelper } from "@/helpers";
+import { joinClassName, compute, getSignInRoutePath } from "@/helpers";
 
 // Child components.
 import { HomeIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
@@ -17,11 +17,9 @@ export default function MainPageLayout(): React.ReactNode {
   const navigate = useNavigate();
   const isAuthenticated = useAuthenticationStore(store => store.isAuthenticated);
   const isNavigationBarExpanded = useNavigationBarStore(store => store.isExpanded);
-  const { getSignInRoutePath } = useRouteHelper();
 
   // Dependencies.
   const matchedRouteHandlesArray = useMatchedRouteHandles();
-  const { joinClassName, compute } = useTsxHelper();
 
   // States.
   const [shouldBlockPointerEvent, setShouldBlockPointerEvent] = useState<boolean>(() => false);
@@ -80,7 +78,6 @@ export default function MainPageLayout(): React.ReactNode {
 function Breadcrumb(): React.ReactNode {
   // Dependencies.
   const matchedRoutes = useMatches();
-  const { joinClassName } = useTsxHelper();
 
   // Computed.
   const breadcrumItems = useMemo<BreadcrumbItemData[]>(() => {
@@ -116,9 +113,6 @@ function Breadcrumb(): React.ReactNode {
 }
 
 function BreadcrumbItem(props: BreadcrumbItemData & { isFirst: boolean, isLast: boolean; }): React.ReactNode {
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
-
   // Template.
   function renderChild(): React.ReactNode {
     if (props.isFirst) {

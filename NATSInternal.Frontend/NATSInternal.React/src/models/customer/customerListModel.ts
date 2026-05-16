@@ -1,52 +1,28 @@
-import { getMetadata } from "@/metadata";
-import { useAvatarHelper, useCurrencyHelper, useDateTimeHelper } from "@/helpers";
-import { usePhoneNumberHelper, useRouteHelper } from "@/helpers";
+import { createCustomerBasicModel } from "@/models";
+import { metadata } from "@/metadata";
+import { getCustomerCreateRoutePath } from "@/helpers";
 
 declare global {
   type CustomerListModel = Implements<
-      ISearchableListModel<CustomerListCustomerModel> &
-      ISortableListModel<CustomerListCustomerModel> &
-      IPageableListModel<CustomerListCustomerModel> &
-      IUpsertableListModel<CustomerListCustomerModel>, {
+      ISearchableListModel<CustomerBasicModel> &
+      IUpsertableListModel<CustomerBasicModel>, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
     resultsPerPage: number;
     searchContent: string;
-    items: CustomerListCustomerModel[];
+    items: CustomerBasicModel[];
     pageCount: number;
     itemCount: number;
     get sortByFieldNameOptions(): string[];
     get createRoutePath(): string;
-    mapFromResponseDto(responseDto: CustomerGetListResponseDto): CustomerListModel;
-    toRequestDto(): CustomerGetListRequestDto;
-  }>;
-
-  type CustomerListCustomerModel = Readonly<{
-    id: string;
-    fullName: string;
-    nickName: string | null;
-    gender: Gender;
-    birthday: string | null;
-    phoneNumber: string | null;
-    debtRemainingAmount: number;
-    authorization: CustomerExistingAuthorizationResponseDto;
-    get avatarUrl(): string;
-    get formattedBirthday(): string | null;
-    get formattedPhoneNumber(): string | null;
-    get formattedDebtRemainingAmount(): string;
-    get detailRoute(): string;
+    mapFromResponseDto(responseDto: CustomerListResponseDto): CustomerListModel;
+    toRequestDto(): CustomerListRequestDto;
   }>;
 }
+const customerListOptions = metadata.listOptionsList.customer;
 
-const { getDefaultAvatarUrlByFullName } = useAvatarHelper();
-const { getAmountDisplayText: getDisplayCurrencyText } = useCurrencyHelper();
-const { getDisplayDateString } = useDateTimeHelper();
-const { formatRawPhoneNumber } = usePhoneNumberHelper();
-const { getCustomerCreateRoutePath, getCustomerDetailRoutePath } = useRouteHelper();
-const customerListOptions = getMetadata().listOptionsList.customer;
-
-export function createCustomerListModel(responseDto?: CustomerGetListResponseDto): CustomerListModel {
+export function createCustomerListModel(responseDto?: CustomerListResponseDto): CustomerListModel {
   const model: CustomerListModel = {
     sortByAscending: customerListOptions.defaultSortByAscending ?? true,
     sortByFieldName: customerListOptions.defaultSortByFieldName ?? "",
@@ -62,16 +38,16 @@ export function createCustomerListModel(responseDto?: CustomerGetListResponseDto
     get createRoutePath(): string {
       return getCustomerCreateRoutePath();
     },
-    mapFromResponseDto(responseDto: CustomerGetListResponseDto): CustomerListModel {
+    mapFromResponseDto(responseDto: CustomerListResponseDto): CustomerListModel {
       return {
         ...this,
-        items: responseDto.items.map(createCustomerListCustomerModel),
+        items: responseDto.items.map(createCustomerBasicModel),
         pageCount: responseDto.pageCount,
         itemCount: responseDto.itemCount
       };
     },
-    toRequestDto(): CustomerGetListRequestDto {
-      const requestDto: CustomerGetListRequestDto = {
+    toRequestDto(): CustomerListRequestDto {
+      const requestDto: CustomerListRequestDto = {
         sortByAscending: this.sortByAscending,
         sortByFieldName: this.sortByFieldName,
         page: this.page,
@@ -94,25 +70,4 @@ export function createCustomerListModel(responseDto?: CustomerGetListResponseDto
   }
 
   return model;
-}
-
-function createCustomerListCustomerModel(responseDto: CustomerGetListCustomerResponseDto): CustomerListCustomerModel {
-  return {
-    ...responseDto,
-    get avatarUrl(): string {
-      return getDefaultAvatarUrlByFullName(this.fullName);
-    },
-    get formattedPhoneNumber(): string | null {
-      return this.phoneNumber && formatRawPhoneNumber(this.phoneNumber);
-    },
-    get formattedBirthday(): string | null {
-      return this.birthday && getDisplayDateString(this.birthday);
-    },
-    get formattedDebtRemainingAmount(): string {
-      return getDisplayCurrencyText(this.debtRemainingAmount);
-    },
-    get detailRoute(): string {
-      return getCustomerDetailRoutePath(this.id);
-    },
-  }; 
 }

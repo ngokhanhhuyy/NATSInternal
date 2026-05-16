@@ -1,29 +1,23 @@
-import {
-  createBrandBasicModel,
-  createPhotoBasicModel,
-  createProductCategoryBasicModel,
-  createStockBasicModel,
-  createUserBasicModel
-} from "@/models";
-import { useCurrencyHelper, useDateTimeHelper, useRouteHelper } from "@/helpers";
+import { createPhotoBasicModel, createProductCategoryBasicModel, createUserBasicModel } from "@/models";
+import { getDisplayDateTimeString, getProductUpdateRoutePath, getAmountDisplayText } from "@/helpers";
 
 declare global {
   type ProductDetailModel = Readonly<{
-    id: string;
+    id: number;
     name: string;
     description: string | null;
     unit: string;
     defaultAmountBeforeVatPerUnit: number;
     defaultVatPercentagePerUnit: number;
+    stockingQuantity: number;
+    resupplyThresholdQuantity: number | null;
     isForRetail: boolean;
     isDiscontinued: boolean;
     createdDateTime: string;
     createdUser: UserBasicModel;
     lastUpdatedDateTime: string | null;
     lastUpdatedUser: UserBasicModel | null;
-    category: ProductCategoryBasicModel | null;
-    stock: StockBasicModel;
-    brand: BrandBasicModel | null;
+    categories: ProductCategoryBasicModel[];
     photos: PhotoBasicModel[];
     authorization: ProductExistingAuthorizationResponseDto;
     formattedDefaultAmountBeforeVatPerUnit: string;
@@ -31,11 +25,7 @@ declare global {
   }>;
 }
 
-const { getAmountDisplayText } = useCurrencyHelper();
-const { getDisplayDateTimeString } = useDateTimeHelper();
-const { getProductUpdateRoutePath } = useRouteHelper();
-
-export function createProductDetailModel(responseDto: ProductGetDetailResponseDto): ProductDetailModel {
+export function createProductDetailModel(responseDto: ProductDetailResponseDto): ProductDetailModel {
   return {
     id: responseDto.id,
     name: responseDto.name,
@@ -43,15 +33,16 @@ export function createProductDetailModel(responseDto: ProductGetDetailResponseDt
     unit: responseDto.unit,
     defaultAmountBeforeVatPerUnit: responseDto.defaultAmountBeforeVatPerUnit,
     defaultVatPercentagePerUnit: responseDto.defaultVatPercentagePerUnit,
+    stockingQuantity: responseDto.stockingQuantity,
+    resupplyThresholdQuantity: responseDto.resupplyThresholdQuantity,
     isForRetail: responseDto.isForRetail,
     isDiscontinued: responseDto.isDiscontinued,
     createdDateTime: getDisplayDateTimeString(responseDto.createdDateTime),
     createdUser: createUserBasicModel(responseDto.createdUser),
-    lastUpdatedDateTime: responseDto.lastUpdatedDateTime && getDisplayDateTimeString(responseDto.lastUpdatedDateTime),
+    lastUpdatedDateTime: responseDto.lastUpdatedDateTime &&
+      getDisplayDateTimeString(responseDto.lastUpdatedDateTime),
     lastUpdatedUser: responseDto.lastUpdatedUser && createUserBasicModel(responseDto.lastUpdatedUser),
-    category: responseDto.category && createProductCategoryBasicModel(responseDto.category),
-    brand: responseDto.brand && createBrandBasicModel(responseDto.brand),
-    stock: createStockBasicModel(responseDto.stock),
+    categories: responseDto.categories.map(createProductCategoryBasicModel),
     photos: responseDto.photos.map(dto => createPhotoBasicModel(dto)),
     formattedDefaultAmountBeforeVatPerUnit: getAmountDisplayText(responseDto.defaultAmountBeforeVatPerUnit),
     updateRoutePath: getProductUpdateRoutePath(responseDto.id),

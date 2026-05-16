@@ -1,17 +1,7 @@
-import { useHttpClient } from "./httpClient";
-
-const httpClient = useHttpClient();
+import { httpClient } from "./httpClient";
 
 export type PhotoApi = {
-  getMultipleByProductIdsAsync(requestDto: PhotoGetMultipleByProductIds): Promise<PhotoBasicResponseDto[]>;
 };
 
-const photoApi: PhotoApi = {
-  async getMultipleByProductIdsAsync(requestDto: PhotoGetMultipleByProductIds): Promise<PhotoBasicResponseDto[]> {
-    return await httpClient.getAsync("/photos", requestDto);
-  },
+export const photoApi: PhotoApi = {
 };
-
-export function usePhotoApi(): PhotoApi {
-  return photoApi;
-}

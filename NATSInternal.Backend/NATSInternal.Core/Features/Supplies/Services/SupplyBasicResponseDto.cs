@@ -1,5 +1,4 @@
 using NATSInternal.Core.Features.Authorization;
-using NATSInternal.Core.Features.Photos;
 
 namespace NATSInternal.Core.Features.Supplies;
 
@@ -12,18 +11,13 @@ public class SupplyBasicResponseDto
         ShipmentFee = supply.ShipmentFee;
         ItemAmount = supply.CachedItemsAmount;
         StatsDate = supply.StatsDate;
-
-        if (supply.Thumbnail is not null)
-        {
-            Thumbnail = new(supply.Thumbnail);
-        }
+        ThumbnailUrl = supply.Thumbnail?.Url;
     }
 
     internal SupplyBasicResponseDto(Supply supply, SupplyExistingAuthorizationResponseDto authorization) : this(supply)
     {
         Authorization = authorization;
     }
-
 
     #endregion
 
@@ -32,7 +26,7 @@ public class SupplyBasicResponseDto
     public long ShipmentFee { get; }
     public long ItemAmount { get; }
     public DateOnly StatsDate { get; }
-    public PhotoBasicResponseDto? Thumbnail { get; }
+    public string? ThumbnailUrl { get; }
     public SupplyExistingAuthorizationResponseDto? Authorization { get; }
     #endregion
 }

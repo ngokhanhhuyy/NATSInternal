@@ -1,6 +1,8 @@
 namespace NATSInternal.Core.Features.Metadata;
 
-public class IMetadataService
+public interface IMetadataService
 {
-    
+    #region Methods
+    MetadataResponseDto GetMetadata();
+    #endregion
 }

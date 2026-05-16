@@ -1,14 +1,6 @@
-/**
- * Convert datetime string extracted from local-datetime {@link HTMLInputElement} to ISO 8601 format string
- * (ICT-Indochina timezone) to be used as data for request DTOs.
- * 
- * @param dateTimeInputValue String value extracted from datetime-local {@link HTMLInputElement}.
- * @returns An ISO string as data for request DTOs.
- * @example "1997-08-30T21:00" => "1997-08-30T21:00:00"
- */
-function getDateTimeISOString(dateTimeInputValue: string): string {
+export function getDateTimeISOString(dateTimeInputValue: string): string {
   return dateTimeInputValue + ":00";
-}
+};
 
 /**
  * Convert date string extracted from date {@link HTMLInputElement} to ISO 8601 format string to be used as data for
@@ -18,7 +10,7 @@ function getDateTimeISOString(dateTimeInputValue: string): string {
  * @returns An ISO string as data for request DTOs.
  * @example "1997-08-30" => "1997-08-30"
  */
-function getDateISOString(dateInputValue: string): string {
+export function getDateISOString(dateInputValue: string): string {
   return dateInputValue;
 }
 
@@ -30,7 +22,7 @@ function getDateISOString(dateInputValue: string): string {
  * @returns An ISO string as data for request DTOs.
  * @example "21:00" => "21:00:00"
  */
-function getTimeISOString(timeInputValue: string): string {
+export function getTimeISOString(timeInputValue: string): string {
   return timeInputValue + ":00";
 }
 
@@ -44,7 +36,7 @@ function getTimeISOString(timeInputValue: string): string {
  * "1997-08-30T21:00:00" => "1997-08-30T21:00"
  * null => ""
  */
-function getHTMLDateTimeInputString(responseDtoValue: string | null): string {
+export function getHTMLDateTimeInputString(responseDtoValue: string | null): string {
   if (responseDtoValue) {
     return removeUnnecessaryParts(responseDtoValue);
   }
@@ -57,21 +49,21 @@ function getHTMLDateTimeInputString(responseDtoValue: string | null): string {
  * 
  * @returns A string representing the current datetime as value for {@link HTMLInputElement}.
  */
-function getCurrentDateTimeHTMLInputString(): string {
+export function getCurrentDateTimeHTMLInputString(): string {
   const date = new Date();
   date.setMilliseconds(7 * 3_600_000);
   return removeUnnecessaryParts(date.toISOString());
 }
 
 /**
- * Convert date ISO string retrieved from the server to the format that is used as date {@link HTMLInputElement} value.
- * If the value is null, the result will be an empty string.
+ * Convert date ISO string retrieved from the server to the format that is used as date {@link HTMLInputElement}
+ * value. If the value is null, the result will be an empty string.
  * 
  * @param responseDtoValue A date ISO string retrived from the server.
  * @returns A string used as date HTMLInputElement value.
  * @example "1997-08-30" => "1997-08-30"
  */
-function getHTMLDateInputString(responseDtoValue: string | null): string {
+export function getHTMLDateInputString(responseDtoValue: string | null): string {
   return responseDtoValue ?? "";
 }
 
@@ -80,7 +72,7 @@ function getHTMLDateInputString(responseDtoValue: string | null): string {
  * 
  * @returns A string representing the today as value for date {@link HTMLInputElement}.
  */
-function getCurrentDateHTMLInputString(): string {
+export function getCurrentDateHTMLInputString(): string {
   const date = new Date();
   date.setMilliseconds(7 * 3_600_000);
   return date.toISOString().split("T")[0];
@@ -94,7 +86,7 @@ function getCurrentDateHTMLInputString(): string {
  * @returns A string used as time {@link HTMLInputElement} value.
  * @example "21:00" => 21:00"
  */
-function getHTMLTimeInputString(responseDtoValue: string | null): string {
+export function getHTMLTimeInputString(responseDtoValue: string | null): string {
   return responseDtoValue ?? "";
 }
 
@@ -103,7 +95,7 @@ function getHTMLTimeInputString(responseDtoValue: string | null): string {
  * 
  * @returns A string representing the current time as value for time {@link HTMLInputElement}.
  */
-function getCurrentTimeHTMLInputString(): string {
+export function getCurrentTimeHTMLInputString(): string {
   const date = new Date();
   date.setMilliseconds(7 * 3_600_000);
   return removeUnnecessaryParts(date.toISOString()).split("T")[1];
@@ -116,7 +108,7 @@ function getCurrentTimeHTMLInputString(): string {
  * @returns A formatted datetime string used for displaying.
  * @example "1997-08-30T21:00:00" => "21:00 30-08-1997"
  */
-function getDisplayDateTimeString(responseDtoValue: string): string {
+export function getDisplayDateTimeString(responseDtoValue: string): string {
   const formattedValue = responseDtoValue.split(".")[0];
   const date = new Date(formattedValue);
   const [day, month, year] = [
@@ -129,7 +121,7 @@ function getDisplayDateTimeString(responseDtoValue: string): string {
     date.getMinutes().toString().padStart(2, "0"),
   ];
 
-  return `${timeValues.join("g")}, ngày ${day} tháng ${month}, ${year}`;
+  return `${timeValues.join("g")} ngày ${day} tháng ${month} ${year}`;
 }
 
 /**
@@ -139,7 +131,7 @@ function getDisplayDateTimeString(responseDtoValue: string): string {
  * @returns A formatted time string used for displaying.
  * @example "21:00:00" => "21:00"
  */
-function getDisplayTimeString(responseDtoValue: string): string {
+export function getDisplayTimeString(responseDtoValue: string): string {
   const date = new Date(responseDtoValue + "+07:00");
   return date.getHours().toString().padStart(2, "0") +
     "g" + date.getMinutes().toString().padStart(2, "0");
@@ -152,14 +144,14 @@ function getDisplayTimeString(responseDtoValue: string): string {
  * @returns A date string for displaying.
  * @example "1997-08-30" => "30-08-1997"
  */
-function getDisplayDateString(responseDtoValue: string): string {
+export function getDisplayDateString(responseDtoValue: string): string {
   const date = new Date(responseDtoValue);
   const [day, month, year] = [
     date.getDate().toString().padStart(2, "0"),
     (date.getMonth() + 1).toString(),
     date.getFullYear().toString().padStart(4, "0")
   ];
-  return `Ngày ${day} tháng ${month}, ${year}`;
+  return `Ngày ${day} tháng ${month} ${year}`;
 }
 
 /**
@@ -170,10 +162,8 @@ function getDisplayDateString(responseDtoValue: string): string {
  * @param comparedDateString An ISO string representing a date to be compared.
  * @returns 1 if the target date is greater, 0 if they are equal, -1 if the compared date is greater.
  */
-function compareDates(targetDateString: string, comparedDateString: string): number {
-  return compareDateTimes(
-    targetDateString.split("T")[0],
-    comparedDateString.split("T")[0]);
+export function compareDates(targetDateString: string, comparedDateString: string): number {
+  return compareDateTimes(targetDateString.split("T")[0], comparedDateString.split("T")[0]);
 }
 
 /**
@@ -184,9 +174,7 @@ function compareDates(targetDateString: string, comparedDateString: string): num
  * @param comparedDateTimeString An ISO string representing a datetime to be compared.
  * @returns 1 if the target datetime is greater, 0 if they are equal, -1 if the compared datetime is greater.
  */
-function compareDateTimes(
-  targetDateTimeString: string,
-  comparedDateTimeString: string): number {
+export function compareDateTimes(targetDateTimeString: string, comparedDateTimeString: string): number {
   let targetDateTime = new Date(targetDateTimeString);
   if (targetDateTimeString.split("T").length == 1) {
     targetDateTime = new Date(`${targetDateTime}T00:00:00+07:00`);
@@ -216,8 +204,7 @@ function compareDateTimes(
  * RemoveMilliSecondsAndTimeZone("1997-08-30T21:00:00.710Z")
  * => "1997-08-30T21:00:00"
  */
-function removeUnnecessaryParts(value: string): string {
-
+export function removeUnnecessaryParts(value: string): string {
   const splittedISOString = value.split("T");
   const dateISOString = splittedISOString[0];
   const timeISOString = splittedISOString[1]
@@ -233,7 +220,7 @@ function removeUnnecessaryParts(value: string): string {
  * @param targetString An ISO string representing the {@link Date} to compare.
  * @returns The text describing the difference.
  */
-function getDeltaTextRelativeToNow(targetString: string) {
+export function getDeltaTextRelativeToNow(targetString: string) {
   const targetDate = new Date(targetString.split(".")[0] + "+07:00");
   const currentDate = new Date();
   const targetTime = targetDate.getTime();
@@ -297,7 +284,7 @@ function getDeltaTextRelativeToNow(targetString: string) {
  * @param futureDate A {@link Date} object which represents later date and time than the `startingDate` parameter.
  * @returns The number of months difference between the given {@link Date} objects.
  */
-function getMonthsDifference(pastDate: Date, futureDate: Date): number {
+export function getMonthsDifference(pastDate: Date, futureDate: Date): number {
   const pastYear = pastDate.getFullYear();
   const futureYear = futureDate.getFullYear();
   const pastTotalMonths = pastYear * 12 + pastDate.getMonth();
@@ -327,15 +314,14 @@ function getMonthsDifference(pastDate: Date, futureDate: Date): number {
  * @param futureDate A {@link Date} object which represents later date and time than the `startingDate` parameter.
  * @returns The number of years difference between the given {@link Date} objects.
  */
-function getYearsDifference(pastDate: Date, futureDate: Date): number {
+export function getYearsDifference(pastDate: Date, futureDate: Date): number {
   const pastYear = pastDate.getFullYear();
   const futureYear = futureDate.getFullYear();
   const yearsDifference = futureYear - pastYear;
 
   // Add years difference to past date to check if the difference is full.
-  // Example: The difference between 2023-12 and 2024-01 is 1 year, but
-  // since the difference in months is only 1 month, it's not a full year
-  // difference, so it should be adjusted to 0 year difference (rounded down).
+  // Example: The difference between 2023-12 and 2024-01 is 1 year, but since the difference in months is only 1 month,
+  // it's not a full year difference, so it should be adjusted to 0 year difference (rounded down).
   const simulatingDate = new Date(pastDate.toISOString());
   simulatingDate.setFullYear(futureDate.getFullYear());
   if (simulatingDate.getTime() > futureDate.getTime()) {
@@ -352,7 +338,7 @@ function getYearsDifference(pastDate: Date, futureDate: Date): number {
  * @param month The month to be checked.
  * @returns The number of total days in the month.
  */
-function getDaysInMonth(year: number, month: number): number {
+export function getDaysInMonth(year: number, month: number): number {
   const date = new Date(year, month, 0);
   return date.getDate();
 }
@@ -364,7 +350,7 @@ function getDaysInMonth(year: number, month: number): number {
  * @param date A {@link Date} object which the result is based on.
  * @returns A {@link Date} object representing the date with the exactly 1 year different from the given date.
  */
-function getOneYearEarlierDate(date: Date): Date {
+export function getOneYearEarlierDate(date: Date): Date {
   const previousYear = date.getFullYear() - 1;
   const thisMonth = date.getMonth() + 1;
   const daysInPreviousYearThisMonth = getDaysInMonth(previousYear, thisMonth);
@@ -380,7 +366,7 @@ function getOneYearEarlierDate(date: Date): Date {
  * @param date A {@link Date} object to be based on.
  * @returns A {@link Date} object representing the moment which is exactly 1 month earlier.
  */
-function getOneMonthEarlierDate(date: Date): Date {
+export function getOneMonthEarlierDate(date: Date): Date {
   const previousMonth = (date.getMonth() + 1) - 1;
   let previousMonthYear = date.getFullYear();
   if (previousMonth === 12) {
@@ -400,7 +386,7 @@ function getOneMonthEarlierDate(date: Date): Date {
  * @param isoFormatString A string in ISO format, representing the date, retrieved from the server.
  * @returns An array with `[year, month, dateOfMonth]` format.
  */
-function getDateFromISOString(isoFormatString: string): [number, number, number] {
+export function getDateFromISOString(isoFormatString: string): [number, number, number] {
   const dateAsString = isoFormatString.split("T")[0];
   return dateAsString.split("-").map(value => parseInt(value)) as [number, number, number];
 }
@@ -411,33 +397,9 @@ function getDateFromISOString(isoFormatString: string): [number, number, number]
  * @param date An array containing [year, month, date].
  * @returns The ISO format string reprenseting the date.
  */
-function getISOStringFromDate(date: [number, number, number]): string {
+export function getISOStringFromDate(date: [number, number, number]): string {
   const [year, month, dateOfMonth] = date;
   const monthAsString = month.toString().padStart(2, "0");
   const dateOfMonthAsString = dateOfMonth.toString().padStart(2, "0");
   return `${year}/${monthAsString}/${dateOfMonthAsString}`;
-}
-
-const dateTimeHelper = {
-  getDateTimeISOString,
-  getDateISOString,
-  getTimeISOString,
-  getHTMLDateTimeInputString,
-  getCurrentDateTimeHTMLInputString,
-  getHTMLDateInputString,
-  getCurrentDateHTMLInputString,
-  getHTMLTimeInputString,
-  getCurrentTimeHTMLInputString,
-  getDisplayDateTimeString,
-  getDisplayDateString,
-  getDisplayTimeString,
-  compareDates,
-  compareDateTimes,
-  getDeltaTextRelativeToNow,
-  getDateFromISOString,
-  getISOStringFromDate
-};
-
-export function useDateTimeHelper() {
-  return dateTimeHelper;
 }

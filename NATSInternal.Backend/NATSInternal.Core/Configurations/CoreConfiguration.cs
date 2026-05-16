@@ -13,6 +13,7 @@ using NATSInternal.Core.Features.Authentication;
 using NATSInternal.Core.Features.Authorization;
 using NATSInternal.Core.Features.Customers;
 using NATSInternal.Core.Features.Expenses;
+using NATSInternal.Core.Features.Metadata;
 using NATSInternal.Core.Features.Orders;
 using NATSInternal.Core.Features.Payments;
 using NATSInternal.Core.Features.Products;
@@ -59,6 +60,7 @@ public static class CoreConfiguration
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductCategoryService, ProductCategoryService>();
             services.AddScoped<IExpenseService, ExpenseService>();
+            services.AddScoped<IMetadataService, MetadataService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<ISupplyService, SupplyService>();
             services.AddScoped<PaymentInternalService>();
@@ -108,14 +110,14 @@ public static class CoreConfiguration
             await context.Database.EnsureCreatedAsync();
             await context.Database.CloseConnectionAsync();
         }
-    }
 
-    public static async Task SeedDataAsync(this IServiceProvider serviceProvider, bool isDevelopment)
-    {
-        IServiceScopeFactory serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-        using IServiceScope serviceScope = serviceScopeFactory.CreateScope();
-        Seeder seeder = serviceScope.ServiceProvider.GetRequiredService<Seeder>();
+        public async Task SeedDataAsync(bool isDevelopment)
+        {
+            IServiceScopeFactory serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+            using IServiceScope serviceScope = serviceScopeFactory.CreateScope();
+            Seeder seeder = serviceScope.ServiceProvider.GetRequiredService<Seeder>();
         
-        await seeder.SeedAsync(isDevelopment);
+            await seeder.SeedAsync(isDevelopment);
+        }
     }
 }

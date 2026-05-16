@@ -1,5 +1,5 @@
 import React, { useState, useRef, useImperativeHandle, forwardRef } from "react";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Child component.
 import BaseModal from "./BaseModal";
@@ -23,9 +23,6 @@ export type YesNoModalHandler = {
 
 // Component.
 const YesNoModal = forwardRef<YesNoModalHandler, YesNoModalProps>((props, ref): React.ReactNode => {
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
-
   // States.
   const [isOpen, setIsOpen] = useState(false);
   const answerPromise = useRef<((value: boolean | PromiseLike<boolean>) => void) | null>(null);

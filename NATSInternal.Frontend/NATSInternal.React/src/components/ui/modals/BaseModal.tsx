@@ -1,6 +1,6 @@
 import React, { useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Props.
 type BaseModalProps = {
@@ -15,9 +15,6 @@ type BaseModalProps = {
 };
 
 export default function BaseModal(props: BaseModalProps) {
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
-
   // States.
   const elementRef = useRef<HTMLDivElement | null>(null);
 

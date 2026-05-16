@@ -1,13 +1,9 @@
 import React from "react";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Props.
 type Props<
-    TListModel extends
-      ISearchableListModel<TItemModel> &
-      ISortableListModel<TItemModel> &
-      IPageableListModel<TItemModel> &
-      IUpsertableListModel<TItemModel>,
+    TListModel extends ISearchableListModel<TItemModel> & IUpsertableListModel<TItemModel>,
     TItemModel extends object> = {
   model: TListModel;
   isReloading: boolean;
@@ -19,14 +15,9 @@ type Props<
 export default function ResultsTablePanel<
       TListModel extends
         ISearchableListModel<TItemModel> &
-        ISortableListModel<TItemModel> &
-        IPageableListModel<TItemModel> &
         IUpsertableListModel<TItemModel>,
       TItemModel extends object>
     (props: Props<TListModel, TItemModel>): React.ReactNode {
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
-
   // Template.
   return (
     <div className="panel">

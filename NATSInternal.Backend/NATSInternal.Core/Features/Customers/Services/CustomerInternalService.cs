@@ -67,6 +67,11 @@ internal class CustomerInternalService : ICustomerInternalService
                 (c.Email != null && c.Email.Contains(lowercasedSearchContent)) ||
                 (c.Address != null && c.Address.Contains(lowercasedSearchContent))));
         }
+        
+        if (requestDto.ExcludedIds.Count > 0)
+        {
+            query = query.Where(c => !requestDto.ExcludedIds.Contains(c.Id));
+        }
 
         switch (requestDto.SortByFieldName)
         {
@@ -83,7 +88,10 @@ internal class CustomerInternalService : ICustomerInternalService
                 query = query.ApplySorting(c => c.CreatedDateTime, requestDto.SortByAscending);
                 break;
             case nameof(CustomerListRequestDto.FieldToSort.DebtRemainingAmount):
-                throw new NotImplementedException();
+               query = query
+                   .ApplySorting(c => c.CachedDebtRemainingAmount, requestDto.SortByAscending)
+                   .ThenApplySorting(c => c.LastName, requestDto.SortByAscending);
+                break;
             default:
                 throw new NotImplementedException();
         }

@@ -1,20 +1,18 @@
-import { useHttpClient } from "./httpClient";
+import { httpClient } from "./httpClient";
 
 export type CustomerApi = {
-  getListAsync(requestDto?: CustomerGetListRequestDto): Promise<CustomerGetListResponseDto>;
-  getDetailAsync(id: string): Promise<CustomerGetDetailResponseDto>;
+  getListAsync(requestDto?: CustomerListRequestDto): Promise<CustomerListResponseDto>;
+  getDetailAsync(id: string): Promise<CustomerDetailResponseDto>;
   createAsync(requestDto: CustomerUpsertRequestDto): Promise<string>;
   updateAsync(id: string, requestDto: CustomerUpsertRequestDto): Promise<void>;
   deleteAsync(id: string): Promise<void>;
 };
 
-const httpClient = useHttpClient();
-
-const customerApi: CustomerApi = {
-  async getListAsync(requestDto?: CustomerGetListRequestDto): Promise<CustomerGetListResponseDto> {
+export const customerApi: CustomerApi = {
+  async getListAsync(requestDto?: CustomerListRequestDto): Promise<CustomerListResponseDto> {
     return httpClient.getAsync("/customers", requestDto);
   },
-  async getDetailAsync(id: string): Promise<CustomerGetDetailResponseDto> {
+  async getDetailAsync(id: string): Promise<CustomerDetailResponseDto> {
     return httpClient.getAsync(`/customers/${id}`);
   },
   async createAsync(requestDto: CustomerUpsertRequestDto): Promise<string> {
@@ -27,7 +25,3 @@ const customerApi: CustomerApi = {
     return httpClient.deleteAndIgnoreAsync(`/customers/${id}`);
   }
 };
-
-export function useCustomerApi(): CustomerApi {
-  return customerApi;
-}

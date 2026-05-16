@@ -1,5 +1,5 @@
 import React from "react";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName, compute } from "@/helpers";
 import styles from "./Spinner.module.css";
 
 type SpinnerProps = {
@@ -11,9 +11,6 @@ type SpinnerProps = {
 export default function Spinner(props: SpinnerProps) {
   // Props.
   const { size = "md", variant = "indigo", shadow = false, ...domProps } = props;
-
-  // Dependencies.
-  const { joinClassName, compute } = useTsxHelper();
 
   // Computed.
   const shadowClassName = compute(() => shadow ? "shadow-sm" : undefined);

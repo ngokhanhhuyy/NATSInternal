@@ -14,6 +14,7 @@ public class ProductBasicResponseDto
     public bool IsResupplyNeeded { get; }
     public bool IsDiscontinued { get; }
     public string? ThumbnailUrl { get; }
+    public bool IsDeleted { get; }
     public List<ProductCategoryBasicResponseDto> Categories { get; }
     public ProductExistingAuthorizationResponseDto? Authorization { get; }
     #endregion
@@ -29,6 +30,7 @@ public class ProductBasicResponseDto
         StockingQuantity = product.StockingQuantity;
         IsDiscontinued = product.IsDiscontinued;
         Categories = product.Categories.Select(pc => new ProductCategoryBasicResponseDto(pc)).ToList();
+        IsDeleted = product.DeletedDateTime is not null;
 
         if (product.ResupplyThresholdQuantity.HasValue && !product.IsDiscontinued)
         {

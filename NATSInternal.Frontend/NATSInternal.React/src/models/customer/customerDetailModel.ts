@@ -1,11 +1,11 @@
-import { createCustomerBasicModelFromResponseDto } from "../shared/customerBasicModel";
+import { createCustomerBasicModel } from "@/models";
 import { createUserBasicModel } from "@/models/shared/userBasicModel";
-import { useAvatarHelper, useCurrencyHelper, useDateTimeHelper } from "@/helpers";
-import { useRouteHelper, usePhoneNumberHelper } from "@/helpers";
+import { getCustomerUpdateRoutePath, getDisplayDateString, getDisplayDateTimeString } from "@/helpers";
+import { formatRawPhoneNumber, getDefaultAvatarUrlByFullName, getAmountDisplayText } from "@/helpers";
 
 declare global {
   type CustomerDetailModel = Readonly<{
-    id: string;
+    id: number;
     firstName: string;
     middleName: string | null;
     lastName: string;
@@ -32,13 +32,7 @@ declare global {
   }>;
 }
 
-const { getDefaultAvatarUrlByFullName } = useAvatarHelper();
-const { getAmountDisplayText } = useCurrencyHelper();
-const { getDisplayDateString, getDisplayDateTimeString } = useDateTimeHelper();
-const { formatRawPhoneNumber } = usePhoneNumberHelper();
-const { getCustomerUpdateRoutePath } = useRouteHelper();
-
-export function createCustomerDetailModel(responseDto: CustomerGetDetailResponseDto): CustomerDetailModel {
+export function createCustomerDetailModel(responseDto: CustomerDetailResponseDto): CustomerDetailModel {
   return {
     ...responseDto,
     birthday: responseDto.birthday && getDisplayDateString(responseDto.birthday),
@@ -47,8 +41,9 @@ export function createCustomerDetailModel(responseDto: CustomerGetDetailResponse
     createdUser: createUserBasicModel(responseDto.createdUser),
     createdDateTime: getDisplayDateTimeString(responseDto.createdDateTime),
     lastUpdatedUser: responseDto.lastUpdatedUser && createUserBasicModel(responseDto.lastUpdatedUser),
-    lastUpdatedDateTime: responseDto.lastUpdatedDateTime && getDisplayDateTimeString(responseDto.lastUpdatedDateTime),
-    introducer: responseDto.introducer && createCustomerBasicModelFromResponseDto(responseDto.introducer),
+    lastUpdatedDateTime: responseDto.lastUpdatedDateTime &&
+      getDisplayDateTimeString(responseDto.lastUpdatedDateTime),
+    introducer: responseDto.introducer && createCustomerBasicModel(responseDto.introducer),
     get avatarUrl(): string {
       return getDefaultAvatarUrlByFullName(this.fullName);
     },

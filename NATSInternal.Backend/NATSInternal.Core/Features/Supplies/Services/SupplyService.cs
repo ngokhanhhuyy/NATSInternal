@@ -20,7 +20,8 @@ internal class SupplyService : ISupplyService
     private readonly IHasProductService<SupplyUpsertItemRequestDto, SupplyItem> _hasProductService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IValidator<SupplyListRequestDto> _listValidator;
-    private readonly IValidator<AbstractSupplyUpsertRequestDto> _upsertValidator;
+    private readonly IValidator<SupplyCreateRequestDto> _createValidator;
+    private readonly IValidator<SupplyUpdateRequestDto> _updateValidator;
     private readonly IDbExceptionHandler _exceptionHandler;
     private readonly ICallerDetailProvider _callerDetailProvider;
     private readonly IClock _clock;
@@ -33,7 +34,8 @@ internal class SupplyService : ISupplyService
         IHasProductService<SupplyUpsertItemRequestDto, SupplyItem> hasProductService,
         IAuthorizationInternalService authorizationService,
         IValidator<SupplyListRequestDto> listValidator,
-        IValidator<AbstractSupplyUpsertRequestDto> upsertValidator,
+        IValidator<SupplyCreateRequestDto> createValidator,
+        IValidator<SupplyUpdateRequestDto> updateValidator,
         IDbExceptionHandler exceptionHandler,
         ICallerDetailProvider callerDetailProvider,
         IClock clock)
@@ -43,7 +45,8 @@ internal class SupplyService : ISupplyService
         _hasProductService = hasProductService;
         _authorizationService = authorizationService;
         _listValidator = listValidator;
-        _upsertValidator = upsertValidator;
+        _createValidator = createValidator;
+        _updateValidator = updateValidator;
         _exceptionHandler = exceptionHandler;
         _callerDetailProvider = callerDetailProvider;
         _clock = clock;
@@ -124,18 +127,14 @@ internal class SupplyService : ISupplyService
         return new(supply, authorization);
     }
 
-    public async Task<int> CreateAsync(AbstractSupplyUpsertRequestDto requestDto)
+    public async Task<int> CreateAsync(SupplyCreateRequestDto requestDto)
     {
         if (!_authorizationService.CanCreateSupply())
         {
             throw new AuthorizationException();
         }
 
-        _upsertValidator.Validate(requestDto, options =>
-        {
-            options.ThrowOnFailures();
-            options.IncludeRuleSets("Create").IncludeRulesNotInRuleSet();
-        });
+        _createValidator.ValidateAndThrow(requestDto);
 
         DateTime currentDateTime = _clock.Now;
         Supply supply = new()
@@ -173,13 +172,9 @@ internal class SupplyService : ISupplyService
         }
     }
 
-    public async Task UpdateAsync(int id, AbstractSupplyUpsertRequestDto requestDto)
+    public async Task UpdateAsync(int id, SupplyUpdateRequestDto requestDto)
     {
-        _upsertValidator.Validate(requestDto, options =>
-        {
-            options.ThrowOnFailures();
-            options.IncludeRuleSets("Update").IncludeRulesNotInRuleSet();
-        });
+        _updateValidator.ValidateAndThrow(requestDto);
 
         Supply supply = await _context.Supplies
             .Include(s => s.Items).ThenInclude(si => si.Product)
@@ -204,7 +199,7 @@ internal class SupplyService : ISupplyService
             requestDto.Items,
             supply.Items,
             MapItem,
-            (product) => product.StockingQuantity += 1,
+            product => product.StockingQuantity += 1,
             nameof(requestDto.Items));
 
         // TODO: Handle photo creation or updation.
@@ -239,7 +234,7 @@ internal class SupplyService : ISupplyService
         supply.DeletedDateTime = _clock.Now;
         supply.DeletedUserId = _callerDetailProvider.GetId();
 
-        _hasProductService.DeleteItemsAsync(supply.Items, (product) => product.StockingQuantity -= 1);
+        _hasProductService.DeleteItemsAsync(supply.Items, product => product.StockingQuantity -= 1);
 
         try
         {

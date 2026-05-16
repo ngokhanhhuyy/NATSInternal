@@ -1,5 +1,9 @@
 declare global {
-  type PhotoGetMultipleByProductIds = {
-    productIds: string[];
+  type PhotoUpsertRequestDto = {
+    id: number | null;
+    file: string;
+    isThumbnail: boolean;
+    isChanged: boolean;
+    isDeleted: boolean;
   };
 }

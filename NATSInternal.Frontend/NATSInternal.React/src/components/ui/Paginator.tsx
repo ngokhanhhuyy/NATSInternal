@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { usePaginationHelper, useTsxHelper, type PaginationRange } from "@/helpers";
+import { getPaginationRange, joinClassName, type PaginationRange } from "@/helpers";
 
 // Child components.
 import { Button } from ".";
@@ -27,10 +27,6 @@ export default function Paginator(props: PaginatorProps): React.ReactNode {
     getPageButtonClassName,
     ...domProps
   } = props;
-
-  // Dependencies.
-  const { getPaginationRange } = usePaginationHelper();
-  const { joinClassName } = useTsxHelper();
 
   // Computed.
   const paginationRanges: PaginationRanges = useMemo(() => ({

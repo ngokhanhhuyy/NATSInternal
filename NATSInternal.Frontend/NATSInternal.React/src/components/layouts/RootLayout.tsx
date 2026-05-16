@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useLocation, useMatches, Outlet } from "react-router";
-import { useRouteHelper, useTsxHelper } from "@/helpers";
+import { compute, getSignInRoutePath } from "@/helpers";
 
 // Child components.
 import TopBar from "./navigationBar/TopBar";
@@ -12,8 +12,6 @@ export default function RootLayout(): React.ReactNode {
   // Dependencies.
   const location = useLocation();
   const matchedRoutes = useMatches();
-  const { getSignInRoutePath } = useRouteHelper();
-  const { compute } = useTsxHelper();
 
   // Computed.
   const shouldRenderNavigationBar = compute<boolean>(() => !location.pathname.startsWith(getSignInRoutePath()));

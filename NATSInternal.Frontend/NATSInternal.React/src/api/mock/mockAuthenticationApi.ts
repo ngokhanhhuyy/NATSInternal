@@ -75,7 +75,7 @@ export function getAndEnsureCallerExists(): Caller {
   }
 
   try {
-    const callerAsUser = JSON.parse(callerData) as UserGetDetailResponseDto;
+    const callerAsUser = JSON.parse(callerData) as UserDetailResponseDto;
     return {
       ...callerAsUser,
       hasPermission(permissionName: string): boolean {

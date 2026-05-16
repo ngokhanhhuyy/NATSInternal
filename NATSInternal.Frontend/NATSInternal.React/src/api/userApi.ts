@@ -1,25 +1,19 @@
-import { useHttpClient } from "./httpClient";
+import { httpClient } from "./httpClient";
 
 export type UserApi = {
-  getListAsync(requestDto: UserGetListRequestDto): Promise<UserGetListResponseDto>;
-  getDetailByIdAsync(id: string): Promise<UserGetDetailResponseDto>;
-  getDetailByUserNameAsync(userName: string): Promise<UserGetDetailResponseDto>;
+  getListAsync(requestDto: UserListRequestDto): Promise<UserListResponseDto>;
+  getDetailByIdAsync(id: string): Promise<UserDetailResponseDto>;
+  getDetailByUserNameAsync(userName: string): Promise<UserDetailResponseDto>;
 };
 
-const httpClient = useHttpClient();
-
-const userApi: UserApi = {
-  getListAsync(requestDto: UserGetListRequestDto): Promise<UserGetListResponseDto> {
+export const userApi: UserApi = {
+  getListAsync(requestDto: UserListRequestDto): Promise<UserListResponseDto> {
     return httpClient.getAsync("/users", requestDto);
   },
-  getDetailByIdAsync(id: string): Promise<UserGetDetailResponseDto> {
+  getDetailByIdAsync(id: string): Promise<UserDetailResponseDto> {
     return httpClient.getAsync(`/users/${id}`);
   },
-  getDetailByUserNameAsync(userName: string): Promise<UserGetDetailResponseDto> {
+  getDetailByUserNameAsync(userName: string): Promise<UserDetailResponseDto> {
     return httpClient.getAsync(`/users/${userName}`);
   }
 };
-
-export function useUserApi(): UserApi {
-  return userApi;
-}

@@ -1,12 +1,11 @@
 import { create } from "zustand";
-import { useApi, AuthenticationError } from "@/api";
+import { api, AuthenticationError } from "@/api";
 
 export type AuthenticationStore = {
   isAuthenticated: boolean;
   readonly setIsAuthenticated: (authenticated: boolean) => void;
 };
 
-const api = useApi();
 const initialIsAuthenticated = await isAuthenticatedAsync();
 
 export const useAuthenticationStore = create<AuthenticationStore>((set) => ({

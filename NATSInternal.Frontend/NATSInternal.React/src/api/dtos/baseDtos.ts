@@ -1,30 +1,42 @@
 declare global {
-  interface ISortableListRequestDto {
+  // RequestDtos.
+  interface IListRequestDto {
     sortByAscending: boolean;
     sortByFieldName: string;
-  }
-
-  interface IPageableListRequestDto {
     page: number;
     resultsPerPage: number;
   }
-
-  interface ISearchableListRequestDto {
-    searchContent: string;
+  
+  interface ISearchableListRequestDto extends IListRequestDto {
+    searchContent: string | null;
   }
-
-  interface IPageableListResponseDto<TItem extends object> {
+  
+  interface IHasStatsListRequestDto extends IListRequestDto {
+    statsMonthYear: ListMonthYearRequestDto | null;
+  }
+  
+  interface IHasStatsUpsertRequestDto {
+    statsDate: string;
+    note: string | null;
+  }
+  
+  interface IHasProductUpsertRequestDto<TItem extends IHasProductItemUpsertRequestDto>
+    extends IHasStatsUpsertRequestDto
+  {
     items: TItem[];
+  }
+  
+  interface IHasProductItemUpsertRequestDto {
+    id: number| null;
+    productId: number;
+    quantity: number;
+  }
+  
+  // ResponseDtos.
+  interface IListResponseDto<TBasic> {
+    items: TBasic[];
     pageCount: number;
     itemCount: number;
-  }
-
-  interface IUpsertableListResponseDto<TItem extends IUpsertableExistingAuthorizationResponseDto>
-    extends IPageableListResponseDto<TItem> { }
-
-  interface IUpsertableExistingAuthorizationResponseDto {
-    canEdit: boolean;
-    canDelete: boolean;
   }
 }
 

@@ -239,18 +239,15 @@ async function deleteAndIgnoreAsync(endpointPath: string, params?: Params, delay
   await executeAsync("delete", endpointPath, undefined, params, delay);
 }
 
-
-export function useHttpClient() {
-  return {
-    getAsync,
-    postAsync,
-    postAndIgnoreAsync,
-    putAsync,
-    putAndIgnoreAsync,
-    deleteAsync,
-    deleteAndIgnoreAsync
-  };
-}
+export const httpClient = {
+  getAsync,
+  postAsync,
+  postAndIgnoreAsync,
+  putAsync,
+  putAndIgnoreAsync,
+  deleteAsync,
+  deleteAndIgnoreAsync
+};
 
 /**
  * Convert a TypeScript/JavaScript object into a string representing the query string which plays parameter role in

@@ -1,12 +1,8 @@
 declare global {
-  interface ISortableListModel<TItemModel extends object> {
+  interface IListModel<TItemModel extends object> {
     sortByAscending: boolean;
     sortByFieldName: string;
-    items: TItemModel[];
     sortByFieldNameOptions: string[];
-  }
-
-  interface IPageableListModel<TItemModel extends object> {
     page: number;
     resultsPerPage: number;
     items: TItemModel[];
@@ -14,7 +10,7 @@ declare global {
     itemCount: number;
   }
 
-  interface ISearchableListModel<TItemModel extends object> {
+  interface ISearchableListModel<TItemModel extends object> extends IListModel<TItemModel> {
     searchContent: string;
     items: TItemModel[];
   }

@@ -8,7 +8,7 @@ import { useRouteHelper, useRoleHelper, useTsxHelper } from "@/helpers";
 import { UserIcon } from "@heroicons/react/24/solid";
 
 // Type.
-type CurrentUser = UserGetDetailResponseDto & { avatarUrl: string };
+type CurrentUser = UserDetailResponseDto & { avatarUrl: string };
 
 // Props.
 export default function CurrentUser(): React.ReactNode {

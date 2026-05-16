@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect, createContext, type ComponentProps } from "react";
 import { useBlocker, type BlockerFunction } from "react-router";
 import { OperationError, ValidationError } from "@/api";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName, compute } from "@/helpers";
 
 // Child component.
 import MainContainer from "./MainContainer";
@@ -30,9 +30,6 @@ type FormContainerProps<TUpsertResult> = {
 
 // Component.
 export default function FormContainer<TUpsertResult>(props: FormContainerProps<TUpsertResult>): React.ReactNode {
-  // Dependencies.
-  const { joinClassName, compute } = useTsxHelper();
-
   // Blocker.
   const shouldBlock = useCallback<BlockerFunction>(() => {
     return props.isModelDirty === true && !isSubmissionSucceeded.current;

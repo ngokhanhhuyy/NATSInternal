@@ -46,7 +46,7 @@ internal static class DateOnlyRuleBuilderOptionsExtensions
             DateOnly minimumStatsDate = GetMinimumStatsDate(today);
             return ruleBuilder.Must(date =>
                 {
-                    if (date != null)
+                    if (date is null)
                     {
                         if (date > today)
                         {
@@ -61,7 +61,7 @@ internal static class DateOnlyRuleBuilderOptionsExtensions
                 })
                 .Must(dateTime =>
                 {
-                    if (dateTime != null)
+                    if (dateTime is null)
                     {
                         if (dateTime < minimumStatsDate)
                         {

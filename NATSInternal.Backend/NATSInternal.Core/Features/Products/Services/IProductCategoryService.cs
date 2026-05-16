@@ -26,7 +26,7 @@ public interface IProductCategoryService
     /// <returns>
     /// A task that returns the detailed product category response for the matching category.
     /// </returns>
-    /// <exception cref="NotFoundException">
+    /// <exception cref="NATSInternal.Core.Common.Exceptions.NotFoundException">
     /// Thrown when no product category exists for <paramref name="id"/>.
     /// </exception>
     /// <example>
@@ -48,13 +48,13 @@ public interface IProductCategoryService
     /// <exception cref="FluentValidation.ValidationException">
     /// Thrown when <paramref name="requestDto"/> fails validation.
     /// </exception>
-    /// <exception cref="AuthorizationException">
+    /// <exception cref="NATSInternal.Core.Common.Exceptions.AuthorizationException">
     /// Thrown when the current user is not allowed to create product categories.
     /// </exception>
-    /// <exception cref="ConcurrencyException">
+    /// <exception cref="NATSInternal.Core.Common.Exceptions.ConcurrencyException">
     /// Thrown when a concurrency conflict occurs while saving the new product category.
     /// </exception>
-    /// <exception cref="OperationException">
+    /// <exception cref="NATSInternal.Core.Common.Exceptions.OperationException">
     /// Thrown when another product category already uses the supplied name.
     /// </exception>
     /// <example>
@@ -78,16 +78,16 @@ public interface IProductCategoryService
     /// <exception cref="FluentValidation.ValidationException">
     /// Thrown when <paramref name="requestDto"/> fails validation.
     /// </exception>
-    /// <exception cref="NotFoundException">
+    /// <exception cref="NATSInternal.Core.Common.Exceptions.NotFoundException">
     /// Thrown when no product category exists for <paramref name="id"/>.
     /// </exception>
-    /// <exception cref="AuthorizationException">
+    /// <exception cref="NATSInternal.Core.Common.Exceptions.AuthorizationException">
     /// Thrown when the current user is not allowed to edit the specified product category.
     /// </exception>
-    /// <exception cref="ConcurrencyException">
+    /// <exception cref="NATSInternal.Core.Common.Exceptions.ConcurrencyException">
     /// Thrown when a concurrency conflict occurs while saving the product category changes.
     /// </exception>
-    /// <exception cref="OperationException">
+    /// <exception cref="NATSInternal.Core.Common.Exceptions.OperationException">
     /// Thrown when another product category already uses the supplied name.
     /// </exception>
     /// <example>
@@ -105,13 +105,13 @@ public interface IProductCategoryService
     /// </summary>
     /// <param name="id">The identifier of the product category to delete.</param>
     /// <returns>A task that represents the asynchronous delete operation.</returns>
-    /// <exception cref="NotFoundException">
+    /// <exception cref="NATSInternal.Core.Common.Exceptions.NotFoundException">
     /// Thrown when no product category exists for <paramref name="id"/>.
     /// </exception>
-    /// <exception cref="AuthorizationException">
+    /// <exception cref="NATSInternal.Core.Common.Exceptions.AuthorizationException">
     /// Thrown when the current user is not allowed to delete the specified product category.
     /// </exception>
-    /// <exception cref="ConcurrencyException">
+    /// <exception cref="NATSInternal.Core.Common.Exceptions.ConcurrencyException">
     /// Thrown when a concurrency conflict occurs while saving the delete operation.
     /// </exception>
     /// <example>

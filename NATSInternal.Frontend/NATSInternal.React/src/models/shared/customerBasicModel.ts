@@ -1,8 +1,8 @@
-import { useAvatarHelper, useRouteHelper } from "@/helpers";
+import { avatarHelper, routeHelper } from "@/helpers";
 
 declare global {
   type CustomerBasicModel = Readonly<{
-    id: string;
+    id: number;
     fullName: string;
     nickName: string | null;
     isDeleted: boolean;
@@ -11,30 +11,16 @@ declare global {
   }>;
 }
 
-const avatarHelper = useAvatarHelper();
-const { getCustomerDetailRoutePath } = useRouteHelper();
+const { getDefaultAvatarUrlByFullName } = avatarHelper;
+const { getCustomerDetailRoutePath } = routeHelper;
 
-function createFromResponseDto(responseDto: CustomerBasicResponseDto): CustomerBasicModel {
+export function createCustomerBasicModel(responseDto: CustomerBasicResponseDto): CustomerBasicModel {
   return {
-    ...responseDto,
-    avatarUrl: avatarHelper.getDefaultAvatarUrlByFullName(responseDto.fullName),
+    id: responseDto.id,
+    fullName: responseDto.fullName,
+    nickName: responseDto.nickName,
+    isDeleted: responseDto.isDeleted,
+    avatarUrl: getDefaultAvatarUrlByFullName(responseDto.fullName),
     detailRoute: getCustomerDetailRoutePath(responseDto.id)
   };
 }
-
-function createFromCustomerListCustomerModel(model: CustomerListCustomerModel): CustomerBasicModel {
-  const { id, fullName, nickName, avatarUrl, detailRoute } = model;
-  return {
-    id,
-    fullName,
-    nickName,
-    isDeleted: false,
-    avatarUrl,
-    detailRoute
-  };
-}
-
-export {
-  createFromResponseDto as createCustomerBasicModelFromResponseDto,
-  createFromCustomerListCustomerModel as createCustomerBasicModelFromCustomerListCustomerModel
-};

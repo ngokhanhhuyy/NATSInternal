@@ -32,9 +32,20 @@ public class ProductCategoryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> GetDetail([FromRoute] int id)
+    public async Task<IActionResult> Detail([FromRoute] int id)
     {
         return Ok(await _service.GetDetailAsync(id));
+    }
+
+    [HttpPost]
+    [ProducesResponseType<int>(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Update([FromBody] ProductCategoryUpsertRequestDto requestDto)
+    {
+        int id = await _service.CreateAsync(requestDto);
+        return CreatedAtAction(nameof(Detail), new { id }, id);
     }
 
     [HttpPut("{id:int}")]

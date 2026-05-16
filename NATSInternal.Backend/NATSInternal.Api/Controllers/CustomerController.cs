@@ -34,7 +34,7 @@ public class CustomerController : ControllerBase
     [ProducesResponseType<CustomerDetailResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetDetail([FromRoute] int id)
+    public async Task<IActionResult> Detail([FromRoute] int id)
     {
         return Ok(await _service.GetDetailAsync(id));
     }
@@ -48,7 +48,7 @@ public class CustomerController : ControllerBase
     public async Task<IActionResult> Create([FromBody] CustomerUpsertRequestDto requestDto)
     {
         int createdId = await _service.CreateAsync(requestDto);
-        return CreatedAtAction(nameof(GetDetail), new { id = createdId }, createdId);
+        return CreatedAtAction(nameof(Detail), new { id = createdId }, createdId);
     }
 
     [HttpPut("{id:int}")]

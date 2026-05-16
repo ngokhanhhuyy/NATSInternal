@@ -1,7 +1,7 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider, useRouteError, Navigate } from "react-router";
 import { AuthenticationError } from "@/api";
-import { useRouteHelper } from "@/helpers";
+import { routeHelper } from "@/helpers";
 
 // Layouts.
 import { RootLayout, MainPageLayout } from "@/components/layouts";
@@ -12,11 +12,6 @@ import { homeRoutes } from "./homeRoutes";
 import { customerRoutes } from "./customerRoutes";
 import { productRoutes } from "./productRoutes";
 
-// Pages.
-
-// Route helper.
-const { getSignInRoutePath, getDashboardRoutePath } = useRouteHelper();
-
 // Components.
 function AuthenticationErrorBoundary(): React.ReactNode | null {
   // Dependencies.
@@ -24,7 +19,7 @@ function AuthenticationErrorBoundary(): React.ReactNode | null {
 
   // Template.
   if (error instanceof AuthenticationError) {
-    return <Navigate to={getSignInRoutePath()} />;
+    return <Navigate to={routeHelper.getSignInRoutePath()} />;
   }
 
   throw error;
@@ -44,7 +39,7 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Navigate to={getDashboardRoutePath()} replace />
+            element: <Navigate to={routeHelper.getDashboardRoutePath()} replace />
           },
           homeRoutes,
           customerRoutes,
@@ -58,7 +53,7 @@ const router = createBrowserRouter([
   },
   {
     path: "*",
-    element: <Navigate to={getDashboardRoutePath()} replace />
+    element: <Navigate to={routeHelper.getDashboardRoutePath()} replace />
   }
 ]);
 

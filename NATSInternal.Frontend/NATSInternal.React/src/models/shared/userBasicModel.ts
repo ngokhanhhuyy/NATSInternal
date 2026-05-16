@@ -1,19 +1,19 @@
-import { useRouteHelper } from "@/helpers";
+import { routeHelper } from "@/helpers";
 
 declare global {
   type UserBasicModel = Readonly<{
-    id: string;
+    id: number;
     userName: string;
     isDeleted: boolean;
     detailRoute: string;
   }>;
 }
 
-const { getUserProfileRoutePath } = useRouteHelper();
-
 export function createUserBasicModel(responseDto: UserBasicResponseDto): UserBasicModel {
   return {
-    ...responseDto,
-    detailRoute: getUserProfileRoutePath(responseDto.id)
+    id: responseDto.id,
+    userName: responseDto.userName,
+    isDeleted: responseDto.isDeleted,
+    detailRoute: routeHelper.getUserProfileRoutePath(responseDto.id)
   };
 }

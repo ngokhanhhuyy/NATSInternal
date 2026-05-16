@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Props.
 export type CollapsibleProps = {
@@ -8,9 +8,6 @@ export type CollapsibleProps = {
 
 // Component.
 export default function Collapsible({ isCollapsed, ...props }: CollapsibleProps): React.ReactNode {
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
-
   // States.
   const elementRef = useRef<HTMLDivElement>(null!);
 

@@ -13,6 +13,7 @@ public class OrderBasicResponseDto
         StatsDate = order.StatsDate;
         AmountAfterVat = order.CachedAmountAfterVat;
         Customer = new(order.Customer);
+        ThumbnailUrl = order.ThumbnailUrl;
     }
 
     internal OrderBasicResponseDto(Order order, OrderExistingAuthorizationResponseDto authorization) : this(order)
@@ -27,6 +28,7 @@ public class OrderBasicResponseDto
     public DateOnly StatsDate { get; set; }
     public long AmountAfterVat { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
+    public string? ThumbnailUrl { get; set; }
     public OrderExistingAuthorizationResponseDto? Authorization { get; set; }
     #endregion
 }

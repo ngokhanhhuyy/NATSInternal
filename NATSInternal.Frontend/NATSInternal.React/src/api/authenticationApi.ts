@@ -1,16 +1,14 @@
-import { useHttpClient } from "./httpClient";
-
-const httpClient = useHttpClient();
+import { httpClient } from "./httpClient";
 
 export type AuthenticationApi = {
   getAccessCookieAsync(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void>;
   clearAccessCookieAsync(): Promise<void>;
-  getCallerDetailAsync(): Promise<UserGetDetailResponseDto>;
+  getCallerDetailAsync(): Promise<UserDetailResponseDto>;
   changePasswordAsync(requestDto: ChangePasswordRequestDto): Promise<void>;
   checkAuthenticationStatusAsync(): Promise<void>;
 };
 
-const api: AuthenticationApi = {
+export const authenticationApi: AuthenticationApi = {
   async getAccessCookieAsync(requestDto: VerifyUserNameAndPasswordRequestDto): Promise<void> {
     return await httpClient.postAndIgnoreAsync("/authentication/get-access-cookie", requestDto);
   },
@@ -19,7 +17,7 @@ const api: AuthenticationApi = {
     return await httpClient.postAndIgnoreAsync("/authentication/clear-access-cookie", {  });
   },
   
-  async getCallerDetailAsync(): Promise<UserGetDetailResponseDto> {
+  async getCallerDetailAsync(): Promise<UserDetailResponseDto> {
     return await httpClient.getAsync("/authentication/caller-detail");
   },
 
@@ -31,7 +29,3 @@ const api: AuthenticationApi = {
     await httpClient.postAndIgnoreAsync("/authentication/check-authentication-status", { });
   }
 };
-
-export function useAuthenticationApi(): AuthenticationApi {
-  return api;
-}

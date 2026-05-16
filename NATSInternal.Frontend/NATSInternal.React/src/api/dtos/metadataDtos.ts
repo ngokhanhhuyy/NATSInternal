@@ -1,22 +1,21 @@
 declare global {
-  type MetadataGetResponseDto = {
-    displayNameList: MetadataGetDisplayNamesListResponseDto;
-    listOptionsList: MetadataGetListOptionsListResponseDto;
-    creatingAuthorizationList: MetadataGetCreatingAuthorizationListResponseDto;
-    countries: CountryBasicResponseDto[];
+  type MetadataResponseDto = {
+    displayNameList: MetadataDisplayNamesResponseDto;
+    listOptionsList: MetadataListOptionsListResponseDto;
+    creatingAuthorization: MetadataCreatingAuthorizationResponseDto;
   };
 
-  type MetadataGetDisplayNamesListResponseDto = Record<string, string>;
+  type MetadataDisplayNamesResponseDto = Record<string, string>;
   
-  type MetadataGetListOptionsListResponseDto = {
-    user: MetadataGetListOptionsResponseDto;
-    customer: MetadataGetListOptionsResponseDto;
-    product: MetadataGetListOptionsResponseDto;
-    brand: MetadataGetListOptionsResponseDto;
-    productCategory: MetadataGetListOptionsResponseDto;
+  type MetadataListOptionsListResponseDto = {
+    user: MetadataListOptionsResponseDto;
+    customer: MetadataListOptionsResponseDto;
+    product: MetadataListOptionsResponseDto;
+    brand: MetadataListOptionsResponseDto;
+    productCategory: MetadataListOptionsResponseDto;
   };
 
-  type MetadataGetListOptionsResponseDto = {
+  type MetadataListOptionsResponseDto = {
     resourceName: string;
     sortByFieldNameOptions: string[];
     defaultSortByFieldName: string;
@@ -24,7 +23,7 @@ declare global {
     defaultResultsPerPage: number;
   };
 
-  type MetadataGetCreatingAuthorizationListResponseDto = {
+  type MetadataCreatingAuthorizationResponseDto = {
     canCreateUser: boolean;
     canCreateCustomer: boolean;
     canCreateProduct: boolean;

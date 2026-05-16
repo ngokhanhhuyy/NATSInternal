@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router";
 import { getDisplayName } from "@/metadata";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Types.
 export type NavigationBarItemData = {
@@ -19,8 +19,6 @@ export type NavigationBarItemProps = NavigationBarItemData & {
 
 export default function NavigationBarItem({ Icon, ...props }: NavigationBarItemProps): React.ReactNode {
   // Dependencies.
-  const { joinClassName } = useTsxHelper();
-
   const displayName = useMemo<string | undefined>(() => getDisplayName(props.name) ?? props.fallbackDisplayName, []);
 
   // Template.
