@@ -1,12 +1,9 @@
 import React from "react";
 import { Link } from "react-router";
-import { useDateTimeHelper, useCurrencyHelper } from "@/helpers";
+import { getDeltaTextRelativeToNow, getAmountDisplayText } from "@/helpers";
 
 // Components.
 export default function LatestTransactionPanel(): React.ReactNode {
-  // Dependencies.
-  const { getAmountDisplayText } = useCurrencyHelper();
-
   // Template.
   return (
     <div className="panel">
@@ -53,7 +50,6 @@ type Model = {
   dateTime: string;
 };
 
-const { getDeltaTextRelativeToNow } = useDateTimeHelper();
 const model: Model[] = Array.from({ length: 2 }).map((_, index) => ({
   type: getTransactionType(),
   quantity: Math.round(Math.random() * 100) + 20,

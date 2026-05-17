@@ -9,7 +9,7 @@ export type ProductCategoryApi = {
 
 export const productCategoryApi: ProductCategoryApi = {
   async getAllAsync(): Promise<ProductCategoryBasicResponseDto[]> {
-    return await httpClient.getAsync("/products/categories/all");
+    return await httpClient.getAsync("/products/categories");
   },
   async getDetailAsync(id: number): Promise<ProductCategoryDetailResponseDto> {
     return await httpClient.getAsync(`/products/categories/${id}`);

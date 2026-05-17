@@ -1,11 +1,9 @@
 import React, { useMemo } from "react";
 import { useLoaderData } from "react-router";
 import { getDisplayName } from "@/metadata";
-import type { ProductUpsertInitialLoadedModels } from "./ProductUpsertPage";
 
 // Child components.
 import { FormField, TextInput, TextAreaInput, NumberInput } from "@/components/form";
-import { SelectInput, type SelectInputOption } from "@/components/form";
 import { BooleanSelectInput, type BooleanSelectInputOption } from "@/components/form";
 
 // Props.
@@ -16,41 +14,24 @@ type DetailPanelProps = {
 
 export default function DetailPanel(props: DetailPanelProps): React.ReactNode {
   // Dependencies.
-  const { brandOptionModels, categoryOptionModels } = useLoaderData<ProductUpsertInitialLoadedModels>();
+  const { categoryModels } = useLoaderData<{ categoryModels: ProductCategoryBasicModel[] }>();
 
   // Computed.
-  const brandDisplayName = useMemo<string>(() => getDisplayName("brand") ?? "", []);
   const categoryDislayName = useMemo<string>(() => getDisplayName("productCategory") ?? "", []);
 
-  const brandOptions = useMemo<(SelectInputOption[])>(() => {
-    return [
-      { value: "", displayName: "Chưa chọn thương hiệu" },
-      ...brandOptionModels.map(dto => ({ value: dto.id, displayName: dto.name }))
-    ];
-  }, []);
-
-  const categoryOptions = useMemo<SelectInputOption[]>(() => {
-    return [
-      { value: "", displayName: "Chưa chọn phân loại" },
-      ...categoryOptionModels.map(dto => ({ value: dto.name, displayName: dto.name }))
-    ];
-  }, []);
-
   // Callbacks.
-  function handleBrandChanged(id: number): void {
-    if (id) {
-      props.onModelUpdated({ brand: brandOptionModels.find(b => b.id === id) });
+  function handleProductCategoryChanged(category: ProductCategoryBasicModel, isChecked: boolean): void {
+    if (isChecked) {
+      props.onModelUpdated({
+        categories: [...props.model.categories, category]
+      });
+
+      return;
     }
 
-    props.onModelUpdated({ brand: null });
-  }
-
-  function handleProductCategoryChanged(name: string): void {
-    if (name) {
-      props.onModelUpdated({ category: categoryOptionModels.find(b => b.name === name) });
-    }
-
-    props.onModelUpdated({ category: null });
+    props.onModelUpdated({
+      categories: props.model.categories.filter(pc => pc.id !== category.id)
+    });
   }
 
   // Template.
@@ -119,22 +100,24 @@ export default function DetailPanel(props: DetailPanelProps): React.ReactNode {
             </div>
           </FormField>
 
-          {/* Brand */}
-          <FormField path="brand.id" displayName={brandDisplayName} className="sm:col-span-3">
-            <SelectInput
-              options={brandOptions}
-              value={props.model.brand?.id ?? ""}
-              onValueChanged={handleBrandChanged}
-            />
-          </FormField>
-
           {/* Category */}
-          <FormField path="category.name" displayName={categoryDislayName} className="sm:col-span-3">
-            <SelectInput
-              options={categoryOptions}
-              value={props.model.category?.name ?? ""}
-              onValueChanged={handleProductCategoryChanged}
-            />
+          <FormField path="category.id" displayName={categoryDislayName} className="sm:col-span-6">
+            <div className="flex flex-wrap gap-2">
+              {categoryModels.map((category, index) => (
+                <div className="flex gap-2" key={index}>
+                  <input
+                    type="checkbox"
+                    name={`categories[${index}].id`}
+                    checked={props.model.categories.map(pc => pc.id).includes(category.id)}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      const isChecked = (event.target as HTMLInputElement).checked;
+                      handleProductCategoryChanged(category, isChecked);
+                    }}
+                  />
+                  <label className="form-label">{category.name}</label>
+                </div>
+              ))}
+            </div>
           </FormField>
 
 

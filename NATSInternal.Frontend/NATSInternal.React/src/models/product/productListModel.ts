@@ -11,7 +11,7 @@ declare global {
     page: number;
     resultsPerPage: number;
     searchContent: string;
-    categories: ProductCategoryBasicModel[];
+    category: ProductCategoryBasicModel | null;
     items: ProductBasicModel[];
     pageCount: number;
     itemCount: number;
@@ -31,7 +31,7 @@ export function createProductListModel(responseDto?: ProductListResponseDto): Pr
     page: 1,
     resultsPerPage:  productListOptions.defaultResultsPerPage,
     searchContent: "",
-    categories: [],
+    category: null,
     items: [],
     pageCount: 0,
     itemCount: 0,
@@ -54,7 +54,7 @@ export function createProductListModel(responseDto?: ProductListResponseDto): Pr
         sortByAscending: this.sortByAscending,
         sortByFieldName: this.sortByFieldName,
         page: this.page,
-        categoryIds: this.categories.map(pc => pc.id)
+        categoryId: this.category?.id
       };
 
       if (this.resultsPerPage) {

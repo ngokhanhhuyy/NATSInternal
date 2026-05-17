@@ -42,7 +42,7 @@ export default function DetailPanel(props: Props): React.ReactNode {
             </div>
             <div className="flex flex-wrap gap-2 mb-3">
               <TargetTransactionTypeAlert isForRetail={props.model.isForRetail}  />
-              <StatusAlert isDiscontinued={props.model.isDiscontinued} stock={props.model.stock} />
+              <StatusAlert model={props.model} />
             </div>
           </div>
         </div>
@@ -65,23 +65,14 @@ export default function DetailPanel(props: Props): React.ReactNode {
             {props.model.defaultVatPercentagePerUnit}%
           </Field>
 
-          {/* Brand */}
-          {props.model.brand && (
-            <Field propertyName="brand">
-              <Link to={props.model.brand.detailRoute}>
-                {props.model.brand.name}
+          {/* Categories */}
+          <Field propertyName="category">
+            {props.model.categories.map(category => (
+              <Link to={category.detailRoutePath} key={category.id}>
+                {category.name}
               </Link>
-            </Field>
-          )}
-
-          {/* Category */}
-          {props.model.category && (
-            <Field propertyName="category">
-              <Link to={props.model.category.detailRoutePath}>
-                {props.model.category.name}
-              </Link>
-            </Field>
-          )}
+            ))}
+          </Field>
         </div>
       </div>
     </div>
@@ -105,8 +96,8 @@ function TargetTransactionTypeAlert(props: { isForRetail: boolean }): React.Reac
 };
 
 
- function StatusAlert(props: { isDiscontinued: boolean; stock: StockBasicModel | null }): React.ReactNode {
-  if (props.isDiscontinued) {
+ function StatusAlert(props: { model: ProductDetailModel }): React.ReactNode {
+  if (props.model.isDiscontinued) {
     return (
       <div className="alert alert-neutral-outline dark:alert-neutral dark:font-bold alert-sm">
         Đã ngưng kinh doanh
@@ -114,21 +105,20 @@ function TargetTransactionTypeAlert(props: { isForRetail: boolean }): React.Reac
     );
   }
   
-  if (props.stock != null) {
-    if (props.stock.stockingQuantity === 0) {
-      return (
-        <div className="alert alert-red-outline dark:alert-red dark:font-bold alert-sm">
-          Đã hết hàng
-        </div>
-      );
-    }
+  if (props.model.stockingQuantity === 0) {
+    return (
+      <div className="alert alert-red-outline dark:alert-red dark:font-bold alert-sm">
+        Đã hết hàng
+      </div>
+    );
+  }
 
-    if (props.stock.stockingQuantity <= props.stock.resupplyThresholdQuantity) {
-      return (
-        <div className="alert alert-yellow-outline dark:alert-yellow dark:font-bold alert-sm">
-          Sắp hết hàng
-        </div>
-      );
-    }
+  const resupplyThresholdQuantity = props.model.resupplyThresholdQuantity;
+  if (resupplyThresholdQuantity != null && props.model.stockingQuantity <= resupplyThresholdQuantity) {
+    return (
+      <div className="alert alert-yellow-outline dark:alert-yellow dark:font-bold alert-sm">
+        Sắp hết hàng
+      </div>
+    );
   }
 };

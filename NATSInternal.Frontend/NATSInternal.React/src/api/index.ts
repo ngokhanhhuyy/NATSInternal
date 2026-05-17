@@ -2,7 +2,7 @@ import { authenticationApi, type AuthenticationApi } from "./authenticationApi";
 import { customerApi, type CustomerApi } from "./customerApi";
 import { photoApi, type PhotoApi } from "./photoApi";
 import { productApi, type ProductApi } from "./productApi";
-import { productCategoryApi, type ProductCategoryApi } from "./productCateoryApi";
+import { productCategoryApi, type ProductCategoryApi } from "./productCategoryApi";
 import { userApi, type UserApi } from "./userApi";
 import { metadataApi, type MetadataApi } from "./metadataApi";
 

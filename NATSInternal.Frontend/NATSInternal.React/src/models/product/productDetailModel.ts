@@ -17,6 +17,8 @@ declare global {
     createdUser: UserBasicModel;
     lastUpdatedDateTime: string | null;
     lastUpdatedUser: UserBasicModel | null;
+    deletedUser: UserBasicModel | null;
+    deletedDateTime: string | null;
     categories: ProductCategoryBasicModel[];
     photos: PhotoBasicModel[];
     authorization: ProductExistingAuthorizationResponseDto;
@@ -42,6 +44,8 @@ export function createProductDetailModel(responseDto: ProductDetailResponseDto):
     lastUpdatedDateTime: responseDto.lastUpdatedDateTime &&
       getDisplayDateTimeString(responseDto.lastUpdatedDateTime),
     lastUpdatedUser: responseDto.lastUpdatedUser && createUserBasicModel(responseDto.lastUpdatedUser),
+    deletedDateTime: responseDto.deletedDateTime && getDisplayDateTimeString(responseDto.deletedDateTime),
+    deletedUser: responseDto.deletedUser && createUserBasicModel(responseDto.deletedUser),
     categories: responseDto.categories.map(createProductCategoryBasicModel),
     photos: responseDto.photos.map(dto => createPhotoBasicModel(dto)),
     formattedDefaultAmountBeforeVatPerUnit: getAmountDisplayText(responseDto.defaultAmountBeforeVatPerUnit),

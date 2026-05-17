@@ -12,6 +12,22 @@ type Props = {
 // Components.
 export default function ManagementPanel(props: Props): React.ReactNode {
   // Template.
+  function renderUser(user: UserBasicModel): React.ReactNode {
+    if (user.isDeleted) {
+      return (
+        <span className="line-through">
+          Đã xoá
+        </span>
+      );
+    }
+
+    return (
+      <Link to={props.model.createdUser.detailRoute}>
+        @{props.model.createdUser.userName}
+      </Link>
+    );
+  }
+
   return (
     <div className="panel">
       <div className="panel-header">
@@ -24,15 +40,7 @@ export default function ManagementPanel(props: Props): React.ReactNode {
         <div className="flex flex-col gap-y-3 p-3">
           {/* CreatedUser */}
           <Field propertyName="createdUser">
-            {props.model.createdUser.isDeleted ? (
-              <span className="line-through">
-                Đã xoá
-              </span>
-            ) : (
-              <Link to={props.model.createdUser.detailRoute}>
-                @{props.model.createdUser.userName}
-              </Link>
-            )}
+            {renderUser(props.model.createdUser)}
           </Field>
 
           {/* CreatedDateTime */}
@@ -43,15 +51,7 @@ export default function ManagementPanel(props: Props): React.ReactNode {
           {/* LastUpdatedUser */}
           {props.model.lastUpdatedUser && (
             <Field propertyName="lastUpdatedUser">
-              {props.model.lastUpdatedUser.isDeleted ? (
-                <span className="line-through">
-                  Đã xoá
-                </span>
-              ) : (
-                <Link to={props.model.lastUpdatedUser.detailRoute}>
-                  {props.model.lastUpdatedUser.userName}
-                </Link>
-              )}
+              {renderUser(props.model.lastUpdatedUser)}
             </Field>
           )}
 
@@ -59,6 +59,20 @@ export default function ManagementPanel(props: Props): React.ReactNode {
           {props.model.lastUpdatedDateTime && (
             <Field propertyName="lastUpdatedDateTime">
               {props.model.lastUpdatedDateTime}
+            </Field>
+          )}
+
+          {/* DeletedUser */}
+          {props.model.deletedUser && (
+            <Field propertyName="deletedUser">
+              {renderUser(props.model.deletedUser)}
+            </Field>
+          )}
+
+          {/* DeletedDateTime */}
+          {props.model.deletedDateTime && (
+            <Field propertyName="deletedDateTime">
+              {props.model.deletedDateTime}
             </Field>
           )}
         </div>

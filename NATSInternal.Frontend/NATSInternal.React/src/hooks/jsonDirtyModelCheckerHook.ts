@@ -4,7 +4,7 @@ type Model = { [key: string]: any };
 
 export function useJSONDirtyModelChecker<TModel extends Model>(
   model: TModel | (() => TModel),
-  excludedKeys?: (keyof TModel)[])
+  excludedKeys?: (keyof TModel)[]): [boolean, (newOriginalModel: TModel) => void]
 {
   // States.
   const currentModel = typeof model === "function" ? model() : model;
@@ -15,7 +15,12 @@ export function useJSONDirtyModelChecker<TModel extends Model>(
     return serializeModel(currentModel, excludedKeys) !== originalModelJson.current;
   }, [currentModel]);
 
-  return isDirty;
+  // Callbacks.
+  const setNewOriginalModel = (newOriginalModel: TModel) => {
+    originalModelJson.current = serializeModel(newOriginalModel, excludedKeys);
+  };
+
+  return [isDirty, setNewOriginalModel];
 }
 
 function serializeModel<TModel extends Model>(model: TModel, excludedKeys?: (keyof TModel)[]): string {

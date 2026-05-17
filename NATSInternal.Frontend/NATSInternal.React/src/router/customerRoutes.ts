@@ -38,7 +38,7 @@ export const customerRoutes: RouteObject = {
           Component: CustomerDetailPage,
           loader: async ({ params }) => {
             const module = await import("@/pages/customer/customerDetail/CustomerDetailPage");
-            return module.loadDataAsync(params.id as string);
+            return module.loadDataAsync(parseInt(params.id as string));
           },
           handle: {
             breadcrumbTitle: "Chi tiết",
@@ -54,7 +54,7 @@ export const customerRoutes: RouteObject = {
           Component: CustomerUpdatePage,
           loader: async ({ params }) => {
             const module = await import("@/pages/customer/customerUpsert/CustomerUpdatePage");
-            return module.loadDataAsync(params.id as string);
+            return module.loadDataAsync(parseInt(params.id as string));
           },
           handle: {
             breadcrumbTitle: "Chỉnh sửa",

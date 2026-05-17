@@ -33,26 +33,17 @@ internal partial class ProductSeeder
     #endregion
     
     #region Methods
-    public async Task<ProductSeededResult> SeedAsync(List<User> users, bool isDevelopment)
+    public async Task<List<Product>> SeedAsync(List<User> users)
     {
-        if (isDevelopment)
-        {
-            List<int> userIds = users
-                .Where(u => u.Roles.Any(r => r.Permissions.Any(p => p.Name == PermissionNames.CreateProduct)))
-                .Select(u => u.Id)
-                .ToList();
-            
-            List<ProductCategory> categories = await SeedProductCategoriesAsync(userIds);
-            List<Product> products = await SeedProductsAsync(userIds, categories);
-            
-            return new()
-            {
-                Products = await SeedProductsAsync(userIds, categories),
-                ProductCategories = categories 
-            };
-        }
-
-        return new();
+        List<int> userIds = users
+            .Where(u => u.Roles.Any(r => r.Permissions.Any(p => p.Name == PermissionNames.CreateProduct)))
+            .Select(u => u.Id)
+            .ToList();
+        
+        List<ProductCategory> categories = await SeedProductCategoriesAsync(userIds);
+        List<Product> products = await SeedProductsAsync(userIds, categories);
+        
+        return products;
     }
     #endregion
     
@@ -139,13 +130,5 @@ internal partial class ProductSeeder
         await _context.SaveChangesAsync();
         return products;
     }
-    #endregion
-}
-
-internal class ProductSeededResult
-{
-    #region Properties
-    public List<Product> Products { get; init; } = new();
-    public List<ProductCategory> ProductCategories { get; init; } = new();
     #endregion
 }

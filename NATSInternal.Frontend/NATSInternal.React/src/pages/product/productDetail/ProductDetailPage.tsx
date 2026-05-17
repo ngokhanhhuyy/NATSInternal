@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLoaderData } from "react-router";
-import { useApi } from "@/api";
+import { api } from "@/api";
 import { createProductDetailModel } from "@/models";
 
 // Child components.
@@ -12,12 +12,9 @@ import PhotoPanel from "./PhotoPanel";
 import LatestTransactionPanel from "./LatestTransactionPanel";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
-// Api.
-const api = useApi();
-
 // Data loader.
 export async function loadDataAsync(id: number): Promise<ProductDetailModel> {
-  const responseDto = await api.product.getDetailAsync(id as string);
+  const responseDto = await api.product.getDetailAsync(id);
   return createProductDetailModel(responseDto);
 }
 

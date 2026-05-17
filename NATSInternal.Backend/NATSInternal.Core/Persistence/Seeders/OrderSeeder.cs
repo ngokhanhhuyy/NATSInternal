@@ -38,8 +38,8 @@ internal class OrderSeeder
     #region Methods
     public async Task<Order> SeedSingleOrderAsync(
         List<User> users,
-        List<Customer> customers,
-        DateTime generatingDateTime)
+        DateTime generatingDateTime,
+        Func<DateTime, Task<Customer>> pickOrSeedCustomerAsync)
     {
         OrderType orderType;
         int randomRatio = _random.Next(0, 10);
@@ -73,7 +73,7 @@ internal class OrderSeeder
             .OrderBy(_ => Guid.NewGuid())
             .First();
 
-        Customer customer = customers.OrderBy(_ => Guid.NewGuid()).First();
+        Customer customer = await pickOrSeedCustomerAsync(generatingDateTime);
 
         Order order = new()
         {

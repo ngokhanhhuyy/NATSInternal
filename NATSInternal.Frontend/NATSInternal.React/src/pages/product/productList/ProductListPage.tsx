@@ -7,7 +7,7 @@ import { loadProductListAsync, type ProductListDataLoaderResults } from "./dataL
 import ResultsPanel from "./ResultsPanel";
 import FilterPanelChildren from "./FilterPanelChildren";
 import ListPage from "@/pages/shared/searchablePageableList";
-import { BrandListPanel, ProductCategoryListPanel } from "./SecondaryPanels";
+// import { BrandListPanel, ProductCategoryListPanel } from "./SecondaryPanels";
 
 // Components.
 export default function ProductListPage(): React.ReactNode {
@@ -18,14 +18,6 @@ export default function ProductListPage(): React.ReactNode {
   const [model, setModel] = useState(() => initialModel.productList);
   const [_, triggerRerender] = useRerendingTrigger(reload);
   const [isReloading, startTransition] = useTransition();
-
-  // Computed.
-  const compareModelAdditionally = useCallback((originalModel: ProductListModel, currentModel: ProductListModel) => {
-    return (
-      originalModel.brand?.id === currentModel.brand?.id &&
-      originalModel.category?.name === currentModel.category?.name
-    );
-  }, []);
 
   // Callbacks.
   function reload(): void {
@@ -60,13 +52,6 @@ export default function ProductListPage(): React.ReactNode {
           onModelUpdated={(updatedData) => setModel(m => ({ ...m, ...updatedData }))}
         />
       }
-      sideBarPanels={
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-3 items-start justify-start h-fit">
-          <BrandListPanel />
-          <ProductCategoryListPanel />
-        </div>
-      }
-      additionalDirtyModelComparer={compareModelAdditionally}
     >
       <ResultsPanel model={model} isReloading={isReloading} />
     </ListPage>

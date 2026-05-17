@@ -24,7 +24,7 @@ type CustomerUpsertPageProps<T> = {
 // Component.
 export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>): React.ReactNode {
   // States.
-  const isModelDirty = useJSONDirtyModelChecker(props.model.toRequestDto());
+  const [isModelDirty] = useJSONDirtyModelChecker(props.model.toRequestDto());
 
   // Template;
   return (

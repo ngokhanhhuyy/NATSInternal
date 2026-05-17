@@ -36,6 +36,7 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<OrderServiceItem> OrderServiceItems { get; set; }
     public DbSet<Payment> Payments { get; set; }
     public DbSet<Photo> Photos { get; set; }
+    public DbSet<Seed> Seeds { get; set; }
     #endregion
     
     #region Methods
@@ -72,6 +73,9 @@ internal partial class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
 
         // Photo-cluster entities.
         modelBuilder.ApplyConfiguration(new PhotoEntityConfiguration());
+
+        // Seed-cluster entities.
+        modelBuilder.ApplyConfiguration(new SeedEntityConfiguration());
 
         // Configure identifiers' names.
         ConfigureIdentifierNames(modelBuilder);

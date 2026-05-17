@@ -40,7 +40,7 @@ export const productRoutes: RouteObject = {
           index: true,
           Component: ProductDetailPage,
           loader: ({ params }) => import("@/pages/product/productDetail/ProductDetailPage")
-            .then((module) => module.loadDataAsync(params.id as string)),
+            .then((module) => module.loadDataAsync(parseInt(params.id as string))),
           handle: {
             breadcrumbTitle: "Chi tiết",
             pageTitle: "Chi tiết sản phẩm",
@@ -52,7 +52,7 @@ export const productRoutes: RouteObject = {
           Component: ProductUpdatePage,
           loader: async ({ params }) => {
             const module = await import("@/pages/product/productUpsert/ProductUpdatePage");
-            return module.loadDataAsync(params.id as string);
+            return module.loadDataAsync(parseInt(params.id as string));
           },
           handle: {
             breadcrumbTitle: "Chỉnh sửa",

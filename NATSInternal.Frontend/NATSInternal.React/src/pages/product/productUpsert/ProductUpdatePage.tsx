@@ -1,24 +1,23 @@
 import React, { useState } from "react";
 import { useNavigate, useLoaderData } from "react-router";
-import { useApi } from "@/api";
+import { api } from "@/api";
 import { createProductUpsertModel } from "@/models";
 
 // Child components.
 import ProductUpsertPage from "./ProductUpsertPage";
-import { loadBrandAndCategoryOptionsAsync, type ProductUpsertInitialLoadedModels } from "./ProductUpsertPage";
+import { loadCategoryOptionsAsync } from "./ProductUpsertPage";
 
 // Data loader.
-type ProductUpdateInitialLoadedModels = ProductUpsertInitialLoadedModels & { updateModel: ProductUpsertModel; }; 
+type ProductUpdateInitialLoadedModels = { model: ProductUpsertModel; categoryModels: ProductCategoryBasicModel[]; }; 
 export async function loadDataAsync(id: number): Promise<ProductUpdateInitialLoadedModels> {
-  const api = useApi();
-  const [responseDto, optionModels] = await Promise.all([
+  const [responseDto, categoryModels] = await Promise.all([
     api.product.getDetailAsync(id),
-    loadBrandAndCategoryOptionsAsync()
+    loadCategoryOptionsAsync()
   ]);
 
   return {
-    updateModel: createProductUpsertModel(responseDto),
-    ...optionModels
+    model: createProductUpsertModel(responseDto),
+    categoryModels
   };
 };
 
@@ -26,11 +25,10 @@ export async function loadDataAsync(id: number): Promise<ProductUpdateInitialLoa
 export default function ProductUpdatePage(): React.ReactNode {
   // Dependencies.
   const navigate = useNavigate();
-  const api = useApi();
 
   // States.
   const initialModels = useLoaderData<ProductUpdateInitialLoadedModels>();
-  const [model, setModel] = useState<ProductUpsertModel>(() => initialModels.updateModel);
+  const [model, setModel] = useState<ProductUpsertModel>(() => initialModels.model);
 
   // Callbacks.
   async function handleUpsertAsync(): Promise<void> {

@@ -12,7 +12,7 @@ public class ProductListRequestDto : ISearchableListRequestDto
     public string SortByFieldName { get; set; } = nameof(FieldToSort.Status);
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
-    public List<int> CategoryIds { get; set; } = new();
+    public int? CategoryId { get; set; }
     public string? SearchContent { get; set; }
     #endregion
 
@@ -20,6 +20,7 @@ public class ProductListRequestDto : ISearchableListRequestDto
     public void TransformValues()
     {
         SearchContent = SearchContent.ToNullIfEmptyOrWhiteSpace();
+        CategoryId = CategoryId == 0 ? null : CategoryId;
     }
     #endregion
 

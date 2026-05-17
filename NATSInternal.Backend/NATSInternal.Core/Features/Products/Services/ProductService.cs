@@ -70,9 +70,9 @@ internal class ProductService : IProductService
             ));
         }
 
-        if (requestDto.CategoryIds.Count > 0)
+        if (requestDto.CategoryId.HasValue)
         {
-            query = query.Where(p => p.Categories.Select(pc => pc.Id).Any(pci => requestDto.CategoryIds.Contains(pci)));
+            query = query.Where(p => p.Categories.Any(pc => pc.Id == requestDto.CategoryId.Value));
         }
 
         switch (requestDto.SortByFieldName)
@@ -110,7 +110,7 @@ internal class ProductService : IProductService
             .Select(p => new ProductBasicResponseDto(p, _authorizationService.GetProductExistingAuthorization(p)))
             .ToList();
 
-        return new(productResponseDtos, queryResult.ItemCount, queryResult.PageCount);
+        return new(productResponseDtos, queryResult.PageCount, queryResult.ItemCount);
     }
 
     public async Task<ProductDetailResponseDto> GetDetailAsync(int id)

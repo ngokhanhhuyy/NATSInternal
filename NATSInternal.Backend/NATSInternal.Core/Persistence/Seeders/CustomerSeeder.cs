@@ -1,11 +1,11 @@
 using System.Text;
 using Bogus;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using NATSInternal.Core.Common.Time;
 using NATSInternal.Core.Features.Customers;
 using NATSInternal.Core.Features.Users;
 using NATSInternal.Core.Persistence.DbContext;
+using BogusGender = Bogus.DataSets.Name.Gender;
 
 namespace NATSInternal.Core.Persistence.Seeders;
 
@@ -14,102 +14,93 @@ internal class CustomerSeeder
     #region Fields
     private readonly AppDbContext _context;
     private readonly IClock _clock;
-    private readonly ILogger<CustomerSeeder> _logger;
     private readonly Faker _faker;
     private readonly Random _random;
     #endregion
 
     #region Constructors
-    public CustomerSeeder(AppDbContext context, IClock clock, ILogger<CustomerSeeder> logger)
+    public CustomerSeeder(AppDbContext context, IClock clock)
     {
         _context = context;
         _clock = clock;
-        _logger = logger;
         _faker = new("vi");
         _random = new();
     }
     #endregion
 
     #region Methods
-    public async Task<CustomerSeededResult> SeedAsync(List<User> users, bool isDevelopment)
+    public async Task<Customer> PickOrSeedSingleCustomerAsync(
+        List<User> users,
+        List<Customer> customers,
+        DateTime generatingDateTime)
     {
-        if (!isDevelopment)
+        Customer customer;
+        int newCustomerRatio = _random.Next(0, 10);
+        if (newCustomerRatio < 7)
         {
-            return new();
+            Customer? pickedCustomer = customers
+                .Where(c => c.DeletedDateTime == null)
+                .OrderBy(_ => Guid.NewGuid())
+                .FirstOrDefault();
+            
+            if (pickedCustomer is not null)
+            {
+                return pickedCustomer;
+            }
         }
-
-        return new()
-        {
-            Customers = await SeedCustomersAsync(users)
-        };
-    }
-    #endregion
-
-    #region PrivateMethods
-    private async Task<List<Customer>> SeedCustomersAsync(List<User> users)
-    {
-        List<Customer> customers = await _context.Customers.ToListAsync();
-        if (customers.Count > 0)
-        {
-            return customers;
-        }
-
-        _logger.LogInformation("Seeding customers.");
-
+        
         List<int> userIds = users.Select(u => u.Id).ToList();
-        for (int i = 0; i < 100; i++)
+        int genderInt = _random.Next(2);
+        BogusGender fakerGender = genderInt == 0 ? BogusGender.Male : BogusGender.Female;
+        string fullName = _faker.Name.FullName(fakerGender);
+        (string firstName, string? middleName, string lastName) = SplitFullName(fullName);
+        string phoneNumber = _faker.Phone.PhoneNumber("##########");
+        Customer? introducer = null;
+        if (_random.Next(0, 11) > 8)
         {
-            int genderInt = _random.Next(2);
-            Bogus.DataSets.Name.Gender fakerGender = genderInt == 0
-                ? Bogus.DataSets.Name.Gender.Male
-                : Bogus.DataSets.Name.Gender.Female;
-            string fullName = _faker.Name.FullName(fakerGender);
-            (string firstName, string? middleName, string lastName) = SplitFullName(fullName);
-            string phoneNumber = _faker.Phone.PhoneNumber("##########");
-            Customer? introducer = null;
-            if (customers.Count != 0 && _random.Next(0, 11) > 8)
-            {
-                introducer = customers.MinBy(_ => Guid.NewGuid());
-            }
-
-            string nickName;
-            do
-            {
-                nickName = GenerateNickName(lastName, _faker.Lorem.Word());
-            }
-            while (customers.Any(c => c.NickName == nickName));
-
-            Customer customer = new()
-            {
-                FirstName = lastName,
-                MiddleName = middleName,
-                LastName = firstName,
-                NickName = nickName,
-                Gender = genderInt == 0 ? Gender.Male : Gender.Female,
-                Birthday = DateOnly.FromDateTime(_faker.Date.Between(
-                    _clock.Now.AddYears(-20),
-                    _clock.Now.AddYears(-80))),
-                PhoneNumber = phoneNumber.Replace(" ", string.Empty),
-                ZaloNumber = new[] { phoneNumber, _faker.Phone.PhoneNumber("##########") }
-                    .Skip(_random.Next(3))
-                    .Take(1)
-                    .SingleOrDefault()
-                    ?.Replace(" ", string.Empty),
-                FacebookUrl = "https://facebook.com/" + _faker.Internet.UserName().ToLower(),
-                Email = _faker.Internet.Email(),
-                Address = _faker.Address.StreetAddress(),
-                Note = SliceNoteIfLong(_faker.Lorem.Paragraph()),
-                CreatedDateTime = _clock.Now,
-                Introducer = introducer,
-                CreatedUserId = userIds.Skip(_random.Next(userIds.Count)).Take(1).Single()
-            };
-
-            _context.Customers.Add(customer);
-            customers.Add(customer);
+            introducer = customers
+                .Where(c => c.DeletedDateTime == null)
+                .OrderBy(_ => Guid.NewGuid())
+                .FirstOrDefault();
         }
+
+        string nickName;
+        do
+        {
+            nickName = GenerateNickName(lastName, _faker.Lorem.Word());
+        }
+        while (await _context.Customers.AnyAsync(c => c.NickName == nickName));
+
+        customer = new()
+        {
+            FirstName = lastName,
+            MiddleName = middleName,
+            LastName = firstName,
+            NickName = nickName,
+            Gender = genderInt == 0 ? Gender.Male : Gender.Female,
+            Birthday = DateOnly.FromDateTime(_faker.Date.Between(
+                _clock.Now.AddYears(-20),
+                _clock.Now.AddYears(-80))),
+            PhoneNumber = phoneNumber.Replace(" ", string.Empty),
+            ZaloNumber = new[] { phoneNumber, _faker.Phone.PhoneNumber("##########") }
+                .Skip(_random.Next(3))
+                .Take(1)
+                .SingleOrDefault()
+                ?.Replace(" ", string.Empty),
+            FacebookUrl = "https://facebook.com/" + _faker.Internet.UserName().ToLower(),
+            Email = _faker.Internet.Email(),
+            Address = _faker.Address.StreetAddress(),
+            Note = SliceNoteIfLong(_faker.Lorem.Paragraph()),
+            CreatedDateTime = generatingDateTime,
+            Introducer = introducer,
+            CreatedUserId = userIds.Skip(_random.Next(userIds.Count)).Take(1).Single()
+        };
+
+        _context.Customers.Add(customer);
+        customers.Add(customer);
 
         await _context.SaveChangesAsync();
-        return customers;
+        return customer;
     }
     #endregion
 
@@ -157,12 +148,5 @@ internal class CustomerSeeder
 
         return note[..255];
     }
-    #endregion
-}
-
-internal class CustomerSeededResult
-{
-    #region Properties
-    public List<Customer> Customers { get; init; } = new(); 
     #endregion
 }

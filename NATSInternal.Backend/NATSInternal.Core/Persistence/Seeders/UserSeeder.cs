@@ -32,16 +32,10 @@ internal class UserSeeder
     #endregion
 
     #region Methods
-    public async Task<UserSeededResult> SeedAsync(bool isDevelopment)
+    public async Task<List<User>> SeedAsync(bool isDevelopment)
     {
         List<Role> roles = await SeedRolesAsync();
-        List<User> users = await SeedUsersAsync(roles, isDevelopment);
-
-        return new()
-        {
-            Users = users,
-            Roles = roles
-        };
+        return await SeedUsersAsync(roles, isDevelopment);
     }
     #endregion
     
@@ -215,13 +209,3 @@ internal class UserSeeder
     }
     #endregion
 }
-
-#region Classes
-internal class UserSeededResult
-{
-    #region Properties
-    public required List<User> Users { get; init; }
-    public required List<Role> Roles { get; init; }
-    #endregion
-}
-#endregion

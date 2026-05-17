@@ -4,7 +4,7 @@ declare global {
     sortByFieldName: string;
     page: number;
     resultsPerPage: number;
-    categoryIds: number[];
+    categoryId: number;
     searchContent: string | null;
   }>;
 
@@ -46,6 +46,8 @@ declare global {
     createdUser: UserBasicResponseDto;
     lastUpdatedDateTime: string | null;
     lastUpdatedUser: UserBasicResponseDto | null;
+    deletedDateTime: string | null;
+    deletedUser: UserBasicResponseDto | null;
     categories: ProductCategoryBasicResponseDto[];
     photos: PhotoBasicResponseDto[];
     authorization: ProductExistingAuthorizationResponseDto;

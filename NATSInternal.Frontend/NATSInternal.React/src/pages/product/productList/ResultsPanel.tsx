@@ -28,7 +28,7 @@ export default function ResultsPanel(props: ResultsPanelProps): React.ReactNode 
           {props.model.items.length > 0 ? props.model.items.map((product, index) => (
             <ResultItem model={product} key={index} />
           )) : (
-            <li className="list-group-item opacity-50 px-3 py-10">
+            <li className="list-group-item opacity-50 px-3 py-10 flex justify-center">
               Không có kết quả
             </li>
           )}
@@ -102,7 +102,7 @@ function ResultItem(props: { model: ProductBasicModel }): React.ReactNode {
           </div>
         </div>
 
-        <div className="text-sm">
+        <div className="flex flex-wrap gap-3 text-sm">
           {props.model.categories.map((category, index) => (
             <div className="flex justify-start items-center gap-1" key={index}>
               <TagIcon className="size-4" />

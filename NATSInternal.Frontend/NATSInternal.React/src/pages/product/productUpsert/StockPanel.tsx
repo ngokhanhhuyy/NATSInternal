@@ -5,8 +5,8 @@ import { FormField, NumberInput } from "@/components/form";
 
 // Props.
 type StockPanelProps = {
-  model: ProductUpsertStockModel;
-  onModelChanged(changedData: Partial<ProductUpsertStockModel>): any;
+  model: ProductUpsertModel;
+  onModelChanged(changedData: Partial<ProductUpsertModel>): any;
   isForCreating: boolean;
 };
 

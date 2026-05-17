@@ -90,7 +90,6 @@ export default function SearchablePageableListPage<TListModel extends ListModel<
             model={props.model}
             onModelUpdated={props.onModelUpdated}
             onReloadButtonClicked={props.onFilterPanelReloadButtonClicked}
-            additionalDirtyModelComparer={props.additionalDirtyModelComparer}
           >
             {props.filterPanelChildren}
           </FilterOptionsPanel>

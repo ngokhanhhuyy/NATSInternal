@@ -1,15 +1,12 @@
 import React from "react";
 import { getDisplayName } from "@/metadata";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Props.
 type Props = { propertyName: string; } & React.ComponentPropsWithoutRef<"div">;
 
 // Component.
 export default function Field({ propertyName, ...props }: Props): React.ReactNode {
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
-
   // Template.
   if (props.children == null) {
     return null;

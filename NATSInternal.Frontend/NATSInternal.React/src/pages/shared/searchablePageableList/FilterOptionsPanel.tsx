@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { flushSync } from "react-dom";
 import { getDisplayName } from "@/metadata";
-import { useDirtyModelChecker } from "@/hooks";
+import { useJSONDirtyModelChecker } from "@/hooks";
 import { joinClassName } from "@/helpers";
 
 // Child component.
@@ -17,7 +17,6 @@ type Props<
   model: TListModel;
   onModelUpdated(updatedData: Partial<TListModel>): any;
   onReloadButtonClicked(): any;
-  additionalDirtyModelComparer?: (originalModel: TListModel, currentModel: TListModel) => boolean;
   children?: React.ReactNode | React.ReactNode[];
 };
 
@@ -27,14 +26,7 @@ function DisplayOptionsPanel<
       TItemModel extends object>
     (props: Props<TListModel, TItemModel>): React.ReactNode {
   // States.
-  const [isModelDirty, setModelDirtyCheckerOriginalModel] = useDirtyModelChecker(props.model, (om, m) => {
-    return (
-      m.sortByAscending === om.sortByAscending &&
-      m.sortByFieldName === om.sortByFieldName &&
-      m.searchContent === om.searchContent &&
-      m.resultsPerPage === om.resultsPerPage
-    );
-  });
+  const [isModelDirty, setModelDirtyCheckerOriginalModel] = useJSONDirtyModelChecker(props.model);
 
   // Computed.
   const sortByFieldNameOptions = useMemo<SelectInputOption[]>(() => {
@@ -66,7 +58,7 @@ function DisplayOptionsPanel<
         </div>
       </div>
 
-      <div className="panel-body p-3">
+      <div className="panel-body p-3 pt-2">
         <div className="flex flex-col gap-3">
           {/* Search content and advanced filter toggle button */}
           <FormField path="searchContent" displayName="Tìm kiếm">

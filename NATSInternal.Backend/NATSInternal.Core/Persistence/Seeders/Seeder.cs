@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using NATSInternal.Core.Common.Time;
 using NATSInternal.Core.Features.Customers;
 using NATSInternal.Core.Features.Orders;
+using NATSInternal.Core.Features.Products;
 using NATSInternal.Core.Features.Supplies;
 using NATSInternal.Core.Features.Users;
 using NATSInternal.Core.Persistence.DbContext;
@@ -56,12 +57,21 @@ internal class Seeder
         _logger.LogInformation("Seeding started.");
 
         await using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
-        UserSeededResult userSeededResult = await _userSeeder.SeedAsync(isDevelopment);
-        CustomerSeededResult customerSeededResult = await _customerSeeder
-            .SeedAsync(userSeededResult.Users, isDevelopment);
-        ProductSeededResult productSeededResult = await _productSeeder.SeedAsync(userSeededResult.Users, isDevelopment);
 
-        await SeedFinancialTransactionsAsync(userSeededResult.Users, customerSeededResult.Customers);
+        List<User> users = await _userSeeder.SeedAsync(isDevelopment);
+        List<Customer> customers = new();
+
+        if (isDevelopment)
+        {
+            List<Product> products = await _productSeeder.SeedAsync(users);
+            async Task<Customer> PickOrSeedCustomerAsync(DateTime generatingDateTime)
+            {
+                return await _customerSeeder.PickOrSeedSingleCustomerAsync(users, customers, generatingDateTime);
+            }
+
+            await SeedFinancialTransactionsAsync(users, PickOrSeedCustomerAsync);
+        }
+
         await transaction.CommitAsync();
         
         _logger.LogInformation("Seeding ended.");
@@ -69,7 +79,9 @@ internal class Seeder
     #endregion
 
     #region PrivateMethods
-    private async Task SeedFinancialTransactionsAsync(List<User> users, List<Customer> customers)
+    private async Task SeedFinancialTransactionsAsync(
+        List<User> users,
+        Func<DateTime, Task<Customer>> pickOrSeedCustomerAsync)
     {
         List<EntityRecordCount> entityRecordCounts = await _context.Supplies
             .Select(s => new EntityRecordCount
@@ -98,7 +110,7 @@ internal class Seeder
         while (generatingDateTime <= currentDateTime)
         {
             await _supplySeeder.SeedAsync(users, generatingDateTime);
-            Order order = await _orderSeeder.SeedSingleOrderAsync(users, customers, generatingDateTime);
+            Order order = await _orderSeeder.SeedSingleOrderAsync(users, generatingDateTime, pickOrSeedCustomerAsync);
             await _paymentSeeder.SeedSinglePaymentAsync(order);
             
             do
