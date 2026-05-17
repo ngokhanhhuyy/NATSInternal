@@ -10,8 +10,8 @@ public class OrderDetailResponseDto
     {
         Id = order.Id;
         StatsDate = order.StatsDate;
-        ProductItems = order.ProductItems.Select(pi => new OrderDetailProductItemResponseDto(pi)).ToList();
-        ServiceItems = order.ServiceItems.Select(si => new OrderDetailServiceItemResponseDto(si)).ToList();
+        ProductItems = order.ProductItems.Select(pi => new OrderProductItemDetailResponseDto(pi)).ToList();
+        ServiceItems = order.ServiceItems.Select(si => new OrderServiceItemDetailResponseDto(si)).ToList();
         Note = order.Note;
         CreatedDateTime = order.CreatedDateTime;
         CreatedUser = new(order.CreatedUser);
@@ -34,8 +34,8 @@ public class OrderDetailResponseDto
     #region Properties
     public int Id { get; }
     public DateOnly StatsDate { get; }
-    public List<OrderDetailProductItemResponseDto> ProductItems { get; }
-    public List<OrderDetailServiceItemResponseDto> ServiceItems { get; }
+    public List<OrderProductItemDetailResponseDto> ProductItems { get; }
+    public List<OrderServiceItemDetailResponseDto> ServiceItems { get; }
     public string? Note { get; }
     public DateTime CreatedDateTime { get; }
     public UserBasicResponseDto CreatedUser { get; }

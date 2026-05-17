@@ -1,13 +1,14 @@
 import React, { useState, useCallback, useTransition } from "react";
-import { useLoaderData } from "react-router";
+import { useLoaderData, Link } from "react-router";
 import { useRerendingTrigger } from "@/hooks";
+import { getProductCategoryListRoutePath } from "@/helpers";
+import { TagIcon } from "@heroicons/react/24/outline";
 
 // Child components.
 import { loadProductListAsync, type ProductListDataLoaderResults } from "./dataLoader";
 import ResultsPanel from "./ResultsPanel";
 import FilterPanelChildren from "./FilterPanelChildren";
 import ListPage from "@/pages/shared/searchablePageableList";
-// import { BrandListPanel, ProductCategoryListPanel } from "./SecondaryPanels";
 
 // Components.
 export default function ProductListPage(): React.ReactNode {
@@ -15,7 +16,7 @@ export default function ProductListPage(): React.ReactNode {
   const initialModel = useLoaderData<ProductListDataLoaderResults>();
 
   // States.
-  const [model, setModel] = useState(() => initialModel.productList);
+  const [model, setModel] = useState(() => initialModel.model);
   const [_, triggerRerender] = useRerendingTrigger(reload);
   const [isReloading, startTransition] = useTransition();
 
@@ -46,6 +47,14 @@ export default function ProductListPage(): React.ReactNode {
       isReloading={isReloading}
       onPaginatorPageChanged={handlePaginatorPageChanged}
       onFilterPanelReloadButtonClicked={triggerRerender}
+      linkButtons={
+        <div className="flex justify-end">
+          <Link className="btn" to={getProductCategoryListRoutePath()}>
+            <TagIcon className="size-4" />
+            <span>Danh sách phân loại</span>
+          </Link>
+        </div>
+      }
       filterPanelChildren={
         <FilterPanelChildren
           model={model}

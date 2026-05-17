@@ -3,17 +3,17 @@ import { createProductListModel, createProductCategoryBasicModel } from "@/model
 
 // Data loader.
 export type ProductListDataLoaderResults = {
-  productList: ProductListModel;
-  categoryOptions: ProductCategoryBasicModel[];
+  model: ProductListModel;
+  categoryModels: ProductCategoryBasicModel[];
 };
 
 export async function loadDataAsync(): Promise<ProductListDataLoaderResults> {
-  const [productList, categoryOptions] = await Promise.all([
+  const [productList, categoryModels] = await Promise.all([
     loadProductListAsync(),
     api.productCategory.getAllAsync().then(dtos => dtos.map(dto => createProductCategoryBasicModel(dto)))
   ]);
 
-  return { productList, categoryOptions };
+  return { model: productList, categoryModels };
 }
 
 export async function loadProductListAsync(model?: ProductListModel): Promise<ProductListModel> {

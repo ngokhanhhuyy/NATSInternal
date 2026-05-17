@@ -25,7 +25,7 @@ internal class OrderService : IOrderService
     private readonly ICustomerInternalService _customerService;
     private readonly IPaymentInternalService _paymentService;
     private readonly IListFetchingService _listFetchingService;
-    private readonly IHasProductService<OrderUpsertProductItemRequestDto, OrderProductItem> _hasProductService;
+    private readonly IHasProductService<OrderProductItemUpsertRequestDto, OrderProductItem> _hasProductService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IValidator<OrderListRequestDto> _listValidator;
     private readonly IValidator<OrderUpsertRequestDto> _upsertValidator;
@@ -40,7 +40,7 @@ internal class OrderService : IOrderService
         ICustomerInternalService customerService,
         IPaymentInternalService paymentService,
         IListFetchingService listFetchingService,
-        IHasProductService<OrderUpsertProductItemRequestDto, OrderProductItem> hasProductService,
+        IHasProductService<OrderProductItemUpsertRequestDto, OrderProductItem> hasProductService,
         IAuthorizationInternalService authorizationService,
         IValidator<OrderListRequestDto> listValidator,
         IValidator<OrderUpsertRequestDto> upsertValidator,
@@ -78,9 +78,9 @@ internal class OrderService : IOrderService
             query = query.HasStatsMonthYear(requestDto.StatsMonthYear.Year, requestDto.StatsMonthYear.Month);
         }
         
-        if (requestDto.CustomerIds.Count > 0)
+        if (requestDto.CustomerId.HasValue)
         {
-            query = query.Where(o => requestDto.CustomerIds.Contains(o.Id));
+            query = query.Where(o => o.CustomerId == requestDto.CustomerId.Value);
         }
         
         if (requestDto.DebtOrdersOnly)
@@ -210,7 +210,7 @@ internal class OrderService : IOrderService
             List<string> processedServiceNames = new();
             for (int index = 0; index < requestDto.ServiceItems.Count; index += 1)
             {
-                OrderUpsertServiceItemRequestDto itemRequestDto = requestDto.ServiceItems[index];
+                OrderServiceItemUpsertRequestDto itemRequestDto = requestDto.ServiceItems[index];
                 
                 if (processedServiceNames.Contains(itemRequestDto.Name))
                 {
@@ -321,7 +321,7 @@ internal class OrderService : IOrderService
             List<string> processedServiceNames = new();
             for (int index = 0; index < requestDto.ServiceItems.Count; index += 1)
             {
-                OrderUpsertServiceItemRequestDto itemRequestDto = requestDto.ServiceItems[index];
+                OrderServiceItemUpsertRequestDto itemRequestDto = requestDto.ServiceItems[index];
                 OrderServiceItem serviceItem;
                 
                 if (processedServiceNames.Contains(itemRequestDto.Name))
@@ -496,7 +496,7 @@ internal class OrderService : IOrderService
     #endregion
 
     #region StaticMethods
-    private static void MapProductItem(OrderUpsertProductItemRequestDto itemRequestDto, OrderProductItem item)
+    private static void MapProductItem(OrderProductItemUpsertRequestDto itemRequestDto, OrderProductItem item)
     {
         item.AmountBeforeVatPerUnit = itemRequestDto.AmountBeforeVatPerUnit;
         item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit;

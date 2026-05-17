@@ -4,10 +4,10 @@ using NATSInternal.Core.Common.Validation;
 
 namespace NATSInternal.Core.Features.Orders;
 
-public class OrderUpsertServiceItemValidator : Validator<OrderUpsertServiceItemRequestDto>
+public class OrderServiceItemUpsertValidator : Validator<OrderServiceItemUpsertRequestDto>
 {
     #region Constructors
-    public OrderUpsertServiceItemValidator()
+    public OrderServiceItemUpsertValidator()
     {
         RuleFor(dto => dto.Name)
             .NotEmpty()

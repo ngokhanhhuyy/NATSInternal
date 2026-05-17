@@ -46,8 +46,8 @@ public static class CoreConfiguration
                 IHasProductService<SupplyUpsertItemRequestDto, SupplyItem>,
                 HasProductService<SupplyUpsertItemRequestDto, SupplyItem>>();
             services.AddScoped<
-                IHasProductService<OrderUpsertProductItemRequestDto, OrderProductItem>,
-                HasProductService<OrderUpsertProductItemRequestDto, OrderProductItem>>();
+                IHasProductService<OrderProductItemUpsertRequestDto, OrderProductItem>,
+                HasProductService<OrderProductItemUpsertRequestDto, OrderProductItem>>();
 
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<AuthorizationInternalService>();

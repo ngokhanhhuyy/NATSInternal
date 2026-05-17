@@ -80,11 +80,7 @@ internal class ProductService : IProductService
             case nameof(ProductListRequestDto.FieldToSort.Status):
                 query = query
                     .ApplySorting(p => p.IsDiscontinued, requestDto.SortByAscending)
-                    .ThenApplySorting(
-                        p => p.ResupplyThresholdQuantity != null
-                            ? p.StockingQuantity - p.ResupplyThresholdQuantity
-                            : p.StockingQuantity - 0,
-                        requestDto.SortByAscending)
+                    .ThenApplySorting(p => p.StockingQuantity - p.ResupplyThresholdQuantity, requestDto.SortByAscending)
                     .ThenApplySorting(p => p.Name, requestDto.SortByAscending);
                 break;
             case nameof(ProductListRequestDto.FieldToSort.Name):

@@ -1,6 +1,5 @@
 using Bogus;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using NATSInternal.Core.Features.Authorization;
 using NATSInternal.Core.Common.Contracts;
 using NATSInternal.Core.Features.Products;
@@ -14,16 +13,14 @@ internal class SupplySeeder
 {
     #region Fields
     private readonly AppDbContext _context;
-    private readonly ILogger<SupplySeeder> _logger;
     private readonly Faker _viFaker;
     private readonly Random _random;
     #endregion
     
     #region Constructors
-    public SupplySeeder(AppDbContext context, ILogger<SupplySeeder> logger)
+    public SupplySeeder(AppDbContext context)
     {
         _context = context;
-        _logger = logger;
         _viFaker = new("vi");
         _random = new();
     }
@@ -41,9 +38,7 @@ internal class SupplySeeder
     {
         List<Product> products = await _context.Products
             .Where(p => p.DeletedDateTime == null)
-            .Where(p =>
-                (p.ResupplyThresholdQuantity == null && p.StockingQuantity <= 5) ||
-                (p.ResupplyThresholdQuantity != null && p.StockingQuantity <= p.ResupplyThresholdQuantity))
+            .Where(p => p.StockingQuantity <= p.ResupplyThresholdQuantity)
             .ToListAsync();
             
         if (products.Count == 0)
@@ -60,9 +55,9 @@ internal class SupplySeeder
         foreach (Product product in products)
         {
             int quantity;
-            if (product.ResupplyThresholdQuantity.HasValue)
+            if (product.ResupplyThresholdQuantity > 0)
             {
-                quantity = product.ResupplyThresholdQuantity.Value * _random.Next(2, 5);
+                quantity = product.ResupplyThresholdQuantity * _random.Next(2, 5);
             }
             else
             {
@@ -71,7 +66,7 @@ internal class SupplySeeder
 
             SupplyItem item = new()
             {
-                AmountPerUnit = (int)Math.Round((double)product.DefaultAmountBeforeVatPerUnit / 3 * 2),
+                AmountPerUnit = (int)Math.Round(product.DefaultAmountBeforeVatPerUnit * (2M / 3M) / 1000M) * 1000,
                 Quantity = quantity,
                 ProductId = product.Id
             };
@@ -95,7 +90,7 @@ internal class SupplySeeder
         Supply supply = new()
         {
             StatsDate = DateOnly.FromDateTime(generatingDateTime),
-            ShipmentFee = (int)Math.Round((double)items.Sum(i => i.AmountPerUnit * i.Quantity) / 20),
+            ShipmentFee = (int)Math.Round(items.Sum(i => i.AmountPerUnit * i.Quantity) * 0.01M / 1000) * 1000,
             Note = note,
             CreatedDateTime = generatingDateTime,
             CreatedUserId = createdUser.Id

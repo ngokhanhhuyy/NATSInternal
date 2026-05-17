@@ -1,4 +1,6 @@
+using FluentValidation;
 using JetBrains.Annotations;
+using NATSInternal.Core.Common.Localization;
 using NATSInternal.Core.Common.Time;
 using NATSInternal.Core.Common.Validation;
 
@@ -11,6 +13,10 @@ internal class OrderListValidator : Validator<OrderListRequestDto>
     public OrderListValidator(IClock clock)
     {
         Include(new HasStatsListValidator<OrderListRequestDto, OrderListRequestDto.FieldToSort>(clock));
+        
+        RuleFor(dto => dto.CustomerId)
+            .GreaterThan(0)
+            .WithName(DisplayNames.Customer);
     }
     #endregion
 }

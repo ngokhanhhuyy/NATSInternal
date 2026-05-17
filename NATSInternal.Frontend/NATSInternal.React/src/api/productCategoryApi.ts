@@ -5,6 +5,7 @@ export type ProductCategoryApi = {
   getDetailAsync(id: number): Promise<ProductCategoryDetailResponseDto>;
   createAsync(requestDto: ProductCategoryUpsertRequestDto): Promise<number>;
   updateAsync(id: number, requestDto: ProductCategoryUpsertRequestDto): Promise<void>;
+  deleteAsync(id: number): Promise<void>;
 };
 
 export const productCategoryApi: ProductCategoryApi = {
@@ -19,5 +20,8 @@ export const productCategoryApi: ProductCategoryApi = {
   },
   async updateAsync(id: number, requestDto: ProductCategoryUpsertRequestDto): Promise<void> {
     await httpClient.putAndIgnoreAsync(`/products/categories/${id}`, requestDto);
+  },
+  async deleteAsync(id: number): Promise<void> {
+    await httpClient.deleteAndIgnoreAsync(`/products/categories/${id}`);
   }
 };

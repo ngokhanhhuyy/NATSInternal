@@ -4,10 +4,10 @@ using NATSInternal.Core.Common.Validation;
 
 namespace NATSInternal.Core.Features.Orders;
 
-internal class OrderUpsertProductItemValidator : Validator<OrderUpsertProductItemRequestDto>
+internal class OrderProductItemUpsertValidator : Validator<OrderProductItemUpsertRequestDto>
 {
     #region Constructors
-    public OrderUpsertProductItemValidator()
+    public OrderProductItemUpsertValidator()
     {
         RuleFor(dto => dto.ProductId)
             .GreaterThan(0)

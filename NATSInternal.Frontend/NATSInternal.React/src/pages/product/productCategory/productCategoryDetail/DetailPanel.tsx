@@ -15,7 +15,7 @@ export default function DetailPanel(props: Props): React.ReactNode {
     <div className="panel">
       <div className="panel-header">
         <span className="panel-header-title">
-          Chi tiết thương hiệu
+          Phân loại sản phẩm
         </span>
       </div>
 

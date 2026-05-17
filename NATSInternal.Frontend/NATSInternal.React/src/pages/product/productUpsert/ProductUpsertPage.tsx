@@ -20,6 +20,7 @@ type Props = {
   isForCreating: boolean;
   model: ProductUpsertModel;
   onModelUpdated(updatedData: Partial<ProductUpsertModel>): any;
+  categoryModels: ProductCategoryBasicModel[];
   upsertAction(): Promise<void>;
   onUpsertingSucceeded(): any;
   deleteAction?(): Promise<void>;
@@ -39,7 +40,12 @@ export default function ProductUpsertPage(props: Props): React.ReactNode {
       onUpsertingSucceeded={props.onUpsertingSucceeded}
       isModelDirty={isModelDirty}
     >
-      <DetailPanel model={props.model} onModelUpdated={props.onModelUpdated} />
+      <DetailPanel
+        model={props.model}
+        onModelUpdated={props.onModelUpdated}
+        categoryModels={props.categoryModels}
+      />
+
       <StockPanel
         model={props.model}
         onModelChanged={(changedData) => props.onModelUpdated(changedData)}

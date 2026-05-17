@@ -3,7 +3,7 @@ import { Link } from "react-router";
 
 // Child components.
 import Field from "@/pages/product/productDetail/Field";
-import { ArchiveBoxIcon } from "@heroicons/react/24/outline";
+import { ArchiveBoxIcon, TagIcon } from "@heroicons/react/24/outline";
 
 // Props.
 type Props = {
@@ -66,13 +66,22 @@ export default function DetailPanel(props: Props): React.ReactNode {
           </Field>
 
           {/* Categories */}
-          <Field propertyName="category">
-            {props.model.categories.map(category => (
-              <Link to={category.detailRoutePath} key={category.id}>
-                {category.name}
-              </Link>
-            ))}
-          </Field>
+          {props.model.categories.length > 0 && (
+            <Field propertyName="category">
+              <div className="flex flex-wrap gap-1">
+                {props.model.categories.map(category => (
+                  <Link
+                    className="alert alert-neutral-outline dark:alert-neutral alert-sm gap-1"
+                    to={category.detailRoutePath}
+                    key={category.id}
+                  >
+                    <TagIcon className="size-3.5" />
+                    <span>{category.name}</span>
+                  </Link>
+                ))}
+              </div>
+            </Field>
+          )}
         </div>
       </div>
     </div>
@@ -93,7 +102,7 @@ function TargetTransactionTypeAlert(props: { isForRetail: boolean }): React.Reac
       Chỉ liệu trình
     </div>
   );
-};
+}
 
 
  function StatusAlert(props: { model: ProductDetailModel }): React.ReactNode {
@@ -121,4 +130,4 @@ function TargetTransactionTypeAlert(props: { isForRetail: boolean }): React.Reac
       </div>
     );
   }
-};
+}

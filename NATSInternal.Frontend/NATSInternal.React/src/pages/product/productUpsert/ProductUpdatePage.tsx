@@ -19,7 +19,7 @@ export async function loadDataAsync(id: number): Promise<ProductUpdateInitialLoa
     model: createProductUpsertModel(responseDto),
     categoryModels
   };
-};
+}
 
 // Components.
 export default function ProductUpdatePage(): React.ReactNode {
@@ -45,6 +45,7 @@ export default function ProductUpdatePage(): React.ReactNode {
       isForCreating={false}
       model={model}
       onModelUpdated={(changedData) => setModel(m => ({ ...m, ...changedData }))}
+      categoryModels={initialModels.categoryModels}
       upsertAction={handleUpsertAsync}
       onUpsertingSucceeded={handleUpsertingSucceeded}
     />

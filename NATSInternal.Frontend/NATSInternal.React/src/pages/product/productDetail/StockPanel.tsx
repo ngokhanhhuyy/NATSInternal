@@ -34,11 +34,9 @@ export default function StockPanel({ model }: Props): React.ReactNode {
           </Field>
 
           {/* ResupplyStockingQuantity */}
-          {model.resupplyThresholdQuantity && (
-            <Field propertyName="resupplyThresholdQuantity">
-              {model.resupplyThresholdQuantity ?? 0}
-            </Field>
-          )}
+          <Field propertyName="resupplyThresholdQuantity">
+            {model.resupplyThresholdQuantity ?? 0}
+          </Field>
         </div>
       </div>
     </div>

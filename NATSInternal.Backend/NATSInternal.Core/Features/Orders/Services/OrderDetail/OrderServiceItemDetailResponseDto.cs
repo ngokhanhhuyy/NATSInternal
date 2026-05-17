@@ -1,11 +1,12 @@
 namespace NATSInternal.Core.Features.Orders;
 
-public class OrderDetailServiceItemResponseDto
+public class OrderServiceItemDetailResponseDto
 {
     #region Constructors
-    internal OrderDetailServiceItemResponseDto(OrderServiceItem orderServiceItem)
+    internal OrderServiceItemDetailResponseDto(OrderServiceItem orderServiceItem)
     {
         Id = orderServiceItem.Id;
+        Name = orderServiceItem.Name;
         AmountBeforeVatPerUnit = orderServiceItem.AmountBeforeVatPerUnit;
         VatAmountPerUnit = orderServiceItem.VatAmountPerUnit;
         Quantity = orderServiceItem.Quantity;
@@ -14,6 +15,7 @@ public class OrderDetailServiceItemResponseDto
     
     #region Properties
     public int Id { get; }
+    public string Name { get; }
     public long AmountBeforeVatPerUnit { get; }
     public long VatAmountPerUnit { get; }
     public int Quantity { get; }

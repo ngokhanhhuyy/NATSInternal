@@ -9,6 +9,10 @@ const ProductCategoryDetailPage = lazy(() => {
   return import("@/pages/product/productCategory/productCategoryDetail/ProductCategoryDetailPage");
 });
 
+const ProductCategoryCreatePage = lazy(() => {
+  return import("@/pages/product/productCategory/productCategoryUpsert/ProductCategoryCreatePage");
+});
+
 const ProductCategoryUpdatePage = lazy(() => {
   return import("@/pages/product/productCategory/productCategoryUpsert/ProductCategoryUpdatePage");
 });
@@ -28,6 +32,15 @@ export const productCategoryRoutes: RouteObject = {
       }
     },
     {
+      path: "tao-moi",
+      Component: ProductCategoryCreatePage,
+      handle: {
+        breadcrumbTitle: "Tạo mới",
+        pageTitle: "Tạo phân loại sản phẩm mới",
+        description: "Tạo một phân loại sản phẩm mới, dùng cho các sản phẩm đang được kinh doanh tại cửa hàng."
+      }
+    },
+    {
       path: ":id",
       children: [
         {
@@ -35,13 +48,13 @@ export const productCategoryRoutes: RouteObject = {
           Component: ProductCategoryDetailPage,
           loader: async ({ params }) => {
             const module = await import("@/pages/product/productCategory/productCategoryDetail/dataLoader");
-            return module.loadDataAsync(params.id as string);
+            return module.loadDataAsync(parseInt(params.id as string));
           },
           handle: {
             breadcrumbTitle: "Chi tiết",
-            pageTitle: "Chi tiết phân loại thương hiệu",
+            pageTitle: "Chi tiết phân loại sản phẩm",
             description: (
-              "Thông tin chi tiết của phân loại thương hiệu."
+              "Thông tin chi tiết của phân loại sản phẩm."
             )
           }
         },
@@ -50,7 +63,7 @@ export const productCategoryRoutes: RouteObject = {
           Component: ProductCategoryUpdatePage,
           loader: async ({ params }) => {
             const module = await import("@/pages/product/productCategory/productCategoryUpsert/dataLoader");
-            return module.loadUpdateDataAsync(params.id as string);
+            return module.loadUpdateDataAsync(parseInt(params.id as string));
           },
           handle: {
             breadcrumbTitle: "Chỉnh sửa",

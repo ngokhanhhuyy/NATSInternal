@@ -1,21 +1,18 @@
 import React, { useMemo } from "react";
-import { useLoaderData } from "react-router";
 import { getDisplayName } from "@/metadata";
 
 // Child components.
-import { FormField, TextInput, TextAreaInput, NumberInput } from "@/components/form";
+import { FormField, TextInput, TextAreaInput, NumberInput, CheckBoxInput } from "@/components/form";
 import { BooleanSelectInput, type BooleanSelectInputOption } from "@/components/form";
 
 // Props.
 type DetailPanelProps = {
   model: ProductUpsertModel;
   onModelUpdated(updatedData: Partial<ProductUpsertModel>): any;
+  categoryModels: ProductCategoryBasicModel[];
 };
 
 export default function DetailPanel(props: DetailPanelProps): React.ReactNode {
-  // Dependencies.
-  const { categoryModels } = useLoaderData<{ categoryModels: ProductCategoryBasicModel[] }>();
-
   // Computed.
   const categoryDislayName = useMemo<string>(() => getDisplayName("productCategory") ?? "", []);
 
@@ -102,24 +99,17 @@ export default function DetailPanel(props: DetailPanelProps): React.ReactNode {
 
           {/* Category */}
           <FormField path="category.id" displayName={categoryDislayName} className="sm:col-span-6">
-            <div className="flex flex-wrap gap-2">
-              {categoryModels.map((category, index) => (
-                <div className="flex gap-2" key={index}>
-                  <input
-                    type="checkbox"
-                    name={`categories[${index}].id`}
-                    checked={props.model.categories.map(pc => pc.id).includes(category.id)}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                      const isChecked = (event.target as HTMLInputElement).checked;
-                      handleProductCategoryChanged(category, isChecked);
-                    }}
-                  />
-                  <label className="form-label">{category.name}</label>
-                </div>
+            <div className="flex flex-wrap gap-x-4 gap-y-2 items-center">
+              {props.categoryModels.map((category) => (
+                <CheckBoxInput
+                  label={category.name}
+                  isChecked={props.model.categories.map(pc => pc.id).includes(category.id)}
+                  onInput={(isChecked) => handleProductCategoryChanged(category, isChecked)}
+                  key={category.id}
+                />
               ))}
             </div>
           </FormField>
-
 
           {/* IsForRetail */}
           <FormField path="isForRetail" displayName="Dành cho loại giao dịch" className="sm:col-span-3">

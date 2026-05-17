@@ -32,9 +32,9 @@ public class ProductBasicResponseDto
         Categories = product.Categories.Select(pc => new ProductCategoryBasicResponseDto(pc)).ToList();
         IsDeleted = product.DeletedDateTime is not null;
 
-        if (product.ResupplyThresholdQuantity.HasValue && !product.IsDiscontinued)
+        if (!product.IsDiscontinued)
         {
-            IsResupplyNeeded = product.StockingQuantity <= product.ResupplyThresholdQuantity.Value;
+            IsResupplyNeeded = product.StockingQuantity <= product.ResupplyThresholdQuantity;
         }
 
         if (product.Thumbnail is not null)

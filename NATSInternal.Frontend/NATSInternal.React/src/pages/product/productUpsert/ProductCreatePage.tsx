@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import { flushSync } from "react-dom";
-import { useNavigate } from "react-router";
-import { useApi } from "@/api";
+import { useNavigate, useLoaderData } from "react-router";
+import { api } from "@/api";
 import { createProductUpsertModel } from "@/models";
 
 // Child components.
 import ProductUpsertPage from "./ProductUpsertPage";
-import { loadCategoryOptionsAsync, type ProductUpsertInitialLoadedModels } from "./ProductUpsertPage";
+import { loadCategoryOptionsAsync } from "./ProductUpsertPage";
 
 // Data loader.
-type ProductCreateInitiaLoadedModels = ProductUpsertInitialLoadedModels; 
-export async function loadDataAsync(): Promise<ProductCreateInitiaLoadedModels> {
+export async function loadDataAsync(): Promise<ProductCategoryBasicModel[]> {
   return await loadCategoryOptionsAsync();
 }
 
@@ -18,7 +17,7 @@ export async function loadDataAsync(): Promise<ProductCreateInitiaLoadedModels> 
 export default function ProductCreatePage(): React.ReactNode {
   // Dependencies.
   const navigate = useNavigate();
-  const api = useApi();
+  const categoryModels = useLoaderData<ProductCategoryBasicModel[]>();
 
   // States.
   const [model, setModel] = useState<ProductUpsertModel>(createProductUpsertModel);
@@ -41,6 +40,7 @@ export default function ProductCreatePage(): React.ReactNode {
       isForCreating={true}
       model={model}
       onModelUpdated={(changedData) => setModel(m => ({ ...m, ...changedData }))}
+      categoryModels={categoryModels}
       upsertAction={handleUpsertAsync}
       onUpsertingSucceeded={handleUpsertingSucceeded}
     />

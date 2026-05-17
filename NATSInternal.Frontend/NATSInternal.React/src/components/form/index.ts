@@ -7,5 +7,6 @@ export { default as TextInput, type TextInputProps } from "./TextInput";
 export { default as TextAreaInput } from "./TextAreaInput";
 export { default as NumberInput } from "./NumberInput";
 export { default as ButtonGroupInput, type ButtonGroupInputOption } from "./ButtonGroupInput";
+export { default as CheckBoxInput } from "./CheckBoxInput";
 export { default as SubmitButton } from "./SubmitButton";
 export { default as DeleteButton } from "./DeleteButton";

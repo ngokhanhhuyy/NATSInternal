@@ -7,7 +7,7 @@ import { FormField, TextInput } from "@/components/form";
 import { SubmitButton, DeleteButton } from "@/components/form";
 
 // Props.
-type Props<TUpsertResult extends string | void> = {
+type Props<TUpsertResult extends number | void> = {
   isForCreating: boolean;
   model: ProductCategoryUpsertModel;
   onModelUpdated(updatedData: Partial<ProductCategoryUpsertModel>): any;
@@ -19,9 +19,11 @@ type Props<TUpsertResult extends string | void> = {
 };
 
 // Component.
-const ProductCategoryUpsertPage = <TUpsertResult extends string | void>(props: Props<TUpsertResult>): React.ReactNode => {
+const ProductCategoryUpsertPage = <TUpsertResult extends number | void>(
+  props: Props<TUpsertResult>): React.ReactNode =>
+{
   // States.
-  const isModelDirty = useJSONDirtyModelChecker(props.model);
+  const [isModelDirty] = useJSONDirtyModelChecker(props.model);
 
   // Template.
   return (

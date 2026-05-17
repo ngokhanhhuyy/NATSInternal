@@ -4,8 +4,7 @@ import { getDisplayName } from "@/metadata";
 
 // Child components.
 import type { ProductListDataLoaderResults } from "./dataLoader";
-import { FormField } from "@/components/form";
-import CategoryButton from "./CategoryButton";
+import { FormField, SelectInput, type SelectInputOption } from "@/components/form";
 
 type Props = {
   model: ProductListModel;
@@ -17,39 +16,38 @@ export default function FilterPanelChildren(props: Props): React.ReactNode {
   const initialModels = useLoaderData<ProductListDataLoaderResults>();
 
   // Computed.
-  const selectableCategories = useMemo<ProductCategoryBasicModel[]>(() => {
-    return initialModels.categoryOptions ?? [];
+  const categoryOptions = useMemo<SelectInputOption[]>(() => {
+    const options = initialModels.categoryModels.map(category => ({
+      value: category.id.toString(),
+      displayName: category.name
+    }));
+
+    return [
+      { value: "", displayName: "Tất cả phân loại" },
+      ...options
+    ];
   }, []);
 
   // Callbacks.
-  function handleCategorySelectionChanged(category: ProductCategoryBasicModel | null): void {
-    if (category != null) {
-      props.onModelUpdated({ category: category });
+  function handleCategorySelectionChanged(idAsString: string): void {
+    if (idAsString) {
+      const id = parseInt(idAsString);
+      const category = initialModels.categoryModels.find(pc => pc.id == id)!;
+      props.onModelUpdated({ category });
       return;
     }
 
     props.onModelUpdated({ category: null });
-  };
+  }
 
   // Template.
   return (
     <FormField path="categoryId" displayName={getDisplayName("category") ?? undefined}>
-      <div className={"flex gap-3"}>
-        <CategoryButton
-          model={null}
-          isSelected={props.model.category?.id == null}
-          onClick={handleCategorySelectionChanged}
-        />
-
-        {selectableCategories.map(category => (
-          <CategoryButton
-            model={category}
-            isSelected={props.model.category?.id === category.id}
-            onClick={handleCategorySelectionChanged}
-            key={category.id}
-          />
-        ))}
-      </div>
+      <SelectInput
+        options={categoryOptions}
+        value={props.model.category?.id.toString() ?? ""}
+        onValueChanged={handleCategorySelectionChanged}
+      />
     </FormField>
   );
 }

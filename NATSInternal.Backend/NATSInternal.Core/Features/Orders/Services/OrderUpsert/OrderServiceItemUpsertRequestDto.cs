@@ -2,7 +2,7 @@ using NATSInternal.Core.Common.Dtos;
 
 namespace NATSInternal.Core.Features.Orders;
 
-public class OrderUpsertServiceItemRequestDto : IRequestDto
+public class OrderServiceItemUpsertRequestDto : IRequestDto
 {
     #region Properties
     public int? Id { get; set; }

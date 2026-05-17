@@ -31,7 +31,8 @@ internal class Product
     [Required]
     public required int StockingQuantity { get; set; }
 
-    public int? ResupplyThresholdQuantity { get; set; }
+    [Required]
+    public int ResupplyThresholdQuantity { get; set; }
     
     [Required]
     public required bool IsForRetail { get; set; } = true; 

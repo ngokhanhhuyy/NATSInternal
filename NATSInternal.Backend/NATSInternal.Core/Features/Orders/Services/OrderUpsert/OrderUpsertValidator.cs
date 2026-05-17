@@ -13,8 +13,8 @@ internal class OrderUpsertValidator : Validator<OrderUpsertRequestDto>
     #region Constructors
     public OrderUpsertValidator(
         IValidator<CustomerUpsertRequestDto> customerValidator,
-        IValidator<OrderUpsertProductItemRequestDto> productItemValidator,
-        IValidator<OrderUpsertServiceItemRequestDto> serviceItemValidator,
+        IValidator<OrderProductItemUpsertRequestDto> productItemValidator,
+        IValidator<OrderServiceItemUpsertRequestDto> serviceItemValidator,
         IValidator<PhotoUpsertRequestDto> photoValidator,
         IClock clock)
     {

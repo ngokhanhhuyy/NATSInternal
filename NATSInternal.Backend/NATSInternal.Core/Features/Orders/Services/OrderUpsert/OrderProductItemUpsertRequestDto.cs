@@ -2,7 +2,7 @@ using NATSInternal.Core.Common.Dtos;
 
 namespace NATSInternal.Core.Features.Orders;
 
-public class OrderUpsertProductItemRequestDto : IHasProductItemUpsertRequestDto
+public class OrderProductItemUpsertRequestDto : IHasProductItemUpsertRequestDto
 {
     #region Properties
     public int? Id { get; set; }

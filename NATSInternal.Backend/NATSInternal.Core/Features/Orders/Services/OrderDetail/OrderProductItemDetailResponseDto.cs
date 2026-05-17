@@ -2,10 +2,10 @@ using NATSInternal.Core.Features.Products;
 
 namespace NATSInternal.Core.Features.Orders;
 
-public class OrderDetailProductItemResponseDto
+public class OrderProductItemDetailResponseDto
 {
     #region Constructors
-    internal OrderDetailProductItemResponseDto(OrderProductItem orderProductItem)
+    internal OrderProductItemDetailResponseDto(OrderProductItem orderProductItem)
     {
         Id = orderProductItem.Id;
         AmountBeforeVatPerUnit = orderProductItem.AmountBeforeVatPerUnit;

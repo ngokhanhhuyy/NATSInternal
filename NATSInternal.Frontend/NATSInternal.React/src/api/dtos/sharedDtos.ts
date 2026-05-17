@@ -41,6 +41,16 @@ declare global {
     name: string;
     authorization: ProductCategoryExistingAuthorizationResponseDto | null;
   };
+
+  type OrderBasicResponseDto = {
+    id: number;
+    type: OrderType;
+    statsDate: string;
+    amountAfterVat: number;
+    customer: CustomerBasicResponseDto;
+    thumbnailUrl: string | null;
+    authorization: OrderExistingAuthorizationResponseDto | null;
+  };
   
   type PhotoBasicResponseDto = {
     id: number;

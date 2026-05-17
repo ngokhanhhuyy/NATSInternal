@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLoaderData } from "react-router";
-import { useApi } from "@/api";
-// import { useRouteHelper } from "@/helpers";
+import { api } from "@/api";
+import { getProductCategoryListRoutePath } from "@/helpers";
 
 // Child components.
 import ProductCategoryUpsertPage from "./ProductCategoryUpsertPage";
@@ -9,9 +9,7 @@ import ProductCategoryUpsertPage from "./ProductCategoryUpsertPage";
 // Components.
 export default function ProductCategoryUpdatePage(): React.ReactNode {
   // Dependencies.
-  const api = useApi();
   const navigate = useNavigate();
-  // const { getProductCategoryListRoutePath } = useRouteHelper();
   
   // States.
   const initialModel = useLoaderData<ProductCategoryUpsertModel>();
@@ -26,13 +24,13 @@ export default function ProductCategoryUpdatePage(): React.ReactNode {
     navigate(model.detailRoutePath);
   }
 
-  // async function handleDeleteAysnc(): Promise<void> {
-  //   await api.productCategory.deleteAsync(model.id);
-  // }
+  async function handleDeleteAysnc(): Promise<void> {
+    await api.productCategory.deleteAsync(model.id);
+  }
 
-  // function handleDeletionSucceeded(): void {
-  //   navigate(getProductCategoryListRoutePath());
-  // }
+  function handleDeletionSucceeded(): void {
+    navigate(getProductCategoryListRoutePath());
+  }
 
   // Template.
   return (
@@ -42,6 +40,8 @@ export default function ProductCategoryUpdatePage(): React.ReactNode {
       onModelUpdated={(updatedData) => setModel(m => ({ ...m, ...updatedData }))}
       upsertAction={handleUpsertAsync}
       onUpsertingSucceeded={handleUpsertingSucceeded}
+      deleteAction={handleDeleteAysnc}
+      onDeletionSucceeded={handleDeletionSucceeded}
     />
   );
 }

@@ -10,7 +10,7 @@ declare global {
     defaultAmountBeforeVatPerUnit: number;
     defaultVatPercentagePerUnit: number;
     stockingQuantity: number;
-    resupplyThresholdQuantity: number | null;
+    resupplyThresholdQuantity: number;
     isForRetail: boolean;
     isDiscontinued: boolean;
     createdDateTime: string;

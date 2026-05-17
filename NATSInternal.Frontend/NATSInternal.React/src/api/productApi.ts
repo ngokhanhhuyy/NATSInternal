@@ -3,7 +3,7 @@ import { httpClient } from "./httpClient";
 export type ProductApi = {
   getListAsync(requestDto?: ProductListRequestDto): Promise<ProductListResponseDto>;
   getDetailAsync(id: number): Promise<ProductDetailResponseDto>;
-  createAsync(requestDto: ProductCreateRequestDto): Promise<string>;
+  createAsync(requestDto: ProductCreateRequestDto): Promise<number>;
   updateAsync(id: number, requestDto: ProductUpdateRequestDto): Promise<void>;
   deleteAsync(id: number): Promise<void>;
 };
@@ -15,7 +15,7 @@ export const productApi: ProductApi = {
   async getDetailAsync(id: number): Promise<ProductDetailResponseDto> {
     return await httpClient.getAsync(`/products/${id}`);
   },
-  async createAsync(requestDto: ProductCreateRequestDto): Promise<string> {
+  async createAsync(requestDto: ProductCreateRequestDto): Promise<number> {
     return await httpClient.postAsync("/products",requestDto);
   },
   async updateAsync(id: number, requestDto: ProductUpdateRequestDto): Promise<void> {

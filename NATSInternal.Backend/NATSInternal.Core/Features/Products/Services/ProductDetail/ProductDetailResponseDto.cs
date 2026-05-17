@@ -44,7 +44,7 @@ public class ProductDetailResponseDto
     public long DefaultAmountBeforeVatPerUnit { get; }
     public int DefaultVatPercentagePerUnit { get; }
     public int StockingQuantity { get; }
-    public int? ResupplyThresholdQuantity { get; }
+    public int ResupplyThresholdQuantity { get; }
     public bool IsForRetail { get; }
     public bool IsDiscontinued { get; }
     public DateTime CreatedDateTime { get; }

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, startTransition } from "react";
 import { Link } from "react-router";
-import { useApi } from "@/api";
+import { api } from "@/api";
 import { createProductListModel } from "@/models";
 import { useInitialRendering } from "@/hooks";
 
 // Child components.
-import { ArchiveBoxIcon, TagIcon } from "@heroicons/react/24/outline";
+import { ArchiveBoxIcon } from "@heroicons/react/24/outline";
 
 // Props.
 type Props = {
@@ -14,9 +14,6 @@ type Props = {
 
 // Component.
 export default function ProductListPanel(props: Props): React.ReactNode {
-  // Dependencies.
-  const api = useApi();
-
   // States.
   const isInitialRendering = useInitialRendering();
   const [model, setModel] = useState<ProductListModel>(() => {
@@ -71,15 +68,19 @@ export default function ProductListPanel(props: Props): React.ReactNode {
   );
 }
 
-function Product(props: { model: ProductListProductModel }): React.ReactNode {
+function Product(props: { model: ProductBasicModel }): React.ReactNode {
   // Template.
   return (
-    <li className="list-group-item flex gap-3 justify-start items-start px-3 py-2">
+    <li className="list-group-item flex gap-2 justify-start items-start px-3 py-2">
       {props.model.thumbnailUrl ? (
-        <img src={props.model.thumbnailUrl} className="img-thumbnail size-11" alt={props.model.name} />
+        <img
+          src={props.model.thumbnailUrl}
+          className="img-thumbnail rounded size-6"
+          alt={props.model.name}
+        />
       ) : (
-        <div className="img-thumbnail size-11 flex justify-center items-center">
-          <ArchiveBoxIcon className="size-6 opacity-50" />
+        <div className="img-thumbnail rounded size-6 flex justify-center items-center">
+          <ArchiveBoxIcon className="size-3 opacity-50" />
         </div>
       )}
 
@@ -87,13 +88,6 @@ function Product(props: { model: ProductListProductModel }): React.ReactNode {
         <Link className="font-bold text-blue-600 dark:text-blue-400" to={props.model.detailRoutePath}>
           {props.model.name}
         </Link>
-
-        {props.model.category && (
-          <div className="flex justify-start items-center gap-1 text-sm">
-            <TagIcon className="size-3.5" />
-            <span>{props.model.category.name}</span>
-          </div>
-        )}
       </div>
     </li>
   );
