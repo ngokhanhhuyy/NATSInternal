@@ -58,7 +58,7 @@ declare global {
     isThumbnail: boolean;
   };
   
-  type ListMonthYearRequestDto = {
+  type ListStatsMonthYearRequestDto = {
     month: number;
     year: number;
   };

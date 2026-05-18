@@ -8,7 +8,7 @@ declare global {
     resultsPerPage: number;
     customerId: number;
     debtOrdersOnly: boolean;
-    statsMonthYear: ListMonthYearRequestDto;
+    statsMonthYear: ListStatsMonthYearRequestDto;
   }>;
 
   type OrderListResponseDto = Implements<IListResponseDto<OrderBasicResponseDto>, {
