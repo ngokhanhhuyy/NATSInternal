@@ -14,31 +14,23 @@ internal class HasStatsListValidator<TListRequestDto, TFieldToSort> : Validator<
     {
         Include(new ListValidator<TListRequestDto, TFieldToSort>());
 
-        RuleFor(dto => dto.StatsMonthYear)
-            .ChildRules(cr =>
-            {
-                #nullable disable
-                DateOnly today = clock.Today;
-
-                cr.RuleFor(my => my.Year)
-                    .GreaterThanOrEqualTo(0)
-                    .LessThanOrEqualTo(today.Year)
-                    .WithName(DisplayNames.Year);
-                    
-                cr.RuleFor(my => my.Month)
-                    .GreaterThanOrEqualTo(1)
-                    .LessThanOrEqualTo(today.Month)
-                    .When(dto => dto.Year == today.Year)
-                    .WithName(DisplayNames.Month);
-                    
-                cr.RuleFor(my => my.Month)
-                    .GreaterThanOrEqualTo(1)
-                    .LessThanOrEqualTo(12)
-                    .When(dto => dto.Year < today.Year)
-                    .WithName(DisplayNames.Month);
-                #nullable enable
-            })
-            .When(dto => dto.StatsMonthYear is not null);
+        DateOnly today = clock.Today;
+        RuleFor(dto => dto.StatsYear)
+            .GreaterThanOrEqualTo(0)
+            .LessThanOrEqualTo(today.Year)
+            .WithName(DisplayNames.Year);
+            
+        RuleFor(dto => dto.StatsMonth)
+            .GreaterThanOrEqualTo(1)
+            .LessThanOrEqualTo(today.Month)
+            .When(dto => dto.StatsYear == today.Year)
+            .WithName(DisplayNames.Month);
+            
+        RuleFor(dto => dto.StatsMonth)
+            .GreaterThanOrEqualTo(1)
+            .LessThanOrEqualTo(12)
+            .When(dto => dto.StatsYear < today.Year)
+            .WithName(DisplayNames.Month);
     }
     #endregion
 }

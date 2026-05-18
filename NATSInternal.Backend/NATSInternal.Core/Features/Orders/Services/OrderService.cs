@@ -14,6 +14,7 @@ using NATSInternal.Core.Features.Payments;
 // using NATSInternal.Core.Features.Photos;
 using NATSInternal.Core.Persistence.DbContext;
 using NATSInternal.Core.Persistence.Handlers;
+using NATSInternal.Core.Common.Dtos;
 
 namespace NATSInternal.Core.Features.Orders;
 
@@ -25,6 +26,7 @@ internal class OrderService : IOrderService
     private readonly ICustomerInternalService _customerService;
     private readonly IPaymentInternalService _paymentService;
     private readonly IListFetchingService _listFetchingService;
+    private readonly IStatsMonthYearService _statsMonthYearService;
     private readonly IHasProductService<OrderProductItemUpsertRequestDto, OrderProductItem> _hasProductService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IValidator<OrderListRequestDto> _listValidator;
@@ -40,6 +42,7 @@ internal class OrderService : IOrderService
         ICustomerInternalService customerService,
         IPaymentInternalService paymentService,
         IListFetchingService listFetchingService,
+        IStatsMonthYearService statsMonthYearService,
         IHasProductService<OrderProductItemUpsertRequestDto, OrderProductItem> hasProductService,
         IAuthorizationInternalService authorizationService,
         IValidator<OrderListRequestDto> listValidator,
@@ -52,6 +55,7 @@ internal class OrderService : IOrderService
         _customerService = customerService;
         _paymentService = paymentService;
         _listFetchingService = listFetchingService;
+        _statsMonthYearService = statsMonthYearService;
         _hasProductService = hasProductService;
         _authorizationService = authorizationService;
         _listValidator = listValidator;
@@ -73,10 +77,7 @@ internal class OrderService : IOrderService
             .Include(o => o.Photos.Where(photo => photo.IsThumbnail))
             .Where(o => o.DeletedDateTime == null);
 
-        if (requestDto.StatsMonthYear is not null)
-        {
-            query = query.HasStatsMonthYear(requestDto.StatsMonthYear.Year, requestDto.StatsMonthYear.Month);
-        }
+        query = query.HasStatsMonthYear(requestDto.StatsYear, requestDto.StatsMonth);
         
         if (requestDto.CustomerId.HasValue)
         {
@@ -421,6 +422,11 @@ internal class OrderService : IOrderService
             ThrowDbUpdateHandledException(exception);
             throw;
         }
+    }
+
+    public async Task<List<StatsMonthYearResponseDto>> GetStatsMonthYearSeriesAsync()
+    {
+        return await _statsMonthYearService.GetStatsMonthYearSeries(_context.Orders);
     }
     #endregion
 

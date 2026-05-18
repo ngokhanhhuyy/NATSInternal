@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NATSInternal.Core.Common.Dtos;
 using NATSInternal.Core.Features.Orders;
 
 namespace NATSInternal.Api.Controllers;
@@ -71,6 +72,14 @@ public class OrderController : ControllerBase
     {
         await _service.DeleteAsync(id);
         return Ok();
+    }
+
+    [HttpGet]
+    [ProducesResponseType<List<StatsMonthYearResponseDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetStatsMonthYearSeries()
+    {
+        return Ok(await _service.GetStatsMonthYearSeriesAsync());
     }
     #endregion
 }

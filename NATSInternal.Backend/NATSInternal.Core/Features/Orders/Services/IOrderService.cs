@@ -1,3 +1,5 @@
+using NATSInternal.Core.Common.Dtos;
+
 namespace NATSInternal.Core.Features.Orders;
 
 public interface IOrderService
@@ -8,5 +10,6 @@ public interface IOrderService
     Task<int> CreateAsync(OrderUpsertRequestDto requestDto);
     Task UpdateAsync(int id, OrderUpsertRequestDto requestDto);
     Task DeleteAsync(int id);
+    Task<List<StatsMonthYearResponseDto>> GetStatsMonthYearSeriesAsync();
     #endregion
 }

@@ -11,7 +11,8 @@ public class OrderListRequestDto : IHasStatsListRequestDto
     public int ResultsPerPage { get; set; } = 15;
     public int? CustomerId { get; set; }
     public bool DebtOrdersOnly { get; set; }
-    public ListMonthYearRequestDto? StatsMonthYear { get; set; }
+    public int? StatsYear { get; set; }
+    public int? StatsMonth { get; set; }
     #endregion
 
     #region Methods
