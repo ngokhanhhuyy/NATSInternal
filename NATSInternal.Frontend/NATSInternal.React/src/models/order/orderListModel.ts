@@ -1,3 +1,5 @@
 declare global {
-  type OrderListModel = Implements<IHasStatsListModel
+  type OrderListModel = Implements<IHasStatsListModel, {
+    
+  }>;
 }

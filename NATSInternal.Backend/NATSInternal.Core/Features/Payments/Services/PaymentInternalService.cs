@@ -62,10 +62,7 @@ internal class PaymentInternalService : IPaymentInternalService
             .Include(p => p.Customer)
             .Where(p => p.DeletedDateTime == null);
 
-        if (requestDto.StatsMonthYear is not null)
-        {
-            query = query.HasStatsMonthYear(requestDto.StatsMonthYear.Year, requestDto.StatsMonthYear.Month);
-        }
+        query = query.HasStatsMonthYear(requestDto.StatsYear, requestDto.StatsMonth);
 
         if (requestDto.CustomerId.HasValue)
         {
@@ -107,7 +104,7 @@ internal class PaymentInternalService : IPaymentInternalService
                 _authorizationService.GetPaymentExistingAuthorization(p)))
             .ToList();
 
-        return new(supplyResponseDtos, queryResult.ItemCount, queryResult.PageCount);
+        return new(supplyResponseDtos, queryResult.PageCount, queryResult.ItemCount);
     }
 
     public async Task<PaymentDetailResponseDto> GetDetailAsync(int id)

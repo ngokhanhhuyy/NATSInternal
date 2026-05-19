@@ -62,10 +62,7 @@ internal class SupplyService : ISupplyService
             .Include(s => s.Photos.Where(photo => photo.IsThumbnail))
             .Where(s => s.DeletedDateTime == null);
 
-        if (requestDto.StatsMonthYear is not null)
-        {
-            query = query.HasStatsMonthYear(requestDto.StatsMonthYear.Year, requestDto.StatsMonthYear.Month);
-        }
+        query = query.HasStatsMonthYear(requestDto.StatsYear, requestDto.StatsMonth);
 
         switch (requestDto.SortByFieldName)
         {

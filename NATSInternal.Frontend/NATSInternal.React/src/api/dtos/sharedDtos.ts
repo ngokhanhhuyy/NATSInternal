@@ -57,10 +57,10 @@ declare global {
     url: string;
     isThumbnail: boolean;
   };
-  
-  type ListStatsMonthYearRequestDto = {
-    month: number;
+
+  type StatsMonthYearResponseDto = {
     year: number;
+    month: number;
   };
 }
 

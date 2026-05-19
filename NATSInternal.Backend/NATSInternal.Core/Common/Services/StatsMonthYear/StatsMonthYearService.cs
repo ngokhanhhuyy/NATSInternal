@@ -29,6 +29,7 @@ internal class StatsMonthYearService : IStatsMonthYearService
         DateOnly earliestStatsDate = await dbSet
             .OrderBy(e => e.StatsDate)
             .Select(e => e.StatsDate)
+            .AsAsyncEnumerable()
             .DefaultIfEmpty(today)
             .FirstAsync();
 
@@ -37,8 +38,8 @@ internal class StatsMonthYearService : IStatsMonthYearService
         int generatingMonth = earliestStatsDate.Month;
         bool ShouldGenerationFinish()
         {
-            int currentYear = earliestStatsDate.Year;
-            int currentMonth = earliestStatsDate.Month;
+            int currentYear = today.Year;
+            int currentMonth = today.Month;
             return generatingYear > currentYear || (generatingYear == currentYear && generatingMonth > currentMonth);
         }
 

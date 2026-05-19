@@ -12,7 +12,8 @@ declare global {
   }
   
   interface IHasStatsListRequestDto extends IListRequestDto {
-    statsMonthYear: ListStatsMonthYearRequestDto | null;
+    statsYear: number | null;
+    statsMonth: number | null;
   }
   
   interface IHasStatsUpsertRequestDto {

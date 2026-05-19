@@ -151,6 +151,12 @@ Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
+# @name OrderStatsMonthYearSeries
+GET {{host}}/orders/stats-month-year-series
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
 # @name OrderDetail
 GET {{host}}/orders/401
 Content-Type: application/json
@@ -158,7 +164,7 @@ Cookie: {{accessCookie}}
 
 ###
 # @name PaymentList
-GET {{host}}/payments?sortingByFieldName=StatsDate&sortByAscending=False
+GET {{host}}/payments?sortingByFieldName=StatsDate&sortByAscending=False&page=3&statsYear=2025&statsMonth=11
 Content-Type: application/json
 Cookie: {{accessCookie}}
 

@@ -74,7 +74,7 @@ public class OrderController : ControllerBase
         return Ok();
     }
 
-    [HttpGet]
+    [HttpGet("stats-month-year-series")]
     [ProducesResponseType<List<StatsMonthYearResponseDto>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetStatsMonthYearSeries()

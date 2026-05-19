@@ -6,6 +6,7 @@ export type OrderApi = {
   createAsync(requestDto: OrderUpsertRequestDto): Promise<number>;
   updateAsync(id: number, requestDto: OrderUpsertRequestDto): Promise<void>;
   deleteAsync(id: number): Promise<void>;
+  getStatsMonthYearSeriesAsync(): Promise<StatsMonthYearResponseDto[]>;
 };
 
 export const orderApi: OrderApi = {
@@ -23,5 +24,15 @@ export const orderApi: OrderApi = {
   },
   async deleteAsync(id: number): Promise<void> {
     await httpClient.deleteAndIgnoreAsync(`/orders/${id}`);
+  },
+  async getStatsMonthYearSeriesAsync(): Promise<StatsMonthYearResponseDto[]> {
+    if (statsMonthYearResponseDtos == null) {
+      const responseDtos = await httpClient.getAsync<StatsMonthYearResponseDto[]>("/orders/stats-month-year-series");
+      statsMonthYearResponseDtos = responseDtos;
+    }
+
+    return statsMonthYearResponseDtos;
   }
 };
+
+let statsMonthYearResponseDtos: StatsMonthYearResponseDto[] | null = null;
