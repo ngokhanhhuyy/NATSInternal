@@ -138,11 +138,11 @@ internal class OrderService : IOrderService
         (int page, int resultPerPage) = (requestDto.Page, requestDto.ResultsPerPage);
         Page<Order> queryResult = await _listFetchingService.GetPagedListAsync(query, page, resultPerPage);
 
-        List<OrderBasicResponseDto> supplyResponseDtos = queryResult.Items
+        List<OrderBasicResponseDto> orderResponseDtos = queryResult.Items
             .Select(o => new OrderBasicResponseDto(o, _authorizationService.GetOrderExistingAuthorization(o)))
             .ToList();
 
-        return new(supplyResponseDtos, queryResult.ItemCount, queryResult.PageCount);
+        return new(orderResponseDtos, queryResult.PageCount, queryResult.ItemCount);
     }
 
     public async Task<OrderDetailResponseDto> GetDetailAsync(int id)

@@ -2,6 +2,7 @@ declare global {
   type MetadataResponseDto = {
     displayNameList: MetadataDisplayNamesResponseDto;
     listOptionsList: MetadataListOptionsListResponseDto;
+    statsMonthYearSeries: MetadataStatsMonthYearSeries;
     creatingAuthorization: MetadataCreatingAuthorizationResponseDto;
   };
 
@@ -13,6 +14,10 @@ declare global {
     product: MetadataListOptionsResponseDto;
     brand: MetadataListOptionsResponseDto;
     productCategory: MetadataListOptionsResponseDto;
+    expense: MetadataListOptionsResponseDto;
+    supply: MetadataListOptionsResponseDto;
+    order: MetadataListOptionsResponseDto;
+    payment: MetadataListOptionsResponseDto;
   };
 
   type MetadataListOptionsResponseDto = {
@@ -23,12 +28,20 @@ declare global {
     defaultResultsPerPage: number;
   };
 
+  type MetadataStatsMonthYearSeries = {
+    orderSeries: StatsMonthYearResponseDto[];
+  };
+
   type MetadataCreatingAuthorizationResponseDto = {
     canCreateUser: boolean;
     canCreateCustomer: boolean;
     canCreateProduct: boolean;
     canCreateBrand: boolean;
     canCreateProductCategory: boolean;
+    canCreateExpense: boolean;
+    canCreateSupply: boolean;
+    canCreateOrder: boolean;
+    canCreatePayment: boolean;
   };
 }
 

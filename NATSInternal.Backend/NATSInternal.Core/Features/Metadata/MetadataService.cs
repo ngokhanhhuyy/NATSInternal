@@ -17,6 +17,7 @@ internal class MetadataService : IMetadataService
 {
     #region Fields
     private readonly IAuthorizationService _authorizationService;
+    private readonly IOrderService _orderService;
     private static readonly IDictionary<string, string> _displayNames;
     #endregion
     
@@ -29,14 +30,15 @@ internal class MetadataService : IMetadataService
             .ToDictionary(f => f.Name, f => (string)f.GetValue(null)!);
     }
     
-    public MetadataService(IAuthorizationService authorizationService)
+    public MetadataService(IAuthorizationService authorizationService, IOrderService orderService)
     {
         _authorizationService = authorizationService;
+        _orderService = orderService;
     }
     #endregion
     
     #region Methods
-    public MetadataResponseDto GetMetadata()
+    public async Task<MetadataResponseDto> GetMetadataAsync()
     {
         CustomerListRequestDto customerListRequestDto = new();
         ExpenseListRequestDto expenseListRequestDto = new();
@@ -103,12 +105,20 @@ internal class MetadataService : IMetadataService
         {
             DisplayNameList = _displayNames,
             ListOptionsList = listOptionsList,
+            StatsMonthYearSeries = new()
+            {
+                OrderSeries = await _orderService.GetStatsMonthYearSeriesAsync()
+            },
             CreatingAuthorization = new()
             {
                 CanCreateUser = _authorizationService.CanCreateUser(),
                 CanCreateCustomer = _authorizationService.CanCreateCustomer(),
                 CanCreateProduct = _authorizationService.CanCreateProduct(),
-                CanCreateProductCategory = _authorizationService.CanCreateProductCategory()
+                CanCreateProductCategory = _authorizationService.CanCreateProductCategory(),
+                CanCreateExpense = _authorizationService.CanCreateExpense(),
+                CanCreateSupply = _authorizationService.CanCreateSupply(),
+                CanCreateOrder = _authorizationService.CanCreateOrder(),
+                CanCreatePayment = _authorizationService.CanCreatePayment()
             },
         };
     }

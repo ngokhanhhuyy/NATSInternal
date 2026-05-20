@@ -15,6 +15,11 @@ declare global {
     items: TItemModel[];
   }
 
+  interface IHasStatsListModel<TItemModel extends object> extends IListModel<TItemModel> {
+    statsMonthYear: StatsMonthYearModel | null;
+    statsMonthYearOptions: StatsMonthYearModel[];
+  }
+
   interface IUpsertableListModel<TItemModel extends object> {
     items: TItemModel[];
     createRoutePath?: string;

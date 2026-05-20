@@ -11,6 +11,7 @@ import { authenticationRoutes } from "./authenticatinoRoutes";
 import { homeRoutes } from "./homeRoutes";
 import { customerRoutes } from "./customerRoutes";
 import { productRoutes } from "./productRoutes";
+import { orderRoutes } from "./orderRoutes";
 
 // Components.
 function AuthenticationErrorBoundary(): React.ReactNode | null {
@@ -43,7 +44,8 @@ const router = createBrowserRouter([
           },
           homeRoutes,
           customerRoutes,
-          productRoutes
+          productRoutes,
+          orderRoutes
         ],
         handle: {
           breadcrumbTitle: "Trang chủ"

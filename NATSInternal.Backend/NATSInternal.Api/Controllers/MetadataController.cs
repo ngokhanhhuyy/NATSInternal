@@ -21,9 +21,9 @@ public class MetadataController : ControllerBase
     #region Methods
     [HttpGet]
     [ProducesResponseType<MetadataResponseDto>(StatusCodes.Status200OK)]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return Ok(_service.GetMetadata());
+        return Ok(await _service.GetMetadataAsync());
     }
     #endregion
 }
