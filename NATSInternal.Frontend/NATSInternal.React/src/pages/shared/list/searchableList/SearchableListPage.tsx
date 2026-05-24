@@ -23,11 +23,10 @@ type Props<TListModel extends ListModel<TItemModel>, TItemModel extends object> 
   linkButtons?: React.ReactNode | React.ReactNode[];
   filterPanelChildren?: React.ReactNode | React.ReactNode[];
   sideBarPanels?: React.ReactNode | React.ReactNode[];
-  additionalDirtyModelComparer?: (originalModel: TListModel, additionalModel: TListModel) => boolean;
 };
 
 // Components.
-export default function SearchablePageableListPage<TListModel extends ListModel<TItemModel>, TItemModel extends object>
+export default function SearchableListPage<TListModel extends ListModel<TItemModel>, TItemModel extends object>
   (props: Props<TListModel, TItemModel>): React.ReactNode
 {
 

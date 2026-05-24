@@ -2,6 +2,7 @@ export { default as Block, type PanelProps as BlockProps } from "./Panel";
 export { default as Button, type ButtonProps } from "./Button";
 export { default as Collapsible, type CollapsibleProps } from "./Collapsible";
 export { default as Paginator, type PaginatorProps } from "./Paginator";
+export { default as NewTabLink } from "./NewTabLink";
 export { default as NewTabEmailLink, type NewTabEmailLinkProps } from "./NewTabEmailLink";
 export { default as NewTabPhoneLink, type NewTabPhoneLinkProps } from "./NewTabPhoneLink";
 export { default as NewTabWebsiteLink, type NewTabWebsiteLinkProps } from "./NewTabWebsiteLink";

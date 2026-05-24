@@ -51,6 +51,14 @@ declare global {
     thumbnailUrl: string | null;
     authorization: OrderExistingAuthorizationResponseDto | null;
   };
+
+  type PaymentBasicResponseDto = {
+    id: number;
+    type: PaymentType;
+    statsDate: string;
+    amount: number;
+    customer: CustomerBasicResponseDto;
+  };
   
   type PhotoBasicResponseDto = {
     id: number;

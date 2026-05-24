@@ -21,16 +21,23 @@ declare global {
   type OrderDetailResponseDto = {
     id: number;
     statsDate: string;
+    type: OrderType;
     productItems: OrderProductItemDetailResponseDto[];
     serviceItems: OrderServiceItemDetailResponseDto[];
     note: string | null;
+    customer: CustomerBasicResponseDto;
+    payment: PaymentBasicResponseDto | null;
     createdDateTime: string;
     createdUser: UserBasicResponseDto;
     lastUpdatedDateTime: string | null;
     lastUpdatedUser: UserBasicResponseDto;
     deletedDateTime: string | null;
     deletedUser: UserBasicResponseDto | null;
+    photos: PhotoBasicResponseDto[];
     authorization: OrderExistingAuthorizationResponseDto;
+    amountAfterVat: number;
+    paidAmount: number;
+    debtAmount: number;
   };
 
   type OrderUpsertRequestDto = {

@@ -5,10 +5,11 @@ import { createCustomerDetailModel } from "@/models/customer/customerDetailModel
 
 // Child components.
 import { MainContainer } from "@/components/layouts";
-import PersonalInformationBlock from "./PersonalInformationBlock";
-import ManagementBlock from "./ManagementBlock";
-import DebtBlock from "./DebtBlock";
-import RecentTransactionsBlock from "./RecentTransactions";
+import AvatarAndNamePanel from "./AvatarAndNamePanel";
+import PersonalInformationBlock from "./PersonalInformationPanel";
+import ManagementPanel from "./ManagementPanel";
+import DebtPanel from "./DebtPanel";
+import RecentTransactionPanel from "./RecentTransactionsPanel";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 // Data loder.
@@ -26,13 +27,14 @@ export default function CustomerDetailPage(): React.ReactNode {
   return (
     <MainContainer>
       <div className="flex flex-col gap-3">
+        <AvatarAndNamePanel model={model} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="flex flex-col gap-3">
             <PersonalInformationBlock model={model} />
-            <DebtBlock model={model} />
-            <ManagementBlock model={model} />
+            <DebtPanel model={model} />
+            <ManagementPanel model={model} />
           </div>
-          <RecentTransactionsBlock model={model} />
+          <RecentTransactionPanel model={model} />
         </div>
 
         <div className="flex justify-end">

@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Link } from "react-router";
 
 // Child components.
-import Field from "@/pages/product/productDetail/Field";
+import { Field } from "@/pages/shared/detail";
 import { ArchiveBoxIcon, TagIcon } from "@heroicons/react/24/outline";
 
 // Props.
@@ -50,24 +50,24 @@ export default function DetailPanel(props: Props): React.ReactNode {
         <div className="flex flex-col gap-y-3">
           {/* Description */}
           {props.model.description && (
-            <Field propertyName="description">
+            <Field name="description">
               {props.model.description}
             </Field>
           )}
 
           {/* DefaultAmountBeforeVatPerUnit */}
-          <Field propertyName="defaultAmountBeforeVatPerUnit">
+          <Field name="defaultAmountBeforeVatPerUnit">
             {props.model.formattedDefaultAmountBeforeVatPerUnit}
           </Field>
 
           {/* DefaultVatPercentagePerUnit */}
-          <Field propertyName="defaultVatPercentagePerUnit">
+          <Field name="defaultVatPercentagePerUnit">
             {props.model.defaultVatPercentagePerUnit}%
           </Field>
 
           {/* Categories */}
           {props.model.categories.length > 0 && (
-            <Field propertyName="category">
+            <Field name="category">
               <div className="flex flex-wrap gap-1">
                 {props.model.categories.map(category => (
                   <Link

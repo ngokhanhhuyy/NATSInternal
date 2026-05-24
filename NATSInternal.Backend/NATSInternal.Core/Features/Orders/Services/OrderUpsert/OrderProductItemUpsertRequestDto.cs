@@ -7,7 +7,7 @@ public class OrderProductItemUpsertRequestDto : IHasProductItemUpsertRequestDto
     #region Properties
     public int? Id { get; set; }
     public long AmountBeforeVatPerUnit { get; set; }
-    public long VatAmountPerUnit { get; set; }
+    public int VatPercentagePerUnit { get; set; }
     public int Quantity { get; set; }
     public int ProductId { get; set; }
     #endregion

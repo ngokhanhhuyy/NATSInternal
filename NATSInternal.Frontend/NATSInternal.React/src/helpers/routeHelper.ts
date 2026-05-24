@@ -45,5 +45,11 @@ export const getOrderDetailRoutePath = (id: number) => `/don-hang/${id}`;
 export const getOrderCreateRoutePath = () => "/don-hang/tao-moi";
 export const getOrderUpdateRoutePath = (id: number) => `/don-hang/${id}/chinh-sua`;
 
+
+export const getPaymentListRoutePath = () => "/thanh-toan";
+export const getPaymentDetailRoutePath = (id: number) => `/thanh-toan/${id}`;
+export const getPaymentCreateRoutePath = () => "/thanh-toan/tao-moi";
+export const getPaymentUpdateRoutePath = (id: number) => `/thanh-toan/${id}/chinh-sua`;
+
 export const getDebtOverviewRoutePath = () => "/khoan-no/";
 export const getReportRoutePath = () => "/bao-cao";

@@ -1,15 +1,12 @@
 import React from "react";
 import { getDisplayName } from "@/metadata";
-import { useTsxHelper } from "@/helpers";
+import { joinClassName } from "@/helpers";
 
 // Props.
-type Props = { propertyName: string; } & React.ComponentPropsWithoutRef<"div">;
+type Props = { name: string; } & React.ComponentPropsWithoutRef<"div">;
 
 // Component.
-export default function Field({ propertyName, ...props }: Props): React.ReactNode {
-  // Dependencies.
-  const { joinClassName } = useTsxHelper();
-
+export default function Field({ name, ...props }: Props): React.ReactNode {
   // Template.
   if (props.children == null) {
     return null;
@@ -18,7 +15,7 @@ export default function Field({ propertyName, ...props }: Props): React.ReactNod
   return (
     <div className="flex flex-col">
       <span className="text-sm font-bold opacity-50">
-        {getDisplayName(propertyName) ?? propertyName}
+        {getDisplayName(name) ?? name}
       </span>
 
       <span {...props} className={joinClassName("text-blue-700 dark:text-blue-400", props.className)} />

@@ -1,4 +1,6 @@
 import { createCustomerBasicModel } from "./customerBasicModel";
+import { getOrderDetailRoutePath, getDisplayDateString, getDisplayAmountText } from "@/helpers";
+import { getDisplayName } from "@/metadata";
 
 declare global {
   type OrderBasicModel = {
@@ -9,6 +11,10 @@ declare global {
     customer: CustomerBasicModel;
     thumbnailUrl: string | null;
     authorization: OrderExistingAuthorizationResponseDto | null;
+    detailRoutePath: string;
+    displayName: string;
+    displayStatsDate: string;
+    displayAmountAfterVat: string;
   };
 }
 
@@ -20,6 +26,10 @@ export function createOrderBasicModel(responseDto: OrderBasicResponseDto): Order
     amountAfterVat: responseDto.amountAfterVat,
     customer: createCustomerBasicModel(responseDto.customer),
     thumbnailUrl: responseDto.thumbnailUrl,
-    authorization: responseDto.authorization
+    authorization: responseDto.authorization,
+    displayName: `#${responseDto.id.toString()} ${getDisplayName(responseDto.type)}`,
+    detailRoutePath: getOrderDetailRoutePath(responseDto.id),
+    displayStatsDate: getDisplayDateString(responseDto.statsDate),
+    displayAmountAfterVat: getDisplayAmountText(responseDto.amountAfterVat)
   };
 }

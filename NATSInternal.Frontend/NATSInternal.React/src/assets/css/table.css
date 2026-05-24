@@ -32,7 +32,9 @@
         & :where(th) {
             background-color: --alpha(var(--color-black) / 10%);
             font-size: var(--text-sm);
-            padding-block: --spacing(0.5);
+            padding-top: --spacing(1);
+            padding-bottom: --spacing(0.5);
+            vertical-align: middle;
 
             @variant dark {
                 & {

@@ -29,7 +29,7 @@ internal class PaymentSeeder
         {
             StatsDate = order.StatsDate,
             Type = PaymentType.OrderPayment,
-            Amount = order.CachedAmountAfterVat,
+            Amount = order.AmountAfterVat,
             CustomerId = order.CustomerId,
             OrderId = order.Id,
             CreatedDateTime = order.CreatedDateTime,

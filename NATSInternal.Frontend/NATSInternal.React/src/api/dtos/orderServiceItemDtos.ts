@@ -3,7 +3,7 @@ declare global {
     id: number;
     name: string;
     amountBeforeVatPerUnit: number;
-    vatAmountPerUnit: number;
+    vatPercentagePerUnit: number;
     quantity: number;
   };
 
@@ -11,7 +11,7 @@ declare global {
     id: number | null;
     name: string;
     amountBeforeVatPerUnit: number;
-    vatAmountPerUnit: number;
+    vatPercentagePerUnit: number;
     quantity: number;
   };
 }

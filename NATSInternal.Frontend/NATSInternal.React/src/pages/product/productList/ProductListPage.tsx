@@ -8,7 +8,7 @@ import { TagIcon } from "@heroicons/react/24/outline";
 import { loadProductListAsync, type ProductListDataLoaderResults } from "./dataLoader";
 import ResultsPanel from "./ResultsPanel";
 import FilterPanelChildren from "./FilterPanelChildren";
-import ListPage from "@/pages/shared/searchablePageableList";
+import ListPage from "@/pages/shared/list/searchableList";
 
 // Components.
 export default function ProductListPage(): React.ReactNode {

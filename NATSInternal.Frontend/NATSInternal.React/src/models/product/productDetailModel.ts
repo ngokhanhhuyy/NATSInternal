@@ -1,5 +1,5 @@
 import { createPhotoBasicModel, createProductCategoryBasicModel, createUserBasicModel } from "@/models";
-import { getDisplayDateTimeString, getProductUpdateRoutePath, getAmountDisplayText } from "@/helpers";
+import { getDisplayDateTimeString, getProductUpdateRoutePath, getDisplayAmountText } from "@/helpers";
 
 declare global {
   type ProductDetailModel = Readonly<{
@@ -48,7 +48,7 @@ export function createProductDetailModel(responseDto: ProductDetailResponseDto):
     deletedUser: responseDto.deletedUser && createUserBasicModel(responseDto.deletedUser),
     categories: responseDto.categories.map(createProductCategoryBasicModel),
     photos: responseDto.photos.map(dto => createPhotoBasicModel(dto)),
-    formattedDefaultAmountBeforeVatPerUnit: getAmountDisplayText(responseDto.defaultAmountBeforeVatPerUnit),
+    formattedDefaultAmountBeforeVatPerUnit: getDisplayAmountText(responseDto.defaultAmountBeforeVatPerUnit),
     updateRoutePath: getProductUpdateRoutePath(responseDto.id),
     authorization: responseDto.authorization
   };

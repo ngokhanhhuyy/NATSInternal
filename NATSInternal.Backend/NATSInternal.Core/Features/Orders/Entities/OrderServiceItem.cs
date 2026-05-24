@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NATSInternal.Core.Features.Orders;
 
@@ -16,7 +17,7 @@ internal class OrderServiceItem
     public required long AmountBeforeVatPerUnit { get; set; }
 
     [Required]
-    public required long VatAmountPerUnit { get; set; }
+    public required int VatPercentagePerUnit { get; set; }
 
     [Required]
     public required int Quantity { get; set; }
@@ -29,5 +30,16 @@ internal class OrderServiceItem
 
     #region NavigationProperties
     public Order Order { get; set; } = null!;
+    #endregion
+
+    #region ComputedProperties
+    [NotMapped]
+    public long VatAmountPerUnit => (long)Math.Ceiling(AmountBeforeVatPerUnit * (VatPercentagePerUnit / 100D));
+
+    [NotMapped]
+    public long VatAmount => VatAmountPerUnit * Quantity;
+
+    [NotMapped]
+    public long AmountAfterVat => AmountBeforeVatPerUnit * Quantity + VatAmount;
     #endregion
 }

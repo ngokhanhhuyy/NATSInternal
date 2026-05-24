@@ -41,7 +41,6 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> GetAccessCookie([FromBody] VerifyUserNameAndPasswordRequestDto requestDto)
     {
-        Console.WriteLine(nameof(GetAccessCookie));
         await _authenticationService.VerifyUserNameAndPasswordAsync(requestDto);
         UserDetailResponseDto  userResponseDto;
         userResponseDto = await _userService.GetDetailByUserNameAsync(requestDto.UserName, false);

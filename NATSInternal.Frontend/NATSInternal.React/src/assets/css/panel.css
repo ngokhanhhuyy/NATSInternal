@@ -59,6 +59,13 @@
         flex: 1;
         overflow: hidden;
         
+        .panel:not(:has(.panel-header)) > & {
+            border-top-width: 1px;
+            border-top-style: solid;
+            border-top-left-radius: var(--radius-xl);
+            border-top-right-radius: var(--radius-xl);
+        }
+        
         .panel:not(:has(.panel-footer)) > & {
             border-bottom-width: 1px;
             border-bottom-style: solid;

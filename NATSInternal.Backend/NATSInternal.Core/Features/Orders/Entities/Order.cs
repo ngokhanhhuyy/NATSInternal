@@ -47,18 +47,6 @@ internal class Order : IHasStatsEntity
 
     #region CachedProperties
     [Required]
-    public long CachedProductItemsAmountBeforeVat { get; private set; }
-
-    [Required]
-    public long CachedProductItemsVatAmount { get; private set; }
-
-    [Required]
-    public long CachedServiceItemsAmountBeforeVat { get; private set; }
-
-    [Required]
-    public long CachedServiceItemsVatAmount { get; private set; }
-    
-    [Required]
     public long CachedAmountAfterVat  { get; private set; }
     #endregion
 
@@ -85,15 +73,23 @@ internal class Order : IHasStatsEntity
 
     [NotMapped]
     public long ProductVatAmount => ProductItems.Sum(i => i.VatAmountPerUnit * i.Quantity);
+    
+    [NotMapped]
+    public long ServiceAmountBeforeVat => ServiceItems.Sum(i => i.AmountBeforeVatPerUnit * i.Quantity);
 
     [NotMapped]
-    public long AmountBeforeVat => ProductAmountBeforeVat;
+    public long ServiceVatAmount => ServiceItems.Sum(i => i.VatAmountPerUnit * i.Quantity);
 
     [NotMapped]
-    public long AmountAfterVat => ProductAmountBeforeVat + ProductVatAmount;
+    public long AmountBeforeVat => ProductAmountBeforeVat + ServiceAmountBeforeVat;
 
     [NotMapped]
-    public long VatAmount => ProductVatAmount;
+    public long AmountAfterVat =>
+        ProductAmountBeforeVat + ProductVatAmount +
+        ServiceAmountBeforeVat + ServiceVatAmount;
+
+    [NotMapped]
+    public long VatAmount => ProductVatAmount + ServiceVatAmount;
 
     [NotMapped]
     public static Expression<Func<Order, long>> AmountAfterVatExpression => (order) =>
@@ -103,27 +99,7 @@ internal class Order : IHasStatsEntity
     #region Methods
     public void ComputeCachedProperties()
     {
-        CachedProductItemsAmountBeforeVat = 0;
-        CachedProductItemsVatAmount = 0;
-        foreach (OrderProductItem productItem in ProductItems)
-        {
-            CachedProductItemsAmountBeforeVat += productItem.AmountBeforeVatPerUnit * productItem.Quantity;
-            CachedProductItemsVatAmount += productItem.VatAmountPerUnit * productItem.Quantity;
-        }
-        
-        CachedServiceItemsAmountBeforeVat = 0;
-        CachedServiceItemsVatAmount = 0;
-        foreach (OrderServiceItem serviceItem in ServiceItems)
-        {
-            CachedServiceItemsAmountBeforeVat += serviceItem.AmountBeforeVatPerUnit * serviceItem.Quantity;
-            CachedServiceItemsVatAmount += serviceItem.AmountBeforeVatPerUnit * serviceItem.Quantity;
-        }
-        
-        CachedAmountAfterVat =
-            CachedProductItemsAmountBeforeVat +
-            CachedProductItemsVatAmount +
-            CachedServiceItemsAmountBeforeVat +
-            CachedServiceItemsVatAmount;
+        CachedAmountAfterVat = ProductItems.Sum(pi => pi.AmountAfterVat) + ServiceItems.Sum(si => si.AmountAfterVat);
     }
     #endregion
 }

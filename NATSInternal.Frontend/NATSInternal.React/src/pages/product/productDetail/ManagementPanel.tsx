@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router";
 
 // Child components.
-import Field from "@/pages/product/productDetail/Field";
+import { Field } from "@/pages/shared/detail";
 
 // Props.
 type Props = {
@@ -39,39 +39,39 @@ export default function ManagementPanel(props: Props): React.ReactNode {
       <div className="panel-body">
         <div className="flex flex-col gap-y-3 p-3">
           {/* CreatedUser */}
-          <Field propertyName="createdUser">
+          <Field name="createdUser">
             {renderUser(props.model.createdUser)}
           </Field>
 
           {/* CreatedDateTime */}
-          <Field propertyName="createdDateTime">
+          <Field name="createdDateTime">
             {props.model.createdDateTime}
           </Field>
 
           {/* LastUpdatedUser */}
           {props.model.lastUpdatedUser && (
-            <Field propertyName="lastUpdatedUser">
+            <Field name="lastUpdatedUser">
               {renderUser(props.model.lastUpdatedUser)}
             </Field>
           )}
 
           {/* LastUpdatedDateTime */}
           {props.model.lastUpdatedDateTime && (
-            <Field propertyName="lastUpdatedDateTime">
+            <Field name="lastUpdatedDateTime">
               {props.model.lastUpdatedDateTime}
             </Field>
           )}
 
           {/* DeletedUser */}
           {props.model.deletedUser && (
-            <Field propertyName="deletedUser">
+            <Field name="deletedUser">
               {renderUser(props.model.deletedUser)}
             </Field>
           )}
 
           {/* DeletedDateTime */}
           {props.model.deletedDateTime && (
-            <Field propertyName="deletedDateTime">
+            <Field name="deletedDateTime">
               {props.model.deletedDateTime}
             </Field>
           )}

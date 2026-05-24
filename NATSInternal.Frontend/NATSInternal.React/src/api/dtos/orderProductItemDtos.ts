@@ -2,7 +2,7 @@ declare global {
   type OrderProductItemDetailResponseDto = {
     id: number;
     amountBeforeVatPerUnit: number;
-    vatAmountPerUnit: number;
+    vatPercentagePerUnit: number;
     quantity: number;
     product: ProductBasicResponseDto;
   };
@@ -10,7 +10,7 @@ declare global {
   type OrderProductItemUpsertRequestDto = {
     id: number | null;
     amountBeforeVatPerUnit: number;
-    vatAmountPerUnit: number;
+    vatPercentagePerUnit: number;
     quantity: number;
     productId: number;
   };

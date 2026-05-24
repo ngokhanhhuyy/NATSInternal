@@ -25,9 +25,7 @@ public class OrderListRequestDto : IHasStatsListRequestDto
         StatsDate,
         CreatedDateTime,
         LastUpdatedDateTime,
-        ProductItemsAmount,
-        ServiceItemsAmount,
-        TotalAmount
+        Amount
     }
     #endregion
 }

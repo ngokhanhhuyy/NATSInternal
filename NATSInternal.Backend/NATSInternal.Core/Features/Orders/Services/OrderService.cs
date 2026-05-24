@@ -106,29 +106,9 @@ internal class OrderService : IOrderService
                     .ApplySorting(o => o.LastUpdatedDateTime, requestDto.SortByAscending)
                     .ThenApplySorting(o => o.StatsDate, requestDto.SortByAscending);
                 break;
-            case nameof(OrderListRequestDto.FieldToSort.ProductItemsAmount):
+            case nameof(OrderListRequestDto.FieldToSort.Amount):
                 query = query
-                    .ApplySorting(
-                        o => o.CachedProductItemsAmountBeforeVat + o.CachedProductItemsVatAmount,
-                        requestDto.SortByAscending)
-                    .ThenApplySorting(o => o.StatsDate, requestDto.SortByAscending);
-                break;
-            case nameof(OrderListRequestDto.FieldToSort.ServiceItemsAmount):
-                query = query
-                    .ApplySorting(
-                        o => o.CachedServiceItemsAmountBeforeVat + o.CachedServiceItemsVatAmount,
-                        requestDto.SortByAscending)
-                    .ThenApplySorting(o => o.StatsDate, requestDto.SortByAscending);
-                break;
-            case nameof(OrderListRequestDto.FieldToSort.TotalAmount):
-                query = query
-                    .ApplySorting(
-                        o =>
-                            o.CachedProductItemsAmountBeforeVat +
-                            o.CachedProductItemsVatAmount +
-                            o.CachedServiceItemsAmountBeforeVat +
-                            o.CachedServiceItemsVatAmount,
-                        requestDto.SortByAscending)
+                    .ApplySorting(o => o.CachedAmountAfterVat, requestDto.SortByAscending)
                     .ThenApplySorting(o => o.StatsDate, requestDto.SortByAscending);
                 break;
             default:
@@ -150,8 +130,10 @@ internal class OrderService : IOrderService
         Order order = await _context.Orders
             .AsNoTracking()
             .AsSplitQuery()
+            .Include(o => o.Customer)
             .Include(o => o.ProductItems).ThenInclude(si => si.Product)
             .Include(o => o.ServiceItems)
+            .Include(o => o.Payment).ThenInclude(p => p!.Customer)
             .Include(o => o.Photos)
             .Include(o => o.CreatedUser)
             .Include(o => o.LastUpdatedUser)
@@ -225,7 +207,7 @@ internal class OrderService : IOrderService
                 {
                     Name = itemRequestDto.Name,
                     AmountBeforeVatPerUnit = itemRequestDto.AmountBeforeVatPerUnit,
-                    VatAmountPerUnit = itemRequestDto.VatAmountPerUnit,
+                    VatPercentagePerUnit = itemRequestDto.VatPercentagePerUnit,
                     Quantity = itemRequestDto.Quantity
                 };
 
@@ -339,7 +321,7 @@ internal class OrderService : IOrderService
                     {
                         Name = itemRequestDto.Name,
                         AmountBeforeVatPerUnit = itemRequestDto.AmountBeforeVatPerUnit,
-                        VatAmountPerUnit = itemRequestDto.VatAmountPerUnit,
+                        VatPercentagePerUnit = itemRequestDto.VatPercentagePerUnit,
                         Quantity = itemRequestDto.Quantity
                     };
 
@@ -356,7 +338,7 @@ internal class OrderService : IOrderService
 
                     serviceItem.Name = itemRequestDto.Name;
                     serviceItem.AmountBeforeVatPerUnit = itemRequestDto.AmountBeforeVatPerUnit;
-                    serviceItem.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit;
+                    serviceItem.VatPercentagePerUnit = itemRequestDto.VatPercentagePerUnit;
                 }
 
                 order.ServiceItems.Add(serviceItem);
@@ -505,7 +487,7 @@ internal class OrderService : IOrderService
     private static void MapProductItem(OrderProductItemUpsertRequestDto itemRequestDto, OrderProductItem item)
     {
         item.AmountBeforeVatPerUnit = itemRequestDto.AmountBeforeVatPerUnit;
-        item.VatAmountPerUnit = itemRequestDto.VatAmountPerUnit;
+        item.VatPercentagePerUnit = itemRequestDto.VatPercentagePerUnit;
     }
     #endregion
 }

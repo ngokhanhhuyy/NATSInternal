@@ -29,6 +29,7 @@ public static class DisplayNames
     public const string OrderProductItem = "Mục sản phẩm đơn hàng";
     public const string OrderServiceItem = "Mục dịch vụ đơn hàng";
     public const string OrderPhoto = "Hình ảnh đơn hàng";
+    public const string Retail = "Bán lẻ";
     public const string Treatment = "Liệu trình";
     public const string TreatmentItem = "Mục sản phẩm liệu trình";
     public const string Expense = "Chi phí";
@@ -36,6 +37,8 @@ public static class DisplayNames
     public const string ExpensePayee = "Người/tổ chức nhận thanh toán";
     public const string ExpensePhoto = "Hình ảnh chi phí";
     public const string Consultant = "Dịch vụ tư vấn";
+    public const string ProductItemsAmount = "Giá tiền sản phẩm";
+    public const string ServiceItemsAmount = "Giá tiền dịch vụ";
     public const string Photo = "Hình ảnh";
     public const string Announcement = "Thông báo";
     public const string Id = "Mã số";
@@ -85,8 +88,10 @@ public static class DisplayNames
     public const string ProductName = "Tên sản phẩm";
     public const string ProductCategory = "Phân loại sản phẩm";
     public const string VatAmount = "Thuế VAT";
+    public const string VatPercentagePerUnit = "Hệ số thuế";
     public const string Quatity = "Số lượng";
     public const string ServiceAmount = "Tiền công";
+    public const string TotalAmount = "Tổng giá tiền";
     public const string PayeeName = "Tên người nhận thanh toán";
     public const string PaidAmount = "Số tiền đã thanh toán";
     public const string StartingDateTime = "Ngày giờ bắt đầu";

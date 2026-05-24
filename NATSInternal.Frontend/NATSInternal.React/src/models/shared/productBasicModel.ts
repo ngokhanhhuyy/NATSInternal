@@ -1,5 +1,5 @@
 import { createProductCategoryBasicModel } from "@/models";
-import { getAmountDisplayText, getProductDetailRoutePath } from "@/helpers";
+import { getDisplayAmountText, getProductDetailRoutePath } from "@/helpers";
 
 declare global {
   type ProductBasicModel = {
@@ -23,7 +23,7 @@ export function createProductBasicModel(responseDto: ProductBasicResponseDto): P
   return {
     ...responseDto,
     thumbnailUrl: responseDto.thumbnailUrl,
-    formattedDefaultAmountBeforeVatPerUnit: getAmountDisplayText(responseDto.defaultAmountBeforeVatPerUnit),
+    formattedDefaultAmountBeforeVatPerUnit: getDisplayAmountText(responseDto.defaultAmountBeforeVatPerUnit),
     categories: responseDto.categories.map(createProductCategoryBasicModel),
     detailRoutePath: getProductDetailRoutePath(responseDto.id)
   };

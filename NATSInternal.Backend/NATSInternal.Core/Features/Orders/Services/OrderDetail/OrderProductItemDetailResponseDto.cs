@@ -9,7 +9,7 @@ public class OrderProductItemDetailResponseDto
     {
         Id = orderProductItem.Id;
         AmountBeforeVatPerUnit = orderProductItem.AmountBeforeVatPerUnit;
-        VatAmountPerUnit = orderProductItem.VatAmountPerUnit;
+        VatPercentagePerUnit = orderProductItem.VatPercentagePerUnit;
         Quantity = orderProductItem.Quantity;
         Product = new(orderProductItem.Product);
     }
@@ -18,7 +18,7 @@ public class OrderProductItemDetailResponseDto
     #region Properties
     public int Id { get; }
     public long AmountBeforeVatPerUnit { get; }
-    public long VatAmountPerUnit { get; }
+    public int VatPercentagePerUnit { get; }
     public int Quantity { get; }
     public ProductBasicResponseDto Product { get; }
     #endregion

@@ -2,15 +2,14 @@ import React from "react";
 import { Link } from "react-router";
 
 // Child components.
-import FieldContainer from "./FieldContainer";
-import Field from "./Field";
+import { Field, FieldContainer } from "@/pages/shared/detail";
 import { Block } from "@/components/ui";
 
 // Props.
-type ManagementBlockProps = { model: CustomerDetailModel };
+type ManagementPanelProps = { model: CustomerDetailModel };
 
 // Component.
-export default function ManagementBlock(props: ManagementBlockProps): React.ReactNode {
+export default function ManagementPanel(props: ManagementPanelProps): React.ReactNode {
   // Template.
   function renderUser(user: UserBasicModel): React.ReactNode {
     if (user.isDeleted) {

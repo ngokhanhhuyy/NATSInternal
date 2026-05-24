@@ -1,7 +1,7 @@
 import { createCustomerBasicModel } from "@/models";
 import { createUserBasicModel } from "@/models/shared/userBasicModel";
 import { getCustomerUpdateRoutePath, getDisplayDateString, getDisplayDateTimeString } from "@/helpers";
-import { formatRawPhoneNumber, getDefaultAvatarUrlByFullName, getAmountDisplayText } from "@/helpers";
+import { formatRawPhoneNumber, getDefaultAvatarUrlByFullName, getDisplayAmountText } from "@/helpers";
 
 declare global {
   type CustomerDetailModel = Readonly<{
@@ -53,7 +53,7 @@ export function createCustomerDetailModel(responseDto: CustomerDetailResponseDto
       return getDefaultAvatarUrlByFullName(this.fullName);
     },
     get displayDebtRemainingAmountText(): string{
-      return getAmountDisplayText(this.debtAmount);
+      return getDisplayAmountText(this.debtAmount);
     },
     get updateRoutePath(): string {
       return getCustomerUpdateRoutePath(this.id);

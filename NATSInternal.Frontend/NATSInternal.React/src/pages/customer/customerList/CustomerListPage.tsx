@@ -6,7 +6,7 @@ import { useRerendingTrigger } from "@/hooks";
 
 // Child components.
 import ResultsPanel from "./ResultsPanel";
-import ListPage from "@/pages/shared/searchablePageableList";
+import ListPage from "@/pages/shared/list/searchableList";
 
 // Loader
 export async function loadDataAsync(model?: CustomerListModel): Promise<CustomerListModel> {

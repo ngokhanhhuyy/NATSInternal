@@ -18,9 +18,9 @@ internal class OrderProductItemUpsertValidator : Validator<OrderProductItemUpser
             RuleFor(dto => dto.AmountBeforeVatPerUnit)
                 .GreaterThan(0)
                 .WithName(DisplayNames.AmountBeforeVat);
-            RuleFor(dto => dto.VatAmountPerUnit)
+            RuleFor(dto => dto.VatPercentagePerUnit)
                 .GreaterThanOrEqualTo(0)
-                .WithName(DisplayNames.VatAmount);
+                .WithName(DisplayNames.VatPercentagePerUnit);
             RuleFor(dto => dto.Quantity)
                 .GreaterThan(0)
                 .WithName(DisplayNames.Quantity);

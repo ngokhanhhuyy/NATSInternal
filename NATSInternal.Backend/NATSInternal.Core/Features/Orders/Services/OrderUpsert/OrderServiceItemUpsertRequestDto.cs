@@ -8,7 +8,7 @@ public class OrderServiceItemUpsertRequestDto : IRequestDto
     public int? Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public long AmountBeforeVatPerUnit { get; set; }
-    public long VatAmountPerUnit { get; set; }
+    public int VatPercentagePerUnit { get; set; }
     public int Quantity { get; set; }
     #endregion
 

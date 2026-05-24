@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router";
-import { getDeltaTextRelativeToNow, getAmountDisplayText } from "@/helpers";
+import { getDeltaTextRelativeToNow, getDisplayAmountText } from "@/helpers";
 
 // Components.
 export default function LatestTransactionPanel(): React.ReactNode {
@@ -32,7 +32,7 @@ export default function LatestTransactionPanel(): React.ReactNode {
                   </Link>
                 </td>
                 <td className="text-center">{transaction.quantity}</td>
-                <td className="text-center">{getAmountDisplayText(transaction.totalAmount)}</td>
+                <td className="text-center">{getDisplayAmountText(transaction.totalAmount)}</td>
                 <td className="text-end">{transaction.dateTime}</td>
               </tr>
             ))}

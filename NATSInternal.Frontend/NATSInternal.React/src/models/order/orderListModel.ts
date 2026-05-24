@@ -1,9 +1,10 @@
 import { createOrderBasicModel } from "../shared/orderBasicModel";
 import { createStatsMonthYearModel } from "../shared/statsMonthYearModel";
 import { metadata } from "@/metadata";
+import { getOrderListRoutePath } from "@/helpers";
 
 declare global {
-  type OrderListModel = Implements<IHasStatsListModel<OrderBasicModel>, {
+  type OrderListModel = Implements<IHasStatsListModel<OrderBasicModel> & IUpsertableListModel<OrderBasicModel>, {
     sortByAscending: boolean;
     sortByFieldName: string;
     sortByFieldNameOptions: string[];
@@ -16,6 +17,7 @@ declare global {
     items: OrderBasicModel[];
     pageCount: number;
     itemCount: number;
+    createRoutePath: string;
     mapFromResponseDto(responseDto: OrderListResponseDto): OrderListModel;
     toRequestDto(): OrderListRequestDto;
   }>;
@@ -35,6 +37,7 @@ export function createOrderListModel(): OrderListModel {
     items: [],
     pageCount: 0,
     itemCount: 0,
+    createRoutePath: getOrderListRoutePath(),
     mapFromResponseDto(responseDto: OrderListResponseDto): OrderListModel {
       return {
         ...this,

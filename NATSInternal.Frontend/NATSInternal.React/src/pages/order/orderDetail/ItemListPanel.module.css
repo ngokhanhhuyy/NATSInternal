@@ -1,0 +1,16 @@
+.data-table :global(th), .data-table :global(td) {
+    white-space: nowrap !important;
+}
+
+.data-table :global(th) {
+    vertical-align: middle;
+    border-bottom: 1px solid --alpha(var(--color-neutral-900) / 25%);
+}
+
+.data-table :global(td) {
+    vertical-align: top;
+}
+
+.data-table :global(td:not(:nth-child(-n + 4))) {
+    text-align: right;
+}

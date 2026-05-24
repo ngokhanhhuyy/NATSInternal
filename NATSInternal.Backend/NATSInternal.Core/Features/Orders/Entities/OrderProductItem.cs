@@ -1,6 +1,7 @@
+using NATSInternal.Core.Common.Entities;
 using NATSInternal.Core.Features.Products;
 using System.ComponentModel.DataAnnotations;
-using NATSInternal.Core.Common.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NATSInternal.Core.Features.Orders;
 
@@ -14,7 +15,7 @@ internal class OrderProductItem : IHasProductItemEntity
     public long AmountBeforeVatPerUnit { get; set; }
 
     [Required]
-    public long VatAmountPerUnit { get; set; }
+    public int VatPercentagePerUnit { get; set; }
 
     [Required]
     public int Quantity { get; set; } = 1;
@@ -30,5 +31,16 @@ internal class OrderProductItem : IHasProductItemEntity
     #region NavigationProperties
     public Order Order { get; set; } = null!;
     public Product Product { get; set; } = null!;
+    #endregion
+
+    #region ComputedProperties
+    [NotMapped]
+    public long VatAmountPerUnit => (long)Math.Ceiling(AmountBeforeVatPerUnit * (VatPercentagePerUnit / 100D));
+
+    [NotMapped]
+    public long VatAmount => VatAmountPerUnit * Quantity;
+
+    [NotMapped]
+    public long AmountAfterVat => AmountBeforeVatPerUnit * Quantity + VatAmount;
     #endregion
 }

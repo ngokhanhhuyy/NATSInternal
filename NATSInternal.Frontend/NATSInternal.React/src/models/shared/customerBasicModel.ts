@@ -7,7 +7,7 @@ declare global {
     nickName: string | null;
     isDeleted: boolean;
     avatarUrl: string;
-    detailRoute: string;
+    detailRoutePath: string;
   }>;
 }
 
@@ -18,6 +18,6 @@ export function createCustomerBasicModel(responseDto: CustomerBasicResponseDto):
     nickName: responseDto.nickName,
     isDeleted: responseDto.isDeleted,
     avatarUrl: getDefaultAvatarUrlByFullName(responseDto.fullName),
-    detailRoute: getCustomerDetailRoutePath(responseDto.id)
+    detailRoutePath: getCustomerDetailRoutePath(responseDto.id)
   };
 }

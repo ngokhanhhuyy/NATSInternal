@@ -8,7 +8,7 @@ public class OrderServiceItemDetailResponseDto
         Id = orderServiceItem.Id;
         Name = orderServiceItem.Name;
         AmountBeforeVatPerUnit = orderServiceItem.AmountBeforeVatPerUnit;
-        VatAmountPerUnit = orderServiceItem.VatAmountPerUnit;
+        VatPercentagePerUnit = orderServiceItem.VatPercentagePerUnit;
         Quantity = orderServiceItem.Quantity;
     }
     #endregion
@@ -17,7 +17,7 @@ public class OrderServiceItemDetailResponseDto
     public int Id { get; }
     public string Name { get; }
     public long AmountBeforeVatPerUnit { get; }
-    public long VatAmountPerUnit { get; }
+    public int VatPercentagePerUnit { get; }
     public int Quantity { get; }
     #endregion
 }

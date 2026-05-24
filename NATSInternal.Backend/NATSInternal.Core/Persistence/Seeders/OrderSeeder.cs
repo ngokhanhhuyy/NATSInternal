@@ -102,7 +102,7 @@ internal class OrderSeeder
                 OrderProductItem productItem = new()
                 {
                     AmountBeforeVatPerUnit = product.DefaultAmountBeforeVatPerUnit,
-                    VatAmountPerUnit = (long)Math.Round(product.DefaultAmountBeforeVatPerUnit * vatRatio),
+                    VatPercentagePerUnit = product.DefaultVatPercentagePerUnit,
                     Quantity = Math.Min(_random.Next(3, 6), product.StockingQuantity),
                     ProductId = product.Id
                 };
@@ -130,7 +130,7 @@ internal class OrderSeeder
                 {
                     Name = name,
                     AmountBeforeVatPerUnit = amountBeforeVatPerUnit,
-                    VatAmountPerUnit = (long)Math.Round(amountBeforeVatPerUnit * 0.1),
+                    VatPercentagePerUnit = 10,
                     Quantity = _random.Next(1, 4)
                 };
 

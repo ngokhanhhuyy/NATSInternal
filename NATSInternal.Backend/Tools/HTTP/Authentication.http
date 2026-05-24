@@ -164,7 +164,7 @@ Cookie: {{accessCookie}}
 
 ###
 # @name PaymentList
-GET {{host}}/payments?sortingByFieldName=StatsDate&sortByAscending=False&page=3&statsYear=2025&statsMonth=11
+GET {{host}}/payments?sortingByFieldName=StatsDate&sortByAscending=False&page=3&statsYear=2025&statsMonth=12
 Content-Type: application/json
 Cookie: {{accessCookie}}
 
@@ -199,25 +199,6 @@ Cookie: {{accessCookie}}
     "statsDateTime": null,
     "customersId": 2,
     "updatedReason": "Removed note"
-}
-
-###
-# @name DebtIncurrenceList
-GET {{host}}/debtIncurrence
-Content-Type: application/json
-Cookie: {{accessCookie}}
-
-###
-# @name DebtIncurrenceCreate
-POST {{host}}/debtIncurrence
-Content-Type: application/json
-Cookie: {{accessCookie}}
-
-{
-    "amount": 2000000,
-    "note": null,
-    "incurredDateTime": null,
-    "customersId": 8
 }
 
 ###
