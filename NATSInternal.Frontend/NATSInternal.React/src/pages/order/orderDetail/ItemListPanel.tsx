@@ -24,7 +24,7 @@ export default function ItemListPanel(props: ItemListPanelProps): React.ReactNod
   // Template.
   return (
     <div className="panel flex-1">
-      <div className="panel-header">
+      <div className="panel-header">  
         <span className="panel-header-title">
           {title}
         </span>
@@ -86,17 +86,17 @@ export default function ItemListPanel(props: ItemListPanelProps): React.ReactNod
               </tr>
             ))}
 
-            <tr className="text-end">
+            <tr className="summary">
               <td className="font-bold" colSpan={7}>Tổng giá đơn hàng</td>
               <td className="text-blue-600 dark:text-blue-400">{props.model.displayAmountAfterVat}</td>
             </tr>
 
-            <tr className="text-end">
+            <tr className="summary">
               <td className="font-bold" colSpan={7}>Đã thanh toán</td>
               <td className="text-blue-600 dark:text-blue-400">{props.model.displayPaidAmount}</td>
             </tr>
 
-            <tr className="text-end">
+            <tr className="summary">
               <td className="font-bold" colSpan={7}>Nợ</td>
               <td className="text-blue-600 dark:text-blue-400">{props.model.displayDebtAmount}</td>
             </tr>

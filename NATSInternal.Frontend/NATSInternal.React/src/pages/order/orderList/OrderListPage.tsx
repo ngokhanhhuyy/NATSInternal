@@ -4,7 +4,7 @@ import { useRerendingTrigger } from "@/hooks";
 import { loadDataAsync } from "./dataLoader";
 
 // Child components.
-import ListPage from "@/pages/shared/list/hasStatsList";
+import ListPage from "@/pages/shared/list/listPage/hasStatsList";
 import ResultsPanel from "./ResultsPanel";
 
 // Component.

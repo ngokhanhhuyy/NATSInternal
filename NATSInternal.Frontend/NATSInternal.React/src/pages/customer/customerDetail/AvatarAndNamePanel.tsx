@@ -1,5 +1,8 @@
 import React from "react";
 
+// Child components.
+import { UserIcon } from "@heroicons/react/24/outline";
+
 // Props.
 type AvatarAndNamePanelProps = {
   model: CustomerDetailModel;
@@ -13,11 +16,9 @@ export default function AvatarAndNamePanel(props: AvatarAndNamePanelProps): Reac
       <div className="panel-body p-3">
         <div className="grid grid-cols-[auto_1fr] gap-3">
           {/* Avatar */}
-          <img
-            className="bg-black/5 dark:bg-white/5 border border-black/15 dark:border-white/25 p-1 rounded-lg"
-            src={props.model.avatarUrl}
-            alt={props.model.fullName}
-          />
+          <div className="img-thumbnail size-16 flex justify-center items-center">
+            <UserIcon className="size-8 opacity-50" />
+          </div>
 
           {/* Names */}
           <div className="flex flex-col justify-start pt-1">

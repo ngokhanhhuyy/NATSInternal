@@ -4,15 +4,15 @@ import { getDisplayName } from "@/metadata";
 import { joinClassName } from "@/helpers";
 
 // Child components.
-import FilterOptionsPanel from "./FilterOptionsPanel";
+import FilterOptionsPanel from "./BaseListFilterOptionsPanel";
 import { MainContainer } from "@/components/layouts";
 import { Paginator } from "@/components/ui";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
 // Props.
-type ListModel<TItemModel extends object> = ISearchableListModel<TItemModel> & IUpsertableListModel<TItemModel>;
+type ListModel<TItemModel extends object> = IListModel<TItemModel> & IUpsertableListModel<TItemModel>;
 
-type Props<TListModel extends ListModel<TItemModel>, TItemModel extends object> = {
+export type BaseListPageProps<TListModel extends ListModel<TItemModel>, TItemModel extends object> = {
   resourceName: string;
   model: TListModel;
   onModelUpdated: (updatedData: Partial<TListModel>) => any;
@@ -26,10 +26,9 @@ type Props<TListModel extends ListModel<TItemModel>, TItemModel extends object> 
 };
 
 // Components.
-export default function SearchableListPage<TListModel extends ListModel<TItemModel>, TItemModel extends object>
-  (props: Props<TListModel, TItemModel>): React.ReactNode
+export default function IListModel<TListModel extends ListModel<TItemModel>, TItemModel extends object>
+  (props: BaseListPageProps<TListModel, TItemModel>): React.ReactNode
 {
-
   // Computed.
   const displayName = useMemo(() => getDisplayName(props.resourceName), []);
   

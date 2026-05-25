@@ -4,8 +4,9 @@ import { createCustomerListModel } from "@/models";
 import { joinClassName } from "@/helpers";
 
 // Child components.
-import { Button, NewTabWebsiteLink, Paginator } from "@/components/ui";
+import { Button, Paginator } from "@/components/ui";
 import { TextInput } from "@/components/form";
+import CustomerList from "@/pages/shared/list/customerListResults";
 import { CheckIcon } from "@heroicons/react/24/solid";
 
 // Props.
@@ -61,7 +62,6 @@ export default function List(props: ListProps): React.ReactNode {
         isLoading && "opacity-50 cursor-wait"
       )}
     >
-      {excludedId ?? "null"}
       {/* Search */}
       <div className="flex justify-between gap-3">
         <TextInput
@@ -76,27 +76,16 @@ export default function List(props: ListProps): React.ReactNode {
       </div>
 
       {/* List */}
-      <ul className={joinClassName("list-group", isLoading && "pointer-events-none")}>
-        {model.items.length ? model.items.map((customer, index) => (
-          <li className="list-group-item flex justify-between items-center px-3 py-2" key={index}>
-            <div className="flex flex-col">
-              <NewTabWebsiteLink className="text-blue-700 dark:text-blue-400 font-bold" href={customer.detailRoutePath}>
-                {customer.fullName}
-              </NewTabWebsiteLink>
-              <span className="text-sm opacity-75">
-                {customer.nickName}
-              </span>
-            </div>
-            <Button className="btn-sm aspect-square" onClick={() => onPicked(customer)}>
-              <CheckIcon className="size-4.5" />
-            </Button>
-          </li>
-        )) : (
-          <li className="list-group-item py-5">
-            <span className="opacity-50">Không có kết quả</span>
-          </li>
+      <CustomerList
+        model={model}
+        isReloading={isLoading}
+        renderItemChildren={(customer) => (
+          <Button className="btn-sm aspect-square me-1" onClick={() => onPicked(customer)}>
+            <CheckIcon className="size-4.5" />
+          </Button>
         )}
-      </ul>
+        openLinkInNewTab
+      />
 
       {/* Paginator */}
       <Paginator

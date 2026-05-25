@@ -14,7 +14,7 @@ export type PickedIntroducerInfoProps = {
 export default function PickedIntroducerInfo(props: PickedIntroducerInfoProps): React.ReactNode {
   // Template.
   return (
-    <div className="flex justify-between items-center w-full gap-3">
+    <div className="flex justify-between items-center w-full gap-3 px-3 py-2">
       <div className="flex flex-col">
         <NewTabWebsiteLink className="text-lg font-bold" href={props.model.detailRoutePath}>
           {props.model.fullName}

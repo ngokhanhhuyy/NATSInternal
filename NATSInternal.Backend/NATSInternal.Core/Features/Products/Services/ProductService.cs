@@ -70,6 +70,11 @@ internal class ProductService : IProductService
             ));
         }
 
+        if (!requestDto.OutOfStockProductsIncluded)
+        {
+            query = query.Where(p => p.StockingQuantity > 0);
+        }
+
         if (requestDto.CategoryId.HasValue)
         {
             query = query.Where(p => p.Categories.Any(pc => pc.Id == requestDto.CategoryId.Value));

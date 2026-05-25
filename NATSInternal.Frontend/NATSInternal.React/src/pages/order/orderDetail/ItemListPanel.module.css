@@ -1,4 +1,6 @@
-.data-table :global(th), .data-table :global(td) {
+.data-table :global(th),
+.data-table :global(tr.summary),
+.data-table :global(tr:not(.summary)) :global(td:not(:nth-child(2))) {
     white-space: nowrap !important;
 }
 
@@ -9,6 +11,10 @@
 
 .data-table :global(td) {
     vertical-align: top;
+}
+
+.data-table :global(tr.summary) {
+    text-align: end;
 }
 
 .data-table :global(td:not(:nth-child(-n + 4))) {

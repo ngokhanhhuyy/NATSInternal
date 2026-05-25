@@ -3,7 +3,6 @@ import { Link } from "react-router";
 
 // Child components.
 import { Field, FieldContainer } from "@/pages/shared/detail";
-import { Block } from "@/components/ui";
 
 // Props.
 type ManagementPanelProps = { model: CustomerDetailModel };
@@ -28,45 +27,53 @@ export default function ManagementPanel(props: ManagementPanelProps): React.Reac
   }
 
   return (
-    <Block title="Quản lý" bodyClassName="p-3">
-      <FieldContainer>
-        {/* CreatedUser */}
-        <Field name="createdUser">
-            {renderUser(props.model.createdUser)}
-        </Field>
+    <div className="panel">
+      <div className="panel-header">
+        <span className="panel-header-title">
+          Quản lý
+        </span>
+      </div>
 
-        {/* CreatedDateTime */}
-        <Field name="createdDateTime">
-          {props.model.createdDateTime}
-        </Field>
-
-        {/* LastUpdatedUser */}
-        {props.model.lastUpdatedUser && (
-          <Field name="lastUpdatedUser">
-            {renderUser(props.model.lastUpdatedUser)}
+      <div className="panel-body p-3">
+        <FieldContainer>
+          {/* CreatedUser */}
+          <Field name="createdUser">
+              {renderUser(props.model.createdUser)}
           </Field>
-        )}
 
-        {/* LastUpdatedDateTime */}
-        {props.model.lastUpdatedDateTime && (
-          <Field name="lastUpdatedDateTime">
-            {props.model.lastUpdatedDateTime}
+          {/* CreatedDateTime */}
+          <Field name="createdDateTime">
+            {props.model.createdDateTime}
           </Field>
-        )}
 
-        {/* DeletedUser */}
-        {props.model.deletedUser && (
-          <Field name="deletedUser">
-            {renderUser(props.model.deletedUser)}
-          </Field>
-        )}
+          {/* LastUpdatedUser */}
+          {props.model.lastUpdatedUser && (
+            <Field name="lastUpdatedUser">
+              {renderUser(props.model.lastUpdatedUser)}
+            </Field>
+          )}
 
-        {props.model.deletedDateTime && (
-          <Field name="deletedDateTime">
-            {props.model.deletedDateTime}
-          </Field>
-        )}
-      </FieldContainer>
-    </Block>
+          {/* LastUpdatedDateTime */}
+          {props.model.lastUpdatedDateTime && (
+            <Field name="lastUpdatedDateTime">
+              {props.model.lastUpdatedDateTime}
+            </Field>
+          )}
+
+          {/* DeletedUser */}
+          {props.model.deletedUser && (
+            <Field name="deletedUser">
+              {renderUser(props.model.deletedUser)}
+            </Field>
+          )}
+
+          {props.model.deletedDateTime && (
+            <Field name="deletedDateTime">
+              {props.model.deletedDateTime}
+            </Field>
+          )}
+        </FieldContainer>
+      </div>
+    </div>
   );
 }

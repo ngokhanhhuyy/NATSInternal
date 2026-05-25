@@ -5,6 +5,7 @@ declare global {
     page: number;
     resultsPerPage: number;
     categoryId: number;
+    outOfStockProductsIncluded: boolean;
     searchContent: string | null;
   }>;
 

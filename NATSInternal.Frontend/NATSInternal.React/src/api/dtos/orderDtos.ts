@@ -42,19 +42,19 @@ declare global {
 
   type OrderUpsertRequestDto = {
     type: OrderType;
-    statsDate: string;
+    statsDate: string | null;
     note: string | null;
     paidAmount: number;
     productItems: OrderProductItemUpsertRequestDto[];
     serviceItems: OrderServiceItemUpsertRequestDto[];
     photos: PhotoUpsertRequestDto[];
-  } & (
-    {
-      customerId: number;
-      customer: null;
-    } | {
-      customerId: null;
-      customer: CustomerUpsertRequestDto;
-    }
-  );
+  } & OrderUpsertCustomerRequestDto;
+
+  type OrderUpsertCustomerRequestDto = {
+    customerId: number;
+    customer: null;
+  } | {
+    customerId: null;
+    customer: CustomerUpsertRequestDto;
+  };
 }

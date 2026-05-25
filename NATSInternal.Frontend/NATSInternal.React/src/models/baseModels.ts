@@ -8,6 +8,7 @@ declare global {
     items: TItemModel[];
     pageCount: number;
     itemCount: number;
+    toRequestDto(): IListRequestDto;
   }
 
   interface ISearchableListModel<TItemModel extends object> extends IListModel<TItemModel> {
