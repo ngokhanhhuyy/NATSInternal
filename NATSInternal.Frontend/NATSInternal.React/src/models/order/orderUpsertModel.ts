@@ -13,11 +13,10 @@ declare global {
     productItems: OrderProductItemUpsertModel[];
     serviceItems: OrderServiceItemUpsertModel[];
     photos: PhotoUpsertModel[];
-    customer: OrderUpsertCustomerModel;
+    customer: CustomerBasicModel | null;
+    customerUpsert: CustomerUpsertModel;
     toRequestDto(): OrderUpsertRequestDto;
   };
-
-  type OrderUpsertCustomerModel = CustomerUpsertModel | CustomerBasicModel;
 }
 
 export function createOrderUpsertModel(responseDto?: OrderDetailResponseDto): OrderUpsertModel {
@@ -31,10 +30,11 @@ export function createOrderUpsertModel(responseDto?: OrderDetailResponseDto): Or
     productItems: responseDto?.productItems.map(createOrderProductItemUpsertModel) ?? [],
     serviceItems: responseDto?.serviceItems.map(createOrderServiceItemUpsertModel) ?? [],
     photos: [],
-    customer: responseDto ? createCustomerBasicModel(responseDto.customer) : createCustomerUpsertModel(),
+    customer: responseDto?.customer ? createCustomerBasicModel(responseDto.customer) : null,
+    customerUpsert: createCustomerUpsertModel(),
     toRequestDto(): OrderUpsertRequestDto {
       let customerProperties: OrderUpsertCustomerRequestDto;
-      if (this.customer.id) {
+      if (this.customer) {
         customerProperties = {
           customerId: this.customer.id,
           customer: null,
@@ -42,7 +42,7 @@ export function createOrderUpsertModel(responseDto?: OrderDetailResponseDto): Or
       } else {
         customerProperties = {
           customerId: null,
-          customer: (this.customer as CustomerUpsertModel).toRequestDto(),
+          customer: this.customerUpsert.toRequestDto(),
         };
       }
 

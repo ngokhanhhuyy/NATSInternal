@@ -18,9 +18,7 @@ export default function NotePanel(props: NotePanelProps): React.ReactNode {
 
       <div className="panel-body p-3 pt-2">
         {props.model ? (
-          <div className="mx-2">
-            {props.model}
-          </div>
+          <div>{props.model}</div>
         ) : (
           <div className="flex flex-1 justify-center items-center opacity-50 h-full">
             Không có ghi chú

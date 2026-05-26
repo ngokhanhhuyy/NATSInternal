@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
+import { getDisplayName } from "@/metadata";
 import { joinClassName } from "@/helpers";
 
 // Child component.
@@ -6,19 +7,23 @@ import Modal from "./Modal";
 import { TextInput, type TextInputProps } from "@/components/form";
 
 // Props.
-export type IntroducerInputProps = {
+export type CustomerPickerProps = {
+  resourceName: string;
   value: CustomerBasicModel | null;
   onValueChanged(changedModel: CustomerBasicModel | null): any;
   excludedId: number | null;
 } & Omit<TextInputProps, "value" | "onValueChanged">;
 
 // Component.
-export default function IntroducerInput(props: IntroducerInputProps): React.ReactNode {
+export default function CustomerPickerInput(props: CustomerPickerProps): React.ReactNode {
   // Props.
   const { value, onValueChanged, excludedId, ...domProps } = props;
 
   // States.
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+
+  // Computed.
+  const displayName = useMemo<string>(() => getDisplayName(props.resourceName) ?? props.resourceName, []);
 
   // Callbacks.
   const handlePicked = useCallback((customer: CustomerBasicModel) => {
@@ -41,7 +46,7 @@ export default function IntroducerInput(props: IntroducerInputProps): React.Reac
       <TextInput
         {...domProps}
         className={joinClassName(value == null && "text-black/50 dark:text-white/50")}
-        value={value?.fullName ?? "Chưa chọn người giới thiệu"}
+        value={value?.fullName ?? `Chưa chọn ${displayName}`}
         onValueChanged={() => undefined}
         onClick={() => setIsModalVisible(v => !v)} readOnly
       />

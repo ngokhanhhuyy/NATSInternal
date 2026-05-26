@@ -1,7 +1,7 @@
 import { createOrderBasicModel } from "../shared/orderBasicModel";
 import { createStatsMonthYearModel } from "../shared/statsMonthYearModel";
 import { metadata } from "@/metadata";
-import { getOrderListRoutePath } from "@/helpers";
+import { getOrderCreateRoutePath } from "@/helpers";
 
 declare global {
   type OrderListModel = Implements<IHasStatsListModel<OrderBasicModel> & IUpsertableListModel<OrderBasicModel>, {
@@ -37,7 +37,7 @@ export function createOrderListModel(): OrderListModel {
     items: [],
     pageCount: 0,
     itemCount: 0,
-    createRoutePath: getOrderListRoutePath(),
+    createRoutePath: getOrderCreateRoutePath(),
     mapFromResponseDto(responseDto: OrderListResponseDto): OrderListModel {
       return {
         ...this,

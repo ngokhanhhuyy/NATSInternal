@@ -25,7 +25,7 @@ export const customerRoutes: RouteObject = {
       handle: {
         breadcrumbTitle: "Tạo mới",
         pageTitle: "Tạo khách hàng mới",
-        desciption: (
+        description: (
           "Tạo bản ghi dữ liệu cho một khách hàng mới, bao gồm thông tin cá nhân và người giới thiệu (nếu có)."
         )
       }

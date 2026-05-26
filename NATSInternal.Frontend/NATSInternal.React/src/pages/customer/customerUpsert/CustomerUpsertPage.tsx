@@ -156,6 +156,7 @@ export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>)
             {/* Introducer */}
             <FormField path="introducer" className="sm:col-span-6">
               <IntroducerInput
+                resourceName="introducer"
                 value={props.model.introducer}
                 onValueChanged={introducer => props.onModelChanged({ introducer })}
                 excludedId={props.isForCreating ? null : props.model.id}
@@ -165,7 +166,7 @@ export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>)
             {/* Note */}
             <FormField path="note" className="sm:col-span-6">
               <TextAreaInput
-                placeholder="Ghi chú"
+                placeholder="Ghi chú về khách hàng ..."
                 value={props.model.note}
                 onValueChanged={(note) => props.onModelChanged({ note })}
               />

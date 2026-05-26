@@ -4,7 +4,7 @@ import { useRerendingTrigger } from "@/hooks";
 import { loadDataAsync } from "./dataLoader";
 
 // Child components.
-import ListPage from "@/pages/shared/list/listPage/hasStatsList";
+import HasStatsListPage from "@/pages/shared/list/listPage/hasStatsList";
 import ResultsPanel from "./ResultsPanel";
 
 // Component.
@@ -37,7 +37,7 @@ export default function OrderListPage(): React.ReactNode {
 
   // Template.
   return (
-    <ListPage
+    <HasStatsListPage
       resourceName="order"
       model={model}
       onModelUpdated={handleModelUpdated}
@@ -46,6 +46,6 @@ export default function OrderListPage(): React.ReactNode {
       onFilterPanelReloadButtonClicked={triggerRerender}
     >
       <ResultsPanel model={model} isReloading={isReloading} />
-    </ListPage>
+    </HasStatsListPage>
   );
 }

@@ -35,7 +35,7 @@ export default function ManagementBlock(props: ManagementBlockProps): React.Reac
           Quản lý
         </span>
       </div>
-      <div className="panel-body p-3">
+      <div className="panel-body p-3 pt-2">
         <FieldContainer>
           {/* CreatedUser */}
           <Field name="createdUser">
