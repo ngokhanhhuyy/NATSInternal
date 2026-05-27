@@ -123,7 +123,7 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
   // Template.
   return (
     <FormContainerContext.Provider value={contextPayload}>
-      <MainContainer>
+      <MainContainer className={props.className}>
         {formUpsertingErrorMessages && (
           <div className={joinClassName(
             "bg-red-500/15 border border-red-500 dark:bg-red-500/15 dark:border-red-400/50",

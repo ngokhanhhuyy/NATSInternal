@@ -29,7 +29,8 @@ internal class OrderUpsertValidator : Validator<OrderUpsertRequestDto>
                 context.MessageFormatter.AppendArgument("ComparisonValue", dto.Amount);
                 return paidAmount <= dto.Amount;
             })
-            .WithMessage(ErrorMessages.LessThanOrEqual);
+            .WithMessage(ErrorMessages.LessThanOrEqual)
+            .WithName(DisplayNames.PaidAmount);
 
         RuleFor(dto => dto.Note)
             .MaximumLength(HasStatsContracts.NoteMaxLength);

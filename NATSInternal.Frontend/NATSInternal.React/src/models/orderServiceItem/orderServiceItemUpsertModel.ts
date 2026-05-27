@@ -12,10 +12,10 @@ declare global {
 function create(responseDto?: OrderServiceItemDetailResponseDto): OrderServiceItemUpsertModel {
   return {
     id: responseDto?.id ?? null,
-    name: "",
-    amountBeforeVatPerUnit: 0,
-    vatPercentagePerUnit: 0,
-    quantity: 1,
+    name: responseDto?.name ?? "",
+    amountBeforeVatPerUnit: responseDto?.amountBeforeVatPerUnit ?? 0,
+    vatPercentagePerUnit: responseDto?.vatPercentagePerUnit ?? 0,
+    quantity: responseDto?.quantity ?? 1,
     toRequestDto(): OrderServiceItemUpsertRequestDto {
       return {
         id: this.id,

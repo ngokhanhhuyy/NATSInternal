@@ -22,14 +22,14 @@ public class OrderUpsertRequestDto : IHasStatsUpsertRequestDto
     #region ComputedProperties
     internal long ProductItemsAmount => ProductItems.Sum(pi =>
     {
-        decimal vatAmount = pi.AmountBeforeVatPerUnit * (pi.VatPercentagePerUnit / 100);
-        return (int)Math.Ceiling(pi.AmountBeforeVatPerUnit + vatAmount) * pi.Quantity;
+        decimal vatAmountPerUnit = pi.AmountBeforeVatPerUnit * (pi.VatPercentagePerUnit / 100);
+        return (int)Math.Ceiling(pi.AmountBeforeVatPerUnit + vatAmountPerUnit) * pi.Quantity;
     });
     
     internal long ServiceItemsAmount => ServiceItems.Sum(si =>
     {
-        decimal vatAmount = si.AmountBeforeVatPerUnit * (si.VatPercentagePerUnit / 100);
-        return (int)Math.Ceiling(si.AmountBeforeVatPerUnit + vatAmount) * si.Quantity;
+        decimal vatAmountPerUnit = si.AmountBeforeVatPerUnit * (si.VatPercentagePerUnit / 100);
+        return (int)Math.Ceiling(si.AmountBeforeVatPerUnit + vatAmountPerUnit) * si.Quantity;
     });
 
     internal long Amount => ProductItemsAmount + ServiceItemsAmount;

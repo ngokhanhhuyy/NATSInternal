@@ -1,9 +1,7 @@
 import { createCustomerBasicModel } from "@/models";
-import { getCustomerDetailRoutePath } from "@/helpers";
 
 declare global {
   type CustomerUpsertModel = {
-    id: number;
     firstName: string;
     middleName: string;
     lastName: string;
@@ -17,7 +15,6 @@ declare global {
     address: string;
     note: string;
     introducer: CustomerBasicModel | null;
-    detailRoute: string;
     authorization: CustomerExistingAuthorizationResponseDto | null;
     toRequestDto(): CustomerUpsertRequestDto;
   };
@@ -25,7 +22,6 @@ declare global {
 
 export function createCustomerUpsertModel(responseDto?: CustomerDetailResponseDto): CustomerUpsertModel {
   return {
-    id: responseDto?.id ?? 0,
     firstName: responseDto?.firstName ?? "",
     middleName: responseDto?.middleName ?? "",
     lastName: responseDto?.lastName ?? "",
@@ -40,9 +36,6 @@ export function createCustomerUpsertModel(responseDto?: CustomerDetailResponseDt
     note: responseDto?.note ?? "",
     introducer: (responseDto?.introducer && createCustomerBasicModel(responseDto.introducer)) ?? null,
     authorization: responseDto?.authorization ?? null,
-    get detailRoute(): string {
-      return getCustomerDetailRoutePath(this.id);
-    },
     toRequestDto() {
       return {
         firstName: this.firstName,

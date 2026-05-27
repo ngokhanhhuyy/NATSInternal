@@ -1,17 +1,16 @@
 import React from "react";
 import { useJSONDirtyModelChecker } from "@/hooks";
-import { validatePhoneNumber } from "@/helpers";
 
 // Child components.
 import { FormContainer } from "@/components/layouts";
-import IntroducerInput from "@/pages/shared/upsert/customerPicker";
-import { FormField, TextInput, TextAreaInput, SelectInput } from "@/components/form";
-import { DateTimeInput, SubmitButton, DeleteButton } from "@/components/form";
+import CustomerUpsertInputs from "@/pages/shared/upsert/customerUpsertInputs";
+import { SubmitButton, DeleteButton } from "@/components/form";
 
 // Props.
 type CustomerUpsertPageProps<T> = {
   description: string;
   isForCreating: boolean;
+  id?: number;
   model: CustomerUpsertModel;
   onModelChanged(changedData: Partial<CustomerUpsertModel>): any;
   upsertAction(): Promise<T>;
@@ -41,137 +40,12 @@ export default function CustomerUpsertPage<T>(props: CustomerUpsertPageProps<T>)
         </div>
 
         <div className="panel-body flex flex-col gap-3 px-4 pt-2.5 pb-4">
-          <div className="grid grid-cols-1 sm:grid-cols-6 gap-3">
-            {/* FirstName */}
-            <FormField path="firstName" className="sm:col-span-2">
-              <TextInput
-                placeholder="Nguyễn"
-                value={props.model.firstName}
-                onValueChanged={(firstName) => props.onModelChanged({ firstName })}
-              />
-            </FormField>
-            
-            {/* MiddleName */}
-            <FormField path="middleName" className="sm:col-span-2">
-              <TextInput
-                placeholder="Văn"
-                value={props.model.middleName}
-                onValueChanged={(middleName) => props.onModelChanged({ middleName })}
-              />
-            </FormField>
-
-            {/* LastName */}
-            <FormField path="lastName" className="sm:col-span-2">
-              <TextInput
-                placeholder="An"
-                value={props.model.lastName}
-                onValueChanged={(lastName) => props.onModelChanged({ lastName })}
-              />
-            </FormField>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-6 gap-3">
-            {/* NickName */}
-            <FormField path="nickName" className="sm:col-span-2">
-              <TextInput
-                placeholder="Anh An"
-                value={props.model.nickName}
-                onValueChanged={(nickName) => props.onModelChanged({ nickName })}
-              />
-            </FormField>
-
-            {/* Gender */}
-            <FormField path="gender" className="sm:col-span-2">
-              <SelectInput
-                options={[{ value: "Male", displayName: "Nam" }, { value: "Female", displayName: "Nữ" }]}
-                value={props.model.gender}
-                onValueChanged={(gender: Gender) => props.onModelChanged({ gender })}
-              />
-            </FormField>
-
-            {/* Birthday */}
-            <FormField path="birthday" className="sm:col-span-2">
-              <DateTimeInput
-                type="date"
-                value={props.model.birthday}
-                onValueChanged={(birthday) => props.onModelChanged({ birthday })}
-              />
-            </FormField>
-
-            {/* PhoneNumber */}
-            <FormField path="phoneNumber" className="sm:col-span-2">
-              <TextInput
-                type="tel"
-                placeholder="0123 456 789"
-                value={props.model.phoneNumber}
-                onValueChanged={(phoneNumber) => {
-                  if (!phoneNumber.length || validatePhoneNumber(phoneNumber)) {
-                    props.onModelChanged({ phoneNumber });
-                  }
-                }}
-              />
-            </FormField>
-
-            {/* ZaloNumber */}
-            <FormField path="zaloNumber" className="sm:col-span-2">
-              <TextInput
-                type="tel"
-                placeholder="0123 456 789"
-                value={props.model.zaloNumber}
-                onValueChanged={(zaloNumber) => {
-                  if (!zaloNumber.length || validatePhoneNumber(zaloNumber)) {
-                    props.onModelChanged({ zaloNumber });
-                  }
-                }}
-              />
-            </FormField>
-
-            {/* Email */}
-            <FormField path="email" className="sm:col-span-2">
-              <TextInput
-                placeholder="nguyenvanan@gmail.com"
-                value={props.model.email}
-                onValueChanged={(email) => props.onModelChanged({ email })}
-              />
-            </FormField>
-
-            {/* FacebookURL */}
-            <FormField path="facebookUrl" className="sm:col-span-3">
-              <TextInput
-                placeholder="https://facebook.com/nguyenvana"
-                value={props.model.facebookUrl}
-                onValueChanged={(facebookUrl) => props.onModelChanged({ facebookUrl })}
-              />
-            </FormField>
-
-            {/* Address */}
-            <FormField path="address" className="sm:col-span-3">
-              <TextInput
-                placeholder="123 Nguyễn Tất Thành"
-                value={props.model.address}
-                onValueChanged={(address) => props.onModelChanged({ address })}
-              />
-            </FormField>
-
-            {/* Introducer */}
-            <FormField path="introducer" className="sm:col-span-6">
-              <IntroducerInput
-                resourceName="introducer"
-                value={props.model.introducer}
-                onValueChanged={introducer => props.onModelChanged({ introducer })}
-                excludedId={props.isForCreating ? null : props.model.id}
-              />
-            </FormField>
-
-            {/* Note */}
-            <FormField path="note" className="sm:col-span-6">
-              <TextAreaInput
-                placeholder="Ghi chú về khách hàng ..."
-                value={props.model.note}
-                onValueChanged={(note) => props.onModelChanged({ note })}
-              />
-            </FormField>
-          </div>
+          <CustomerUpsertInputs
+            id={props.id}
+            model={props.model}
+            onModelChanged={props.onModelChanged}
+            isForCreating={props.isForCreating}
+          />
         </div>
       </div>
 

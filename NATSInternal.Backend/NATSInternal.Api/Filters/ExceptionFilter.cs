@@ -1,4 +1,5 @@
 using FluentValidation;
+using Humanizer;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -41,7 +42,7 @@ public class ExceptionFilter : IExceptionFilter
             );
 
             Dictionary<string, string> errorsMap = validationException.Errors.ToDictionary(
-                failure => failure.PropertyName,
+                failure => CamelizePropertyPath(failure.PropertyName),
                 failure => failure.ErrorMessage);
 
             details.Extensions = new Dictionary<string, object?>
@@ -167,6 +168,16 @@ public class ExceptionFilter : IExceptionFilter
         }
 
         return pathBuilder.ToString();
+    }
+
+    private static string CamelizePropertyPath(string propertyPath)
+    {
+        string[] parts = propertyPath.Split(".");
+        string camelCasePropertyPath = string.Join(
+            ValidatorOptions.Global.PropertyChainSeparator,
+            parts.Select(p => p.Camelize()).ToArray());
+            
+        return camelCasePropertyPath;
     }
     #endregion
 }

@@ -8,31 +8,32 @@ import { getCustomerListRoutePath, getCustomerDetailRoutePath } from "@/helpers"
 import CustomerUpsertPage from "./CustomerUpsertPage";
 
 // Loader.
-export async function loadDataAsync(id: number): Promise<CustomerUpsertModel> {
+export async function loadDataAsync(id: number): Promise<[CustomerUpsertModel, number]> {
   const responseDto = await api.customer.getDetailAsync(id);
-  return createCustomerUpsertModel(responseDto);
+  const model = createCustomerUpsertModel(responseDto);
+  return [model, id];
 }
 
 // Component.
 export default function CustomerUpdatePage(): React.ReactNode {
   // Dependencies.
   const navigate = useNavigate();
-  const initialModel = useLoaderData<CustomerUpsertModel>();
+  const [initialModel, id] = useLoaderData<[CustomerUpsertModel, number]>();
 
   // States.
   const [model, setModel] = useState(() => initialModel);
 
   // Callbacks.
   const handleUpdate = async (): Promise<void> => {
-    await api.customer.updateAsync(model.id, model.toRequestDto());
+    await api.customer.updateAsync(id, model.toRequestDto());
   };
 
   const handleDelete = useCallback(async () => {
-    await api.customer.deleteAsync(model.id);
-  }, [model.id]);
+    await api.customer.deleteAsync(id);
+  }, [id]);
 
   const handleUpdatingSucceeded = useCallback((): void => {
-    navigate(getCustomerDetailRoutePath(model.id));
+    navigate(getCustomerDetailRoutePath(id));
   }, []);
 
   const handleDeletionSucceeded = useCallback((): void => {

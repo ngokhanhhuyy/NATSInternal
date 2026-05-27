@@ -72,27 +72,27 @@ internal class Order : IHasStatsEntity
     public long ProductAmountBeforeVat => ProductItems.Sum(i => i.AmountBeforeVatPerUnit * i.Quantity);
 
     [NotMapped]
-    public long ProductVatAmount => ProductItems.Sum(i => i.VatAmountPerUnit * i.Quantity);
+    public decimal ProductVatAmount => ProductItems.Sum(i => i.VatAmountPerUnit * i.Quantity);
     
     [NotMapped]
     public long ServiceAmountBeforeVat => ServiceItems.Sum(i => i.AmountBeforeVatPerUnit * i.Quantity);
 
     [NotMapped]
-    public long ServiceVatAmount => ServiceItems.Sum(i => i.VatAmountPerUnit * i.Quantity);
+    public decimal ServiceVatAmount => ServiceItems.Sum(i => i.VatAmountPerUnit * i.Quantity);
 
     [NotMapped]
     public long AmountBeforeVat => ProductAmountBeforeVat + ServiceAmountBeforeVat;
 
     [NotMapped]
-    public long AmountAfterVat =>
+    public decimal VatAmount => ProductVatAmount + ServiceVatAmount;
+
+    [NotMapped]
+    public long AmountAfterVat => (long)Math.Ceiling(
         ProductAmountBeforeVat + ProductVatAmount +
-        ServiceAmountBeforeVat + ServiceVatAmount;
+        ServiceAmountBeforeVat + ServiceVatAmount);
 
     [NotMapped]
-    public long VatAmount => ProductVatAmount + ServiceVatAmount;
-
-    [NotMapped]
-    public static Expression<Func<Order, long>> AmountAfterVatExpression => (order) =>
+    public static Expression<Func<Order, decimal>> AmountAfterVatExpression => (order) =>
         order.ProductItems.Sum(oi => (oi.AmountBeforeVatPerUnit + oi.VatAmountPerUnit) * oi.Quantity);
     #endregion
 

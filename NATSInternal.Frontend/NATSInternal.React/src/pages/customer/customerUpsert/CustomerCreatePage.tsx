@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { api } from "@/api";
 import { createCustomerUpsertModel } from "@/models/customer/customerUpsertModel";
+import { getCustomerDetailRoutePath } from "@/helpers";
 
 // Child components.
 import CustomerUpsertPage from "./CustomerUpsertPage";
@@ -20,7 +21,7 @@ export default function CustomerCreatePage(): React.ReactNode {
   };
 
   const handleCreatingSucceeded = useCallback((id: number): void => {
-    navigate(id);
+    navigate(getCustomerDetailRoutePath(id));
   }, []);
 
   // Template.
