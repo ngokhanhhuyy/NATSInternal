@@ -35,12 +35,12 @@ internal class OrderProductItem : IHasProductItemEntity
 
     #region ComputedProperties
     [NotMapped]
-    public decimal VatAmountPerUnit => AmountBeforeVatPerUnit * (VatPercentagePerUnit / 100);
+    public long VatAmountPerUnit => (long)Math.Ceiling(AmountBeforeVatPerUnit * (VatPercentagePerUnit / 100M));
 
     [NotMapped]
-    public decimal VatAmount => VatAmountPerUnit * Quantity;
+    public long VatAmount => VatAmountPerUnit * Quantity;
 
     [NotMapped]
-    public long AmountAfterVat => (long)Math.Ceiling((AmountBeforeVatPerUnit * Quantity) + VatAmount);
+    public long AmountAfterVat => (AmountBeforeVatPerUnit * Quantity) + VatAmount;
     #endregion
 }

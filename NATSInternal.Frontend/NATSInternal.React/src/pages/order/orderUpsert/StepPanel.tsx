@@ -17,7 +17,7 @@ export default function StepPanel(props: StepPanelProps): React.ReactNode {
   const computeButtonClassName = (key: number): string => {
     const classNames = ["flex justify-center items-center text-lg p-1 rounded-full size-10 border cursor-pointer"];
     if (props.currentStep >= key) {
-      classNames.push("bg-blue-600 dark:bg-blue-500 border-transparent dark:border-blue-400 text-white");
+      classNames.push("bg-blue-700 dark:bg-blue-500 border-transparent dark:border-blue-400 text-white");
     } else {
       classNames.push("bg-neutral-50 dark:bg-neutral-800 border-black/25 dark:border-white/25");
     }
@@ -49,7 +49,7 @@ export default function StepPanel(props: StepPanelProps): React.ReactNode {
                     "w-15 sm:w-20 md:w-30 h-1 scale-x-150 rounded-full",
                     key >= props.currentStep
                       ? "bg-neutral-900/10 dark:bg-neutral-50/15"
-                      : "bg-blue-600 dark:bg-blue-500"
+                      : "bg-blue-700 dark:bg-blue-500"
                   )} />
                 </div>
               )}

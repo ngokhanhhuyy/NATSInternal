@@ -58,8 +58,12 @@ internal class ProductService : IProductService
         
         IQueryable<Product> query = _context.Products
             .Include(p => p.Categories)
-            .Include(p => p.Photos.Where(photo => photo.IsThumbnail))
-            .Where(c => c.DeletedDateTime == null);
+            .Include(p => p.Photos.Where(photo => photo.IsThumbnail));
+
+        if (!requestDto.DeletedProductsIncluded)
+        {
+            query = query.Where(p => p.DeletedDateTime == null);
+        }
 
         if (!string.IsNullOrEmpty(requestDto.SearchContent))
         {

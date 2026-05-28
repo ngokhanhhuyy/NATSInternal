@@ -40,7 +40,7 @@ function BaseListFilterOptionsPanel<
   }, []);
 
   const resultsPerPageOptions = useMemo<SelectInputOption[]>(() => {
-    return [15, 20, 30, 40, 50].map(resultsPagePage => ({
+    return [10, 15, 20, 30, 40, 50].map(resultsPagePage => ({
       value: resultsPagePage.toString(),
       displayName: `${resultsPagePage.toString()} kết quả`
     }));

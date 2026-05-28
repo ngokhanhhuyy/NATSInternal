@@ -1,4 +1,4 @@
-import { useMatches, type RouteHandle } from "react-router";
+import { useMatches } from "react-router";
 
 export function useMatchedRouteHandles(): (RouteHandle | null)[] {
   // Dependencies.

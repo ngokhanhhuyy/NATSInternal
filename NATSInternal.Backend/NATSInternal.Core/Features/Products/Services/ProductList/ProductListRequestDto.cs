@@ -11,9 +11,10 @@ public class ProductListRequestDto : ISearchableListRequestDto
     public bool SortByAscending { get; set; } = true;
     public string SortByFieldName { get; set; } = nameof(FieldToSort.Status);
     public int Page { get; set; } = 1;
-    public int ResultsPerPage { get; set; } = 15;
+    public int ResultsPerPage { get; set; } = 10;
     public int? CategoryId { get; set; }
     public bool OutOfStockProductsIncluded { get; set; } = true;
+    public bool DeletedProductsIncluded { get; set; } = false;
     public string? SearchContent { get; set; }
     #endregion
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 // Child components.
 import { FormField, DateTimeInput, TextAreaInput, NumberInput } from "@/components/form";
@@ -11,6 +11,11 @@ type BasicInformationPanelProps = {
 
 // Components.
 export default function PaymentAndNotePanel(props: BasicInformationPanelProps): React.ReactNode {
+  // Computed.
+  const displayAmountAfterVat = useMemo<string>(() => {
+    return props.model.computeDisplayAmountAfterVat();
+  }, [props.model.productItems, props.model.serviceItems]);
+  
   // Templates.
   return (
     <div className="panel">
@@ -39,6 +44,7 @@ export default function PaymentAndNotePanel(props: BasicInformationPanelProps): 
                 />
                 <span className="form-input-group-text border-s-0">vnđ</span>
               </div>
+              <span className="opacity-50 text-sm">Tổng giá đơn hàng: {displayAmountAfterVat}</span>
             </FormField>
           </div>
 

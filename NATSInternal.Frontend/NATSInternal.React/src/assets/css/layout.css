@@ -244,9 +244,10 @@ main {
     
     a {
         background-color: transparent;
+        font-size: var(--text-sm);
         border-radius: var(--radius-xl);
-        padding-inline: --spacing(3.5);
-        padding-block: --spacing(2.5);
+        padding-inline: --spacing(2.75);
+        padding-block: --spacing(2.0);
         position: relative;
         display: flex;
         justify-content: stretch;
@@ -296,8 +297,8 @@ main {
         }
         
         svg {
-            width: --spacing(6);
-            height: --spacing(6);
+            width: --spacing(4.5);
+            height: --spacing(4.5);
             display: inline-block;
 
             /* @variant dark {

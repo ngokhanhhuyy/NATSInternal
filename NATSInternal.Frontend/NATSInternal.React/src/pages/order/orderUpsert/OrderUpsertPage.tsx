@@ -3,11 +3,12 @@ import { useNavigate } from "react-router";
 import { useJSONDirtyModelChecker } from "@/hooks";
 
 // Child components.
+import StepPanel from "./StepPanel";
+import CustomerPanel from "./CustomerPanel";
+import ItemListView from "./ItemListView";
+import PaymentAndNotePanel from "./PaymentAndNotePanel";
 import { FormContainer, } from "@/components/layouts";
 import { SubmitButton } from "@/components/form";
-import StepPanel from "./StepPanel";
-import PaymentAndNotePanel from "./PaymentAndNotePanel";
-import CustomerPanel from "./CustomerPanel";
 import { ChevronLeftIcon, ChevronRightIcon, DevicePhoneMobileIcon } from "@heroicons/react/24/outline";
 
 // Props.
@@ -58,6 +59,10 @@ export default function OrderUpsertPage<TUpsertResult>(props: OrderUpsertPagePro
               props.onModelUpdated({ customerUpsert: ({ ...props.model.customerUpsert, ...updatedData }) });
             }}
           />
+        )}
+
+        {currentStep === 2 && (
+          <ItemListView /> 
         )}
 
         {currentStep === 3 && (

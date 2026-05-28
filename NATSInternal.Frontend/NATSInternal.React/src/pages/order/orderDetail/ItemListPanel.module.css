@@ -7,6 +7,12 @@
 .data-table :global(th) {
     vertical-align: middle;
     border-bottom: 1px solid --alpha(var(--color-neutral-900) / 25%);
+
+    @variant dark {
+        & {
+            border-bottom: 1px solid --alpha(var(--color-neutral-50) / 20%);
+        }
+    }
 }
 
 .data-table :global(td) {

@@ -8,7 +8,7 @@ public class PaymentListRequestDto : IHasStatsListRequestDto
     public bool SortByAscending { get; set; }
     public string SortByFieldName { get; set; } = nameof(FieldToSort.StatsDate);
     public int Page { get; set; } = 1;
-    public int ResultsPerPage { get; set; } = 15;
+    public int ResultsPerPage { get; set; } = 10;
     public int? StatsYear { get; set; }
     public int? StatsMonth { get; set; }
     public int? CustomerId { get; set; }

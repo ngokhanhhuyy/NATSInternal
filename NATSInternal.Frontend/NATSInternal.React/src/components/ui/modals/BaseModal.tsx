@@ -55,12 +55,15 @@ export default function BaseModal(props: BaseModalProps) {
       onKeyDown={handleKeyDown}
     >
       <div className={joinClassName(
-        "bg-white dark:bg-neutral-800 border border-transparent dark:border-white/10",
+        "bg-white dark:bg-neutral-800",
         "rounded-xl shadow w-full max-w-sm mx-3 sm:mx-auto transition-all",
         props.isOpen ? "scale-100" : "scale-80"
       )}>
         {/* Header */}
-        <div className="flex justify-between items-center p-3">
+        <div className={joinClassName(
+          "dark:bg-white/10 flex justify-between items-center p-3 rounded-t-xl",
+          "border border-transparent border-b-black/15 dark:border-white/10"
+        )}>
           <div className="text-sm font-bold opacity-75">
             {props.title && props.title.toUpperCase()}
           </div>
@@ -69,12 +72,12 @@ export default function BaseModal(props: BaseModalProps) {
         </div>
 
         {/* Body */}
-        <div className="border-y border-black/10 dark:border-white/10">
+        <div className="border-x border-black/10 dark:border-white/10">
           {props.children}
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-2 p-2">
+        <div className="flex justify-end gap-2 p-2 border border-black/10 dark:border-white/10 rounded-b-xl">
           {props.footerChildren}
         </div>
       </div>
