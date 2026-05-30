@@ -1,3 +1,5 @@
+import { getDisplayAmountText } from "@/helpers";
+
 declare global {
   type OrderServiceItemUpsertModel = {
     id: number | null;
@@ -6,6 +8,8 @@ declare global {
     vatPercentagePerUnit: number;
     quantity: number;
     toRequestDto(): OrderServiceItemUpsertRequestDto;
+    readonly displayAmountBeforeVatPerUnit: string;
+    readonly guid: string;
   };
 }
 
@@ -24,7 +28,11 @@ function create(responseDto?: OrderServiceItemDetailResponseDto): OrderServiceIt
         vatPercentagePerUnit: this.vatPercentagePerUnit,
         quantity: this.quantity,
       };
-    }
+    },
+    get displayAmountBeforeVatPerUnit(): string {
+      return getDisplayAmountText(this.amountBeforeVatPerUnit, { excludeSuffix: true });
+    },
+    guid: crypto.randomUUID()
   };
 }
 

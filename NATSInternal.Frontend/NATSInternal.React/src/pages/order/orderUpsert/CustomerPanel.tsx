@@ -9,10 +9,8 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 
 // Props.
 type CustomerPanelProps = {
- customerModel: CustomerBasicModel | null;
- customerUpsertModel: CustomerUpsertModel;
- onCustomerModelUpdated(pickedModel: CustomerBasicModel | null): any;
- onCustomerUpsertModelUpdated(updatedData: Partial<CustomerUpsertModel>): any;
+  model: OrderUpsertCustomerModel;
+  onModelUpdated(updatedData: Partial<OrderUpsertCustomerModel>): any;
 };
 
 // Components.
@@ -26,36 +24,59 @@ export default function CustomerPanel(props: CustomerPanelProps): React.ReactNod
         </span>
       </div>
 
-      <div className="panel-body">
-        <div className="flex flex-col p-3 pt-2">
-          <FormField path="customer" displayName="Chọn khách hàng có sẵn">
-            <div className="flex gap-2">
-              <CustomerPicker
-                resourceName="customer"
-                value={props.customerModel}
-                onValueChanged={(changedModel) => props.onCustomerModelUpdated(changedModel)}
-                excludedId={null}
-              />
+      <div className="panel-body flex flex-col gap-x-3 gap-y-2">
+        <div className="grid grid-cols-3 gap-3 border-b border-neutral-900/15 dark:border-neutral-50/15 p-3 pt-2">
+          <FormField path="customer.createNewCustomer" displayName="Phương thức chọn khách hàng">
+            <div className="flex gap-1">
+              <button
+                type="button"
+                className={joinClassName("btn", !props.model.createNewCustomer && "btn-primary")}
+                onClick={() => props.onModelUpdated({ createNewCustomer: false })}
+              >
+                Chọn khách hàng có sẵn
+              </button>
 
-              {props.customerModel && (
-                <button className="btn btn-danger" type="button" onClick={() => props.onCustomerModelUpdated(null)}>
-                  <XMarkIcon/>
-                </button>
-              )}
+              <button
+                type="button"
+                className={joinClassName("btn", props.model.createNewCustomer && "btn-primary")}
+                onClick={() => props.onModelUpdated({ createNewCustomer: true })}
+              >
+                Tạo khách hàng mới
+              </button>
             </div>
           </FormField>
         </div>
+        
+        {!props.model.createNewCustomer && (
+          <div className="grid grid-cols-3 gap-3 px-3 pb-3">
+            <FormField path="customer" displayName="Chọn khách hàng có sẵn">
+              <div className="flex gap-2">
+                <CustomerPicker
+                  resourceName="customer"
+                  value={props.model.basic}
+                  onValueChanged={(basic) => props.onModelUpdated({ basic })}
+                  excludedId={null}
+                />
 
-        {!props.customerModel && (
-          <div className={joinClassName(
-            "flex flex-col gap-3 px-4 pt-2.5 pb-4",
-            "border-t border-neutral-900/15 dark:border-neutral-50/15"
-          )}>
+                {props.model.basic && (
+                  <button type="button" className="btn btn-danger" onClick={() => props.onModelUpdated({ basic: null })}>
+                    <XMarkIcon/>
+                  </button>
+                )}
+              </div>
+            </FormField>
+          </div>
+        )}
+
+        {props.model.createNewCustomer && (
+          <div className="flex flex-col gap-3 px-3 pb-3">
             <CustomerUpsertInputs
-              model={props.customerUpsertModel}
-              onModelChanged={props.onCustomerUpsertModelUpdated}
+              model={props.model.create}
+              onModelChanged={(updatedData) => {
+                props.onModelUpdated({ create: ({ ...props.model.create, ...updatedData }) });
+              }}
               isForCreating
-              pathPrefix="customer"
+              pathPrefix="customer.create"
             />
           </div>
         )}

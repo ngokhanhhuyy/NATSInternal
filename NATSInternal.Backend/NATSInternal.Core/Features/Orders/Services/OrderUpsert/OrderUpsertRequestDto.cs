@@ -12,8 +12,7 @@ public class OrderUpsertRequestDto : IHasStatsUpsertRequestDto
     public DateOnly? StatsDate { get; set; }
     public string? Note { get; set; }
     public long PaidAmount { get; set; }
-    public int? CustomerId { get; set; }
-    public CustomerUpsertRequestDto Customer { get; set; } = null!;
+    public OrderUpsertCustomerRequestDto Customer { get; set; } = new();
     public List<OrderProductItemUpsertRequestDto> ProductItems { get; set; } = new();
     public List<OrderServiceItemUpsertRequestDto> ServiceItems { get; set; } = new();
     public List<PhotoUpsertRequestDto> Photos { get; set; } = new();

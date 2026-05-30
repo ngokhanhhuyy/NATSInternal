@@ -1,18 +1,19 @@
 using FluentValidation;
+using JetBrains.Annotations;
 using NATSInternal.Core.Common.Contracts;
 using NATSInternal.Core.Common.Localization;
 using NATSInternal.Core.Common.Time;
 using NATSInternal.Core.Common.Validation;
-using NATSInternal.Core.Features.Customers;
 using NATSInternal.Core.Features.Photos;
 
 namespace NATSInternal.Core.Features.Orders;
 
+[UsedImplicitly]
 internal class OrderUpsertValidator : Validator<OrderUpsertRequestDto>
 {
     #region Constructors
     public OrderUpsertValidator(
-        IValidator<CustomerUpsertRequestDto> customerValidator,
+        IValidator<OrderUpsertCustomerRequestDto> customerValidator,
         IValidator<OrderProductItemUpsertRequestDto> productItemValidator,
         IValidator<OrderServiceItemUpsertRequestDto> serviceItemValidator,
         IValidator<PhotoUpsertRequestDto> photoValidator,
@@ -33,16 +34,11 @@ internal class OrderUpsertValidator : Validator<OrderUpsertRequestDto>
             .WithName(DisplayNames.PaidAmount);
 
         RuleFor(dto => dto.Note)
-            .MaximumLength(HasStatsContracts.NoteMaxLength);
-
-        RuleFor(dto => dto.CustomerId)
-            .GreaterThan(0)
-            .WithMessage(ErrorMessages.Invalid)
-            .WithName(DisplayNames.Customer);
+            .MaximumLength(HasStatsContracts.NoteMaxLength)
+            .WithName(DisplayNames.Note);
 
         RuleFor(dto => dto.Customer)
             .SetValidator(customerValidator)
-            .When(dto => dto.Customer is not null)
             .WithName(DisplayNames.Customer);
 
         RuleFor(dto => dto.ProductItems)

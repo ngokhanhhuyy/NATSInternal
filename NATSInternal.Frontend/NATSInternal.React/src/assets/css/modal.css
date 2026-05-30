@@ -12,7 +12,6 @@
         position: fixed;
         top: 0;
         left: 0;
-        backdrop-filter: blur(var(--blur-md));
         transition-property: opacity;
         transition-duration: .2s;
     }

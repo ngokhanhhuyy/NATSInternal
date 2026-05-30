@@ -1,0 +1,34 @@
+@reference "tailwindcss";
+
+.data-table :global(td) {
+    position: relative;
+}
+
+.data-table :global(td:has(svg):not(:has(button))) {
+    padding: 0 --spacing(1);
+    cursor: pointer;
+}
+
+.data-table :global(td:has(svg):not(:has(button)):hover) {
+    background-color: --alpha(var(--color-black) / 5%) !important;
+    transition: background-color .05s;
+
+    @variant dark {
+        & {
+            background-color: --alpha(var(--color-white) / 5%) !important;
+        }
+    }
+}
+
+.data-table :global(td:has(input)) {
+    padding: 0 0 0 0 !important;
+}
+
+.data-table :global(input) {
+    border-radius: 0;
+    outline-width: 0 !important;
+    margin: --spacing(0) !important;
+    height: 100% !important;
+    position: absolute;
+    top: 0;
+}

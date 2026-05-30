@@ -1,40 +1,57 @@
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import { createOrderProductItemUpsertModel } from "@/models";
 
 // Child components.
-import ProductPicker from "@/pages/shared/upsert/productPicker";
-import { FormField, NumberInput } from "@/components/form";
+import ProductPicker, { type PickedProduct } from "@/pages/shared/upsert/productPicker";
+import ItemListPanel from "./ItemListPanel";
 
 // Props.
 type ItemListViewProps = {
-  onOrderProductItemCreated?(orderProductItem: OrderProductItemUpsertModel): any;
+  model: OrderUpsertModel;
+  onModelUpdated(updatedData: Partial<OrderUpsertModel>): any;
 };
 
 // Components.
-export default function ItemListView(_: ItemListViewProps): React.ReactNode {
-  // Model.
-  const [model, setModel] = useState<OrderProductItemUpsertModel | null>(null);
+export default function ItemListView(props: ItemListViewProps): React.ReactNode {
+  // Computed.
+  const pickedProducts = useMemo<PickedProduct[]>(() => {
+    return props.model.productItems.map(pi => ({
+      product: pi.product,
+      quantity: -pi.quantity
+    }));
+  }, [props.model.productItems]);
+
+  // Callbacks.
+  function handleProductPicked(product: ProductBasicModel): void {
+    let alreadyAdded = false;
+    const productItems: OrderProductItemUpsertModel[] = props.model.productItems.map(pi => {
+      if (pi.product.id === product.id) {
+        alreadyAdded = true;
+        return { ...pi, quantity: pi.quantity + 1 };
+      }
+
+      return pi;
+    });
+
+    if (!alreadyAdded) {
+      const item = createOrderProductItemUpsertModel(product);
+      productItems.push(item);
+    }
+
+    props.onModelUpdated({ productItems });
+  }
 
   // Templates.
   return (
-    <div className="grid grid-cols-2 gap-3 w-full">
-      <ProductPicker
-        onProductPicked={(product) => setModel(() => createOrderProductItemUpsertModel(product))}
-        renderView={(_) => model && (
-          <div className="grid grid-cols-1 xl:grid-cols-2 items-start gap-3 p-3 pt-2 w-full">
-            <FormField path="amountBeforeVatPerUnit" displayName="Giá sản phẩm mỗi đơn vị (trước VAT)">
-              <div className="form-input-group">
-                <NumberInput
-                  value={model.amountBeforeVatPerUnit}
-                  onValueChanged={(amountBeforeVatPerUnit) => setModel(m => ({ ...m!, amountBeforeVatPerUnit }))}
-                />
+    <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-2 gap-3 w-full">
+        <ProductPicker
+          onProductPicked={handleProductPicked}
+          pickedProducts={pickedProducts}
+        />
+      </div>
 
-                <span className="form-input-group-text border-s-0">vnđ</span>
-              </div>
-            </FormField>
-          </div>
-        )}
-      />
+      <ItemListPanel model={props.model} onModelUpdated={props.onModelUpdated} />
     </div>
   );
 }

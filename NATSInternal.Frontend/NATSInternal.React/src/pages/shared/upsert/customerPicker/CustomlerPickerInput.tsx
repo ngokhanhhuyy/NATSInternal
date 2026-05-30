@@ -17,7 +17,7 @@ export type CustomerPickerProps = {
 // Component.
 export default function CustomerPickerInput(props: CustomerPickerProps): React.ReactNode {
   // Props.
-  const { value, onValueChanged, excludedId, ...domProps } = props;
+  const { value, onValueChanged, excludedId, resourceName, ...domProps } = props;
 
   // States.
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
@@ -52,6 +52,7 @@ export default function CustomerPickerInput(props: CustomerPickerProps): React.R
       />
 
       <Modal
+        displayName={displayName}
         model={value}
         excludedId={excludedId}
         isVisible={isModalVisible}

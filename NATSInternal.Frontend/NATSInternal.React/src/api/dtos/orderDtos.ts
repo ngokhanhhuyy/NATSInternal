@@ -48,13 +48,12 @@ declare global {
     productItems: OrderProductItemUpsertRequestDto[];
     serviceItems: OrderServiceItemUpsertRequestDto[];
     photos: PhotoUpsertRequestDto[];
-  } & OrderUpsertCustomerRequestDto;
+    customer: OrderUpsertCustomerRequestDto;
+  };
 
   type OrderUpsertCustomerRequestDto = {
-    customerId: number;
-    customer: null;
-  } | {
-    customerId: null;
-    customer: CustomerUpsertRequestDto;
+    id: number | null;
+    create: CustomerUpsertRequestDto | null;
+    createNewCustomer: boolean;
   };
 }

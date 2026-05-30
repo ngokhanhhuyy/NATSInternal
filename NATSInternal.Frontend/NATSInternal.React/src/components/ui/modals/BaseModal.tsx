@@ -47,17 +47,17 @@ export default function BaseModal(props: BaseModalProps) {
       ref={elementRef}
       id="customer-introducer-picker-modal"
       className={joinClassName(
-        "bg-black/50 w-screen h-screen flex justify-center items-center z-1000",
-        "fixed top-0 left-0 backdrop-blur-md transition-opacity",
+        "bg-black/75 w-screen h-screen flex justify-center items-center z-1000",
+        "fixed top-0 left-0 transition-opacity",
         props.isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
       )}
       onTransitionEnd={handleTransitionEnd}
       onKeyDown={handleKeyDown}
     >
       <div className={joinClassName(
-        "bg-white dark:bg-neutral-800",
+        "bg-white dark:bg-neutral-900",
         "rounded-xl shadow w-full max-w-sm mx-3 sm:mx-auto transition-all",
-        props.isOpen ? "scale-100" : "scale-80"
+        props.isOpen ? "translate-y-0" : "-translate-y-10"
       )}>
         {/* Header */}
         <div className={joinClassName(

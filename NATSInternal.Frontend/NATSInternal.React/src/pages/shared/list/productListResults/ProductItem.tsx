@@ -9,6 +9,7 @@ import { ExclamationTriangleIcon, MinusCircleIcon, TagIcon, ArchiveBoxIcon } fro
 // Props.
 type ProductItemProps = {
   model: ProductBasicModel;
+  label?: React.ReactNode;
   children?: React.ReactNode;
 };
 
@@ -75,6 +76,8 @@ export default function ProductItem(props: ProductItemProps): React.ReactNode {
           <div className={joinClassName("alert dark:font-bold dark:alert-sm min-w-8 text-center", alertClassName)}>
             {props.model.stockingQuantity}
           </div>
+
+          {props.label}
         </div>
 
         <div className="flex flex-wrap gap-3 text-sm">

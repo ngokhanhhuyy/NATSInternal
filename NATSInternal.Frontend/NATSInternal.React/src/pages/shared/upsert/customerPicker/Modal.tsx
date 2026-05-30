@@ -7,6 +7,7 @@ import { Button, BaseModal } from "@/components/ui";
 
 // Props.
 export type ModalProps = {
+  displayName: string;
   model: CustomerBasicModel | null;
   excludedId: number | null;
   isVisible: boolean;
@@ -21,7 +22,7 @@ export default function Modal(props: ModalProps): React.ReactNode {
     <BaseModal
       isOpen={props.isVisible}
       onClosed={props.onCancel}
-      title="Chọn người giới thiệu"
+      title={`Chọn ${props.displayName}`}
       footerChildren={(
         <Button className="h-fit" onClick={props.onCancel}>Huỷ bỏ</Button>
       )}

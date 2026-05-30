@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useTransition } from "react";
+import React, { useState, useMemo, useEffect, useTransition } from "react";
 import { api } from "@/api";
 import { createProductListModel } from "@/models";
 import { joinClassName } from "@/helpers";
@@ -6,35 +6,34 @@ import { joinClassName } from "@/helpers";
 // Child components.
 import ProductList from "@/pages/shared/list/productListResults";
 import { Paginator } from "@/components/ui";
-import { CheckIcon, ArrowsRightLeftIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 // Props.
+export type PickedProduct = {
+  product: ProductBasicModel;
+  quantity: number;
+};
+
 export type ProductPickerProps = {
   onProductPicked(product: ProductBasicModel): any;
-  renderView(switchToProductList: () => any): React.ReactNode;
+  pickedProducts: PickedProduct[];
 };
 
 // Components.
 export default function ProductPicker(props: ProductPickerProps): React.ReactNode {
   // States.
-  const [isProductListVisible, setIsProductListVisible] = useState<boolean>(true);
   const [isLoading, startTransition] = useTransition();
   const [model, setModel] = useState<ProductListModel>(() => {
     const m = createProductListModel();
-    m.resultsPerPage = 10;
+    m.resultsPerPage = 7;
     m.outOfStockProductsIncluded = false;
     return m;
   });
 
-  // Callbacks.
-  const handlePickButtonClicked = useCallback((product: ProductBasicModel) => {
-    setIsProductListVisible(false);
-    props.onProductPicked(product);
-  }, []);
-
-  const switchToProductList = useCallback(() => {
-    setIsProductListVisible(true);
-  }, []);
+  // Computed.
+  const pickedProductIds = useMemo<number[]>(() => {
+    return props.pickedProducts.map(pi => pi.product.id);
+  }, [props.pickedProducts]);
 
   // Effect.
   useEffect(() => {
@@ -46,55 +45,49 @@ export default function ProductPicker(props: ProductPickerProps): React.ReactNod
   }, [model.sortByAscending, model.sortByFieldName, model.page]);
 
   // Templates.
+  const renderItemButton = (product: ProductBasicModel): React.ReactNode => {
+    const quantity = props.pickedProducts.find(p => p.product.id === product.id)?.quantity;
+    return (
+      <div className="flex gap-2 justify-center items-center">
+        {quantity != null && (
+          <span className="text-yellow-700 dark:text-yellow-500">
+            {quantity}
+          </span>
+        )}
+
+        <button
+          type="button"
+          className={joinClassName("btn", pickedProductIds.includes(product.id) && "btn-primary-outline")}
+          onClick={() => props.onProductPicked(product)}
+        >
+          {pickedProductIds.includes(product.id) ? (
+            <PlusIcon />
+          ) : (
+            <CheckIcon />
+          )}
+        </button>
+      </div>
+    );
+  };
+
   return (
     <div className="panel">
       <div className="panel-header">
         <span className="panel-header-title">
           Chọn sản phẩm
         </span>
-
-        <div className="flex gap-1 justify-center items-center">
-          <span>{isProductListVisible.toString()}</span>
-          <button type="button" className="btn btn-sm" onClick={() => setIsProductListVisible(visible => !visible)}>
-            <ArrowsRightLeftIcon />
-          </button>
-        </div>
       </div>
 
       <div className={joinClassName("panel-body flex relative", isLoading && "pointer-events-none")}>
-        <div className={joinClassName(
-          "flex gap-2 w-[200%] shrink-0 relative transition-[left] duration-300",
-          !isProductListVisible ? "-left-full" : "left-0"
-        )}>
-          <div className={joinClassName(
-            "flex flex-col gap-3 p-3 w-full transition-opacity duration-300",
-            !isProductListVisible ? "opacity-0" : "opacity-100"
-          )}>
-            <ProductList
-              model={model}
-              renderItem={(product: ProductBasicModel) => (
-                <div className="flex justify-center items-center">
-                  <button type="button" className="btn" onClick={() => handlePickButtonClicked(product)}>
-                    <CheckIcon />
-                  </button>
-                </div>
-              )}
-            />
+        <div className="flex flex-col gap-3 p-3 w-full transition-opacity duration-300">
+          <ProductList model={model} renderItemButton={renderItemButton} />
 
-            <Paginator
-              page={model.page}
-              pageCount={model.pageCount}
-              onPageChanged={(page) => setModel(m => ({ ...m, page }))}
-              getPageButtonClassName={(_, isActive) => isActive ? "btn-primary" : null}
-            />
-          </div>
-
-          <div className={joinClassName(
-            "flex transition duration-300 w-full",
-            isProductListVisible ? "opacity-0" : "opacity-100"
-          )}>
-            {props.renderView(switchToProductList)}
-          </div>
+          <Paginator
+            page={model.page}
+            pageCount={model.pageCount}
+            onPageChanged={(page) => setModel(m => ({ ...m, page }))}
+            getPageButtonClassName={(_, isActive) => isActive ? "btn-primary" : null}
+          />
         </div>
       </div>
     </div>

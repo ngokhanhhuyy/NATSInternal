@@ -417,7 +417,7 @@ internal class OrderService : IOrderService
     {
         try
         {
-            return await _customerService.GetOrCreateAsync(requestDto.CustomerId, requestDto.Customer);
+            return await _customerService.GetOrCreateAsync(requestDto.Customer.Id, requestDto.Customer.Create!);
         }
         catch (OperationException exception)
         {
@@ -474,7 +474,11 @@ internal class OrderService : IOrderService
         {
             if (handledResult.ViolatedPropertyName == nameof(Order.CustomerId))
             {
-                object[] propertyPathElements = new object[] { nameof(OrderUpsertRequestDto.CustomerId) };
+                object[] propertyPathElements = new object[]
+                {
+                    nameof(OrderUpsertRequestDto.Customer),
+                    nameof(OrderUpsertRequestDto.Customer.Id)
+                };
                 throw OperationException.NotFound(propertyPathElements, DisplayNames.Customer);
             }
 

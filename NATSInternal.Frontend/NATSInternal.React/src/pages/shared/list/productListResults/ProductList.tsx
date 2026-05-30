@@ -8,7 +8,8 @@ import ProductItem from "./ProductItem";
 type ProductListProps = {
   model: ProductListModel;
   className?: string;
-  renderItem?(product: ProductBasicModel): React.ReactNode;
+  renderItemLabel?(product: ProductBasicModel): React.ReactNode;
+  renderItemButton?(product: ProductBasicModel): React.ReactNode;
 };
 
 // Components.
@@ -17,8 +18,12 @@ export default function ProductList(props: ProductListProps): React.ReactNode {
   return (
     <ul className={joinClassName("list-group", props.className)}>
       {props.model.items.length > 0 ? props.model.items.map((product, index) => (
-        <ProductItem model={product} key={index}>
-          {props.renderItem?.(product)}
+        <ProductItem
+          model={product}
+          label={props.renderItemLabel?.(product)}
+          key={index}
+        >
+          {props.renderItemButton?.(product)}
         </ProductItem>
       )) : (
         <li className="list-group-item opacity-50 px-3 py-10 flex justify-center">

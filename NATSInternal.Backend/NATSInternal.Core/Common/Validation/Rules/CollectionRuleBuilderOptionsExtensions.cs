@@ -18,7 +18,7 @@ internal static partial class CollectionRuleBuilderOptionsExtensions
                         return true;
                     }
 
-                    return items.Select(propertySelector).Count() > items.Count;
+                    return !items.GroupBy(propertySelector).Any(i => i.Count() > 1);
                 })
                 .WithMessage(ErrorMessages.Duplicated);
         }

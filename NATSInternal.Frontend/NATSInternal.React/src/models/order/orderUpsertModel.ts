@@ -14,10 +14,15 @@ declare global {
     productItems: OrderProductItemUpsertModel[];
     serviceItems: OrderServiceItemUpsertModel[];
     photos: PhotoUpsertModel[];
-    customer: CustomerBasicModel | null;
-    customerUpsert: CustomerUpsertModel;
+    customer: OrderUpsertCustomerModel;
     toRequestDto(): OrderUpsertRequestDto;
     computeDisplayAmountAfterVat(): string;
+  };
+
+  type OrderUpsertCustomerModel = {
+    basic: CustomerBasicModel | null;
+    create: CustomerUpsertModel;
+    createNewCustomer: boolean;
   };
 }
 
@@ -32,22 +37,12 @@ export function createOrderUpsertModel(responseDto?: OrderDetailResponseDto): Or
     productItems: responseDto?.productItems.map(createOrderProductItemUpsertModel) ?? [],
     serviceItems: responseDto?.serviceItems.map(createOrderServiceItemUpsertModel) ?? [],
     photos: [],
-    customer: responseDto?.customer ? createCustomerBasicModel(responseDto.customer) : null,
-    customerUpsert: createCustomerUpsertModel(),
+    customer: {
+      basic: responseDto?.customer ? createCustomerBasicModel(responseDto.customer) : null,
+      create: createCustomerUpsertModel(),
+      createNewCustomer: !responseDto
+    },
     toRequestDto(): OrderUpsertRequestDto {
-      let customerProperties: OrderUpsertCustomerRequestDto;
-      if (this.customer) {
-        customerProperties = {
-          customerId: this.customer.id,
-          customer: null,
-        };
-      } else {
-        customerProperties = {
-          customerId: null,
-          customer: this.customerUpsert.toRequestDto(),
-        };
-      }
-
       return {
         type: this.type,
         statsDate: this.statsDate ? getDateISOString(this.statsDate) : null,
@@ -56,7 +51,11 @@ export function createOrderUpsertModel(responseDto?: OrderDetailResponseDto): Or
         productItems: this.productItems.map(pi => pi.toRequestDto()),
         serviceItems: this.serviceItems.map(si => si.toRequestDto()),
         photos: this.photos.map(p => p.toRequestDto()),
-        ...customerProperties
+        customer: {
+          id: (!this.customer.createNewCustomer && this.customer.basic) ? this.customer.basic.id : null,
+          create: this.customer.createNewCustomer && this.customer.create ? this.customer.create.toRequestDto() : null,
+          createNewCustomer: this.customer.createNewCustomer
+        }
       };
     },
     computeDisplayAmountAfterVat(): string {
