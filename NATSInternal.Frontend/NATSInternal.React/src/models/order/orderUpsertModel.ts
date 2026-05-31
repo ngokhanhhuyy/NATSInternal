@@ -16,6 +16,7 @@ declare global {
     photos: PhotoUpsertModel[];
     customer: OrderUpsertCustomerModel;
     toRequestDto(): OrderUpsertRequestDto;
+    computeAmountAfterVat(): number;
     computeDisplayAmountAfterVat(): string;
   };
 
@@ -58,7 +59,7 @@ export function createOrderUpsertModel(responseDto?: OrderDetailResponseDto): Or
         }
       };
     },
-    computeDisplayAmountAfterVat(): string {
+    computeAmountAfterVat(): number {
       const productItemsAmountAfterVat = this.productItems.reduce((acc, productItem) => {
         const amountBeforeVatPerUnit = productItem.amountBeforeVatPerUnit;
         const vatAmountPerUnit = Math.ceil(amountBeforeVatPerUnit * (productItem.vatPercentagePerUnit / 100));
@@ -73,7 +74,11 @@ export function createOrderUpsertModel(responseDto?: OrderDetailResponseDto): Or
         return acc + amountAfterVat;
       }, 0);
 
-      return getDisplayAmountText(productItemsAmountAfterVat + servceItemsAmountAfterVat);
+      return productItemsAmountAfterVat + servceItemsAmountAfterVat;
+    },
+    computeDisplayAmountAfterVat(): string {
+      const amountAfterVat = this.computeAmountAfterVat();
+      return getDisplayAmountText(amountAfterVat, { suffix: " vnđ" });
     }
   };
 }

@@ -114,6 +114,7 @@ export default function SignInPage(): React.ReactNode {
       upsertAction={loginAsync}
       onUpsertingSucceeded={handleLoginSucceeded}
       onUpsertingFailed={handleLoginFailed}
+      submitOnEnterKeyPressed
     >
       {/* Introduction */}
       <div className="flex flex-col mb-5">

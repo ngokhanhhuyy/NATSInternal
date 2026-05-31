@@ -25,20 +25,26 @@ export default function CustomerPanel(props: CustomerPanelProps): React.ReactNod
       </div>
 
       <div className="panel-body flex flex-col gap-x-3 gap-y-2">
-        <div className="grid grid-cols-3 gap-3 border-b border-neutral-900/15 dark:border-neutral-50/15 p-3 pt-2">
+        <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 border-b border-neutral-900/15 dark:border-neutral-50/15 p-3 pt-2">
           <FormField path="customer.createNewCustomer" displayName="Phương thức chọn khách hàng">
-            <div className="flex gap-1">
+            <div className="flex">
               <button
                 type="button"
-                className={joinClassName("btn", !props.model.createNewCustomer && "btn-primary")}
+                className={joinClassName(
+                  "btn rounded-r-none",
+                  !props.model.createNewCustomer ? "btn-primary" : "border-r-transparent"
+                )}
                 onClick={() => props.onModelUpdated({ createNewCustomer: false })}
               >
-                Chọn khách hàng có sẵn
+                Chọn khách hàng cũ
               </button>
 
               <button
                 type="button"
-                className={joinClassName("btn", props.model.createNewCustomer && "btn-primary")}
+                className={joinClassName(
+                  "btn rounded-l-none",
+                  props.model.createNewCustomer ? "btn-primary" : "border-l-transparent"
+                )}
                 onClick={() => props.onModelUpdated({ createNewCustomer: true })}
               >
                 Tạo khách hàng mới

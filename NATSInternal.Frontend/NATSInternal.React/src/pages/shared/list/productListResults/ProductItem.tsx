@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { joinClassName, compute } from "@/helpers";
 
 // Child components.
+import { NewTabLink } from "@/components/ui";
 import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { ExclamationTriangleIcon, MinusCircleIcon, TagIcon, ArchiveBoxIcon } from "@heroicons/react/24/outline";
 
@@ -11,6 +12,7 @@ type ProductItemProps = {
   model: ProductBasicModel;
   label?: React.ReactNode;
   children?: React.ReactNode;
+  openLinkInNewTab?: boolean;
 };
 
 // Components.
@@ -63,15 +65,27 @@ export default function ProductItem(props: ProductItemProps): React.ReactNode {
 
       <div className="flex flex-col self-start">
         <div className="flex gap-3 items-center">
-          <Link
-            to={props.model.detailRoutePath}
-            className={joinClassName(
-              "font-bold",
-              !props.model.isDiscontinued && "text-blue-700 dark:text-blue-400"
-            )}
-          >
-            {props.model.name}
-          </Link>
+          {props.openLinkInNewTab ? (
+            <NewTabLink
+              url={props.model.detailRoutePath}
+              className={joinClassName(
+                "font-bold",
+                !props.model.isDiscontinued && "text-blue-700 dark:text-blue-400"
+              )}
+            >
+              {props.model.name}
+            </NewTabLink>
+          ) : (
+            <Link
+              to={props.model.detailRoutePath}
+              className={joinClassName(
+                "font-bold",
+                !props.model.isDiscontinued && "text-blue-700 dark:text-blue-400"
+              )}
+            >
+              {props.model.name}
+            </Link>
+          )}
 
           <div className={joinClassName("alert dark:font-bold dark:alert-sm min-w-8 text-center", alertClassName)}>
             {props.model.stockingQuantity}

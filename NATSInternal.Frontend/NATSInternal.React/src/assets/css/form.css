@@ -63,6 +63,9 @@
         border: 1px solid --alpha(var(--color-black) / 15%);
         border-radius: var(--radius-lg);
         padding: --spacing(1) --spacing(3);
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
         @variant dark {
             & {

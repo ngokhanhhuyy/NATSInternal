@@ -30,7 +30,7 @@ function create(responseDto?: OrderServiceItemDetailResponseDto): OrderServiceIt
       };
     },
     get displayAmountBeforeVatPerUnit(): string {
-      return getDisplayAmountText(this.amountBeforeVatPerUnit, { excludeSuffix: true });
+      return getDisplayAmountText(this.amountBeforeVatPerUnit, { suffix: "đ" });
     },
     guid: crypto.randomUUID()
   };

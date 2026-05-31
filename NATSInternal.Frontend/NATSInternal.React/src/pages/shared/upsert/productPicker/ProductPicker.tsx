@@ -25,7 +25,7 @@ export default function ProductPicker(props: ProductPickerProps): React.ReactNod
   const [isLoading, startTransition] = useTransition();
   const [model, setModel] = useState<ProductListModel>(() => {
     const m = createProductListModel();
-    m.resultsPerPage = 7;
+    m.resultsPerPage = 10;
     m.outOfStockProductsIncluded = false;
     return m;
   });
@@ -47,10 +47,11 @@ export default function ProductPicker(props: ProductPickerProps): React.ReactNod
   // Templates.
   const renderItemButton = (product: ProductBasicModel): React.ReactNode => {
     const quantity = props.pickedProducts.find(p => p.product.id === product.id)?.quantity;
+    
     return (
       <div className="flex gap-2 justify-center items-center">
         {quantity != null && (
-          <span className="text-yellow-700 dark:text-yellow-500">
+          <span className="text-yellow-700 dark:text-yellow-400">
             {quantity}
           </span>
         )}
@@ -71,7 +72,7 @@ export default function ProductPicker(props: ProductPickerProps): React.ReactNod
   };
 
   return (
-    <div className="panel">
+    <div className="panel h-fit sticky top-[calc(var(--topbar-height)+--spacing(3))]">
       <div className="panel-header">
         <span className="panel-header-title">
           Chọn sản phẩm
@@ -79,7 +80,7 @@ export default function ProductPicker(props: ProductPickerProps): React.ReactNod
       </div>
 
       <div className={joinClassName("panel-body flex relative", isLoading && "pointer-events-none")}>
-        <div className="flex flex-col gap-3 p-3 w-full transition-opacity duration-300">
+        <div className="flex flex-col w-full gap-3 p-3">
           <ProductList model={model} renderItemButton={renderItemButton} />
 
           <Paginator

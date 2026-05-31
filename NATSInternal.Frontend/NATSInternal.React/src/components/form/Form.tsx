@@ -1,4 +1,4 @@
-import React, { useState, useMemo, createContext } from "react";
+import React, { useState, useRef, useMemo, createContext } from "react";
 import { ValidationError, OperationError } from "@/api";
 import { createErrorCollectionModel } from "@/models";
 import { joinClassName, compute } from "@/helpers";
@@ -22,6 +22,7 @@ type FormProps<TUpsertResult> = {
   onUpsertingSucceeded?: (result: TUpsertResult) => any;
   onUpsertingFailed?: (error: Error, errorHandled: boolean) => any;
   isModelDirty?: boolean;
+  submitOnEnterKeyPressed?: boolean;
 } & React.ComponentPropsWithoutRef<"form">;
 
 // Component.
@@ -32,6 +33,7 @@ export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
   // States.
   const [errorCollection, setErrorCollection] = useState(createErrorCollectionModel);
   const [submissionState, setSubmissionState] = useState<SubmissionState>("notSubmitting");
+  const elementRef = useRef<HTMLFormElement | null>(null);
 
   // Computed.
   const submittingClassName = compute(() => {
@@ -49,6 +51,26 @@ export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
   }, [errorCollection, submissionState, isModelDirty]);
 
   // Callbacks.
+  function handleKeyPressed(event: React.KeyboardEvent): void {
+    if (event.key === "Enter") {
+      if (!props.submitOnEnterKeyPressed) {
+        event.preventDefault();
+      }
+
+      if (!document.activeElement || !elementRef.current?.contains(document.activeElement)) {
+        return;
+      }
+
+      const typesToCheck = [HTMLInputElement, HTMLButtonElement, HTMLSelectElement, HTMLTextAreaElement] as const;
+      for (const typeToCheck of typesToCheck) {
+        if (document.activeElement instanceof typeToCheck) {
+          document.activeElement.blur();
+          return;
+        }
+      }
+    }
+  }
+
   async function handleUpsertingAsync(event: React.FormEvent): Promise<void> {
     event.preventDefault();
     setErrorCollection(errorCollection => errorCollection.clear());
@@ -76,6 +98,7 @@ export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
     <FormContext.Provider value={contextValue}>
       <form
         {...domProps}
+        ref={elementRef}
         className={joinClassName(
           domProps.className,
           submittingClassName,
@@ -84,6 +107,7 @@ export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
         )}
         noValidate
         onSubmit={handleUpsertingAsync}
+        onKeyDown={handleKeyPressed}
       >
         {domProps.children}
       </form>

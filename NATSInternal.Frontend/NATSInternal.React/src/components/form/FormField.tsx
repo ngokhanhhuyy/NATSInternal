@@ -20,6 +20,8 @@ export type FormFieldProps = {
   path?: string;
   displayName?: string;
   children: React.ReactNode;
+  hideLabel?: boolean;
+  hideValidationMessage?: boolean;
 } & React.ComponentPropsWithoutRef<"div">;
 
 // Components.
@@ -88,7 +90,7 @@ export default function FormField(props: FormFieldProps) {
       "form-field flex flex-col justify-stretched",
     )}>
       {/* Label */}
-      {displayName && (
+      {(!props.hideLabel && displayName) && (
         <label htmlFor={props.path}>
           {displayName}
         </label>
@@ -100,9 +102,11 @@ export default function FormField(props: FormFieldProps) {
       </FormFieldContext.Provider>
 
       {/* Message */}
-      <span className={validationMessageClassName}>
-        {errorMessage}
-      </span>
+      {!props.hideValidationMessage && (
+        <span className={validationMessageClassName}>
+          {errorMessage}
+        </span>
+      )}
     </div>
   );
 }

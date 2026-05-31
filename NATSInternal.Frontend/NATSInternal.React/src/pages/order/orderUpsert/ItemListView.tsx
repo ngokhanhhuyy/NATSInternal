@@ -44,14 +44,14 @@ export default function ItemListView(props: ItemListViewProps): React.ReactNode 
   // Templates.
   return (
     <div className="flex flex-col gap-3">
-      <div className="grid grid-cols-2 gap-3 w-full">
+      <div className="grid grid-cols-2 gap-3 w-full static">
         <ProductPicker
           onProductPicked={handleProductPicked}
           pickedProducts={pickedProducts}
         />
-      </div>
 
-      <ItemListPanel model={props.model} onModelUpdated={props.onModelUpdated} />
+        <ItemListPanel model={props.model} onModelUpdated={props.onModelUpdated} />
+      </div>
     </div>
   );
 }

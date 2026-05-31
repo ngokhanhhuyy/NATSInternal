@@ -25,7 +25,7 @@ function create(args: OrderProductItemDetailResponseDto | ProductBasicModel): Or
       return convertToRequestDto(this);
     },
     get displayAmountBeforeVatPerUnit(): string {
-      return getDisplayAmountText(this.amountBeforeVatPerUnit, { excludeSuffix: true });
+      return getDisplayAmountText(this.amountBeforeVatPerUnit, { suffix: "đ" });
     },
     guid: crypto.randomUUID()
   };

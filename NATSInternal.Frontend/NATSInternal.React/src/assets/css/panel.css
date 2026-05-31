@@ -30,7 +30,7 @@
         
         @variant dark {
             & {
-                background-color: --alpha(var(--color-neutral-700) / 75%);
+                background-color: --alpha(var(--color-white) / 15%);
                 border-color: --alpha(var(--color-white) / 15%);
             }
         }
@@ -75,7 +75,7 @@
         
         @variant dark {
             & {
-                background-color: var(--color-neutral-900);
+                background-color: --alpha(var(--color-white) / 7.5%);
                 border-color: --alpha(var(--color-white) / 15%);
             }
         }

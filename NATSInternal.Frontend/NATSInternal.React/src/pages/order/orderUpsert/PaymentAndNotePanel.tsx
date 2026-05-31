@@ -32,12 +32,14 @@ export default function PaymentAndNotePanel(props: BasicInformationPanelProps): 
             </FormField>
             
             <FormField path="paidAmount">
-              <div className="form-input-group">
-                <NumberInput
-                  value={props.model.paidAmount}
-                  onValueChanged={(paidAmount) => props.onModelUpdated({ paidAmount })}
-                />
-                <span className="form-input-group-text border-s-0">vnđ</span>
+              <div className="flex flex-col">
+                <div className="form-input-group">
+                  <NumberInput
+                    value={props.model.paidAmount}
+                    onValueChanged={(paidAmount) => props.onModelUpdated({ paidAmount })}
+                  />
+                  <span className="form-input-group-text border-s-0">vnđ</span>
+                </div>
               </div>
             </FormField>
           </div>
