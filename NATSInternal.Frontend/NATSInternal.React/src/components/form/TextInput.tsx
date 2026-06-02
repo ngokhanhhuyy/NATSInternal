@@ -11,13 +11,14 @@ export type TextInputProps = {
 // Component.
 export default function TextInput(props: TextInputProps) {
   // Props.
-  const { value, onValueChanged, ...domProps } = props;
+  const { value, onValueChanged, autoComplete = "off", ...domProps } = props;
 
   // Template.
   function renderInput(className?: string, path?: string, displayName?: string) {
     return (
       <input
         {...domProps}
+        autoComplete={autoComplete}
         name={path}
         className={joinClassName(className, props.className)}
         placeholder={props.placeholder ?? displayName}

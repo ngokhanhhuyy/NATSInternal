@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useEffect, useTransition } from "react";
 import { api } from "@/api";
 import { createProductListModel } from "@/models";
-import { joinClassName } from "@/helpers";
+import { compute, joinClassName } from "@/helpers";
 
 // Child components.
 import ProductList from "@/pages/shared/list/productListResults";
+import { TextInput } from "@/components/form";
 import { Paginator } from "@/components/ui";
-import { CheckIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, PlusIcon, MagnifyingGlassIcon, FunnelIcon } from "@heroicons/react/24/outline";
 
 // Props.
 export type PickedProduct = {
@@ -17,12 +18,14 @@ export type PickedProduct = {
 export type ProductPickerProps = {
   onProductPicked(product: ProductBasicModel): any;
   pickedProducts: PickedProduct[];
+  className?: string;
 };
 
 // Components.
 export default function ProductPicker(props: ProductPickerProps): React.ReactNode {
   // States.
   const [isLoading, startTransition] = useTransition();
+  const [renderingKey, setRenderingKey] = useState<number>(0);
   const [model, setModel] = useState<ProductListModel>(() => {
     const m = createProductListModel();
     m.resultsPerPage = 10;
@@ -35,14 +38,22 @@ export default function ProductPicker(props: ProductPickerProps): React.ReactNod
     return props.pickedProducts.map(pi => pi.product.id);
   }, [props.pickedProducts]);
 
+  const isSearchContentValidationMessageVisible = compute<boolean>(() => {
+    return !!model.searchContent && model.searchContent.length < 3;
+  });
+
   // Effect.
   useEffect(() => {
     startTransition(async () => {
+      if (model.searchContent && model.searchContent.length < 3) {
+        return;
+      }
+
       const requestDto = model.toRequestDto();
       const responseDto = await api.product.getListAsync(requestDto);
       setModel(m => m.mapFromResponseDto(responseDto));
     });
-  }, [model.sortByAscending, model.sortByFieldName, model.page]);
+  }, [model.sortByAscending, model.sortByFieldName, model.page, renderingKey]);
 
   // Templates.
   const renderItemButton = (product: ProductBasicModel): React.ReactNode => {
@@ -72,25 +83,46 @@ export default function ProductPicker(props: ProductPickerProps): React.ReactNod
   };
 
   return (
-    <div className="panel h-fit sticky top-[calc(var(--topbar-height)+--spacing(3))]">
-      <div className="panel-header">
-        <span className="panel-header-title">
-          Chọn sản phẩm
-        </span>
-      </div>
+    <div className={joinClassName(
+      "flex flex-col w-full gap-3 p-3",
+      isLoading && "pointer-events-none",
+      props.className
+    )}>
+      <div className="flex flex-col">
+        <div className="grid grid-cols-[1fr_auto] gap-2">
+          <div className="grid grid-cols-[1fr_auto]">
+            <TextInput
+              className="rounded-e-none z-1"
+              placeholder="Tìm kiếm sản phẩm ..."
+              value={model.searchContent}
+              onValueChanged={(searchContent) => setModel(m => ({ ...m, searchContent }))}
+              onKeyDown={(event) => event.key === "Enter" && setRenderingKey(k => k + 1)}
+            />
+            <button type="button" className="btn rounded-s-none border-s-0">
+              <MagnifyingGlassIcon />
+            </button>
+          </div>
 
-      <div className={joinClassName("panel-body flex relative", isLoading && "pointer-events-none")}>
-        <div className="flex flex-col w-full gap-3 p-3">
-          <ProductList model={model} renderItemButton={renderItemButton} />
-
-          <Paginator
-            page={model.page}
-            pageCount={model.pageCount}
-            onPageChanged={(page) => setModel(m => ({ ...m, page }))}
-            getPageButtonClassName={(_, isActive) => isActive ? "btn-primary" : null}
-          />
+          <button type="button" className="btn">
+            <FunnelIcon />
+          </button>
         </div>
+
+        {isSearchContentValidationMessageVisible && (
+          <span className="text-red-700 dark:text-red-400 text-sm">
+            Nội dung tìm kiếm phải chứa ít nhất 3 ký tự.
+          </span>
+        )}
       </div>
+
+      <ProductList model={model} renderItemButton={renderItemButton} />
+
+      <Paginator
+        page={model.page}
+        pageCount={model.pageCount}
+        onPageChanged={(page) => setModel(m => ({ ...m, page }))}
+        getPageButtonClassName={(_, isActive) => isActive ? "btn-primary" : null}
+      />
     </div>
   );
 }

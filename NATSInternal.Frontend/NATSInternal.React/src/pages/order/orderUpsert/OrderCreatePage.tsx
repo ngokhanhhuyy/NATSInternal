@@ -6,6 +6,8 @@ import { getOrderDetailRoutePath } from "@/helpers";
 
 // Child components.
 import OrderUpsertPage from "./OrderUpsertPage";
+import OrderTypePanel from "./OrderTypePanel";
+import CustomerPanel from "./CustomerPanel";
 
 // Components.
 export default function OrderCreatePage(): React.ReactNode {
@@ -31,6 +33,16 @@ export default function OrderCreatePage(): React.ReactNode {
       onModelUpdated={(updatedData) => setModel(m => ({ ...m, ...updatedData }))}
       upsertAction={handleUpsertAsync}
       onUpsertingSucceeded={handleUpsertingSucceeded}
-    />
+    >
+      <OrderTypePanel
+        model={model}
+        onModelUpdated={(updatedData) => setModel(m => ({ ...m, ...updatedData }))}
+      />
+      
+      <CustomerPanel
+        model={model.customer}
+        onModelUpdated={(updatedData) => setModel(m => ({ ...m, customer: { ...m.customer, ...updatedData } }))}
+      />
+    </OrderUpsertPage>
   );
 }

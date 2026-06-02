@@ -1,5 +1,7 @@
 import React from "react";
+import { getDisplayName } from "@/metadata";
 import { joinClassName } from "@/helpers";
+import style from "./OrderTypePanel.module.css";
 
 // Child components.
 import { FormField } from "@/components/form";
@@ -20,26 +22,37 @@ export default function OrderTypePanel(props: OrderTypePanelProps): React.ReactN
           Loại đơn hàng
         </span>
       </div>
-      <div className="panel-body grid grid-cols-5">
-        <FormField path="type">
-          <div className="grid grid-cols-3">
+
+      <div className="panel-body grid grid-cols-12 p-3 pt-1.5">
+        <FormField
+          path="type"
+          className="col-span-4 xl:col-span-3"
+          displayName={getDisplayName("orderType") ?? undefined}
+        >
+          <div className={joinClassName("grid grid-cols-3", style.orderTypeButtonContainer)}>
             <button
               type="button"
-              className={joinClassName("btn", props.model.type === "Retail" ? "btn-primary" : "border-e-0")}
-              onClick={props.onModelUpdated({ type: "Retail" })}
-            />
+              className={joinClassName("btn", props.model.type === "Retail" && "btn-primary")}
+              onClick={() => props.onModelUpdated({ type: "Retail" })}
+            >
+              Bán lẻ
+            </button>
             
             <button
               type="button"
-              className={joinClassName("btn", props.model.type === "Treatment" ? "btn-primary" : "border-x-0")}
-              onClick={props.onModelUpdated({ type: "Treatment" })}
-            />
+              className={joinClassName("btn", props.model.type === "Treatment" && "btn-primary")}
+              onClick={() => props.onModelUpdated({ type: "Treatment" })}
+            >
+              Liệu trình
+            </button>
             
             <button
               type="button"
-              className={joinClassName("btn", props.model.type === "Consultant" ? "btn-primary" : "border-s-0")}
-              onClick={props.onModelUpdated({ type: "Consultant" })}
-            />
+              className={joinClassName("btn", props.model.type === "Consultant" && "btn-primary")}
+              onClick={() => props.onModelUpdated({ type: "Consultant" })}
+            >
+              Tư vấn
+            </button>
           </div>
         </FormField>
       </div>

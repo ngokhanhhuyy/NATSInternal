@@ -3,10 +3,9 @@ import { useNavigate } from "react-router";
 import { useJSONDirtyModelChecker } from "@/hooks";
 
 // Child components.
-import CustomerPanel from "./CustomerPanel";
-import ItemListView from "./ItemListView";
+import ItemListWithPickersPanel from "./ItemListWithPickersPanel";
 import PaymentAndNotePanel from "./PaymentAndNotePanel";
-import { FormContainer, } from "@/components/layouts";
+import { FormContainer } from "@/components/layouts";
 import { SubmitButton } from "@/components/form";
 import { ChevronLeftIcon, DevicePhoneMobileIcon } from "@heroicons/react/24/outline";
 
@@ -17,6 +16,7 @@ type OrderUpsertPageProps<TUpsertResult> = {
   upsertAction(): Promise<TUpsertResult>;
   onUpsertingSucceeded(result: TUpsertResult): any;
   onUpsertingFailed?(error: Error, errorHandled: boolean): any;
+  children?: React.ReactNode | React.ReactNode[];
 };
 
 // Components.
@@ -31,24 +31,15 @@ export default function OrderUpsertPage<TUpsertResult>(props: OrderUpsertPagePro
   return (
     <>
       <FormContainer
-        className="hidden lg:flex pb-50"
+        className="hidden lg:flex pb-[50%]"
         upsertAction={props.upsertAction}
         onUpsertingSucceeded={props.onUpsertingSucceeded}
         onUpsertingFailed={props.onUpsertingFailed}
         isModelDirty={isModelDirty}
       >
-        <CustomerPanel
-          model={props.model.customer}
-          onModelUpdated={(updatedData) => {
-            props.onModelUpdated({ customer: ({ ...props.model.customer, ...updatedData }) });
-          }}
-        />
+        {props.children}
         
-        <ItemListView
-          model={props.model}
-          onModelUpdated={(updatedData) => props.onModelUpdated(updatedData)}
-        />
-        
+        <ItemListWithPickersPanel model={props.model} onModelUpdated={props.onModelUpdated} />
         <PaymentAndNotePanel model={props.model} onModelUpdated={props.onModelUpdated} />
 
         <div className="flex justify-end gap-3">

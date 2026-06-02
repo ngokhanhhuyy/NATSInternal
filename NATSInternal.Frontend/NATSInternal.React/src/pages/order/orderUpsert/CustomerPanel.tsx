@@ -25,9 +25,12 @@ export default function CustomerPanel(props: CustomerPanelProps): React.ReactNod
       </div>
 
       <div className="panel-body flex flex-col gap-x-3 gap-y-2">
-        <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 border-b border-neutral-900/15 dark:border-neutral-50/15 p-3 pt-2">
+        <div className={joinClassName(
+          "grid grid-cols-2 xl:grid-cols-3 gap-3 border-b",
+          "border-neutral-900/15 dark:border-neutral-50/15 p-3 pt-2"
+        )}>
           <FormField path="customer.createNewCustomer" displayName="Phương thức chọn khách hàng">
-            <div className="flex">
+            <div className="grid grid-cols-2 justify-stretch">
               <button
                 type="button"
                 className={joinClassName(

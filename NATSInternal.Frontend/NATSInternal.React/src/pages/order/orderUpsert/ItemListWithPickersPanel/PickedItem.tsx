@@ -1,16 +1,10 @@
-import React, { useMemo } from "react";
-import { joinClassName } from "@/helpers";
+import React from "react";
 
 // Child components.
 import { FormField, NumberInput } from "@/components/form";
 import { PhotoIcon, PlusIcon, MinusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 // Props.
-type ItemListPanelProps = {
-  model: OrderUpsertModel;
-  onModelUpdated(updatedData: Partial<OrderUpsertModel>): any;
-};
-
 type OrderItemUpsertModel = OrderProductItemUpsertModel | OrderServiceItemUpsertModel;
 type ItemProps<T extends OrderItemUpsertModel> = {
   index: number;
@@ -20,96 +14,7 @@ type ItemProps<T extends OrderItemUpsertModel> = {
 };
 
 // Components.
-export default function ItemListPanel(props: ItemListPanelProps): React.ReactNode {
-  // Computed.
-  const displayAmountAfterVat = useMemo<string>(() => {
-    return props.model.computeDisplayAmountAfterVat();
-  }, [props.model.productItems, props.model.serviceItems]);
-
-  // Template.
-  return (
-    <div className="panel h-full">
-      <div className="panel-header">
-        <span className="panel-header-title">
-          Danh sách sản phẩm và dịch vụ
-        </span>
-      </div>
-
-      <div className="panel-body flex flex-col justify-between gap-3 p-3 h-full">
-        {(props.model.productItems.length + props.model.serviceItems.length) ? (
-          <>
-            <ul className="list-group">
-              {props.model.productItems.map((productItem, index) => (
-                <OrderUpsertItem
-                  index={index}
-                  model={productItem}
-                  onModelUpdated={(updatedData) => {
-                    const productItems = props.model.productItems.map(item => {
-                      if (item.guid !== productItem.guid) {
-                        return item;
-                      }
-
-                      return { ...item, ...updatedData };
-                    });
-                    
-                    props.onModelUpdated?.({ productItems });
-                  }}
-                  onModelDeleted={() => {
-                    const productItems = props.model.productItems.filter(item => item.guid !== productItem.guid);
-                    props.onModelUpdated?.({ productItems });
-                    }}
-                  key={productItem.guid}
-                />
-              ))}
-              
-              {props.model.serviceItems.map((serviceItem, index) => (
-                <OrderUpsertItem
-                  index={props.model.serviceItems.length + index}
-                  model={serviceItem}
-                  onModelUpdated={(updatedData) => {
-                    const serviceItems = props.model.serviceItems.map(item => {
-                      if (item.guid !== serviceItem.guid) {
-                        return item;
-                      }
-
-                      return { ...item, ...updatedData };
-                    });
-                    
-                    props.onModelUpdated?.({ serviceItems });
-                  }}
-                  onModelDeleted={() => {
-                    const serviceItems = props.model.serviceItems.filter(item => item.guid !== serviceItem.guid);
-                    props.onModelUpdated?.({ serviceItems });
-                  }}
-                  key={serviceItem.guid}
-                />
-              ))}
-            </ul>
-
-            <div className="border border-black/10 dark:border-white/10 rounded-lg p-3 flex justify-end gap-10">
-              <span className="text-blue-700 dark:text-blue-400 font-bold">
-                Thành tiền
-              </span>
-
-              <span>{displayAmountAfterVat}</span>
-            </div>
-          </>
-        ) : (
-          <div className={joinClassName(
-            "flex justify-center items-center",
-            "border border-black/10 dark:border-white/10 rounded-xl h-full"
-          )}>
-            <span className="opacity-50">
-              Chưa chọn sản phẩm và dịch vụ
-            </span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function OrderUpsertItem<T extends OrderItemUpsertModel>(props: ItemProps<T>): React.ReactNode {
+export default function PickedItem<T extends OrderItemUpsertModel>(props: ItemProps<T>): React.ReactNode {
   // Computed.
   function computePath(path: string): string {
     const prefix = isOrderProductItemUpsertModel(props.model) ? "productItems" : "serviceItems";

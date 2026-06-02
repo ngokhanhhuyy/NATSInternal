@@ -56,6 +56,14 @@
             border-top-right-radius: 0;
             border-bottom-right-radius: 0;
         }
+
+        & .form-control + .form-input-group-text {
+            border-left-color: transparent;
+        }
+
+        & .form-input-group-text:has(+ .form-control) {
+            border-right-color: transparent;
+        }
     }
 
     .form-input-group-text {

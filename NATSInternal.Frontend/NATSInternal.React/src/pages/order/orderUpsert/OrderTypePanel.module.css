@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@import "@/assets/css/style.css";
+
+.order-type-button-container > :global(:not(:first-child)) {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+.order-type-button-container > :global(:not(:first-child):not(.btn-primary)) {
+    border-left-color: transparent !important;
+}
+
+.order-type-button-container > :global(:not(:last-child)) {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.order-type-button-container > :global(.btn:has(+ .btn-primary)) {
+    border-right-color: transparent !important;
+}
