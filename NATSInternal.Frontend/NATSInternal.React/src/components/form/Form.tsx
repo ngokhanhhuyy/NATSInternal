@@ -23,12 +23,14 @@ type FormProps<TUpsertResult> = {
   onUpsertingFailed?: (error: Error, errorHandled: boolean) => any;
   isModelDirty?: boolean;
   submitOnEnterKeyPressed?: boolean;
+  render?(errorCollection: ErrorCollectionModel): React.ReactNode;
 } & React.ComponentPropsWithoutRef<"form">;
 
 // Component.
 export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
   // Props.
   const {
+    render,
     upsertAction,
     onUpsertingSucceeded,
     onUpsertingFailed,
@@ -118,6 +120,7 @@ export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
         onKeyDown={handleKeyPressed}
       >
         {domProps.children}
+        {render?.(errorCollection)}
       </form>
     </FormContext.Provider>
   );

@@ -44,7 +44,7 @@ internal class OrderUpsertValidator : Validator<OrderUpsertRequestDto>
         RuleFor(dto => dto.ProductItems)
             .NotEmpty()
             .Unique(pi => pi.ProductId)
-            .When(dto => dto.Type is OrderType.Retail)
+            .When(dto => dto.Type is OrderType.Retail or OrderType.Treatment)
             .WithName(DisplayNames.OrderProductItem);
 
         RuleForEach(dto => dto.ProductItems)

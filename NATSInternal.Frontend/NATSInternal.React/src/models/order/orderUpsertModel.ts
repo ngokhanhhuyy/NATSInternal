@@ -62,15 +62,17 @@ export function createOrderUpsertModel(responseDto?: OrderDetailResponseDto): Or
     computeAmountAfterVat(): number {
       const productItemsAmountAfterVat = this.productItems.reduce((acc, productItem) => {
         const amountBeforeVatPerUnit = productItem.amountBeforeVatPerUnit;
-        const vatAmountPerUnit = Math.ceil(amountBeforeVatPerUnit * (productItem.vatPercentagePerUnit / 100));
-        const amountAfterVat = (amountBeforeVatPerUnit + vatAmountPerUnit) * productItem.quantity;
+        const vatAmountPerUnit = amountBeforeVatPerUnit * (productItem.vatPercentagePerUnit / 100);
+        const ceiledVatAmountPerUnit = Math.ceil(vatAmountPerUnit / 1000) * 1000;
+        const amountAfterVat = (amountBeforeVatPerUnit + ceiledVatAmountPerUnit) * productItem.quantity;
         return acc + amountAfterVat;
       }, 0);
 
       const servceItemsAmountAfterVat = this.serviceItems.reduce((acc, serviceItem) => {
         const amountBeforeVatPerUnit = serviceItem.amountBeforeVatPerUnit;
-        const vatAmountPerUnit = Math.ceil(amountBeforeVatPerUnit * (serviceItem.vatPercentagePerUnit / 100));
-        const amountAfterVat = (amountBeforeVatPerUnit + vatAmountPerUnit) * serviceItem.quantity;
+        const vatAmountPerUnit = amountBeforeVatPerUnit * (serviceItem.vatPercentagePerUnit / 100);
+        const ceiledVatAmountPerUnit = Math.ceil(vatAmountPerUnit / 1000) * 1000;
+        const amountAfterVat = (amountBeforeVatPerUnit + ceiledVatAmountPerUnit) * serviceItem.quantity;
         return acc + amountAfterVat;
       }, 0);
 

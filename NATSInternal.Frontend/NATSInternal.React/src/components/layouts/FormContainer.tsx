@@ -22,6 +22,7 @@ export const FormContainerContext = createContext<FormContainerContextPayload>({
 
 // Props.
 type FormContainerProps<TUpsertResult> = {
+  formClassName?: string;
   deleteAction?: () => Promise<void>;
   onDeletionSucceeded?: () => any;
   onDeletionFailed?: (error: Error, errorHandled: boolean) => any;
@@ -140,11 +141,12 @@ export default function FormContainer<TUpsertResult>(props: FormContainerProps<T
         )}
 
         <Form
-          className="flex flex-col gap-3"
+          className={joinClassName("flex flex-col gap-3", props.formClassName)}
           upsertAction={props.upsertAction}
           onUpsertingSucceeded={handleUpsertingSucceeded}
           onUpsertingFailed={handleUpsertingFailed}
           isModelDirty={props.isModelDirty}
+          render={props.render}
         >
           {props.children}
         </Form>

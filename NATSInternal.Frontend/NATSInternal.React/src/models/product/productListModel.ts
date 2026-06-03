@@ -12,6 +12,7 @@ declare global {
     resultsPerPage: number;
     searchContent: string;
     outOfStockProductsIncluded: boolean;
+    discontinuedProductsIncluded: boolean;
     deletedProductsIncluded: boolean;
     category: ProductCategoryBasicModel | null;
     items: ProductBasicModel[];
@@ -34,6 +35,7 @@ export function createProductListModel(responseDto?: ProductListResponseDto): Pr
     resultsPerPage:  productListOptions.defaultResultsPerPage,
     searchContent: "",
     outOfStockProductsIncluded: true,
+    discontinuedProductsIncluded: true,
     deletedProductsIncluded: false,
     category: null,
     items: [],

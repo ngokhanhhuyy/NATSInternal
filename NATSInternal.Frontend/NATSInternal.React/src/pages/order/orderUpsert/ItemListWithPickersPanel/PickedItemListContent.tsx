@@ -1,13 +1,15 @@
 import React, { useMemo } from "react";
-import { joinClassName } from "@/helpers";
+import { joinClassName, compute } from "@/helpers";
 
 // Child components.
 import PickedItem from "./PickedItem";
+import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 
 // Props.
 type PickedItemListContentProps = {
   model: OrderUpsertModel;
   onModelUpdated(updatedData: Partial<OrderUpsertModel>): any;
+  errorCollection: ErrorCollectionModel;
 };
 
 // Components.
@@ -17,7 +19,39 @@ export default function PickedItemListPanel(props: PickedItemListContentProps): 
     return props.model.computeDisplayAmountAfterVat();
   }, [props.model.productItems, props.model.serviceItems]);
 
+  const emptyValidationMessages = compute<string[] | null>(() => {
+    if (!props.errorCollection.isValidated || !props.errorCollection.details.length) {
+      return null;
+    }
+
+    if (props.model.productItems.length + props.model.serviceItems.length) {
+      return null;
+    }
+
+    return props.errorCollection.details
+      .filter(detail => detail.propertyPath === "productItems" || detail.propertyPath === "serviceItems")
+      .map(detail => detail.message);
+  });
+
   // Template.
+  if (emptyValidationMessages?.length) {
+    return (
+      <div className={joinClassName(
+        "bg-red-600/15 dark:bg-red-500/5 grid grid-cols-[auto_auto] justify-center items-center gap-3",
+        "border border-red-600 dark:border-red-500 rounded-xl h-full text-red-600 dark:text-red-500"
+      )}>
+        <ExclamationCircleIcon className="size-6" />
+        <div className="flex flex-col">
+          {emptyValidationMessages.map((message, index) => (
+            <span key={index}>
+              {message}
+            </span>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   if (props.model.productItems.length + props.model.serviceItems.length) {
     return (
       <div className="flex flex-col justify-between gap-3 h-full">

@@ -1,5 +1,7 @@
 import React, { useRef, useEffect } from "react";
-import { joinClassName } from "@/helpers";
+import { joinClassName, compute } from "@/helpers";
+
+// Child components.
 import Input from "./Input";
 
 // Props.
@@ -19,6 +21,11 @@ export default function NumberInput(props: NumberInputProps) {
   // States.
   const elementRef = useRef<HTMLInputElement | null>(null);
 
+  // Computed.
+  const computedValue = compute<string>(() => {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  });
+
   // Callbacks.
   function handleInput(event: React.FormEvent<HTMLInputElement>): void {
     const inputElement = event.target as HTMLInputElement;
@@ -27,11 +34,11 @@ export default function NumberInput(props: NumberInputProps) {
       return;
     }
 
-    if (!/\d+/.test(inputElement.value)) {
+    if (!/[0-9\s]+/g.test(inputElement.value)) {
       return;
     }
     
-    const parsedValue = parseInt(inputElement.value);
+    const parsedValue = parseInt(inputElement.value.replaceAll(" ", ""));
     if (props.min != null && parsedValue < props.min) {
       onValueChanged(props.min);
       return;
@@ -61,7 +68,7 @@ export default function NumberInput(props: NumberInputProps) {
         name={path}
         className={joinClassName(className, props.className)}
         placeholder={props.placeholder ?? displayName}
-        value={value}
+        value={computedValue}
         onInput={handleInput}
       />
     );

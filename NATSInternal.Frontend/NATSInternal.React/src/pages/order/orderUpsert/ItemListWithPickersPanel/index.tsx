@@ -3,12 +3,13 @@ import { compute } from "@/helpers";
 
 // Child components.
 import ProductServicePickersContent from "./ProductServicePickersContent";
-import PickedItemListPanel from "./PickedItemListContent";
+import PickedItemListContent from "./PickedItemListContent";
 
 // Props.
 type ItemListPanelProps = {
   model: OrderUpsertModel;
   onModelUpdated(updatedData: Partial<OrderUpsertModel>): any;
+  errorCollection: ErrorCollectionModel;
 };
 
 // Components.
@@ -56,7 +57,11 @@ export default function ItemListPanel(props: ItemListPanelProps): React.ReactNod
           }}
         />
 
-        <PickedItemListPanel model={props.model} onModelUpdated={props.onModelUpdated} />
+        <PickedItemListContent
+          model={props.model}
+          onModelUpdated={props.onModelUpdated}
+          errorCollection={props.errorCollection}
+        />
       </div>
     </div>
   );

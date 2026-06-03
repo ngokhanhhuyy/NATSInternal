@@ -46,9 +46,10 @@ export default function ProductServicePickerContent(props: ProductServicePickerC
 
   // Callbacks.
   function handleProductPicked(product: ProductBasicModel): void {
-    const pickedProduct = pickedProducts.find(pp => pp.product.id);
+    const pickedProduct = pickedProducts.find(pp => pp.product.id === product.id);
+    console.log(pickedProduct);
     if (pickedProduct) {
-      props.onProductItemUpdated(product.id, pickedProduct.quantity + 1);
+      props.onProductItemUpdated(product.id, -pickedProduct.quantity + 1);
       return;
     }
 

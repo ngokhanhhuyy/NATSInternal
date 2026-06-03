@@ -36,16 +36,23 @@ export default function OrderUpsertPage<TUpsertResult>(props: OrderUpsertPagePro
         onUpsertingSucceeded={props.onUpsertingSucceeded}
         onUpsertingFailed={props.onUpsertingFailed}
         isModelDirty={isModelDirty}
-      >
-        {props.children}
-        
-        <ItemListWithPickersPanel model={props.model} onModelUpdated={props.onModelUpdated} />
-        <PaymentAndNotePanel model={props.model} onModelUpdated={props.onModelUpdated} />
+        render={(errorCollection) => (
+          <>
+            {props.children}
+            
+            <ItemListWithPickersPanel
+              model={props.model}
+              onModelUpdated={props.onModelUpdated}
+              errorCollection={errorCollection}
+            />
+            <PaymentAndNotePanel model={props.model} onModelUpdated={props.onModelUpdated} />
 
-        <div className="flex justify-end gap-3">
-          <SubmitButton/>
-        </div>
-      </FormContainer>
+            <div className="flex justify-end gap-3">
+              <SubmitButton/>
+            </div>
+          </>
+        )}
+      />
 
       <div className="flex flex-col gap-3 lg:hidden mt-3">
         <div className="panel">

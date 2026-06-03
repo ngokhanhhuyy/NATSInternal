@@ -14,6 +14,7 @@ public class ProductListRequestDto : ISearchableListRequestDto
     public int ResultsPerPage { get; set; } = 10;
     public int? CategoryId { get; set; }
     public bool OutOfStockProductsIncluded { get; set; } = true;
+    public bool DiscontinuedProductsIncluded { get; set; } = false;
     public bool DeletedProductsIncluded { get; set; } = false;
     public string? SearchContent { get; set; }
     #endregion
