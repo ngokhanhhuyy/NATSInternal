@@ -30,6 +30,7 @@ export default function ProductPicker(props: ProductPickerProps): React.ReactNod
     const m = createProductListModel();
     m.resultsPerPage = 10;
     m.outOfStockProductsIncluded = false;
+    m.discontinuedProductsIncluded = false;
     return m;
   });
 

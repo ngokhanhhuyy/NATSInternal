@@ -61,6 +61,7 @@ export function createProductListModel(responseDto?: ProductListResponseDto): Pr
         sortByFieldName: this.sortByFieldName,
         page: this.page,
         outOfStockProductsIncluded: this.outOfStockProductsIncluded,
+        discontinuedProductsIncluded: this.discontinuedProductsIncluded,
         deletedProductsIncluded: this.deletedProductsIncluded,
         categoryId: this.category?.id
       };

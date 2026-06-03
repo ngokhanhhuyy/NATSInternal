@@ -1,8 +1,9 @@
 import React from "react";
+import { compute } from "@/helpers";
 
 // Child components.
-import { FormField, NumberInput } from "@/components/form";
-import { PhotoIcon, PlusIcon, MinusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { FormField, NumberInput, NumberInputWithControlButtons } from "@/components/form";
+import { PhotoIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 // Props.
 type OrderItemUpsertModel = OrderProductItemUpsertModel | OrderServiceItemUpsertModel;
@@ -16,18 +17,18 @@ type ItemProps<T extends OrderItemUpsertModel> = {
 // Components.
 export default function PickedItem<T extends OrderItemUpsertModel>(props: ItemProps<T>): React.ReactNode {
   // Computed.
+  const maxQuantity = compute<number>(() => {
+    const defaultMaxValue = 99;
+    if (!isOrderProductItemUpsertModel(props.model)) {
+      return defaultMaxValue;
+    }
+
+    return Math.min(defaultMaxValue, props.model.product.stockingQuantity);
+  });
+
   function computePath(path: string): string {
     const prefix = isOrderProductItemUpsertModel(props.model) ? "productItems" : "serviceItems";
     return `${prefix}.[${props.index}].${path}`;
-  }
-
-  // Callbacks.
-  function incrementQuantity(): void {
-    props.onModelUpdated?.({ quantity: props.model.quantity + 1 } as Partial<T>);
-  }
-  
-  function decrementQuantity(): void {
-    props.onModelUpdated?.({ quantity: props.model.quantity - 1 } as Partial<T>);
   }
 
   // Template.
@@ -84,35 +85,15 @@ export default function PickedItem<T extends OrderItemUpsertModel>(props: ItemPr
             </FormField>
             
             <FormField path={computePath("quantity")} hideLabel hideValidationMessage>
-              <div className="form-input-group">
-                <button
-                  type="button"
-                  className="btn border-e-0"
-                  onClick={decrementQuantity}
-                  disabled={props.model.quantity === 1}
-                >
-                  <MinusIcon />
-                </button>
-
-                <NumberInput
-                  className="form-control-sm rounded-none text-center z-1"
-                  value={props.model.quantity}
-                  onValueChanged={(quantity) => {
-                    props.onModelUpdated({ quantity } as Partial<T>);
-                  }}
-                  min={1}
-                  max={100}
-                />
-
-                <button
-                  type="button"
-                  className="btn border-s-0"
-                  onClick={incrementQuantity}
-                  disabled={props.model.quantity === 100}
-                >
-                  <PlusIcon />
-                </button>
-              </div>
+              <NumberInputWithControlButtons
+                inputClassName="form-control-sm"
+                value={props.model.quantity}
+                onValueChanged={(quantity) => {
+                  props.onModelUpdated({ quantity } as Partial<T>);
+                }}
+                min={1}
+                max={maxQuantity}
+              />
             </FormField>
 
             <button

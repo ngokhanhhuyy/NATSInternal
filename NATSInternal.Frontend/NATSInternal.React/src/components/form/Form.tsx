@@ -36,6 +36,7 @@ export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
     onUpsertingFailed,
     isModelDirty,
     autoComplete = "off",
+    submitOnEnterKeyPressed = false,
     ...domProps
   } = props;
 
@@ -61,21 +62,26 @@ export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
 
   // Callbacks.
   function handleKeyPressed(event: React.KeyboardEvent): void {
-    if (event.key === "Enter") {
-      if (!props.submitOnEnterKeyPressed) {
-        event.preventDefault();
-      }
-
-      if (!document.activeElement || !elementRef.current?.contains(document.activeElement)) {
-        return;
-      }
-
+    type InputElement = HTMLInputElement | HTMLButtonElement | HTMLSelectElement | HTMLTextAreaElement;
+    const isInputElement = (element: Element): element is InputElement => {
       const typesToCheck = [HTMLInputElement, HTMLButtonElement, HTMLSelectElement, HTMLTextAreaElement] as const;
       for (const typeToCheck of typesToCheck) {
         if (document.activeElement instanceof typeToCheck) {
-          document.activeElement.blur();
-          return;
+          return true;
         }
+      }
+
+      return false;
+    };
+
+    if (event.key === "Enter") {
+      if (submitOnEnterKeyPressed) {
+        return;
+      }
+
+      event.preventDefault();
+      if (document.activeElement && isInputElement(document.activeElement)) {
+        document.activeElement.blur();
       }
     }
   }

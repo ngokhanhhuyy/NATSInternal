@@ -79,9 +79,9 @@ internal class ProductService : IProductService
             query = query.Where(p => p.StockingQuantity > 0);
         }
 
-        if (requestDto.DiscontinuedProductsIncluded)
+        if (!requestDto.DiscontinuedProductsIncluded)
         {
-            query = query.Where(p => p.IsDiscontinued);
+            query = query.Where(p => !p.IsDiscontinued);
         }
 
         if (requestDto.CategoryId.HasValue)
