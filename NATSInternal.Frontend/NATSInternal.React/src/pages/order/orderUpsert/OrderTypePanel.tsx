@@ -26,7 +26,7 @@ export default function OrderTypePanel(props: OrderTypePanelProps): React.ReactN
       <div className="panel-body grid grid-cols-12 p-3 pt-1.5">
         <FormField
           path="type"
-          className="col-span-4 xl:col-span-3"
+          className="col-span-8 sm:col-span-6 md:col-span-5 lg:col-span-4 xl:col-span-3"
           displayName={getDisplayName("orderType") ?? undefined}
         >
           <div className={joinClassName("grid grid-cols-3", style.orderTypeButtonContainer)}>

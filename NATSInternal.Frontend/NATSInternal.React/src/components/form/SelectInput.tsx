@@ -30,7 +30,7 @@ export default function SelectInput(props: SelectInputProps): React.ReactNode {
         <MenuButton className={joinClassName(
           className,
           props.className,
-          "form-control text-start hover:cursor-pointer flex justify-between items-center pe-2",
+          "form-control text-start hover:cursor-pointer flex justify-between items-center pe-2 gap-2",
           "data-open:border-blue-500 data-open:outline-blue-500"
         )}>
           <span>{props.options.find(option => option.value == props.value)?.displayName}</span>

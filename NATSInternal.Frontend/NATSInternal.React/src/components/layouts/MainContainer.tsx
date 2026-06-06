@@ -19,9 +19,9 @@ export default function MainContainer({ isLoading, children, ...domProps }: Main
       {...domProps}
       id="main-container"
       className={joinClassName(
-        domProps.className,
-        "transition-opacity duration-200",
-        isLoading && "opacity-50 cursor-wait"
+        "pb-[50vh] transition-opacity duration-200",
+        isLoading && "opacity-50 cursor-wait",
+        domProps.className
       )}
     >
       {children}

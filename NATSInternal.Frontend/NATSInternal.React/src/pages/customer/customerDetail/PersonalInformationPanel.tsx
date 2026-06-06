@@ -22,7 +22,7 @@ export default function PersonalInformationPanel(props: PersonalInformationPanel
 
   // Template.
   return (
-    <div className="panel">
+    <div className="panel h-full">
       <div className="panel-header">
         <span className="panel-header-title">
           Thông tin cá nhân

@@ -8,6 +8,7 @@ declare global {
     type: OrderType;
     statsDate: string;
     amountAfterVat: number;
+    isDebtOrder: boolean;
     customer: CustomerBasicModel;
     thumbnailUrl: string | null;
     authorization: OrderExistingAuthorizationResponseDto | null;
@@ -24,12 +25,13 @@ export function createOrderBasicModel(responseDto: OrderBasicResponseDto): Order
     type: responseDto.type,
     statsDate: responseDto.statsDate,
     amountAfterVat: responseDto.amountAfterVat,
+    isDebtOrder: responseDto.isDebtOrder,
     customer: createCustomerBasicModel(responseDto.customer),
     thumbnailUrl: responseDto.thumbnailUrl,
     authorization: responseDto.authorization,
     displayName: `#${responseDto.id.toString()} ${getDisplayName(responseDto.type)}`,
     detailRoutePath: getOrderDetailRoutePath(responseDto.id),
     displayStatsDate: getDisplayDateString(responseDto.statsDate),
-    displayAmountAfterVat: getDisplayAmountText(responseDto.amountAfterVat)
+    displayAmountAfterVat: getDisplayAmountText(responseDto.amountAfterVat, { suffix: " vnđ" })
   };
 }

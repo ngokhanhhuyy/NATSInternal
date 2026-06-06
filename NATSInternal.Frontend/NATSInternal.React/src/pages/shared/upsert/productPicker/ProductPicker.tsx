@@ -1,13 +1,15 @@
 import React, { useState, useMemo, useEffect, useTransition } from "react";
 import { api } from "@/api";
-import { createProductListModel } from "@/models";
+import { createProductListModel, createProductCategoryBasicModel } from "@/models";
+import { metadata, getDisplayName } from "@/metadata";
 import { compute, joinClassName } from "@/helpers";
 
 // Child components.
 import ProductList from "@/pages/shared/list/productListResults";
-import { TextInput } from "@/components/form";
+import { TextInput, SelectInput, type SelectInputOption } from "@/components/form";
 import { Paginator } from "@/components/ui";
 import { CheckIcon, PlusIcon, MagnifyingGlassIcon, FunnelIcon } from "@heroicons/react/24/outline";
+import { BarsArrowUpIcon, BarsArrowDownIcon } from "@heroicons/react/24/outline";
 
 // Props.
 export type PickedProduct = {
@@ -25,7 +27,10 @@ export type ProductPickerProps = {
 export default function ProductPicker(props: ProductPickerProps): React.ReactNode {
   // States.
   const [isLoading, startTransition] = useTransition();
+  const [isProductFiltersVisible, setIsProductFiltersVisible] = useState(false);
   const [renderingKey, setRenderingKey] = useState<number>(0);
+  const [categoryModels, setCategoryModels] = useState<ProductCategoryBasicModel[]>(() => []);
+
   const [model, setModel] = useState<ProductListModel>(() => {
     const m = createProductListModel();
     m.resultsPerPage = 10;
@@ -43,7 +48,52 @@ export default function ProductPicker(props: ProductPickerProps): React.ReactNod
     return !!model.searchContent && model.searchContent.length < 3;
   });
 
+  const sortByFieldNameOptions = useMemo<SelectInputOption[]>(() => {
+    return metadata.listOptionsList.product.sortByFieldNameOptions.map(fieldName => ({
+      value: fieldName,
+      displayName: getDisplayName(fieldName) ?? fieldName
+    }));
+  }, []);
+
+  const categoryOptions = useMemo<SelectInputOption[]>(() => {
+    const options: SelectInputOption[] = [
+      {
+        value: "",
+        displayName: "Tất cả phân loại"
+      }
+    ];
+
+    for (const categoryModel of categoryModels) {
+      options.push({
+        value: categoryModel.id.toString(),
+        displayName: categoryModel.name
+      });
+    }
+
+    return options;
+  }, [categoryModels]);
+
+  // Callbacks.
+  function handleCategoryChanged(categoryIdAsString: string): void {
+    let category: ProductCategoryBasicModel | null = null;
+    if (categoryIdAsString) {
+      category = categoryModels.find(c => c.id === parseInt(categoryIdAsString)) ?? null;
+    }
+
+    setModel(m => ({ ...m, category }));
+  }
+
   // Effect.
+  useEffect(() => {
+    const loadOptionsAsync = async () => {
+      const responseDtos = await api.productCategory.getAllAsync();
+      const options = responseDtos.map(createProductCategoryBasicModel);
+      setCategoryModels(options);
+    };
+
+    loadOptionsAsync();
+  }, []);
+
   useEffect(() => {
     startTransition(async () => {
       if (model.searchContent && model.searchContent.length < 3) {
@@ -54,7 +104,7 @@ export default function ProductPicker(props: ProductPickerProps): React.ReactNod
       const responseDto = await api.product.getListAsync(requestDto);
       setModel(m => m.mapFromResponseDto(responseDto));
     });
-  }, [model.sortByAscending, model.sortByFieldName, model.page, renderingKey]);
+  }, [model.sortByAscending, model.sortByFieldName, model.page, model.category, renderingKey]);
 
   // Templates.
   const renderItemButton = (product: ProductBasicModel): React.ReactNode => {
@@ -99,12 +149,21 @@ export default function ProductPicker(props: ProductPickerProps): React.ReactNod
               onValueChanged={(searchContent) => setModel(m => ({ ...m, searchContent }))}
               onKeyDown={(event) => event.key === "Enter" && setRenderingKey(k => k + 1)}
             />
-            <button type="button" className="btn rounded-s-none border-s-0">
+
+            <button
+              type="button"
+              className="btn rounded-s-none border-s-0"
+              onClick={() => setRenderingKey(key => key + 1)}
+            >
               <MagnifyingGlassIcon />
             </button>
           </div>
 
-          <button type="button" className="btn">
+          <button
+            type="button"
+            className={joinClassName("btn", isProductFiltersVisible && "btn-primary")}
+            onClick={() => setIsProductFiltersVisible(visible => !visible)}
+          >
             <FunnelIcon />
           </button>
         </div>
@@ -116,7 +175,53 @@ export default function ProductPicker(props: ProductPickerProps): React.ReactNod
         )}
       </div>
 
-      <ProductList model={model} renderItemButton={renderItemButton} />
+      {isProductFiltersVisible && (
+        <div className="flex flex-col gap-3">
+          <div className="form-input-group">
+            <div className="form-input-group-text border-e-0 shrink-0 w-40 justify-start">
+              <span className="opacity-50">Sắp xếp theo</span>
+            </div>
+            <SelectInput
+              className="rounded-s-none"
+              options={sortByFieldNameOptions}
+              value={model.sortByFieldName}
+              onValueChanged={(sortByFieldName) => setModel(m => ({ ...m, sortByFieldName }))}
+            />
+          </div>
+          
+          <div className="form-input-group">
+            <div className="form-input-group-text border-e-0 shrink-0 w-40 justify-start">Thứ tự sắp xếp</div>
+            <button
+              type="button"
+              className="btn gap-2 justify-start w-full"
+              onClick={() => setModel(m => ({ ...m, sortByAscending: !m.sortByAscending }))}
+            >
+              {model.sortByAscending ? (
+                <>
+                  <BarsArrowDownIcon />
+                  <span>Từ lớn đến nhỏ</span>
+                </>
+              ) : (
+                <>
+                  <BarsArrowUpIcon />
+                  <span>Từ nhỏ đến lớn</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className="form-input-group">
+            <div className="form-input-group-text border-e-0 shrink-0 w-40 justify-start">Phân loại</div>
+            <SelectInput
+              options={categoryOptions}
+              value={model.category?.id.toString() ?? ""}
+              onValueChanged={handleCategoryChanged}
+            />
+          </div>
+        </div>
+      )}
+
+      <ProductList model={model} renderItemButton={renderItemButton} hideStatusIcon />
 
       <Paginator
         page={model.page}

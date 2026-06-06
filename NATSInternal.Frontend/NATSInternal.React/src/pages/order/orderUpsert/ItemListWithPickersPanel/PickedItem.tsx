@@ -33,8 +33,8 @@ export default function PickedItem<T extends OrderItemUpsertModel>(props: ItemPr
 
   // Template.
   return (
-    <li className="list-group-item flex py-2 ps-3">
-      <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3">
+    <li className="list-group-item flex py-2 px-3">
+      <div className="grid grid-cols-1 xl:grid-cols-[auto_1fr] items-center gap-3">
         <div className="hidden xl:block">
           {(isOrderProductItemUpsertModel(props.model) && props.model.product.thumbnailUrl) ? (
             <img
@@ -106,8 +106,6 @@ export default function PickedItem<T extends OrderItemUpsertModel>(props: ItemPr
             </button>
           </div>
         </div>
-
-        <div></div>
       </div>
     </li>
   );

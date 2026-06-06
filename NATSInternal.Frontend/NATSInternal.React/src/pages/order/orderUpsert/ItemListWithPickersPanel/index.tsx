@@ -35,7 +35,7 @@ export default function ItemListPanel(props: ItemListPanelProps): React.ReactNod
         </span>
       </div>
 
-      <div className="panel-body grid grid-cols-2 items-start gap-3 p-3 relative overflow-visible">
+      <div className="panel-body grid grid-cols-1 lg:grid-cols-2 items-start gap-3 p-3 relative overflow-visible">
         <ProductServicePickersContent
           model={props.model}
           onProductItemCreated={(productItem) => {
@@ -56,7 +56,7 @@ export default function ItemListPanel(props: ItemListPanelProps): React.ReactNod
             props.onModelUpdated({ serviceItems: [...props.model.serviceItems, serviceItem] });
           }}
         />
-
+  
         <PickedItemListContent
           model={props.model}
           onModelUpdated={props.onModelUpdated}

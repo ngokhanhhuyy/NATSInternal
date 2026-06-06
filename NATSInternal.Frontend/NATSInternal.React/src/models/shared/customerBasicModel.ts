@@ -11,13 +11,24 @@ declare global {
   }>;
 }
 
-export function createCustomerBasicModel(responseDto: CustomerBasicResponseDto): CustomerBasicModel {
+export function createCustomerBasicModel(arg: CustomerBasicResponseDto | CustomerDetailModel): CustomerBasicModel {
   return {
-    id: responseDto.id,
-    fullName: responseDto.fullName,
-    nickName: responseDto.nickName,
-    isDeleted: responseDto.isDeleted,
-    avatarUrl: getDefaultAvatarUrlByFullName(responseDto.fullName),
-    detailRoutePath: getCustomerDetailRoutePath(responseDto.id)
+    id: arg.id,
+    fullName: arg.fullName,
+    nickName: arg.nickName,
+    isDeleted: isCustomerDetailModel(arg) ? arg.deletedDateTime != null : arg.isDeleted,
+    avatarUrl: getDefaultAvatarUrlByFullName(arg.fullName),
+    detailRoutePath: getCustomerDetailRoutePath(arg.id)
   };
+}
+
+function isCustomerDetailModel(arg: CustomerBasicResponseDto | CustomerDetailModel): arg is CustomerDetailModel {
+  const detailProperties: (keyof CustomerDetailModel)[] = ["firstName", "middleName", "lastName"];
+  for (const property of detailProperties) {
+    if (!Object.hasOwn(arg, property)) {
+      return false;
+    }
+  }
+
+  return true;
 }

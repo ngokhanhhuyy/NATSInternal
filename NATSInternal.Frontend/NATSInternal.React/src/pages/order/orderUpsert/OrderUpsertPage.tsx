@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router";
+// import { useNavigate } from "react-router";
 import { useJSONDirtyModelChecker } from "@/hooks";
 
 // Child components.
@@ -7,7 +7,7 @@ import ItemListWithPickersPanel from "./ItemListWithPickersPanel";
 import PaymentAndNotePanel from "./PaymentAndNotePanel";
 import { FormContainer } from "@/components/layouts";
 import { SubmitButton } from "@/components/form";
-import { ChevronLeftIcon, DevicePhoneMobileIcon } from "@heroicons/react/24/outline";
+// import { ChevronLeftIcon, DevicePhoneMobileIcon } from "@heroicons/react/24/outline";
 
 // Props.
 type OrderUpsertPageProps<TUpsertResult> = {
@@ -22,7 +22,7 @@ type OrderUpsertPageProps<TUpsertResult> = {
 // Components.
 export default function OrderUpsertPage<TUpsertResult>(props: OrderUpsertPageProps<TUpsertResult>): React.ReactNode {
   // Dependencies.
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   // States.
   const [isModelDirty] = useJSONDirtyModelChecker(() => props.model.toRequestDto());
@@ -31,7 +31,6 @@ export default function OrderUpsertPage<TUpsertResult>(props: OrderUpsertPagePro
   return (
     <>
       <FormContainer
-        className="hidden lg:flex pb-[50%]"
         upsertAction={props.upsertAction}
         onUpsertingSucceeded={props.onUpsertingSucceeded}
         onUpsertingFailed={props.onUpsertingFailed}
@@ -54,7 +53,7 @@ export default function OrderUpsertPage<TUpsertResult>(props: OrderUpsertPagePro
         )}
       />
 
-      <div className="flex flex-col gap-3 lg:hidden mt-3">
+      {/* <div className="flex flex-col gap-3 lg:hidden mt-3">
         <div className="panel">
           <div className="panel-body flex flex-col gap-y-1 justify-center items-center px-5 py-20">
             <div className="grid grid-cols-[auto_auto] justify-center items-center gap-4 opacity-75">
@@ -71,7 +70,7 @@ export default function OrderUpsertPage<TUpsertResult>(props: OrderUpsertPagePro
           <ChevronLeftIcon />
           <span>Quay lại</span>
         </button>
-      </div>
+      </div> */}
     </>
   );
 }

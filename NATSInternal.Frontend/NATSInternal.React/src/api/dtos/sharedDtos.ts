@@ -47,6 +47,7 @@ declare global {
     type: OrderType;
     statsDate: string;
     amountAfterVat: number;
+    isDebtOrder: boolean;
     customer: CustomerBasicResponseDto;
     thumbnailUrl: string | null;
     authorization: OrderExistingAuthorizationResponseDto | null;

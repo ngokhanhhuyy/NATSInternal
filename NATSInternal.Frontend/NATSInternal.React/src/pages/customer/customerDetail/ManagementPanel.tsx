@@ -27,7 +27,7 @@ export default function ManagementPanel(props: ManagementPanelProps): React.Reac
   }
 
   return (
-    <div className="panel">
+    <div className="panel h-full">
       <div className="panel-header">
         <span className="panel-header-title">
           Quản lý

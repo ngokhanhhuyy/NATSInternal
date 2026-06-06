@@ -5,7 +5,9 @@
         justify-content: start;
         align-items: stretch;
 
-        &:has(input[required]), &:has(select[required]), &:has(textarea[required]) {
+        &:has(input[required]),
+        &:has(select[required]),
+        &:has(textarea[required]) {
             --color: var(--color-red-700);
 
             @variant dark {
@@ -74,6 +76,10 @@
         display: flex;
         justify-content: center;
         align-items: center;
+
+        .form-input-group-sm & {
+            font-size: 0.875rem;
+        }
 
         @variant dark {
             & {

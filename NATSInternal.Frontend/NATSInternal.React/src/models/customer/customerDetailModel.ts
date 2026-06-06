@@ -53,7 +53,7 @@ export function createCustomerDetailModel(responseDto: CustomerDetailResponseDto
       return getDefaultAvatarUrlByFullName(this.fullName);
     },
     get displayDebtRemainingAmountText(): string{
-      return getDisplayAmountText(this.debtAmount);
+      return getDisplayAmountText(this.debtAmount, { suffix: " vnđ" });
     },
     get updateRoutePath(): string {
       return getCustomerUpdateRoutePath(this.id);

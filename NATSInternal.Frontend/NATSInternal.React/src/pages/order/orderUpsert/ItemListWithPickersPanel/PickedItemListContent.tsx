@@ -37,7 +37,7 @@ export default function PickedItemListPanel(props: PickedItemListContentProps): 
   if (emptyValidationMessages?.length) {
     return (
       <div className={joinClassName(
-        "bg-red-600/15 dark:bg-red-500/5 grid grid-cols-[auto_auto] justify-center items-center gap-3",
+        "bg-red-600/15 dark:bg-red-500/5 grid grid-cols-[auto_auto] justify-center items-center gap-3 py-10",
         "border border-red-600 dark:border-red-500 rounded-xl h-full text-red-600 dark:text-red-500"
       )}>
         <ExclamationCircleIcon className="size-6" />
@@ -55,7 +55,7 @@ export default function PickedItemListPanel(props: PickedItemListContentProps): 
   if (props.model.productItems.length + props.model.serviceItems.length) {
     return (
       <div className="flex flex-col justify-between gap-3 h-full">
-        <ul className="list-group">
+        <ul className="list-group border-blue-600 dark:border-blue-400">
           {props.model.productItems.map((productItem, index) => (
             <PickedItem
               index={index}
@@ -104,8 +104,8 @@ export default function PickedItemListPanel(props: PickedItemListContentProps): 
         </ul>
 
         <div className={joinClassName(
-          "bg-black/7.5 dark:bg-white/10",
-          "border border-black/10 dark:border-white/10 rounded-lg p-3 flex justify-end gap-10"
+          "bg-black/5 dark:bg-white/10",
+          "border border-blue-600 dark:border-blue-400 rounded-lg p-3 flex justify-end gap-10"
         )}>
           <span className="text-blue-700 dark:text-blue-400 font-bold">
             Thành tiền
@@ -119,8 +119,8 @@ export default function PickedItemListPanel(props: PickedItemListContentProps): 
 
   return (
     <div className={joinClassName(
-      "flex justify-center items-center",
-      "border border-black/10 dark:border-white/10 rounded-xl h-full"
+      "flex justify-center items-center py-10",
+      "border border-blue-500 dark:border-blue-400 rounded-xl h-full"
     )}>
       <span className="opacity-50">
         Chưa chọn sản phẩm và dịch vụ

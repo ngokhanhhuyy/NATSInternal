@@ -13,6 +13,7 @@ type ProductItemProps = {
   label?: React.ReactNode;
   children?: React.ReactNode;
   openLinkInNewTab?: boolean;
+  hideStatusIcon?: boolean;
 };
 
 // Components.
@@ -52,8 +53,13 @@ export default function ProductItem(props: ProductItemProps): React.ReactNode {
   };
 
   return (
-    <li className="list-group-item grid grid-cols-[auto_auto_1fr_auto] items-center gap-3 px-3 py-1.5">
-      <Icon />
+    <li className={joinClassName(
+      "list-group-item grid items-center gap-3 px-3 py-1.5",
+      !props.hideStatusIcon ? "grid-cols-[auto_auto_1fr_auto]" : "grid-cols-[auto_1fr_auto] ps-2"
+    )}>
+      {!props.hideStatusIcon && (
+        <Icon />
+      )}
 
       {props.model.thumbnailUrl ? (
         <img src={props.model.thumbnailUrl} className="img-thumbnail size-12" alt={props.model.name} />

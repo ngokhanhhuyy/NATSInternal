@@ -6,10 +6,8 @@ import { createCustomerDetailModel } from "@/models/customer/customerDetailModel
 // Child components.
 import { MainContainer } from "@/components/layouts";
 import AvatarAndNamePanel from "./AvatarAndNamePanel";
-import PersonalInformationBlock from "./PersonalInformationPanel";
-import ManagementPanel from "./ManagementPanel";
-import DebtPanel from "./DebtPanel";
-import RecentTransactionPanel from "./RecentTransactionsPanel";
+import DetailPanel from "./DetailPanel";
+import RecentOrdersPanel from "./RecentOrdersPanel";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 // Data loder.
@@ -28,14 +26,9 @@ export default function CustomerDetailPage(): React.ReactNode {
     <MainContainer>
       <div className="flex flex-col gap-3">
         <AvatarAndNamePanel model={model} />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="flex flex-col gap-3">
-            <PersonalInformationBlock model={model} />
-            <DebtPanel model={model} />
-            <ManagementPanel model={model} />
-          </div>
-          <RecentTransactionPanel model={model} />
-        </div>
+        <DetailPanel model={model} />
+        
+        <RecentOrdersPanel model={model} />
 
         <div className="flex justify-end">
           <Link className="btn gap-1.5" to={model.updateRoutePath}>

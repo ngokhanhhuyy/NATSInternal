@@ -88,7 +88,7 @@ export default function ProductServicePickerContent(props: ProductServicePickerC
   return (
     <div className={joinClassName(
       "border border-black/10 dark:border-white/10 rounded-xl h-fit",
-      "sticky top-[calc(var(--topbar-height)+--spacing(3))]"
+      "lg:sticky top-[calc(var(--topbar-height)+--spacing(3))]"
     )}>
       {props.model.type === "Treatment" && (
         <div className="flex justify-center p-2 border-b border-b-black/10 dark:border-b-white/10">

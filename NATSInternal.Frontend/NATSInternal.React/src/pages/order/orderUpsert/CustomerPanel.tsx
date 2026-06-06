@@ -29,7 +29,11 @@ export default function CustomerPanel(props: CustomerPanelProps): React.ReactNod
           "grid grid-cols-2 xl:grid-cols-3 gap-3 border-b",
           "border-neutral-900/15 dark:border-neutral-50/15 p-3 pt-2"
         )}>
-          <FormField path="customer.createNewCustomer" displayName="Phương thức chọn khách hàng">
+          <FormField
+            className="col-span-2 md:col-span-1"
+            path="customer.createNewCustomer"
+            displayName="Phương thức chọn khách hàng"
+          >
             <div className="grid grid-cols-2 justify-stretch">
               <button
                 type="button"

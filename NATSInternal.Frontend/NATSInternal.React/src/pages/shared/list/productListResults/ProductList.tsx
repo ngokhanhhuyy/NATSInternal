@@ -11,6 +11,7 @@ type ProductListProps = {
   renderItemLabel?(product: ProductBasicModel): React.ReactNode;
   renderItemButton?(product: ProductBasicModel): React.ReactNode;
   openLinkInNewTab?: boolean;
+  hideStatusIcon?: boolean;
 };
 
 // Components.
@@ -23,6 +24,7 @@ export default function ProductList(props: ProductListProps): React.ReactNode {
           model={product}
           label={props.renderItemLabel?.(product)}
           openLinkInNewTab={props.openLinkInNewTab}
+          hideStatusIcon={props.hideStatusIcon}
           key={index}
         >
           {props.renderItemButton?.(product)}
