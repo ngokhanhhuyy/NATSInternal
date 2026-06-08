@@ -95,6 +95,19 @@
             }
         }
     }
+
+    .panel-body-area {
+        background-color: --alpha(var(--color-black) / 2.5%);
+        border: 1px solid --alpha(var(--color-black) / 15%);
+        border-radius: var(--radius-lg);
+
+        @variant dark {
+            & {
+                background-color: --alpha(var(--color-white) / 2.5%);
+                border-color: --alpha(var(--color-white) / 15%);
+            }
+        }
+    }
 }
 
 @layer utilities {

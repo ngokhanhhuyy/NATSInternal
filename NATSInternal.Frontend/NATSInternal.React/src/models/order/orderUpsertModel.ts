@@ -3,7 +3,7 @@ import { createCustomerUpsertModel } from "../customer/customerUpsertModel";
 import { createOrderProductItemUpsertModel } from "../orderProductItem/orderProductItemUpsertModel";
 import { createOrderServiceItemUpsertModel } from "../orderServiceItem/orderServiceItemUpsertModel";
 import { getHTMLDateInputString, getCurrentDateHTMLInputString, getDateISOString } from "@/helpers";
-import { getDisplayAmountText } from "@/helpers";
+import { getDisplayAmountText, computeOrderItemAmountAfterVat } from "@/helpers";
 
 declare global {
   type OrderUpsertModel = {
@@ -61,18 +61,12 @@ export function createOrderUpsertModel(responseDto?: OrderDetailResponseDto): Or
     },
     computeAmountAfterVat(): number {
       const productItemsAmountAfterVat = this.productItems.reduce((acc, productItem) => {
-        const amountBeforeVatPerUnit = productItem.amountBeforeVatPerUnit;
-        const vatAmountPerUnit = amountBeforeVatPerUnit * (productItem.vatPercentagePerUnit / 100);
-        const ceiledVatAmountPerUnit = Math.ceil(vatAmountPerUnit / 1000) * 1000;
-        const amountAfterVat = (amountBeforeVatPerUnit + ceiledVatAmountPerUnit) * productItem.quantity;
+        const amountAfterVat = computeOrderItemAmountAfterVat(productItem);
         return acc + amountAfterVat;
       }, 0);
 
       const servceItemsAmountAfterVat = this.serviceItems.reduce((acc, serviceItem) => {
-        const amountBeforeVatPerUnit = serviceItem.amountBeforeVatPerUnit;
-        const vatAmountPerUnit = amountBeforeVatPerUnit * (serviceItem.vatPercentagePerUnit / 100);
-        const ceiledVatAmountPerUnit = Math.ceil(vatAmountPerUnit / 1000) * 1000;
-        const amountAfterVat = (amountBeforeVatPerUnit + ceiledVatAmountPerUnit) * serviceItem.quantity;
+        const amountAfterVat = computeOrderItemAmountAfterVat(serviceItem);
         return acc + amountAfterVat;
       }, 0);
 

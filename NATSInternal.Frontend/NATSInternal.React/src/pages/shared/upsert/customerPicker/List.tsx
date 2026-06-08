@@ -80,7 +80,7 @@ export default function List(props: ListProps): React.ReactNode {
         model={model}
         isReloading={isLoading}
         renderItemChildren={(customer) => (
-          <Button className="btn-sm aspect-square me-1" onClick={() => onPicked(customer)}>
+          <Button className="btn-sm aspect-square me-1 self-center" onClick={() => onPicked(customer)}>
             <CheckIcon className="size-4.5" />
           </Button>
         )}

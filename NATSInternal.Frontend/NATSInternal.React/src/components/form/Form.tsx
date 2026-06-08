@@ -66,7 +66,7 @@ export default function Form<TUpsertResult>(props: FormProps<TUpsertResult>) {
     const isInputElement = (element: Element): element is InputElement => {
       const typesToCheck = [HTMLInputElement, HTMLButtonElement, HTMLSelectElement, HTMLTextAreaElement] as const;
       for (const typeToCheck of typesToCheck) {
-        if (document.activeElement instanceof typeToCheck) {
+        if (document.activeElement?.contains(element) && document.activeElement instanceof typeToCheck) {
           return true;
         }
       }

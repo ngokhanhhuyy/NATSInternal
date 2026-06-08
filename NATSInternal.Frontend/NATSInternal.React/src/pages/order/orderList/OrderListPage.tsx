@@ -1,11 +1,12 @@
-import React, { useState, useCallback, useTransition } from "react";
-import { useLoaderData } from "react-router";
+import React, { useState, useCallback, useEffect, useTransition } from "react";
+import { useLoaderData, Link } from "react-router";
 import { useRerendingTrigger } from "@/hooks";
+import { metadata } from "@/metadata";
 import { loadDataAsync } from "./dataLoader";
 
 // Child components.
 import HasStatsListPage from "@/pages/shared/list/listPage/hasStatsList";
-import ResultsPanel from "./ResultsPanel";
+import OrderListResults from "@/pages/shared/list/orderListResults";
 
 // Component.
 export default function OrderListPage(): React.ReactNode {
@@ -14,7 +15,7 @@ export default function OrderListPage(): React.ReactNode {
   
   // States.
   const [model, setModel] = useState(() => initialModel);
-  const [_, triggerRerender] = useRerendingTrigger(reload);
+  const [renderingKey, triggerRendering] = useRerendingTrigger(reload);
   const [isReloading, startTransition] = useTransition();
   
   // Callbacks.
@@ -32,8 +33,19 @@ export default function OrderListPage(): React.ReactNode {
 
   const handlePaginatorPageChanged = useCallback((page: number) => {
     setModel(m => ({ ...m, page }));
-    triggerRerender();
+    triggerRendering();
   }, []);
+
+  // Effect.
+  useEffect(() => {
+    reload();
+  }, [
+    model.sortByAscending,
+    model.sortByFieldName,
+    model.page,
+    model.resultsPerPage,
+    model.statsMonthYear,
+    renderingKey]);
 
   // Template.
   return (
@@ -43,9 +55,23 @@ export default function OrderListPage(): React.ReactNode {
       onModelUpdated={handleModelUpdated}
       isReloading={isReloading}
       onPaginatorPageChanged={handlePaginatorPageChanged}
-      onFilterPanelReloadButtonClicked={triggerRerender}
+      onReloadingRequested={triggerRendering}
+      canCreate={metadata.creatingAuthorization.canCreateOrder}
     >
-      <ResultsPanel model={model} isReloading={isReloading} />
+      <OrderListResults
+        model={model}
+        renderItem={(order) => (
+          <div className="flex flex-col items-end">
+            <Link className="text-blue-700 dark:text-blue-400" to={order.customer.detailRoutePath}>
+              {order.customer.fullName}
+            </Link>
+
+            <span className="opacity-50 text-sm">
+              {order.customer.nickName}
+            </span>
+          </div>
+        )}
+      />
     </HasStatsListPage>
   );
 }

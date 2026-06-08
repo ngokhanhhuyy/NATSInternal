@@ -25,12 +25,12 @@ public class OrderDetailResponseDto
         Photos = order.Photos.Select(p => new PhotoBasicResponseDto(p)).ToList();
         Authorization = authorization;
         AmountAfterVat = order.AmountAfterVat;
-        PaidAmount = order.Payment?.Amount ?? 0;
+        PaidAmount = order.EffectivePayment?.Amount ?? 0;
         DebtAmount = AmountAfterVat - PaidAmount;
 
-        if (order.Payment is not null)
+        if (order.EffectivePayment is not null)
         {
-            Payment = new(order.Payment);
+            Payment = new(order.EffectivePayment);
         }
 
         if (order.LastUpdatedUser is not null)

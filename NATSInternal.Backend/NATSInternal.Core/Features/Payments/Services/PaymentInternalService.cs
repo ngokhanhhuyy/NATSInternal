@@ -145,19 +145,13 @@ internal class PaymentInternalService : IPaymentInternalService
 
         Customer? customer = await _context.Customers
             .Where(c => c.Id == requestDto.CustomerId)
-            .Where(c => c.DeletedDateTime != null)
+            .Where(c => c.DeletedDateTime == null)
             .SingleOrDefaultAsync();
 
         if (customer is null)
         {
             object[] propertyPathElements = new object[] { nameof(requestDto.CustomerId) };
             throw OperationException.NotFound(propertyPathElements, DisplayNames.Customer);
-        }
-
-        if (customer.CachedDebtAmount - requestDto.Amount < 0)
-        {
-            object[] propertyPathElements = new object[] { nameof(requestDto.Amount) };
-            throw new OperationException(propertyPathElements, ErrorMessages.PaidAmountIsGreaterThanRemainingDebtAmount);
         }
 
         DateTime currentDateTime = _clock.Now;
@@ -206,14 +200,6 @@ internal class PaymentInternalService : IPaymentInternalService
         if (!authorization.CanEdit)
         {
             throw new AuthorizationException();
-        }
-
-        long amountDiff = requestDto.Amount - payment.Amount;
-        if (payment.Customer.CachedDebtAmount - amountDiff < 0)
-        {
-            object[] propertyPathElements = new object[] { nameof(requestDto.Amount) };
-            string errorMessage = ErrorMessages.PaidAmountIsGreaterThanRemainingDebtAmount;
-            throw new OperationException(propertyPathElements, errorMessage);
         }
 
         payment.StatsDate = requestDto.StatsDate ?? payment.StatsDate;

@@ -1,23 +1,40 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Link } from "react-router";
+import { compute } from "@/helpers";
 
 // Child components.
 import { Field } from "@/pages/shared/detail";
-import { ArchiveBoxIcon, TagIcon } from "@heroicons/react/24/outline";
+import { TagIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 // Props.
-type Props = {
+type DetailPanelProps = {
   model: ProductDetailModel;
 };
 
 // Components.
-export default function DetailPanel(props: Props): React.ReactNode {
+export default function DetailPanel(props: DetailPanelProps): React.ReactNode {
   // Computed.
-  const thumbnailUrl = useMemo<string | null>(() => {
-    return props.model.photos.filter(p => p.isThumbnail).map(p => p.url)[0] ?? null;
-  }, [props.model.photos]);
-
+  const isResupplyNeeded = compute<boolean>(() => {
+    return !props.model.isDiscontinued && props.model.stockingQuantity <= (props.model.resupplyThresholdQuantity ?? 0);
+  });
+  
   // Template.
+  function renderUser(user: UserBasicModel): React.ReactNode {
+    if (user.isDeleted) {
+      return (
+        <span className="line-through">
+          Đã xoá
+        </span>
+      );
+    }
+
+    return (
+      <Link to={props.model.createdUser.detailRoute}>
+        @{props.model.createdUser.userName}
+      </Link>
+    );
+  }
+
   return (
     <div className="panel">
       <div className="panel-header">
@@ -26,28 +43,8 @@ export default function DetailPanel(props: Props): React.ReactNode {
         </span>
       </div>
 
-      <div className="panel-body flex flex-col gap-2 px-3 pt-3 pb-2">
-        <div className="flex gap-3 justify-start items-start">
-          {thumbnailUrl ? (
-            <img className="img-thumbnail size-14" src={thumbnailUrl} alt={props.model.name} />
-          ) : (
-            <div className="img-thumbnail size-14 flex justify-center items-center">
-              <ArchiveBoxIcon className="size-7 opacity-50" />
-            </div>
-          )}
-
-          <div className="flex flex-col justify-start items-start">
-            <div className="text-2xl text-blue-700 dark:text-blue-400">
-              {props.model.name}
-            </div>
-            <div className="flex flex-wrap gap-2 mb-3">
-              <TargetTransactionTypeAlert isForRetail={props.model.isForRetail}  />
-              <StatusAlert model={props.model} />
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-y-3">
+      <div className="panel-body grid grid-cols-1 lg:grid-cols-2 gap-3 p-3 items-start">
+        <div className="panel-body-area flex flex-col gap-y-3 p-3 h-full">
           {/* Description */}
           {props.model.description && (
             <Field name="description">
@@ -83,51 +80,67 @@ export default function DetailPanel(props: Props): React.ReactNode {
             </Field>
           )}
         </div>
+
+        <div className="flex flex-col gap-3">
+          <div className="panel-body-area flex flex-col gap-y-3 p-3 pb-2">
+            {/* CreatedUser */}
+            <Field name="createdUser">
+              {renderUser(props.model.createdUser)}
+            </Field>
+
+            {/* CreatedDateTime */}
+            <Field name="createdDateTime">
+              {props.model.createdDateTime}
+            </Field>
+
+            {/* LastUpdatedUser */}
+            {props.model.lastUpdatedUser && (
+              <Field name="lastUpdatedUser">
+                {renderUser(props.model.lastUpdatedUser)}
+              </Field>
+            )}
+
+            {/* LastUpdatedDateTime */}
+            {props.model.lastUpdatedDateTime && (
+              <Field name="lastUpdatedDateTime">
+                {props.model.lastUpdatedDateTime}
+              </Field>
+            )}
+
+            {/* DeletedUser */}
+            {props.model.deletedUser && (
+              <Field name="deletedUser">
+                {renderUser(props.model.deletedUser)}
+              </Field>
+            )}
+
+            {/* DeletedDateTime */}
+            {props.model.deletedDateTime && (
+              <Field name="deletedDateTime">
+                {props.model.deletedDateTime}
+              </Field>
+            )}
+          </div>
+
+          <div className="panel-body-area flex flex-col gap-y-3 p-3 pb-2 h-full">
+            {/* StockingQuantity */}
+            <Field name="stockingQuantity" className="flex gap-3">
+              {props.model.stockingQuantity}
+              {isResupplyNeeded && (
+                <div className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400 text-sm">
+                  <ExclamationTriangleIcon className="size-4.5" />
+                  <span>Cần nhập hàng</span>
+                </div>
+              )}
+            </Field>
+
+            {/* ResupplyStockingQuantity */}
+            <Field name="resupplyThresholdQuantity">
+              {props.model.resupplyThresholdQuantity ?? 0}
+            </Field>
+          </div>
+        </div>
       </div>
     </div>
   );
-}
-
-function TargetTransactionTypeAlert(props: { isForRetail: boolean }): React.ReactNode {
-  if (props.isForRetail) {
-    return (
-      <div className="alert alert-emerald-outline dark:alert-emerald dark:font-bold alert-sm">
-        Cả liệu trình và bán lẻ
-      </div>
-    );
-  }
-
-  return (
-    <div className="alert alert-blue-outline dark:alert-blue dark:font-bold alert-sm">
-      Chỉ liệu trình
-    </div>
-  );
-}
-
-
- function StatusAlert(props: { model: ProductDetailModel }): React.ReactNode {
-  if (props.model.isDiscontinued) {
-    return (
-      <div className="alert alert-neutral-outline dark:alert-neutral dark:font-bold alert-sm">
-        Đã ngưng kinh doanh
-      </div>
-    );
-  }
-  
-  if (props.model.stockingQuantity === 0) {
-    return (
-      <div className="alert alert-red-outline dark:alert-red dark:font-bold alert-sm">
-        Đã hết hàng
-      </div>
-    );
-  }
-
-  const resupplyThresholdQuantity = props.model.resupplyThresholdQuantity;
-  if (resupplyThresholdQuantity != null && props.model.stockingQuantity <= resupplyThresholdQuantity) {
-    return (
-      <div className="alert alert-yellow-outline dark:alert-yellow dark:font-bold alert-sm">
-        Sắp hết hàng
-      </div>
-    );
-  }
 }

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useTransition } from "react";
 import { api } from "@/api";
-import { createOrderListModel, createCustomerBasicModel } from "@/models";
+import { createOrderListModel, createCustomerBasicModel, createProductBasicModel } from "@/models";
 import { joinClassName } from "@/helpers";
 
 // Child components.
@@ -10,7 +10,11 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
 // Props.
 type RecentOrdersPanelProps = {
-  model: CustomerDetailModel;
+  customerModel: CustomerDetailModel;
+  productModel?: ProductDetailModel;
+} | {
+  customerModel?: CustomerDetailModel;
+  productModel: ProductDetailModel;
 };
 
 // Component.
@@ -21,7 +25,8 @@ export default function RecentOrdersPanel(props: RecentOrdersPanelProps): React.
   const [listModel, setListModel] = useState<OrderListModel>(() => {
     const m = createOrderListModel();
     m.resultsPerPage = 10;
-    m.customer = createCustomerBasicModel(props.model);
+    m.customer = props.customerModel ? createCustomerBasicModel(props.customerModel) : null;
+    m.product = props.productModel ? createProductBasicModel(props.productModel) : null;
     return m;
   });
 
@@ -79,7 +84,7 @@ export default function RecentOrdersPanel(props: RecentOrdersPanelProps): React.
         </span>
       </div>
 
-      <div className={joinClassName("panel-body p-3", isLoading && "opacity-50")}>
+      <div className={joinClassName("panel-body p-3", isLoading && "pointer-events-none")}>
         <div className="flex flex-col gap-3">
           <div className="flex gap-2 w-fit">
             <div className="form-input-group">
@@ -92,23 +97,29 @@ export default function RecentOrdersPanel(props: RecentOrdersPanelProps): React.
               />
             </div>
 
-            <button
-              type="button"
-              className="btn shrink-0"
-              disabled={listModel.page - 1 <= 0}
-              onClick={() => setListModel(m => ({ ...m, page: m.page - 1 }))}
-            >
-              <ChevronLeftIcon />
-            </button>
+            {listModel.pageCount > 1 && (
+              <>
+                <button
+                  type="button"
+                  className="btn shrink-0 gap-0"
+                  disabled={listModel.page - 1 < 1}
+                  onClick={() => setListModel(m => ({ ...m, page: m.page - 1 }))}
+                >
+                  <ChevronLeftIcon />
+                  <span className="hidden sm:inline">Trang trước</span>
+                </button>
 
-            <button
-              type="button"
-              className="btn shrink-0 "
-              disabled={listModel.page + 1 >= listModel.pageCount}
-              onClick={() => setListModel(m => ({ ...m, page: m.page + 1 }))}
-            >
-              <ChevronRightIcon />
-            </button>
+                <button
+                  type="button"
+                  className="btn shrink-0 gap-0"
+                  disabled={listModel.page + 1 > listModel.pageCount}
+                  onClick={() => setListModel(m => ({ ...m, page: m.page + 1 }))}
+                >
+                  <span className="hidden sm:inline">Trang sau</span>
+                  <ChevronRightIcon />
+                </button>
+              </>
+            )}
           </div>
           <div className={joinClassName(
             "bg-black/2.5 dark:bg-white/2.5",

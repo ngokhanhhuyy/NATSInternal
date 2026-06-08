@@ -1,4 +1,4 @@
-import { getDisplayAmountText } from "@/helpers";
+import { getDisplayAmountText, computeOrderItemAmountAfterVat } from "@/helpers";
 
 declare global {
   type OrderServiceItemDetailModel = {
@@ -13,17 +13,14 @@ declare global {
 }
 
 function create(responseDto: OrderServiceItemDetailResponseDto): OrderServiceItemDetailModel {
-  const vatAmountPerUnit = responseDto.amountBeforeVatPerUnit * (responseDto.vatPercentagePerUnit / 100);
-  const amountAfterVat = (responseDto.amountBeforeVatPerUnit + vatAmountPerUnit) * responseDto.quantity;
-  
   return {
     id: responseDto.id,
     name: responseDto.name,
     amountBeforeVatPerUnit: responseDto.amountBeforeVatPerUnit,
     vatPercentagePerUnit: responseDto.vatPercentagePerUnit,
     quantity: responseDto.quantity,
-    displayAmountBeforeVatPerUnit: getDisplayAmountText(responseDto.amountBeforeVatPerUnit, { excludeSuffix: true }),
-    displayAmountAfterVat: getDisplayAmountText(amountAfterVat, { excludeSuffix: true })
+    displayAmountBeforeVatPerUnit: getDisplayAmountText(responseDto.amountBeforeVatPerUnit),
+    displayAmountAfterVat: getDisplayAmountText(computeOrderItemAmountAfterVat(responseDto))
   };
 }
 

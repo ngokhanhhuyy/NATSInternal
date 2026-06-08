@@ -12,7 +12,7 @@ public class OrderBasicResponseDto
         Type = order.Type;
         StatsDate = order.StatsDate;
         AmountAfterVat = order.CachedAmountAfterVat;
-        IsDebtOrder = order.Payment is not null && order.CachedAmountAfterVat > order.Payment.Amount;
+        IsDebtOrder = order.EffectivePayment is null || order.CachedAmountAfterVat > order.EffectivePayment.Amount;
         Customer = new(order.Customer);
         ThumbnailUrl = order.ThumbnailUrl;
     }

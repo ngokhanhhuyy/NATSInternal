@@ -52,10 +52,10 @@ internal class Order : IHasStatsEntity
 
     #region NavigationProperties
     public Customer Customer { get; set; } = null!;
-    public Payment? Payment { get; set; }
+    public List<Payment> Payments { get; set; } = new();
     public User CreatedUser { get; set; } = null!;
-    public User? LastUpdatedUser { get; set; } = null!;
-    public User? DeletedUser { get; set; } = null!;
+    public User? LastUpdatedUser { get; set; }
+    public User? DeletedUser { get; set; }
     public List<OrderProductItem> ProductItems { get; private set; } = new();
     public List<OrderServiceItem> ServiceItems { get; private set; } = new();
     public List<Photo> Photos { get; private set; } = new();
@@ -92,6 +92,9 @@ internal class Order : IHasStatsEntity
         ServiceAmountBeforeVat + ServiceVatAmount;
 
     [NotMapped]
+    public Payment? EffectivePayment => Payments.SingleOrDefault(p => p.DeletedDateTime is null);
+
+    [NotMapped]
     public static Expression<Func<Order, long>> AmountAfterVatExpression => (order) =>
         order.ProductItems.Sum(oi => (oi.AmountBeforeVatPerUnit + oi.VatAmountPerUnit) * oi.Quantity);
     #endregion
@@ -99,7 +102,7 @@ internal class Order : IHasStatsEntity
     #region Methods
     public void ComputeCachedProperties()
     {
-        CachedAmountAfterVat = ProductItems.Sum(pi => pi.AmountAfterVat) + ServiceItems.Sum(si => si.AmountAfterVat);
+        CachedAmountAfterVat = AmountAfterVat;
     }
     #endregion
 }

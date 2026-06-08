@@ -4,6 +4,7 @@ export * from "./currencyHelper";
 export * from "./dateTimeHelper";
 export * from "./guidHelper";
 export * from "./jsonHelper";
+export * from "./orderHelper";
 export * from "./paginationHelper";
 export * from "./phoneNumberHelper";
 export * from "./photoHelper";

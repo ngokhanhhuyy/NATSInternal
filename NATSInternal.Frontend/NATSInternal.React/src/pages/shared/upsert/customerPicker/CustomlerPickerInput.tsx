@@ -28,16 +28,22 @@ export default function CustomerPickerInput(props: CustomerPickerProps): React.R
   // Callbacks.
   const handlePicked = useCallback((customer: CustomerBasicModel) => {
     setTimeout(() => onValueChanged(customer), 110);
-    setIsModalVisible(false);
+    requestAnimationFrame(() => {
+      setIsModalVisible(false);
+    });
   }, [onValueChanged]);
 
   const handleUnpicked = useCallback(() => {
     setTimeout(() => onValueChanged(null), 110);
-    setIsModalVisible(false);
+    requestAnimationFrame(() => {
+      setIsModalVisible(false);
+    });
   }, []);
 
   const handleCancel = useCallback(() => {
-    setIsModalVisible(false);
+    requestAnimationFrame(() => {
+      setIsModalVisible(false);
+    });
   }, []);
 
   // Template.

@@ -122,6 +122,24 @@ public static class Program
         app.UseMiddleware<CallerDetailExtractingMiddleware>();
         app.MapControllers();
         app.UseStaticFiles();
+        app.MapFallback(async context =>
+        {
+            if (context.Request.Path.StartsWithSegments("/api"))
+            {
+                context.Response.StatusCode = 404;
+                return;
+            }
+
+            string? acceptHeader = context.Request.Headers.Accept.ToString();
+            if (acceptHeader.Contains("text/html"))
+            {
+                context.Response.ContentType = "text/html";
+                await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "index.html"));
+                return;
+            }
+
+            context.Response.StatusCode = 404;
+        });
         await app.RunAsync();
     }
 }

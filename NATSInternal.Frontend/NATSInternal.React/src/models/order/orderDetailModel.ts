@@ -68,9 +68,9 @@ export function createOrderDetailModel(responseDto: OrderDetailResponseDto): Ord
     displayLastUpdatedDateTime: responseDto.lastUpdatedDateTime &&
       getDisplayDateTimeString(responseDto.lastUpdatedDateTime),
     displayDeletedDateTime: responseDto.deletedDateTime && getDisplayDateTimeString(responseDto.deletedDateTime),
-    displayAmountAfterVat: getDisplayAmountText(responseDto.amountAfterVat, { excludeSuffix: true }),
-    displayPaidAmount: getDisplayAmountText(responseDto.paidAmount, { excludeSuffix: true }),
-    displayDebtAmount: getDisplayAmountText(responseDto.debtAmount, { excludeSuffix: true }),
+    displayAmountAfterVat: getDisplayAmountText(responseDto.amountAfterVat),
+    displayPaidAmount: getDisplayAmountText(responseDto.paidAmount),
+    displayDebtAmount: getDisplayAmountText(responseDto.debtAmount),
     updateRoutePath: getOrderUpdateRoutePath(responseDto.id)
   };
 }

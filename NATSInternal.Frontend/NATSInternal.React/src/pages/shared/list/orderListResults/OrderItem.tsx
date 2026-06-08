@@ -5,32 +5,56 @@ import { joinClassName, compute } from "@/helpers";
 
 // Child components.
 import { ClockIcon, CurrencyDollarIcon, TagIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 // Props.
 type OrderItemProps = {
   model: OrderBasicModel;
   children?: React.ReactNode;
+  hideIcon?: boolean;
 };
 
 // Components.
 export default function OrderItem(props: OrderItemProps): React.ReactNode {
   // Computed.
-  const displayId = compute<string>(() => {
-    return `#${props.model.id.toString()} ${getDisplayName(props.model.type)}`;
+  const className = compute<string>(() => {
+    if (props.hideIcon) {
+      if (props.children) {
+        return "grid-cols-[auto_2fr_1fr]";
+      } else {
+        return "grid-cols-[auto_1fr]";
+      }
+    } else {
+      if (props.children) {
+        return "grid-cols-[auto_auto_2fr_1fr]";
+      } else {
+        return "grid-cols-[auto_auto_1fr]";
+      }
+    }
   });
+
+  // Template.
+  const renderIcon = () => {
+    if (props.model.isDebtOrder) {
+      return <ExclamationTriangleIcon className="text-yellow-600 dark:text-yellow-400 size-6" />;
+    }
+
+    return <CheckCircleIcon className="text-emerald-600 dark:text-emerald-400 size-6" />;
+  };
 
   // Template.
   return (
     <li className="list-group-item items-center px-3 py-1.5">
-      <div className={joinClassName(
-        "grid gap-3",
-        props.children ? "grid-cols-[auto_2fr_1fr]" : "grid-cols-[auto_1fr]"
-      )}>
+      <div className={joinClassName("grid gap-3", className)}>
+        <div className="flex items-center">
+          {!props.hideIcon && renderIcon()}
+        </div>
+
         {props.model.thumbnailUrl ? (
           <img
             src={props.model.thumbnailUrl}
             className="img-thumbnail size-12"
-            alt={displayId}
+            alt={`#${props.model.id.toString()} ${getDisplayName(props.model.type)}`}
           />
         ) : (
           <div className="img-thumbnail size-12 flex justify-center items-center">
@@ -72,12 +96,12 @@ export default function OrderItem(props: OrderItemProps): React.ReactNode {
 
           <div className="flex flex-col gap-x-10 w-fit">
             <div className="flex items-center gap-1">
-              <ClockIcon className="size-4 opacity-50" />
+              <ClockIcon className="size-5 opacity-50" />
               <span className="opacity-50">{props.model.displayStatsDate}</span>
             </div>
             
             <div className="flex items-center gap-1">
-              <CurrencyDollarIcon className="size-4 opacity-50" />
+              <CurrencyDollarIcon className="size-5 opacity-50" />
               <span className="opacity-50">{props.model.displayAmountAfterVat}</span>
             </div>
           </div>

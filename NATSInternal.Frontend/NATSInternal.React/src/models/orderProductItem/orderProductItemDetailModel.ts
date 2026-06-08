@@ -1,5 +1,5 @@
 import { createProductBasicModel } from "../shared/productBasicModel";
-import { getDisplayAmountText } from "@/helpers";
+import { getDisplayAmountText, computeOrderItemAmountAfterVat } from "@/helpers";
 
 declare global {
   type OrderProductItemDetailModel = {
@@ -14,17 +14,14 @@ declare global {
 }
 
 function create(responseDto: OrderProductItemDetailResponseDto): OrderProductItemDetailModel {
-  const vatAmountPerUnit = responseDto.amountBeforeVatPerUnit * (responseDto.vatPercentagePerUnit / 100);
-  const amountAfterVat = (responseDto.amountBeforeVatPerUnit + vatAmountPerUnit) * responseDto.quantity;
-
   return {
     id: responseDto.id,
     amountBeforeVatPerUnit: responseDto.amountBeforeVatPerUnit,
     vatPercentagePerUnit: responseDto.vatPercentagePerUnit,
     quantity: responseDto.quantity,
     product: createProductBasicModel(responseDto.product),
-    displayAmountBeforeVatPerUnit: getDisplayAmountText(responseDto.amountBeforeVatPerUnit, { excludeSuffix: true }),
-    displayAmountAfterVat: getDisplayAmountText(amountAfterVat, { excludeSuffix: true })
+    displayAmountBeforeVatPerUnit: getDisplayAmountText(responseDto.amountBeforeVatPerUnit),
+    displayAmountAfterVat: getDisplayAmountText(computeOrderItemAmountAfterVat(responseDto))
   };
 }
 

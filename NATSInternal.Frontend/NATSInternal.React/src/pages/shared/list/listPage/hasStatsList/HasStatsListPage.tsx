@@ -1,9 +1,11 @@
 import React, { useMemo } from "react";
+import { getDisplayName } from "@/metadata";
 import { compute } from "@/helpers";
 
 // Child components.
 import BaseListPage, { type BaseListPageProps } from "../baseListPage";
 import { FormField, SelectInput, type SelectInputOption } from "@/components/form";
+import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 
 // Props.
 type ListModel<TItemModel extends object> = IHasStatsListModel<TItemModel> & IUpsertableListModel<TItemModel>;
@@ -55,12 +57,20 @@ export default function HasStatsListPage<TListModel extends ListModel<TItemModel
   // Template.
   return (
     <BaseListPage {...props} filterPanelChildren={
-      <FormField path="statsMonthYear" displayName="Thời gian thống kê">
-        <SelectInput
-          options={statsMonthYearOptions}
-          value={selectedStatsMonthYearValue}
-          onValueChanged={handleStatsMonthYearInput}
-        />
+      <FormField path="statsMonthYear" displayName="Thời gian thống kê" hideLabel>
+        <div className="form-input-group">
+          <div className="form-input-group-text border-e-0 flex gap-1.5 items-center shrink-0 sm:min-w-37.5">
+            <CalendarDaysIcon className="size-4.5" />
+            <span className="hidden sm:inline">{getDisplayName("statsDate")}</span>
+          </div>
+
+          <SelectInput
+            className="min-w-60"
+            options={statsMonthYearOptions}
+            value={selectedStatsMonthYearValue}
+            onValueChanged={handleStatsMonthYearInput}
+          />
+        </div>
       </FormField>
     }/>
   );

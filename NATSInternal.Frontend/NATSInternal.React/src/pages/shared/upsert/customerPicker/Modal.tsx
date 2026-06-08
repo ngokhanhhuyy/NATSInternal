@@ -23,6 +23,7 @@ export default function Modal(props: ModalProps): React.ReactNode {
       isOpen={props.isVisible}
       onClosed={props.onCancel}
       title={`Chọn ${props.displayName}`}
+      modalClassName="max-w-xl"
       footerChildren={(
         <Button className="h-fit" onClick={props.onCancel}>Huỷ bỏ</Button>
       )}

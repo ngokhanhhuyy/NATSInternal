@@ -8,7 +8,7 @@ import CustomerItem from "./CustomerItem";
 type CustomerListProps = {
   className?: string;
   model: CustomerListModel;
-  isReloading: boolean;
+  isReloading?: boolean;
   renderItemChildren?(customer: CustomerBasicModel): React.ReactNode;
   computeItemClassName?(customer: CustomerBasicModel): string | undefined;
   openLinkInNewTab?: boolean;
@@ -32,7 +32,7 @@ export default function CustomerList(props: CustomerListProps): React.ReactNode 
           {props.renderItemChildren?.(customer)}
         </CustomerItem>
       )) : (
-        <li className="list-group-item opacity-50 px-3 py-10">
+        <li className="list-group-item flex justify-center items-center opacity-50 px-3 py-10">
           Không có kết quả
         </li>
       )}

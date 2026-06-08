@@ -15,7 +15,7 @@ internal class SearchableListValidator<TListRequestDto, TFieldToSort> : Validato
         Include(new ListValidator<TListRequestDto, TFieldToSort>());
         
         RuleFor(dto => dto.SearchContent)
-            .MinimumLength(3)
+            .MinimumLength(2)
             .MaximumLength(255)
             .WithName(DisplayNames.SearchContent);
     }

@@ -10,6 +10,7 @@ public class CustomerBasicResponseDto
         Id = customer.Id;
         FullName = customer.FullName;
         NickName = customer.NickName;
+        DebtAmount = customer.CachedDebtAmount;
         IsDeleted = customer.DeletedDateTime is not null;
     }
 
@@ -25,6 +26,7 @@ public class CustomerBasicResponseDto
     public int Id { get; }
     public string FullName { get; }
     public string? NickName { get; }
+    public long DebtAmount { get; set; }
     public bool IsDeleted { get; }
     public CustomerExistingAuthorizationResponseDto? Authorization { get; }
     #endregion

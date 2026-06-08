@@ -24,6 +24,7 @@ public class CustomerDetailResponseDto
         Email = customer.Email;
         Address = customer.Address;
         Note = customer.Note;
+        DebtAmount = customer.CachedDebtAmount;
         CreatedUser = new(customer.CreatedUser);
         CreatedDateTime = customer.CreatedDateTime;
         LastUpdatedDateTime = customer.LastUpdatedDateTime;

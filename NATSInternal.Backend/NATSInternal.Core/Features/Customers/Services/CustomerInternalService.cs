@@ -75,6 +75,14 @@ internal class CustomerInternalService : ICustomerInternalService
 
         switch (requestDto.SortByFieldName)
         {
+            case nameof(CustomerListRequestDto.FieldToSort.Status):
+                query = query
+                    .ApplySorting(c => c.CachedDebtAmount == 0, requestDto.SortByAscending)
+                    .ThenApplySorting(c => c.CachedDebtAmount > 0, requestDto.SortByAscending)
+                    .ThenApplySorting(c => c.LastName, requestDto.SortByAscending)
+                    .ThenApplySorting(c => c.FullName, requestDto.SortByAscending)
+                    .ThenApplySorting(c => c.CreatedDateTime, requestDto.SortByAscending);
+                break;
             case nameof(CustomerListRequestDto.FieldToSort.LastName):
                 query = query.ApplySorting(c => c.LastName, requestDto.SortByAscending);
                 break;

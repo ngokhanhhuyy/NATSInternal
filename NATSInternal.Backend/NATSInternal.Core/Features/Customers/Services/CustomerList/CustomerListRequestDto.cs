@@ -7,7 +7,7 @@ public class CustomerListRequestDto : ISearchableListRequestDto
 {
     #region Properties
     public bool SortByAscending { get; set; } = true;
-    public string SortByFieldName { get; set; } = nameof(FieldToSort.LastName);
+    public string SortByFieldName { get; set; } = nameof(FieldToSort.Status);
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 10;
     public string? SearchContent { get; set; }
@@ -25,6 +25,7 @@ public class CustomerListRequestDto : ISearchableListRequestDto
     #region Enums
     public enum FieldToSort
     {
+        Status,
         LastName,
         FirstName,
         Birthday,

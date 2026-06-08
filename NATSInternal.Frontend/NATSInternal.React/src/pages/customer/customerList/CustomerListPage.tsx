@@ -1,11 +1,12 @@
-import React, { useState, useCallback, useTransition } from "react";
+import React, { useState, useCallback, useEffect, useTransition } from "react";
 import { useLoaderData } from "react-router";
 import { api } from "@/api";
+import { metadata } from "@/metadata";
 import { createCustomerListModel } from "@/models";
 import { useRerendingTrigger } from "@/hooks";
 
 // Child components.
-import ResultsPanel from "./ResultsPanel";
+import CustomerListResults from "@/pages/shared/list/customerListResults";
 import ListPage from "@/pages/shared/list/listPage/searchableList";
 
 // Loader
@@ -26,7 +27,7 @@ export default function CustomerListPage(): React.ReactNode {
 
   // States.
   const [model, setModel] = useState(() => initialModel);
-  const [_, triggerRerender] = useRerendingTrigger(reload);
+  const [renderingKey, triggerRendering] = useRerendingTrigger(reload);
   const [isReloading, startTransition] = useTransition();
 
   // Callbacks.
@@ -44,8 +45,13 @@ export default function CustomerListPage(): React.ReactNode {
 
   const handlePaginatorPageChanged = useCallback((page: number) => {
     setModel(m => ({ ...m, page }));
-    triggerRerender();
+    triggerRendering();
   }, []);
+
+  // Effect.
+  useEffect(() => {
+    reload();
+  }, [model.sortByAscending, model.sortByFieldName, model.page, model.resultsPerPage, renderingKey]);
 
   // Template.
   return (
@@ -55,9 +61,10 @@ export default function CustomerListPage(): React.ReactNode {
       onModelUpdated={handleModelUpdated}
       isReloading={isReloading}
       onPaginatorPageChanged={handlePaginatorPageChanged}
-      onFilterPanelReloadButtonClicked={triggerRerender}
+      onReloadingRequested={triggerRendering}
+      canCreate={metadata.creatingAuthorization.canCreateCustomer}
     >
-      <ResultsPanel model={model} isReloading={isReloading} />
+      <CustomerListResults className="list-group-flush" model={model} />
     </ListPage>
   );
 }

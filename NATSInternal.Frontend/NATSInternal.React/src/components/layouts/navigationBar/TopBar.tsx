@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigationBarStore, useThemeStore } from "@/stores";
 import { joinClassName } from "@/helpers";
 
@@ -18,20 +18,20 @@ export default function TopBar(props: TopBarProps): React.ReactNode {
   const navigationBarStore = useNavigationBarStore(); 
 
   // States.
-  const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const [isScrolled, _] = useState<boolean>(false);
 
   // Effects.
-  useEffect(() => {
-    const handleScrollY = () => {
-      setIsScrolled(window.scrollY != 0);
-    };
+  // useEffect(() => {
+  //   const handleScrollY = () => {
+  //     setIsScrolled(window.scrollY != 0);
+  //   };
 
-    window.addEventListener("scroll", handleScrollY);
+  //   window.addEventListener("scroll", handleScrollY);
 
-    return () => {
-      window.removeEventListener("scroll", handleScrollY);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("scroll", handleScrollY);
+  //   };
+  // }, []);
 
   // Template.
   return (

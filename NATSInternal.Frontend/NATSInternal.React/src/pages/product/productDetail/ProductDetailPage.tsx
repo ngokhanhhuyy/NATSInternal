@@ -6,10 +6,9 @@ import { createProductDetailModel } from "@/models";
 // Child components.
 import { MainContainer } from "@/components/layouts";
 import DetailPanel from "./DetailPanel";
-import ManagementPanel from "./ManagementPanel";
-import StockPanel from "./StockPanel";
+import ThumbnailAndNamePanel from "./ThumbnailAndNamePanel";
 import PhotoPanel from "./PhotoPanel";
-import LatestTransactionPanel from "./LatestTransactionPanel";
+import RecentOrdersPanel from "@/pages/shared/detail/recentOrdersPanel";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 // Data loader.
@@ -27,17 +26,14 @@ export default function ProductDetailPage(): React.ReactNode {
   return (
     <MainContainer>
       <div className="flex flex-col gap-3 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-stretch">
-          <div className="flex flex-col gap-y-3">
-            <DetailPanel model={model} />
-            <StockPanel model={model} />
-            <ManagementPanel model={model} />
-          </div>
-          
-          <PhotoPanel model={model} />
-        </div>
+        <ThumbnailAndNamePanel model={model} />
+        <DetailPanel model={model} />
 
-        <LatestTransactionPanel />
+        {model.photos.length > 0 && (
+          <PhotoPanel model={model} />
+        )}
+
+        <RecentOrdersPanel productModel={model} />
 
         <div className="flex justify-end">
           <Link className="btn gap-1.5" to={model.updateRoutePath}>

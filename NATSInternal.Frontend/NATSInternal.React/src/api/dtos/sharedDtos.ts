@@ -17,6 +17,7 @@ declare global {
     id: number;
     fullName: string;
     nickName: string | null;
+    debtAmount: number;
     isDeleted: boolean;
     authorization: CustomerExistingAuthorizationResponseDto | null;
   };

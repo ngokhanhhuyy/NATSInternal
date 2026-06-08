@@ -73,7 +73,7 @@ internal class OrderService : IOrderService
 
         IQueryable<Order> query = _context.Orders
             .Include(o => o.Customer)
-            .Include(o => o.Payment)
+            .Include(o => o.Payments)
             .Include(o => o.Photos.Where(photo => photo.IsThumbnail))
             .Where(o => o.DeletedDateTime == null);
 
@@ -83,10 +83,19 @@ internal class OrderService : IOrderService
         {
             query = query.Where(o => o.CustomerId == requestDto.CustomerId.Value);
         }
+
+        if (requestDto.ProductId.HasValue)
+        {
+            query = query
+                .Include(o => o.ProductItems).ThenInclude(opi => opi.Product)
+                .Where(o => o.ProductItems.Any(opi => opi.Product.Id == requestDto.ProductId.Value));
+        }
         
         if (requestDto.DebtOrdersOnly)
         {
-            query = query.Where(o => o.Payment == null || o.CachedAmountAfterVat > o.Payment.Amount);
+            query = query.Where(o =>
+                o.Payments.SingleOrDefault(p => p.DeletedDateTime == null) != null ||
+                o.CachedAmountAfterVat > o.Payments.Single(p => p.DeletedDateTime == null).Amount);
         }
 
         switch (requestDto.SortByFieldName)
@@ -133,7 +142,7 @@ internal class OrderService : IOrderService
             .Include(o => o.Customer)
             .Include(o => o.ProductItems).ThenInclude(si => si.Product)
             .Include(o => o.ServiceItems)
-            .Include(o => o.Payment).ThenInclude(p => p!.Customer)
+            .Include(o => o.Payments).ThenInclude(p => p!.Customer)
             .Include(o => o.Photos)
             .Include(o => o.CreatedUser)
             .Include(o => o.LastUpdatedUser)
@@ -265,7 +274,7 @@ internal class OrderService : IOrderService
         Order order = await _context.Orders
             .Include(o => o.ProductItems).ThenInclude(o => o.Product)
             .Include(o => o.ServiceItems)
-            .Include(o => o.Payment)
+            .Include(o => o.Payments)
             .AsSplitQuery()
             .SingleOrDefaultAsync(o => o.Id == id && o.DeletedDateTime == null)
             ?? throw new NotFoundException();
@@ -273,7 +282,7 @@ internal class OrderService : IOrderService
         await using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
 
         Customer customer = await GetCustomerOrCreateAsync(requestDto);
-        long oldDebtAmount = order.CachedAmountAfterVat - (order.Payment?.Amount ?? 0);
+        long oldDebtAmount = order.AmountAfterVat - (order.EffectivePayment?.Amount ?? 0);
 
         order.StatsDate = requestDto.StatsDate ?? order.StatsDate;
         order.Note = requestDto.Note;
@@ -341,7 +350,6 @@ internal class OrderService : IOrderService
                     serviceItem.VatPercentagePerUnit = itemRequestDto.VatPercentagePerUnit;
                 }
 
-                order.ServiceItems.Add(serviceItem);
                 processedServiceNames.Add(serviceItem.Name);
             }
         }
@@ -360,16 +368,16 @@ internal class OrderService : IOrderService
             throw;
         }
 
-        if (order.Payment is null && requestDto.PaidAmount > 0)
+        if (order.EffectivePayment is null && requestDto.PaidAmount > 0)
         {
             await CreatePaymentAsync(requestDto, order);
         }
-        else if (order.Payment is not null)
+        else if (order.EffectivePayment is not null)
         {
-            await UpdateOrDeletePaymentAsync(order.Payment, requestDto);
+            await UpdateOrDeletePaymentAsync(order.EffectivePayment, requestDto);
         }
 
-        long newDebtAmount = order.CachedAmountAfterVat - (order.Payment?.Amount ?? 0);
+        long newDebtAmount = order.AmountAfterVat - (order.EffectivePayment?.Amount ?? 0);
         long ComputeNewCachedDebtAmount(long amount) => amount + (newDebtAmount - oldDebtAmount);
         await _customerService.UpdateCachedDebtAmount(customer, ComputeNewCachedDebtAmount);
     

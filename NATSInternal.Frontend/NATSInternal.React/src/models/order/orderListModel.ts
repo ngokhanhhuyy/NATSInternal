@@ -11,6 +11,7 @@ declare global {
     page: number;
     resultsPerPage: number;
     customer: CustomerBasicModel | null;
+    product: ProductBasicModel | null;
     debtOrdersOnly: boolean;
     statsMonthYear: StatsMonthYearModel | null;
     statsMonthYearOptions: StatsMonthYearModel[];
@@ -31,6 +32,7 @@ export function createOrderListModel(): OrderListModel {
     page: 1,
     resultsPerPage: metadata.listOptionsList.order.defaultResultsPerPage,
     customer: null,
+    product: null,
     debtOrdersOnly: false,
     statsMonthYear: null,
     statsMonthYearOptions: metadata.statsMonthYearSeries.orderSeries.map(createStatsMonthYearModel),
@@ -53,6 +55,7 @@ export function createOrderListModel(): OrderListModel {
         page: this.page,
         resultsPerPage: this.resultsPerPage,
         customerId: this.customer?.id,
+        productId: this.product?.id,
         debtOrdersOnly: this.debtOrdersOnly,
         statsYear: this.statsMonthYear?.year,
         statsMonth: this.statsMonthYear?.month

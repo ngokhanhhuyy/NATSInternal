@@ -1,12 +1,13 @@
-import React, { useState, useCallback, useTransition } from "react";
+import React, { useState, useCallback, useEffect, useTransition } from "react";
 import { useLoaderData, Link } from "react-router";
 import { useRerendingTrigger } from "@/hooks";
+import { metadata } from "@/metadata";
 import { getProductCategoryListRoutePath } from "@/helpers";
 import { TagIcon } from "@heroicons/react/24/outline";
 
 // Child components.
 import { loadProductListAsync, type ProductListDataLoaderResults } from "./dataLoader";
-import ResultsPanel from "./ResultsPanel";
+import ProductListResults from "@/pages/shared/list/productListResults";
 import FilterPanelChildren from "./FilterPanelChildren";
 import ListPage from "@/pages/shared/list/listPage/searchableList";
 
@@ -17,7 +18,7 @@ export default function ProductListPage(): React.ReactNode {
 
   // States.
   const [model, setModel] = useState(() => initialModel.model);
-  const [_, triggerRerender] = useRerendingTrigger(reload);
+  const [renderingKey, triggerRerender] = useRerendingTrigger(reload);
   const [isReloading, startTransition] = useTransition();
 
   // Callbacks.
@@ -38,6 +39,11 @@ export default function ProductListPage(): React.ReactNode {
     triggerRerender();
   }, []);
 
+  // Effect.
+  useEffect(() => {
+    reload();
+  }, [model.sortByAscending, model.sortByFieldName, model.page, model.resultsPerPage, renderingKey]);
+
   // Template.
   return (
     <ListPage
@@ -46,7 +52,7 @@ export default function ProductListPage(): React.ReactNode {
       onModelUpdated={handleModelUpdated}
       isReloading={isReloading}
       onPaginatorPageChanged={handlePaginatorPageChanged}
-      onFilterPanelReloadButtonClicked={triggerRerender}
+      onReloadingRequested={triggerRerender}
       linkButtons={
         <div className="flex justify-end">
           <Link className="btn" to={getProductCategoryListRoutePath()}>
@@ -61,8 +67,9 @@ export default function ProductListPage(): React.ReactNode {
           onModelUpdated={(updatedData) => setModel(m => ({ ...m, ...updatedData }))}
         />
       }
+      canCreate={metadata.creatingAuthorization.canCreateProduct}
     >
-      <ResultsPanel model={model} isReloading={isReloading} />
+      <ProductListResults className="list-group-flush" model={model} />
     </ListPage>
   );
 }

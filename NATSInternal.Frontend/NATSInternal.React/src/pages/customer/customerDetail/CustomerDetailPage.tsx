@@ -7,7 +7,7 @@ import { createCustomerDetailModel } from "@/models/customer/customerDetailModel
 import { MainContainer } from "@/components/layouts";
 import AvatarAndNamePanel from "./AvatarAndNamePanel";
 import DetailPanel from "./DetailPanel";
-import RecentOrdersPanel from "./RecentOrdersPanel";
+import RecentOrdersPanel from "@/pages/shared/detail/recentOrdersPanel";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 // Data loder.
@@ -28,7 +28,7 @@ export default function CustomerDetailPage(): React.ReactNode {
         <AvatarAndNamePanel model={model} />
         <DetailPanel model={model} />
         
-        <RecentOrdersPanel model={model} />
+        <RecentOrdersPanel customerModel={model} />
 
         <div className="flex justify-end">
           <Link className="btn gap-1.5" to={model.updateRoutePath}>

@@ -17,6 +17,7 @@ NATSInternal.sln.DotSettings.user
 .github/
 
 # Ignore user and build artifacts
+/NATSInternal.Backend/NATSInternal.Api/wwwroot/**/*
 /NATSInternal.API/wwwroot/images/user/
 /NATSInternal.API/NATSInternal.API.csproj.user
 /NATSInternal.Blazor

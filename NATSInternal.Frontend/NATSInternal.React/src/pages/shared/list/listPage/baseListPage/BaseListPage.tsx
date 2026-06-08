@@ -4,8 +4,9 @@ import { getDisplayName } from "@/metadata";
 import { joinClassName } from "@/helpers";
 
 // Child components.
-import FilterOptionsPanel from "./BaseListFilterOptionsPanel";
+import FilterOptionsArea from "./BaseListFilterOptionsArea";
 import { MainContainer } from "@/components/layouts";
+import { SelectInput, type SelectInputOption } from "@/components/form";
 import { Paginator } from "@/components/ui";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
@@ -17,12 +18,13 @@ export type BaseListPageProps<TListModel extends ListModel<TItemModel>, TItemMod
   model: TListModel;
   onModelUpdated: (updatedData: Partial<TListModel>) => any;
   isReloading: boolean;
-  children?: React.ReactNode | React.ReactNode[];
+  children: React.ReactNode;
   onPaginatorPageChanged: (page: number) => any;
-  onFilterPanelReloadButtonClicked: () => any;
+  onReloadingRequested: () => any;
   linkButtons?: React.ReactNode | React.ReactNode[];
   filterPanelChildren?: React.ReactNode | React.ReactNode[];
   sideBarPanels?: React.ReactNode | React.ReactNode[];
+  canCreate: boolean;
 };
 
 // Components.
@@ -31,29 +33,69 @@ export default function IListModel<TListModel extends ListModel<TItemModel>, TIt
 {
   // Computed.
   const displayName = useMemo(() => getDisplayName(props.resourceName), []);
+
+  const resultsPerPageOptions = useMemo<SelectInputOption[]>(() => {
+    return [5, 10, 15, 20, 30, 40, 50].map(resultsPerPage => ({
+      value: resultsPerPage.toString(),
+      displayName: resultsPerPage.toString()
+    }));
+  }, []);
   
   // Template.
   return (
-    <MainContainer className="gap-3" isLoading={props.isReloading}>
+    <MainContainer className="gap-3">
       <div className={joinClassName(
         "grid grid-cols-1 gap-3",
         props.sideBarPanels != null ? "xl:grid-cols-[1fr_25rem]" : null
       )}>
         <div className="flex flex-col items-stretch gap-3">
-          {props.children}
+          <div className="panel">
+            <div className="panel-header">
+              <span className="panel-header-title">
+                Danh sách {getDisplayName(props.resourceName)}
+              </span>
+            </div>
+
+            <div className="panel-body flex flex-col p-3 gap-3">
+              <FilterOptionsArea
+                model={props.model}
+                onModelUpdated={props.onModelUpdated}
+                displayName={displayName}
+                onReloadButtonClicked={props.onReloadingRequested}
+              >
+                {props.filterPanelChildren}
+              </FilterOptionsArea>
+
+              <div className="panel-body-area">
+                {props.children}
+              </div>
+
+              <div className="flex justify-between">
+                <SelectInput
+                  className="w-22.5"
+                  options={resultsPerPageOptions}
+                  value={props.model.resultsPerPage.toString()}
+                  onValueChanged={(resultsPerPageAsString) => {
+                    props.onModelUpdated({
+                      resultsPerPage: parseInt(resultsPerPageAsString)
+                    } as Partial<TListModel>);
+                  }}
+                />
+
+                {props.model.pageCount > 1 && (
+                  <Paginator
+                    page={props.model.page}
+                    pageCount={props.model.pageCount}
+                    onPageChanged={props.onPaginatorPageChanged}
+                    getPageButtonClassName={(_, isActive) => isActive ? "btn-primary" : undefined}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
 
           <div className="flex justify-end gap-3">
-            <Paginator
-              page={props.model.page}
-              pageCount={props.model.pageCount}
-              onPageChanged={props.onPaginatorPageChanged}
-              getPageButtonClassName={(_, isActive) => isActive ? "btn-primary" : undefined}
-            />
-
-            {props.model.pageCount > 1 && (
-              <div className="border-r border-black/25 dark:border-white/25 w-px" />
-            )}
-            
+            {props.linkButtons}
             {props.model.createRoutePath && (
               <Link className="btn gap-1 shrink-0" to={props.model.createRoutePath}>
                 <PlusIcon className="size-4.5" />
@@ -61,16 +103,6 @@ export default function IListModel<TListModel extends ListModel<TItemModel>, TIt
               </Link>
             )}
           </div>
-          
-          {props.linkButtons}
-
-          <FilterOptionsPanel
-            model={props.model}
-            onModelUpdated={props.onModelUpdated}
-            onReloadButtonClicked={props.onFilterPanelReloadButtonClicked}
-          >
-            {props.filterPanelChildren}
-          </FilterOptionsPanel>
         </div>
 
         {props.sideBarPanels}

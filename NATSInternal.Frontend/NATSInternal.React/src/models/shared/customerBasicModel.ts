@@ -5,6 +5,7 @@ declare global {
     id: number;
     fullName: string;
     nickName: string | null;
+    debtAmount: number;
     isDeleted: boolean;
     avatarUrl: string;
     detailRoutePath: string;
@@ -16,6 +17,7 @@ export function createCustomerBasicModel(arg: CustomerBasicResponseDto | Custome
     id: arg.id,
     fullName: arg.fullName,
     nickName: arg.nickName,
+    debtAmount: arg.debtAmount,
     isDeleted: isCustomerDetailModel(arg) ? arg.deletedDateTime != null : arg.isDeleted,
     avatarUrl: getDefaultAvatarUrlByFullName(arg.fullName),
     detailRoutePath: getCustomerDetailRoutePath(arg.id)

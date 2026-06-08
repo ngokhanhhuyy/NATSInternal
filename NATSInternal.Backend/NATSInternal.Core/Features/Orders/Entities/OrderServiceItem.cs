@@ -34,7 +34,14 @@ internal class OrderServiceItem
 
     #region ComputedProperties
     [NotMapped]
-    public long VatAmountPerUnit => (long)Math.Ceiling(AmountBeforeVatPerUnit * (VatPercentagePerUnit / 100M));
+    public long VatAmountPerUnit
+    {
+        get
+        {
+            decimal rawVatAmountPerUnit = AmountBeforeVatPerUnit * (VatPercentagePerUnit / 100M);
+            return (long)Math.Ceiling(rawVatAmountPerUnit / 1000) * 1000;
+        }
+    }
 
     [NotMapped]
     public long VatAmount => VatAmountPerUnit * Quantity;

@@ -12,8 +12,8 @@ internal class PaymentEntityConfiguration : IEntityTypeConfiguration<Payment>
         // Relationships.
         entityBuilder
             .HasOne(p => p.Order)
-            .WithOne(p => p.Payment)
-            .HasForeignKey<Payment>(p => p.OrderId)
+            .WithMany(p => p.Payments)
+            .HasForeignKey(p => p.OrderId)
             .OnDelete(DeleteBehavior.Restrict);
 
         entityBuilder

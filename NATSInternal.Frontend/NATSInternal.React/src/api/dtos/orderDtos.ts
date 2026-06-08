@@ -7,6 +7,7 @@ declare global {
     page: number;
     resultsPerPage: number;
     customerId: number;
+    productId: number;
     debtOrdersOnly: boolean;
     statsYear: number | null;
     statsMonth: number | null;
