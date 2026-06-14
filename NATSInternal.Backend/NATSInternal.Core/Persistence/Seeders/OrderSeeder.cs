@@ -117,10 +117,10 @@ internal class OrderSeeder
             for (int index = 0; index < serviceItemCount; index += 1)
             {
                 string name;
-                int wordCount = 10;
+                int wordCount = 5;
                 do
                 {
-                    name = _enFaker.Lorem.Sentence(wordCount, 10);
+                    name = _enFaker.Lorem.Sentence(wordCount, 3);
                     wordCount -= 1;
                 }
                 while (name.Length > OrderServiceItemContracts.NameMaxLength);

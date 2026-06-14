@@ -78,6 +78,11 @@ internal class OrderService : IOrderService
             .Where(o => o.DeletedDateTime == null);
 
         query = query.HasStatsMonthYear(requestDto.StatsYear, requestDto.StatsMonth);
+
+        if (requestDto.Type.HasValue)
+        {
+            query = query.Where(o => o.Type == requestDto.Type.Value);
+        }
         
         if (requestDto.CustomerId.HasValue)
         {

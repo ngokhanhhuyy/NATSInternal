@@ -6,6 +6,8 @@ export type ProductApi = {
   createAsync(requestDto: ProductCreateRequestDto): Promise<number>;
   updateAsync(id: number, requestDto: ProductUpdateRequestDto): Promise<void>;
   deleteAsync(id: number): Promise<void>;
+  getTopBySoldQuantity(requestDto: TopRequestDto): Promise<TopResponseDto<ProductBasicResponseDto, number>>;
+  getTopByRevenue(requestDto: TopRequestDto): Promise<TopResponseDto<ProductBasicResponseDto, number>>;
 };
 
 export const productApi: ProductApi = {
@@ -23,5 +25,11 @@ export const productApi: ProductApi = {
   },
   async deleteAsync(id: number): Promise<void> {
     await httpClient.deleteAndIgnoreAsync(`/products/${id}`);
-  }
+  },
+  async getTopBySoldQuantity(requestDto: TopRequestDto): Promise<TopResponseDto<ProductBasicResponseDto, number>> {
+    return await httpClient.getAsync("/products/topBySoldQuantity", requestDto);
+  },
+  async getTopByRevenue(requestDto: TopRequestDto): Promise<TopResponseDto<ProductBasicResponseDto, number>> {
+    return await httpClient.getAsync("/products/topByRevenue", requestDto);
+  },
 };

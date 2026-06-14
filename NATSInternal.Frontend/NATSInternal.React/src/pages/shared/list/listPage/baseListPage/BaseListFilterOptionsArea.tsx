@@ -36,7 +36,7 @@ function BaseListFilterOptionsArea<
 
   // Template.
   return (
-    <div className="grid grid-cols-1 lg:flex lg:flex-wrap gap-3 justify-stretch items-start w-full">
+    <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.5fr] gap-3 justify-stretch items-start w-full">
       <div className="grid grid-cols-[1fr_auto] md:grid-cols-1 gap-3">
         {props.children}
 
@@ -60,7 +60,6 @@ function BaseListFilterOptionsArea<
         <div className="form-input-group">
           <div className="form-input-group-text gap-1.5 border-e-transparent">
             <Bars3BottomRightIcon className="size-4" />
-            <span className="hidden md:inline">Sắp xếp theo</span>
           </div>
 
           <SelectInput
@@ -78,7 +77,6 @@ function BaseListFilterOptionsArea<
             ) : (
               <BarsArrowUpIcon className="size-4" />
             )}
-            <span className="hidden md:inline">Thứ tự</span>
           </div>
 
           <Button

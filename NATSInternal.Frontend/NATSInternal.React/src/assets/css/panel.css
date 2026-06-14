@@ -43,14 +43,16 @@
     }
     
     .panel-header-title {
-        color: --alpha(var(--color-blue-700) / 100%);
+        color: --alpha(var(--color-black) / 50%);
         font-size: var(--text-sm);
         font-weight: bold;
         text-transform: uppercase;
         
         @variant dark {
             & {
+                background-color: transparent;
                 color: --alpha(var(--color-white) / 75%);
+                padding-inline: 0;
             }
         }
     }

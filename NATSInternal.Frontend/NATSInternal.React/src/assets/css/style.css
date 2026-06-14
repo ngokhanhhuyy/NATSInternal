@@ -12,6 +12,20 @@
 @import "./table.css";
 @custom-variant dark (&:where(.dark, .dark *));
 
+@font-face {
+  font-family: "Roboto";
+  src: url("@/assets/fonts/Roboto-Variable.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Quicksand";
+  src: url("@/assets/fonts/Quicksand-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  size-adjust: 92%;
+}
+
 @theme {
     --html-background: --alpha(var(--color-black) / 5%);
     --color-primary: var(--color-black);
@@ -26,7 +40,7 @@ html {
     --topbar-height: 60px;
     --border-color: rgba(0, 0, 0, 0.15);
     background: var(--html-background);
-    font-family: Arial, sans-serif;
+    font-family: "Roboto", "Quicksand", "IBM Plex Sans", "Libre Franklin", Helvetica, Arial, sans-serif;
     font-size: 14px;
     scroll-behavior: auto !important;
     overscroll-behavior: none;

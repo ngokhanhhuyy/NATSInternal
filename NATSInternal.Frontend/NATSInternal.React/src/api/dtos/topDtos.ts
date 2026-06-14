@@ -7,7 +7,9 @@ declare global {
     timeRangeUnitCount: number;
   }>;
 
-  type TopResponseDto<TBasicResponseDto, TMetric> = {
+  type TopResponseDto<TBasicResponseDto, TMetric> = TopItemResponseDto<TBasicResponseDto, TMetric>[];
+
+  type TopItemResponseDto<TBasicResponseDto, TMetric> = {
     item: TBasicResponseDto;
     metric: TMetric;
   };

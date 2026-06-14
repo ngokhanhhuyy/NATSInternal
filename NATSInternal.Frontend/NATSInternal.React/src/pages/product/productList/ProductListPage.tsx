@@ -10,6 +10,7 @@ import { loadProductListAsync, type ProductListDataLoaderResults } from "./dataL
 import ProductListResults from "@/pages/shared/list/productListResults";
 import FilterPanelChildren from "./FilterPanelChildren";
 import ListPage from "@/pages/shared/list/listPage/searchableList";
+import TopByCriterionPanel from "./TopByCriterionPanel";
 
 // Components.
 export default function ProductListPage(): React.ReactNode {
@@ -59,6 +60,19 @@ export default function ProductListPage(): React.ReactNode {
           model={model}
           onModelUpdated={(updatedData) => setModel(m => ({ ...m, ...updatedData }))}
         />
+      }
+      sideBarPanels={
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-3 h-fit">
+          <TopByCriterionPanel
+            getTopAsync={async (api, requestDto) => api.product.getTopBySoldQuantity(requestDto)}
+            criterion="SoldQuantity"
+          />
+          
+          <TopByCriterionPanel
+            getTopAsync={async (api, requestDto) => api.product.getTopByRevenue(requestDto)}
+            criterion="Revenue"
+          />
+        </div>
       }
       canCreate={metadata.creatingAuthorization.canCreateProduct}
     >

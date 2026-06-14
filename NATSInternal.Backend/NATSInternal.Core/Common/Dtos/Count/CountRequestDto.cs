@@ -2,10 +2,9 @@ using NATSInternal.Core.Common.Enums;
 
 namespace NATSInternal.Core.Common.Dtos;
 
-public class TopRequestDto : ITopAndCountRequestDto
+public class CountRequestDto : ITopAndCountRequestDto
 {
     #region Properties
-    public int ResultsCount { get; set; }
     public TopTimeRangeUnitType TimeRangeUnitType { get; set; }
     public int TimeRangeUnitCount { get; set; }
     #endregion

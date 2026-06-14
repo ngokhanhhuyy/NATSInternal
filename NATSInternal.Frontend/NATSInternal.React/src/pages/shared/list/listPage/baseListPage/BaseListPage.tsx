@@ -44,7 +44,7 @@ export default function IListModel<TListModel extends ListModel<TItemModel>, TIt
     <MainContainer className="gap-3">
       <div className={joinClassName(
         "grid grid-cols-1 gap-3",
-        props.sideBarPanels != null ? "xl:grid-cols-[1fr_25rem]" : null
+        props.sideBarPanels != null ? "lg:grid-cols-[1fr_20rem]" : null
       )}>
         <div className="flex flex-col items-stretch gap-3">
           <div className="panel">

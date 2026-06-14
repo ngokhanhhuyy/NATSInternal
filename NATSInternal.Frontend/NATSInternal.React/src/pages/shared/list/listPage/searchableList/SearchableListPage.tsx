@@ -70,19 +70,18 @@ export default function SearchableListPage<TListModel extends ListModel<TItemMod
 
           <button
             type="button"
-            className="btn shrink-0 border-s-transparent gap-1"
+            className="btn shrink-0 border-s-transparent gap-1 aspect-square"
             onClick={handleSearchBoxBlurredOrSearchButtonClicked}
           >
             <MagnifyingGlassIcon />
-            <span className="hidden sm:inline">Tìm kiếm</span>
           </button>
         </div>
 
-        {searchContentValidationMessage ? (
+        {searchContentValidationMessage && (
           <span className="field-validation-error">
             {searchContentValidationMessage}
           </span>
-        ) : <span>{searchContent}</span>}
+        )}
       </FormField>
     }/>
   );

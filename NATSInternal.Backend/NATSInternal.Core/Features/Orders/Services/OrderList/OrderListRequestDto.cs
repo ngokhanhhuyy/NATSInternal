@@ -9,6 +9,7 @@ public class OrderListRequestDto : IHasStatsListRequestDto
     public string SortByFieldName { get; set; } = nameof(FieldToSort.StatsDate);
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 15;
+    public OrderType? Type { get; set; }
     public int? CustomerId { get; set; }
     public int? ProductId { get; set; }
     public bool DebtOrdersOnly { get; set; }

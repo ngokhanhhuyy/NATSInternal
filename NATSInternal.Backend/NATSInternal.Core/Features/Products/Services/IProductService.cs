@@ -104,19 +104,19 @@ public interface IProductService
     /// The request containing the criterion, results count and time range information.
     /// </param>
     /// <returns>
-    /// A list of products those have their properties being on top based on sold quantity.
+    /// A response dto containing products with sold quantity.
     /// </returns>
-    Task<List<TopResponseDto<ProductBasicResponseDto, int>>> GetTopBySoldQuantity(TopRequestDto requestDto);
+    Task<TopResponseDto<ProductBasicResponseDto, int>> GetTopBySoldQuantity(TopRequestDto requestDto);
 
     /// <summary>
-    /// Get top products by profit over the last specified time range unit.
+    /// Get top products by revenue over the last specified time range unit.
     /// </summary>
     /// <param name="requestDto">
     /// The request containing the criterion, results count and time range information.
     /// </param>
     /// <returns>
-    /// A list of products those have their properties being on top based on profit.
+    /// A response dto containing products with revenue.
     /// </returns>
-    Task<List<TopResponseDto<ProductBasicResponseDto, long>>> GetTopByProfit(TopRequestDto requestDto);
+    Task<TopResponseDto<ProductBasicResponseDto, long>> GetTopByRevenue(TopRequestDto requestDto);
     #endregion
 }

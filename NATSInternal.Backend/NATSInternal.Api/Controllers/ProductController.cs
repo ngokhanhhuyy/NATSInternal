@@ -75,17 +75,17 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("topBySoldQuantity")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<TopResponseDto<ProductBasicResponseDto, int>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> TopBySoldQuantity([FromQuery] TopRequestDto requestDto)
     {
         return Ok(await _service.GetTopBySoldQuantity(requestDto));
     }
 
-    [HttpGet("topByProfit")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> TopByProfit([FromQuery] TopRequestDto requestDto)
+    [HttpGet("topByRevenue")]
+    [ProducesResponseType<TopResponseDto<ProductBasicResponseDto, long>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> TopByRevenue([FromQuery] TopRequestDto requestDto)
     {
-        return Ok(await _service.GetTopByProfit(requestDto));
+        return Ok(await _service.GetTopByRevenue(requestDto));
     }
     #endregion
 }

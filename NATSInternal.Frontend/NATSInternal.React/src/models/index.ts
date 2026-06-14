@@ -15,6 +15,8 @@ export * from "./orderProductItem/orderProductItemUpsertModel";
 export * from "./orderServiceItem/orderServiceItemDetailModel";
 export * from "./orderServiceItem/orderServiceItemUpsertModel";
 export * from "./photo/photoUpsertRequestDto";
+export * from "./top/topModel";
+export * from "./top/topItemModel";
 export * from "./shared/customerBasicModel";
 export * from "./shared/productBasicModel";
 export * from "./shared/productCategoryBasicModel";

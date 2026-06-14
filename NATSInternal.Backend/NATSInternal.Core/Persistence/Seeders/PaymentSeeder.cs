@@ -9,6 +9,7 @@ internal class PaymentSeeder
 {
     #region Fields
     private readonly AppDbContext _context;
+    private readonly Random _random = new();
     private readonly ILogger<OrderSeeder> _logger;
     #endregion
     
@@ -24,6 +25,13 @@ internal class PaymentSeeder
     public async Task SeedSinglePaymentAsync(Order order)
     {
         _logger.LogInformation($"Seeding payment at dateTime {order.CreatedDateTime:o}.");
+
+        int debtAndRefundChance = _random.Next(0, 50);
+        long amount;
+        if (debtAndRefundChance <= 8)
+        {
+            amount = order.AmountAfterVat - Math.Ceiling()
+        }
 
         Payment payment = new()
         {

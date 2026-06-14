@@ -57,7 +57,7 @@ internal class SupplySeeder
             int quantity;
             if (product.ResupplyThresholdQuantity > 0)
             {
-                quantity = product.ResupplyThresholdQuantity * _random.Next(2, 5);
+                quantity = product.ResupplyThresholdQuantity * _random.Next(2, 3);
             }
             else
             {

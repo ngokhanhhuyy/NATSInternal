@@ -36,6 +36,7 @@ internal class OrderEntityConfiguration : IEntityTypeConfiguration<Order>
         entityBuilder.HasIndex(o => o.StatsDate);
         entityBuilder.HasIndex(o => o.CreatedDateTime);
         entityBuilder.HasIndex(o => o.LastUpdatedDateTime);
+        entityBuilder.HasIndex(o => o.Type);
 
         // RowVersion.
         entityBuilder.Property<byte[]?>("RowVersion").IsRowVersion();

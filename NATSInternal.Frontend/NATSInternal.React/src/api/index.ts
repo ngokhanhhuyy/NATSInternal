@@ -7,7 +7,7 @@ import { orderApi, type OrderApi } from "./orderApi";
 import { userApi, type UserApi } from "./userApi";
 import { metadataApi, type MetadataApi } from "./metadataApi";
 
-interface IApi {
+export interface IApi {
   authentication: AuthenticationApi;
   customer: CustomerApi;
   product: ProductApi;
