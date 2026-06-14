@@ -7,7 +7,6 @@ import OrderItem from "./OrderItem";
 type ResultsPanelProps = {
   model: OrderListModel;
   hideIcon?: boolean;
-  hideCustomer?: boolean;
 };
 
 // Components.
@@ -19,7 +18,6 @@ export default function OrderList(props: ResultsPanelProps): React.ReactNode {
         <OrderItem
           model={order}
           hideIcon={props.hideIcon}
-          hideCustomer={props.hideCustomer}
           key={index}
         />
       )) : (

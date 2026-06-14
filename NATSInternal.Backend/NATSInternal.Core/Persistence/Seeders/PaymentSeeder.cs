@@ -26,23 +26,29 @@ internal class PaymentSeeder
     {
         _logger.LogInformation($"Seeding payment at dateTime {order.CreatedDateTime:o}.");
 
-        int debtAndRefundChance = _random.Next(0, 50);
-        long amount;
-        if (debtAndRefundChance <= 8)
+        int debtAndRefundChance = _random.Next(0, 200);
+        long amount = order.AmountAfterVat;
+        if (debtAndRefundChance < 4)
         {
-            amount = order.AmountAfterVat - Math.Ceiling()
+            amount -= (long)Math.Ceiling(amount * 0.1M / 1000M) * 1000;
+        }
+        else if (debtAndRefundChance == 199)
+        {
+            amount += (long)Math.Ceiling(amount * 0.15M / 1000M) * 1000;
         }
 
         Payment payment = new()
         {
             StatsDate = order.StatsDate,
             Type = PaymentType.OrderPayment,
-            Amount = order.AmountAfterVat,
+            Amount = amount,
             CustomerId = order.CustomerId,
             OrderId = order.Id,
             CreatedDateTime = order.CreatedDateTime,
             CreatedUserId = order.CreatedUserId,
         };
+
+        order.Customer.CachedDebtAmount += order.AmountAfterVat - payment.Amount;
 
         _context.Payments.Add(payment);
 

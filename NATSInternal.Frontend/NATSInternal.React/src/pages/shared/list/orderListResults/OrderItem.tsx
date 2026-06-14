@@ -12,7 +12,6 @@ import { CheckCircleIcon, ExclamationTriangleIcon } from "@heroicons/react/24/ou
 type OrderItemProps = {
   model: OrderBasicModel;
   hideIcon?: boolean;
-  hideCustomer?: boolean;
 };
 
 // Components.
@@ -90,12 +89,10 @@ export default function OrderItem(props: OrderItemProps): React.ReactNode {
               <span className="opacity-50">{props.model.displayStatsDate}</span>
             </div>
             
-            {!props.hideCustomer && (
-              <div className="flex items-center gap-1">
-                <UserIcon className="size-5 opacity-50" />
-                {customerLink}
-              </div>
-            )}
+            <div className="flex items-center gap-1">
+              <UserIcon className="size-5 opacity-50" />
+              {customerLink}
+            </div>
           </div>
         </div>
       </div>
