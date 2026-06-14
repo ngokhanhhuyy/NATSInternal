@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useTransition } from "react";
-import { useLoaderData, Link } from "react-router";
-import { useRerendingTrigger } from "@/hooks";
+import { useLoaderData } from "react-router";
+import { useInitialRendering } from "@/hooks";
 import { metadata } from "@/metadata";
 import { loadDataAsync } from "./dataLoader";
 
@@ -15,8 +15,8 @@ export default function OrderListPage(): React.ReactNode {
   
   // States.
   const [model, setModel] = useState(() => initialModel);
-  const [renderingKey, triggerRendering] = useRerendingTrigger(reload);
   const [isReloading, startTransition] = useTransition();
+  const isInitialRendering = useInitialRendering();
   
   // Callbacks.
   function reload(): void {
@@ -31,21 +31,14 @@ export default function OrderListPage(): React.ReactNode {
     setModel(m => ({ ...m, ...updatedData }));
   }, []);
 
-  const handlePaginatorPageChanged = useCallback((page: number) => {
-    setModel(m => ({ ...m, page }));
-    triggerRendering();
-  }, []);
-
   // Effect.
   useEffect(() => {
+    if (isInitialRendering) {
+      return;
+    }
+    
     reload();
-  }, [
-    model.sortByAscending,
-    model.sortByFieldName,
-    model.page,
-    model.resultsPerPage,
-    model.statsMonthYear,
-    renderingKey]);
+  }, [model.sortByAscending, model.sortByFieldName, model.page, model.resultsPerPage, model.statsMonthYear]);
 
   // Template.
   return (
@@ -54,24 +47,9 @@ export default function OrderListPage(): React.ReactNode {
       model={model}
       onModelUpdated={handleModelUpdated}
       isReloading={isReloading}
-      onPaginatorPageChanged={handlePaginatorPageChanged}
-      onReloadingRequested={triggerRendering}
       canCreate={metadata.creatingAuthorization.canCreateOrder}
     >
-      <OrderListResults
-        model={model}
-        renderItem={(order) => (
-          <div className="flex flex-col items-end">
-            <Link className="text-blue-700 dark:text-blue-400" to={order.customer.detailRoutePath}>
-              {order.customer.fullName}
-            </Link>
-
-            <span className="opacity-50 text-sm">
-              {order.customer.nickName}
-            </span>
-          </div>
-        )}
-      />
+      <OrderListResults model={model} />
     </HasStatsListPage>
   );
 }

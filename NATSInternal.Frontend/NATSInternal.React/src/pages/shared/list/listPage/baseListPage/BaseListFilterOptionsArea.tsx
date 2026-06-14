@@ -14,7 +14,6 @@ type BaseListFilterOptionsAreaProps<
     TItemModel extends object> = {
   model: TListModel;
   onModelUpdated(updatedData: Partial<TListModel>): any;
-  onReloadButtonClicked(): any;
   children?: React.ReactNode | React.ReactNode[];
   displayName: string | null;
 };
@@ -30,9 +29,9 @@ function BaseListFilterOptionsArea<
   // Computed.
   const sortByFieldNameOptions = useMemo<SelectInputOption[]>(() => {
     return props.model.sortByFieldNameOptions.map((fieldName) => ({
-        value: fieldName,
-        displayName: getDisplayName(fieldName) ?? fieldName
-      }));
+      value: fieldName,
+      displayName: getDisplayName(fieldName) ?? fieldName
+    }));
   }, []);
 
   // Template.

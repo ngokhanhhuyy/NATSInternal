@@ -27,7 +27,7 @@
         gap: --spacing(1.5);
         justify-content: center;
         align-items: center;
-        /* box-shadow: var(--shadow-xs); */
+        box-shadow: var(--shadow-xs);
 
         &:hover {
             background-color: var(--btn-background-color-hover);
@@ -46,6 +46,8 @@
                 --btn-border-color: --alpha(var(--color-white) / 15%);
 
                 --btn-background-color-hover: --alpha(var(--color-white) / 10%);
+
+                box-shadow: none;
             }
         }
 

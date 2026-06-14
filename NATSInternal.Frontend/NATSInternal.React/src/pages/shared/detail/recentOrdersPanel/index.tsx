@@ -73,7 +73,7 @@ export default function RecentOrdersPanel(props: RecentOrdersPanelProps): React.
       );
     }
 
-    return <OrderListResults model={listModel} />;
+    return <OrderListResults model={listModel} hideCustomer={props.customerModel != null} />;
   };
 
   return (

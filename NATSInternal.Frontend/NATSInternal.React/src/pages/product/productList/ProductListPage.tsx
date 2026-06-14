@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useTransition } from "react";
 import { useLoaderData, Link } from "react-router";
-import { useRerendingTrigger } from "@/hooks";
+import { useInitialRendering, useRequestHandlerQueue } from "@/hooks";
 import { metadata } from "@/metadata";
 import { getProductCategoryListRoutePath } from "@/helpers";
 import { TagIcon } from "@heroicons/react/24/outline";
@@ -18,31 +18,26 @@ export default function ProductListPage(): React.ReactNode {
 
   // States.
   const [model, setModel] = useState(() => initialModel.model);
-  const [renderingKey, triggerRerender] = useRerendingTrigger(reload);
   const [isReloading, startTransition] = useTransition();
+  const isInitialRendering = useInitialRendering();
+  const reloadAsync = useRequestHandlerQueue(async () => await loadProductListAsync(model), (reloadedModel) => {
+    setModel(reloadedModel);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
 
   // Callbacks.
-  function reload(): void {
-    startTransition(async () => {
-      const reloadedModel = await loadProductListAsync(model);
-      setModel(reloadedModel);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-  }
-  
   const handleModelUpdated = useCallback((updatedData: Partial<ProductListModel>) => {
     setModel(m => ({ ...m, ...updatedData }));
   }, []);
 
-  const handlePaginatorPageChanged = useCallback((page: number) => {
-    setModel(m => ({ ...m, page }));
-    triggerRerender();
-  }, []);
-
   // Effect.
   useEffect(() => {
-    reload();
-  }, [model.sortByAscending, model.sortByFieldName, model.page, model.resultsPerPage, renderingKey]);
+    if (isInitialRendering) {
+      return;
+    }
+    
+    startTransition(reloadAsync);
+  }, [model.sortByAscending, model.sortByFieldName, model.searchContent, model.page, model.resultsPerPage]);
 
   // Template.
   return (
@@ -51,8 +46,6 @@ export default function ProductListPage(): React.ReactNode {
       model={model}
       onModelUpdated={handleModelUpdated}
       isReloading={isReloading}
-      onPaginatorPageChanged={handlePaginatorPageChanged}
-      onReloadingRequested={triggerRerender}
       linkButtons={
         <div className="flex justify-end">
           <Link className="btn" to={getProductCategoryListRoutePath()}>

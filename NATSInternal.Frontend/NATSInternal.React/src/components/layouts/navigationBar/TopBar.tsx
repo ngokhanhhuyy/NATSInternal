@@ -5,7 +5,7 @@ import { joinClassName } from "@/helpers";
 // Child component.
 import MainLogo from "./MainLogo";
 import { Button } from "@/components/ui";
-import { Bars4Icon, MoonIcon, SunIcon, Cog6ToothIcon } from "@heroicons/react/24/solid";
+import { Bars4Icon, MoonIcon, SunIcon } from "@heroicons/react/24/solid";
 
 // Props.
 type TopBarProps = {
@@ -63,7 +63,7 @@ function ThemeToggleButton(): React.ReactNode {
   // Template.
   let icon: React.ReactNode;
   if (themeStore.auto) {
-    icon = <Cog6ToothIcon className="size-4.5" />;
+    icon = <span className="text-xl">A</span>;
   } else if (themeStore.theme === "light") {
     icon = <SunIcon className="size-5" />;
   } else {

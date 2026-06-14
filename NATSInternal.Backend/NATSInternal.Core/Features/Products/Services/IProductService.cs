@@ -1,3 +1,5 @@
+using NATSInternal.Core.Common.Dtos;
+
 namespace NATSInternal.Core.Features.Products;
 
 /// <summary>
@@ -15,7 +17,9 @@ public interface IProductService
     /// A task representing the asynchronous operation, containing the product
     /// list response with items, total count, and page count.
     /// </returns>
-    /// <exception cref="ValidationException">Thrown when the requestDto fails validation.</exception>
+    /// <exception cref="FluentValidation.ValidationException">
+    /// Thrown when the requestDto fails validation.
+    /// </exception>
     /// <exception cref="ArgumentException">Thrown when an invalid sort field is specified.</exception>
     Task<ProductListResponseDto> GetListAsync(ProductListRequestDto requestDto);
 
@@ -24,7 +28,7 @@ public interface IProductService
     /// </summary>
     /// <param name="id">The unique identifier of the product to retrieve.</param>
     /// <returns>A task representing the asynchronous operation, containing the product detail response.</returns>
-    /// <exception cref="NotFoundException">
+    /// <exception cref="Common.Exceptions.NotFoundException">
     /// Thrown when the product with the specified id is not found or has been deleted.
     /// </exception>
     Task<ProductDetailResponseDto> GetDetailAsync(int id);
@@ -36,17 +40,17 @@ public interface IProductService
     /// <returns>
     /// A task representing the asynchronous operation, containing the id of the newly created product.
     /// </returns>
-    /// <exception cref="AuthorizationException">
+    /// <exception cref="Common.Exceptions.AuthorizationException">
     /// Thrown when the current user does not have permission to create products.
     /// </exception>
-    /// <exception cref="ValidationException">Thrown when the requestDto fails validation.</exception>
-    /// <exception cref="OperationException">
+    /// <exception cref="Common.Exceptions.ValidationException">Thrown when the requestDto fails validation.</exception>
+    /// <exception cref="Common.Exceptions.OperationException">
     /// Thrown when one or more category IDs do not exist in the system.
     /// </exception>
-    /// <exception cref="ConcurrencyException">
+    /// <exception cref="Common.Exceptions.ConcurrencyException">
     /// Thrown when a foreign key constraint violation occurs during save.
     /// </exception>
-    /// <exception cref="OperationException">
+    /// <exception cref="Common.Exceptions.OperationException">
     /// Thrown when a product with the same name already exists (unique constraint violation).
     /// </exception>
     Task<int> CreateAsync(ProductCreateRequestDto requestDto);
@@ -57,20 +61,22 @@ public interface IProductService
     /// <param name="id">The unique identifier of the product to update.</param>
     /// <param name="requestDto">The request containing the product update data.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    /// <exception cref="ValidationException">Thrown when the requestDto fails validation.</exception>
-    /// <exception cref="NotFoundException">
+    /// <exception cref="FluentValidation.ValidationException">
+    /// Thrown when the requestDto fails validation.
+    /// </exception>
+    /// <exception cref="Common.Exceptions.NotFoundException">
     /// Thrown when the product with the specified id is not found or has been deleted.
     /// </exception>
-    /// <exception cref="AuthorizationException">
+    /// <exception cref="Common.Exceptions.AuthorizationException">
     /// Thrown when the current user does not have permission to edit the product.
     /// </exception>
-    /// <exception cref="OperationException">
+    /// <exception cref="Common.Exceptions.OperationException">
     /// Thrown when one or more category IDs do not exist in the system.
     /// </exception>
-    /// <exception cref="ConcurrencyException">
+    /// <exception cref="Common.Exceptions.ConcurrencyException">
     /// Thrown when a concurrency conflict or foreign key constraint violation occurs during save.
     /// </exception>
-    /// <exception cref="OperationException">
+    /// <exception cref="Common.Exceptions.OperationException">
     /// Thrown when attempting to set a duplicate product name (unique constraint violation).
     /// </exception>
     Task UpdateAsync(int id, ProductUpdateRequestDto requestDto);
@@ -80,15 +86,37 @@ public interface IProductService
     /// </summary>
     /// <param name="id">The unique identifier of the product to delete.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    /// <exception cref="NotFoundException">
+    /// <exception cref="Common.Exceptions.NotFoundException">
     /// Thrown when the product with the specified id is not found or has been deleted.
     /// </exception>
-    /// <exception cref="AuthorizationException">
+    /// <exception cref="Common.Exceptions.AuthorizationException">
     /// Thrown when the current user does not have permission to delete the product.
     /// </exception>
-    /// <exception cref="ConcurrencyException">
+    /// <exception cref="Common.Exceptions.ConcurrencyException">
     /// Thrown when a concurrency conflict or foreign key constraint violation occurs during save.
     /// </exception>
     Task DeleteAsync(int id);
+
+    /// <summary>
+    /// Get top products by sold quantity over the last specified time range unit.
+    /// </summary>
+    /// <param name="requestDto">
+    /// The request containing the criterion, results count and time range information.
+    /// </param>
+    /// <returns>
+    /// A list of products those have their properties being on top based on sold quantity.
+    /// </returns>
+    Task<List<TopResponseDto<ProductBasicResponseDto, int>>> GetTopBySoldQuantity(TopRequestDto requestDto);
+
+    /// <summary>
+    /// Get top products by profit over the last specified time range unit.
+    /// </summary>
+    /// <param name="requestDto">
+    /// The request containing the criterion, results count and time range information.
+    /// </param>
+    /// <returns>
+    /// A list of products those have their properties being on top based on profit.
+    /// </returns>
+    Task<List<TopResponseDto<ProductBasicResponseDto, long>>> GetTopByProfit(TopRequestDto requestDto);
     #endregion
 }

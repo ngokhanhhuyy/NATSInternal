@@ -105,6 +105,20 @@ Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
+# @name ProductTopBySoldQuantity
+// @no-log
+GET {{host}}/products/topBySoldQuantity?resultsCount=5&timeRangeUnitType=day&timeRangeUnitCount=7
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
+# @name ProductTopByProfit
+// @no-log
+GET {{host}}/products/topByProfit?resultsCount=5&timeRangeUnitType=day&timeRangeUnitCount=7
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
 # @name ProductCategoryAll
 GET {{host}}/products/categories
 Content-Type: application/json

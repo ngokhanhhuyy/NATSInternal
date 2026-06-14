@@ -8,7 +8,7 @@ declare global {
     type: OrderType;
     statsDate: string;
     amountAfterVat: number;
-    isDebtOrder: boolean;
+    debtAmount: number;
     customer: CustomerBasicModel;
     thumbnailUrl: string | null;
     authorization: OrderExistingAuthorizationResponseDto | null;
@@ -25,7 +25,7 @@ export function createOrderBasicModel(responseDto: OrderBasicResponseDto): Order
     type: responseDto.type,
     statsDate: responseDto.statsDate,
     amountAfterVat: responseDto.amountAfterVat,
-    isDebtOrder: responseDto.isDebtOrder,
+    debtAmount: responseDto.debtAmount,
     customer: createCustomerBasicModel(responseDto.customer),
     thumbnailUrl: responseDto.thumbnailUrl,
     authorization: responseDto.authorization,

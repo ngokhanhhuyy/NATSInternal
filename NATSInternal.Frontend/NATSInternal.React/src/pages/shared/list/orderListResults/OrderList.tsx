@@ -6,7 +6,8 @@ import OrderItem from "./OrderItem";
 // Props.
 type ResultsPanelProps = {
   model: OrderListModel;
-  renderItem?(model: OrderBasicModel): React.ReactNode;
+  hideIcon?: boolean;
+  hideCustomer?: boolean;
 };
 
 // Components.
@@ -15,9 +16,12 @@ export default function OrderList(props: ResultsPanelProps): React.ReactNode {
   return (
     <ul className="list-group list-group-flush">
       {props.model.items.length > 0 ? props.model.items.map((order, index) => (
-        <OrderItem model={order}  key={index}>
-          {props.renderItem?.(order)}
-        </OrderItem>
+        <OrderItem
+          model={order}
+          hideIcon={props.hideIcon}
+          hideCustomer={props.hideCustomer}
+          key={index}
+        />
       )) : (
         <li className="list-group-item opacity-50 px-3 py-10">
           Không có kết quả

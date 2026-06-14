@@ -19,8 +19,6 @@ export type BaseListPageProps<TListModel extends ListModel<TItemModel>, TItemMod
   onModelUpdated: (updatedData: Partial<TListModel>) => any;
   isReloading: boolean;
   children: React.ReactNode;
-  onPaginatorPageChanged: (page: number) => any;
-  onReloadingRequested: () => any;
   linkButtons?: React.ReactNode | React.ReactNode[];
   filterPanelChildren?: React.ReactNode | React.ReactNode[];
   sideBarPanels?: React.ReactNode | React.ReactNode[];
@@ -61,7 +59,6 @@ export default function IListModel<TListModel extends ListModel<TItemModel>, TIt
                 model={props.model}
                 onModelUpdated={props.onModelUpdated}
                 displayName={displayName}
-                onReloadButtonClicked={props.onReloadingRequested}
               >
                 {props.filterPanelChildren}
               </FilterOptionsArea>
@@ -86,7 +83,7 @@ export default function IListModel<TListModel extends ListModel<TItemModel>, TIt
                   <Paginator
                     page={props.model.page}
                     pageCount={props.model.pageCount}
-                    onPageChanged={props.onPaginatorPageChanged}
+                    onPageChanged={(page) => props.onModelUpdated({ page } as Partial<TListModel>)}
                     getPageButtonClassName={(_, isActive) => isActive ? "btn-primary" : undefined}
                   />
                 )}

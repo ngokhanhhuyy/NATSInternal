@@ -48,9 +48,9 @@ export default function BaseModal(props: BaseModalProps) {
       ref={elementRef}
       id="customer-introducer-picker-modal"
       className={joinClassName(
-        "bg-black/75 w-screen h-screen flex justify-center items-center z-1 contain-[layout-paint]",
-        "fixed top-0 left-0 transition-colors will-change-[background] transform-gpu ease-in-out",
-        props.isOpen ? "bg-black/75 " : "bg-transparent pointer-events-none"
+        "bg-black/75 w-screen h-screen flex justify-center items-center z-1000 contain-[layout-paint] duration-100",
+        "fixed top-0 left-0 transition-all will-change-[background] transform-gpu ease-in-out",
+        props.isOpen ? "opacity-100 backdrop-blur-md" : "opacity-0 backdrop-blur-none pointer-events-none"
       )}
       onTransitionEnd={handleTransitionEnd}
       onKeyDown={handleKeyDown}
@@ -58,7 +58,6 @@ export default function BaseModal(props: BaseModalProps) {
       <div className={joinClassName(
         "bg-white dark:bg-neutral-900 will-change-[transform_opacity] transform-gpu",
         "rounded-xl shadow max-w-sm w-full mx-3 sm:mx-auto transition-[opacity_transform]",
-        props.isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10",
         props.modalClassName
       )}>
         {/* Header */}

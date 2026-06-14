@@ -153,6 +153,8 @@ public static class DisplayNames
     public const string StockingQuantity = "Số lượng trong kho";
     public const string ResupplyThresholdQuantity = "Số lượng ngưỡng cảnh báo hết hàng";
     public const string Default = "Mặc định";
+    public const string TimeRangeUnitType = "Kiểu đơn vị khung thời gian";
+    public const string TimeRangeUnitCount = "Số lượng đơn vị khung thời gian";
     #endregion
 
     #region StaticConstructors

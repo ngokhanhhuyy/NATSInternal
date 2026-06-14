@@ -142,15 +142,22 @@ export function getDisplayTimeString(responseDtoValue: string): string {
  * 
  * @param responseDtoValue A date ISO string in response DTOs retrieved from server.
  * @returns A date string for displaying.
- * @example "1997-08-30" => "30-08-1997"
+ * @example "1997-08-30" => "30-08-1997" (options.shortFormat = true)
+ * @example "1997-08-30" => "Ngày 30 tháng 08 năm 1997" (options = undefined || options.shortFormat = false)
  */
-export function getDisplayDateString(responseDtoValue: string): string {
+export function getDisplayDateString(responseDtoValue: string, options?: { shortFormat: false }): string {
   const date = new Date(responseDtoValue);
-  const [day, month, year] = [
+  const dateElements = [
     date.getDate().toString().padStart(2, "0"),
     (date.getMonth() + 1).toString(),
     date.getFullYear().toString().padStart(4, "0")
-  ];
+  ] as const;
+
+  if (options?.shortFormat) {
+    return dateElements.join("-");
+  }
+
+  const [day, month, year] = dateElements;
   return `Ngày ${day} tháng ${month} ${year}`;
 }
 

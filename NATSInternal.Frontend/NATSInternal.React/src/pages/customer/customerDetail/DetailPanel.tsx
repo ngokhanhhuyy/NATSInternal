@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router";
-import { compute, joinClassName } from "@/helpers";
+import { compute, joinClassName, getTextClassNameBasedOnDebtAmount } from "@/helpers";
 
 // Child components
 import { Field, FieldContainer } from "@/pages/shared/detail";
@@ -109,7 +109,7 @@ export default function DetailPanel(props: CustomerDetailProps): React.ReactNode
           <FieldContainer className={areaClassName}>
             {/* CreatedUser */}
             <Field name="createdUser">
-                {renderUser(props.model.createdUser)}
+              {renderUser(props.model.createdUser)}
             </Field>
   
             {/* CreatedDateTime */}
@@ -147,7 +147,9 @@ export default function DetailPanel(props: CustomerDetailProps): React.ReactNode
           
           <FieldContainer className={areaClassName}>
             <Field name="debtRemainingAmount">
-              {props.model.displayDebtRemainingAmountText}
+              <span className={getTextClassNameBasedOnDebtAmount(props.model.debtAmount)}>
+                {props.model.displayDebtAmountText}
+              </span>
             </Field>
           </FieldContainer>
         </div>

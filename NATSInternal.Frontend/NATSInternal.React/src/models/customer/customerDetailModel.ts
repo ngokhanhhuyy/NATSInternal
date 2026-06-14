@@ -29,7 +29,7 @@ declare global {
     introducer: CustomerBasicModel | null;
     authorization: CustomerExistingAuthorizationResponseDto;
     get avatarUrl(): string;
-    get displayDebtRemainingAmountText(): string;
+    get displayDebtAmountText(): string;
     get updateRoutePath(): string;
   }>;
 }
@@ -52,7 +52,7 @@ export function createCustomerDetailModel(responseDto: CustomerDetailResponseDto
     get avatarUrl(): string {
       return getDefaultAvatarUrlByFullName(this.fullName);
     },
-    get displayDebtRemainingAmountText(): string{
+    get displayDebtAmountText(): string{
       return getDisplayAmountText(this.debtAmount, { suffix: " vnđ" });
     },
     get updateRoutePath(): string {

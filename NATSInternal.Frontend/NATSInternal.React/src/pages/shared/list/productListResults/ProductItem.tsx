@@ -36,7 +36,7 @@ export default function ProductItem(props: ProductItemProps): React.ReactNode {
   });
 
   // Template.
-  const Icon = () => {
+  const renderIcon = () => {
     if (props.model.stockingQuantity === 0) {
       return <ExclamationCircleIcon className="text-red-600 dark:text-red-400 size-6" />;
     }
@@ -57,9 +57,7 @@ export default function ProductItem(props: ProductItemProps): React.ReactNode {
       "list-group-item grid items-center gap-3 px-3 py-1.5",
       !props.hideStatusIcon ? "grid-cols-[auto_auto_1fr_auto]" : "grid-cols-[auto_1fr_auto] ps-2"
     )}>
-      {!props.hideStatusIcon && (
-        <Icon />
-      )}
+      {!props.hideStatusIcon && renderIcon()}
 
       {props.model.thumbnailUrl ? (
         <img src={props.model.thumbnailUrl} className="img-thumbnail size-12" alt={props.model.name} />

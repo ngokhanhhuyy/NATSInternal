@@ -18,7 +18,7 @@ internal class SupplyItemEntityConfiguration : IEntityTypeConfiguration<SupplyIt
 
         entityBuilder
             .HasOne(si => si.Product)
-            .WithMany()
+            .WithMany(p => p.SupplyItems)
             .HasForeignKey(si => si.ProductId)
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();

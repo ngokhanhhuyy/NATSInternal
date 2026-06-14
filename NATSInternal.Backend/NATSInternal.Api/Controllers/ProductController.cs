@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NATSInternal.Core.Common.Dtos;
 using NATSInternal.Core.Features.Products;
 
 namespace NATSInternal.Api.Controllers;
@@ -71,6 +72,20 @@ public class ProductController : ControllerBase
     {
         await _service.DeleteAsync(id);
         return Ok();
+    }
+
+    [HttpGet("topBySoldQuantity")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> TopBySoldQuantity([FromQuery] TopRequestDto requestDto)
+    {
+        return Ok(await _service.GetTopBySoldQuantity(requestDto));
+    }
+
+    [HttpGet("topByProfit")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> TopByProfit([FromQuery] TopRequestDto requestDto)
+    {
+        return Ok(await _service.GetTopByProfit(requestDto));
     }
     #endregion
 }

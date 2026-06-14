@@ -16,6 +16,13 @@ internal class OrderProductItemEntityConfiguration : IEntityTypeConfiguration<Or
             .HasForeignKey(opi => opi.OrderId)
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
+        
+        entityBuilder
+            .HasOne(opi => opi.Product)
+            .WithMany(opi => opi.OrderProductItems)
+            .HasForeignKey(opi => opi.ProductId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired();
 
         // Indexes.
         entityBuilder.HasIndex(opi => new { opi.OrderId, opi.ProductId }).IsUnique();

@@ -1,5 +1,6 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider, useRouteError, Navigate } from "react-router";
+import { useAuthenticationStore } from "@/stores";
 import { AuthenticationError } from "@/api";
 import { getSignInRoutePath, getDashboardRoutePath } from "@/helpers";
 
@@ -17,9 +18,12 @@ import { orderRoutes } from "./orderRoutes";
 function AuthenticationErrorBoundary(): React.ReactNode | null {
   // Dependencies.
   const error = useRouteError();
+  const setIsAutheticated = useAuthenticationStore(store => store.setIsAuthenticated);
 
   // Template.
   if (error instanceof AuthenticationError) {
+    console.log(true);
+    setIsAutheticated(false);
     return <Navigate to={getSignInRoutePath()} />;
   }
 

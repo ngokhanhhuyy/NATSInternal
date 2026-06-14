@@ -60,13 +60,15 @@ export default function MainPageLayout(): React.ReactNode {
       )}
     >
       {/* The bar on top the current page, containing breadcrumb */}
-      <div id="breadcrumb">
-        <Breadcrumb />
-      </div>
+      <div id="breadcrumb-container">
+        <div id="breadcrumb">
+          <Breadcrumb />
+        </div>
 
-      <div id="page-title-container">
-        <span className="text-2xl">{matchedRouteHandle?.pageTitle}</span>
-        <span className="text-md opacity-50">{matchedRouteHandle?.description}</span>
+        <div id="page-title-container">
+          <span className="text-2xl">{matchedRouteHandle?.pageTitle}</span>
+          <span className="text-md opacity-50">{matchedRouteHandle?.description}</span>
+        </div>
       </div>
 
       {/* Page */}

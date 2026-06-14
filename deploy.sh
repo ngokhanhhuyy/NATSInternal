@@ -16,6 +16,7 @@ echo "Built frontend files"
 
 # Move built files to backend's public folder.
 mv ./dist/* ../../NATSInternal.Backend/NATSInternal.Api/wwwroot/
+rm -rf ./dist
 echo "Moved frontend's built files to backend's public folder"
 
 echo "Finished!"

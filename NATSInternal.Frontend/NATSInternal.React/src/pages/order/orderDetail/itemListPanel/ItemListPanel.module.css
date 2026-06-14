@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 .data-table :global(th),
 .data-table :global(tr.summary),
 .data-table :global(tr:not(.summary)) :global(td:not(:nth-child(2))) {

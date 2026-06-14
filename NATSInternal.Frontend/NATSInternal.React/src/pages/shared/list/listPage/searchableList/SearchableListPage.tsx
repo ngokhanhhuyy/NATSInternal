@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { compute, joinClassName } from "@/helpers";
 
 // Child components.
@@ -16,12 +16,13 @@ export default function SearchableListPage<TListModel extends ListModel<TItemMod
   (props: SearchableListPageProps<TListModel, TItemModel>): React.ReactNode
 {
   // States.
-  const previousSearchContent = useRef<string>(props.model.searchContent);
+  const [searchContent, setSearchContent] = useState<string>(props.model.searchContent);
+  const previousSearchContent = useRef<string>(searchContent);
 
   // Computed.
   const searchContentValidationMessage = compute<string | undefined>(() => {
-    const searchContent = props.model.searchContent.trim();
-    if (searchContent.length === 1) {
+    const trimmedSearchContent = searchContent.trim();
+    if (trimmedSearchContent.length === 1) {
       return "Nội dung tìm kiếm phải chứa ít nhất 2 ký tự";
     }
   });
@@ -32,20 +33,25 @@ export default function SearchableListPage<TListModel extends ListModel<TItemMod
       return;
     }
 
-    if (props.model.searchContent === previousSearchContent.current) {
+    if (searchContent === previousSearchContent.current) {
       return;
     }
 
-    props.onReloadingRequested();
-    previousSearchContent.current = props.model.searchContent;
+    props.onModelUpdated({ searchContent } as Partial<TListModel>);
+    previousSearchContent.current = searchContent;
   }
 
-  function handleSearchBoxBlurred(): void {
-    if (props.model.searchContent !== previousSearchContent.current) {
-      props.onReloadingRequested();
-      previousSearchContent.current = props.model.searchContent;
+  function handleSearchBoxBlurredOrSearchButtonClicked(): void {
+    if (searchContent !== previousSearchContent.current) {
+      props.onModelUpdated({ searchContent } as Partial<TListModel>);
+      previousSearchContent.current = searchContent;
     }
   }
+
+  // Effect.
+  useEffect(() => {
+    setSearchContent(props.model.searchContent);
+  }, [props.model.searchContent]);
 
   // Template.
   return (
@@ -56,27 +62,27 @@ export default function SearchableListPage<TListModel extends ListModel<TItemMod
             className={joinClassName("z-1 min-w-65", searchContentValidationMessage && "is-invalid")}
             placeholder="Tìm kiếm"
             autoComplete="off"
-            value={props.model.searchContent}
-            onValueChanged={(searchContent) => props.onModelUpdated({ searchContent } as Partial<TListModel>)}
+            value={searchContent}
+            onValueChanged={setSearchContent}
             onKeyDown={handleSearchBoxKeyDown}
-            onBlur={handleSearchBoxBlurred}
+            onBlur={handleSearchBoxBlurredOrSearchButtonClicked}
           />
 
           <button
             type="button"
             className="btn shrink-0 border-s-transparent gap-1"
-            onClick={props.onReloadingRequested}
+            onClick={handleSearchBoxBlurredOrSearchButtonClicked}
           >
             <MagnifyingGlassIcon />
             <span className="hidden sm:inline">Tìm kiếm</span>
           </button>
         </div>
 
-        {searchContentValidationMessage && (
+        {searchContentValidationMessage ? (
           <span className="field-validation-error">
             {searchContentValidationMessage}
           </span>
-        )}
+        ) : <span>{searchContent}</span>}
       </FormField>
     }/>
   );

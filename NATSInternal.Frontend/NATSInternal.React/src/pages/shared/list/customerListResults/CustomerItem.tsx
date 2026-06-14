@@ -4,6 +4,7 @@ import { joinClassName, compute } from "@/helpers";
 
 // Child components.
 import { NewTabWebsiteLink } from "@/components/ui";
+import DebtAlert from "@/pages/shared/alerts/DebtAlert";
 import { UserIcon } from "@heroicons/react/24/outline";
 
 // Props.
@@ -30,12 +31,6 @@ export default function CustomerItem(props: CustomerItemProps): React.ReactNode 
     return names.join(" ");
   });
 
-  const debtAlertClassName = joinClassName(
-    "alert alert-sm font-bold",
-    props.model.debtAmount > 0 && "alert-yellow-outline dark:alert-yellow" ,
-    props.model.debtAmount < 0 && "alert-red-outline dark:alert-red"
-  );
-
   // Template.
   return (
     <li className={joinClassName("list-group-item items-center p-2", props.className)}>
@@ -59,12 +54,7 @@ export default function CustomerItem(props: CustomerItemProps): React.ReactNode 
               </Link>
             )}
 
-            {props.model.debtAmount !== 0 && (
-              <span className={debtAlertClassName}>
-                {props.model.debtAmount > 0 && "Nợ"}
-                {props.model.debtAmount < 0 && "Cần hoàn tiền"}
-              </span>
-            )}
+            <DebtAlert className="alert-sm" debtAmount={props.model.debtAmount} />
           </div>
 
           <span className="text-sm opacity-50">

@@ -1,5 +1,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using NATSInternal.Core.Common.Dtos;
+using NATSInternal.Core.Common.Enums;
 using NATSInternal.Core.Common.Exceptions;
 using NATSInternal.Core.Common.Extensions;
 using NATSInternal.Core.Common.Localization;
@@ -10,6 +12,7 @@ using NATSInternal.Core.Features.Authorization;
 // using NATSInternal.Core.Features.Photos;
 using NATSInternal.Core.Persistence.DbContext;
 using NATSInternal.Core.Persistence.Handlers;
+using System.Numerics;
 
 namespace NATSInternal.Core.Features.Products;
 
@@ -19,6 +22,7 @@ internal class ProductService : IProductService
     private readonly AppDbContext _context;
     private readonly IListFetchingService _listFetchingService;
     private readonly IAuthorizationInternalService _authorizationService;
+    private readonly ITopService _topService;
     private readonly IValidator<ProductListRequestDto> _listValidator;
     private readonly IValidator<ProductCreateRequestDto> _createValidator;
     private readonly IValidator<ProductUpdateRequestDto> _updateValidator;
@@ -31,6 +35,7 @@ internal class ProductService : IProductService
     public ProductService(
         AppDbContext context,
         IListFetchingService listFetchingService,
+        ITopService topService,
         IAuthorizationInternalService authorizationService,
         IValidator<ProductListRequestDto> listValidator,
         IValidator<ProductCreateRequestDto> createValidator,
@@ -41,6 +46,7 @@ internal class ProductService : IProductService
     {
         _context = context;
         _listFetchingService = listFetchingService;
+        _topService = topService;
         _authorizationService = authorizationService;
         _listValidator = listValidator;
         _createValidator = createValidator;
@@ -347,6 +353,38 @@ internal class ProductService : IProductService
 
             throw;
         }
+    }
+
+    public async Task<List<TopResponseDto<ProductBasicResponseDto, int>>> GetTopBySoldQuantity(TopRequestDto requestDto)
+    {
+        DateOnly earliestDate = _topService.ValidateAndGetEarliestDate(requestDto);
+        
+        return await _context.Products
+            .Include(p => p.OrderProductItems)
+            .OrderByDescending(p => p.OrderProductItems.Sum(opi => opi.Quantity))
+            .Select(p => new TopResponseDto<ProductBasicResponseDto, int>(
+                new ProductBasicResponseDto(p),
+                p.OrderProductItems.Sum(opi => opi.Quantity)))
+            .ToListAsync();
+    }
+
+    public async Task<List<TopResponseDto<ProductBasicResponseDto, long>>> GetTopByProfit(TopRequestDto requestDto)
+    {
+        DateOnly earliestDate = _topService.ValidateAndGetEarliestDate(requestDto);
+        
+        return await _context.Products
+            .Include(p => p.SupplyItems.Where(si => si.Supply.StatsDate >= earliestDate))
+            .ThenInclude(si => si.Supply)
+            .Include(p => p.OrderProductItems.Where(opi => opi.Order.StatsDate >= earliestDate))
+            .ThenInclude(opi => opi.Order)
+            .OrderByDescending(p =>
+                p.OrderProductItems.Sum(opi => opi.AmountBeforeVatPerUnit * opi.Quantity) -
+                p.SupplyItems.Sum(si => si.AmountPerUnit * si.Quantity))
+            .Select(p => new TopResponseDto<ProductBasicResponseDto, long>(
+                new ProductBasicResponseDto(p),
+                p.OrderProductItems.Sum(opi => opi.AmountBeforeVatPerUnit * opi.Quantity) -
+                p.SupplyItems.Sum(si => si.AmountPerUnit * si.Quantity)))
+            .ToListAsync();
     }
     #endregion
 }

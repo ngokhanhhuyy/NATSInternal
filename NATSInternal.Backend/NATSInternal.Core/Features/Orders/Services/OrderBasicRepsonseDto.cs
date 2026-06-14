@@ -12,7 +12,7 @@ public class OrderBasicResponseDto
         Type = order.Type;
         StatsDate = order.StatsDate;
         AmountAfterVat = order.CachedAmountAfterVat;
-        IsDebtOrder = order.EffectivePayment is null || order.CachedAmountAfterVat > order.EffectivePayment.Amount;
+        DebtAmount = order.CachedAmountAfterVat - (order.EffectivePayment?.Amount ?? 0);
         Customer = new(order.Customer);
         ThumbnailUrl = order.ThumbnailUrl;
     }
@@ -28,7 +28,7 @@ public class OrderBasicResponseDto
     public OrderType Type { get; set; }
     public DateOnly StatsDate { get; set; }
     public long AmountAfterVat { get; set; }
-    public bool IsDebtOrder { get; set; }
+    public long DebtAmount { get; set; }
     public CustomerBasicResponseDto Customer { get; set; }
     public string? ThumbnailUrl { get; set; }
     public OrderExistingAuthorizationResponseDto? Authorization { get; set; }

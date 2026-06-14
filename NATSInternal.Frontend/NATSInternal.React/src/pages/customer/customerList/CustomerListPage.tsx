@@ -3,7 +3,7 @@ import { useLoaderData } from "react-router";
 import { api } from "@/api";
 import { metadata } from "@/metadata";
 import { createCustomerListModel } from "@/models";
-import { useRerendingTrigger } from "@/hooks";
+import { useInitialRendering, useRequestHandlerQueue } from "@/hooks";
 
 // Child components.
 import CustomerListResults from "@/pages/shared/list/customerListResults";
@@ -27,31 +27,26 @@ export default function CustomerListPage(): React.ReactNode {
 
   // States.
   const [model, setModel] = useState(() => initialModel);
-  const [renderingKey, triggerRendering] = useRerendingTrigger(reload);
   const [isReloading, startTransition] = useTransition();
+  const isInitialRendering = useInitialRendering();
+  const reloadAsync = useRequestHandlerQueue(async () => await loadDataAsync(model), (reloadedModel) => {
+    setModel(reloadedModel);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
 
   // Callbacks.
-  function reload(): void {
-    startTransition(async () => {
-      const reloadedModel = await loadDataAsync(model);
-      setModel(reloadedModel);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-  }
-
   const handleModelUpdated = useCallback((updatedData: Partial<CustomerListModel>) => {
     setModel(m => ({ ...m, ...updatedData }));
   }, []);
 
-  const handlePaginatorPageChanged = useCallback((page: number) => {
-    setModel(m => ({ ...m, page }));
-    triggerRendering();
-  }, []);
-
   // Effect.
   useEffect(() => {
-    reload();
-  }, [model.sortByAscending, model.sortByFieldName, model.page, model.resultsPerPage, renderingKey]);
+    if (isInitialRendering) {
+      return;
+    }
+
+    startTransition(reloadAsync);
+  }, [model.sortByAscending, model.sortByFieldName, model.page, model.resultsPerPage, model.searchContent]);
 
   // Template.
   return (
@@ -60,8 +55,6 @@ export default function CustomerListPage(): React.ReactNode {
       model={model}
       onModelUpdated={handleModelUpdated}
       isReloading={isReloading}
-      onPaginatorPageChanged={handlePaginatorPageChanged}
-      onReloadingRequested={triggerRendering}
       canCreate={metadata.creatingAuthorization.canCreateCustomer}
     >
       <CustomerListResults className="list-group-flush" model={model} />

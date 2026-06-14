@@ -3,6 +3,7 @@ export * from "./initialRenderingHook";
 export * from "./jsonDirtyModelCheckerHook";
 export * from "./matchedRouteHandlesHook";
 export * from "./mountedHook";
+export * from "./requestQueue";
 export * from "./rerenderTriggerHook";
 export * from "./screenBreakpointHooks";
 export * from "./throttleStateHook";

@@ -1,4 +1,6 @@
+using NATSInternal.Core.Features.Orders;
 using NATSInternal.Core.Features.Photos;
+using NATSInternal.Core.Features.Supplies;
 using NATSInternal.Core.Features.Users;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -63,6 +65,8 @@ internal class Product
     public User? LastUpdatedUser { get; set; }
     public User? DeletedUser { get; set; }
     public List<Photo> Photos { get; private set; } = new();
+    public List<SupplyItem> SupplyItems { get; private set; } = new();
+    public List<OrderProductItem> OrderProductItems { get; private set; } = new();
     #endregion
 
     #region ComputedProperties

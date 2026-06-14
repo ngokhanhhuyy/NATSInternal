@@ -2,6 +2,7 @@ export * from "./avatarHelper";
 export * from "./componentHelper";
 export * from "./currencyHelper";
 export * from "./dateTimeHelper";
+export * from "./debtHelper";
 export * from "./guidHelper";
 export * from "./jsonHelper";
 export * from "./orderHelper";

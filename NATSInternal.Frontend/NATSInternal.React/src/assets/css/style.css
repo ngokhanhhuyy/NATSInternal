@@ -28,6 +28,7 @@ html {
     background: var(--html-background);
     font-family: Arial, sans-serif;
     font-size: 14px;
+    scroll-behavior: auto !important;
     overscroll-behavior: none;
 
     &.dark {
@@ -38,6 +39,12 @@ html {
         color: white;
         color-scheme: dark;
     }
+    
+    @media (prefers-reduced-motion: no-preference) {
+        html {
+            scroll-behavior: smooth;
+        }
+    }
 }
 
 body {
@@ -45,6 +52,11 @@ body {
     justify-content: stretch;
     align-items: stretch;
     overflow-y: auto;
+    scroll-behavior: auto !important;
+}
+
+main {
+    scroll-behavior: auto !important;
 }
 
 a:not(.hover\:underline):not(.hover\:overline):not(.hover\:line-through):not(.hover\:no-underline):hover {

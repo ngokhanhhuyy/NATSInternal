@@ -1,6 +1,8 @@
 import React from "react";
+import { joinClassName, compute } from "@/helpers";
 
 // Child components.
+import DebtAlert from "@/pages/shared/alerts/DebtAlert";
 import { UserIcon } from "@heroicons/react/24/outline";
 
 // Props.
@@ -10,6 +12,20 @@ type AvatarAndNamePanelProps = {
 
 // Components.
 export default function AvatarAndNamePanel(props: AvatarAndNamePanelProps): React.ReactNode {
+  // Computed.
+  const linkClassName = compute<string>(() => {
+    const names: string[] = ["font-bold", "whitespace-nowrap"];
+    if (props.model.debtAmount === 0) {
+      names.push("text-blue-700 dark:text-blue-400");
+    } else if (props.model.debtAmount > 0) {;
+      names.push("text-yellow-600 dark:text-yellow-400");
+    } else {
+      names.push("text-red-600 dark:text-red-400");
+    }
+
+    return names.join(" ");
+  });
+
   // Template.
   return (
     <div className="panel">
@@ -22,9 +38,13 @@ export default function AvatarAndNamePanel(props: AvatarAndNamePanelProps): Reac
 
           {/* Names */}
           <div className="flex flex-col justify-start pt-1">
-            <span className="text-blue-600 dark:text-blue-400 text-2xl">
-              {props.model.fullName}
-            </span>
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className={joinClassName("text-xl", linkClassName)}>
+                {props.model.fullName}
+              </span>
+
+              <DebtAlert debtAmount={props.model.debtAmount} />
+            </div>
             <span className="text-lg opacity-50">{props.model.nickName}</span>
           </div>
         </div>

@@ -221,11 +221,14 @@ export default function ProductPicker(props: ProductPickerProps): React.ReactNod
         </div>
       )}
 
-      <ProductList
-        model={model}
-        renderItemButton={renderItemButton}
-        hideStatusIcon
-      />
+      <div className="panel-body-area">
+        <ProductList
+          className="list-group-flush"
+          model={model}
+          renderItemButton={renderItemButton}
+          hideStatusIcon
+        />
+      </div>
 
       <Paginator
         page={model.page}
