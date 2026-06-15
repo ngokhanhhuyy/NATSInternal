@@ -4,21 +4,15 @@ import React from "react";
 import { BuildingStorefrontIcon } from "@heroicons/react/24/outline";
 
 // Props.
-type Props = {
+type ThumbnailAndNamePanelProps = {
   model: ProductCategoryDetailModel;
 };
 
 // Component.
-export default function DetailPanel(props: Props): React.ReactNode {
+export default function ThumbnailAndNamePanel(props: ThumbnailAndNamePanelProps): React.ReactNode {
   // Template.
   return (
     <div className="panel">
-      <div className="panel-header">
-        <span className="panel-header-title">
-          Phân loại sản phẩm
-        </span>
-      </div>
-
       <div className="panel-body flex flex-col p-3 gap-3">
         <div className="flex gap-3 justify-start items-start">
           <div className="img-thumbnail size-14 flex justify-center items-center">
@@ -26,9 +20,13 @@ export default function DetailPanel(props: Props): React.ReactNode {
           </div>
 
           <div className="flex flex-col justify-start items-start">
-            <div className="text-2xl text-blue-700 dark:text-blue-400">
+            <span className="text-2xl text-blue-700 dark:text-blue-400">
               {props.model.name}
-            </div>
+            </span>
+
+            <span className="opacity-50">
+              {props.model.productCount ?? 0} sản phẩm
+            </span>
           </div>
         </div>
       </div>

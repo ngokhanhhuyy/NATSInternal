@@ -5,16 +5,20 @@ declare global {
   type ProductCategoryDetailModel = Readonly<{
     id: number;
     name: string;
+    productCount: number;
     authorization: ProductCategoryExistingAuthorizationResponseDto | null;
     updateRoutePath: string;
     toBasicModel(): ProductCategoryBasicModel;
   }>;
 }
 
-export function createProductCategoryDetailModel(responseDto: ProductCategoryDetailResponseDto): ProductCategoryDetailModel {
+export function createProductCategoryDetailModel(
+  responseDto: ProductCategoryDetailResponseDto): ProductCategoryDetailModel
+{
   return {
     id: responseDto.id,
     name: responseDto.name,
+    productCount: responseDto.productCount,
     authorization: responseDto.authorization,
     updateRoutePath: getProductCategoryUpdateRoutePath(responseDto.id),
     toBasicModel(): ProductCategoryBasicModel {

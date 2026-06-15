@@ -6,7 +6,8 @@ import { getProductCategoryCreateRoutePath } from "@/helpers";
 
 // Child components.
 import { MainContainer } from "@/components/layouts";
-import { TagIcon, PlusIcon } from "@heroicons/react/24/outline";
+import ProductCategoryListResults from "@/pages/product/ProductCategoryListResults";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 // Data loader.
 export async function loadDataAsync(): Promise<ProductCategoryBasicModel[]> {
@@ -29,20 +30,10 @@ export default function ProductListPage(): React.ReactNode {
           </span>
         </div>
 
-        <div className="panel-body">
-          <ul className="list-group border-none">
-            {model.map(category => (
-              <li className="list-group-item p-2 flex align-center gap-2" key={category.id}>
-                <div className="img-thumbnail rounded-sm size-6 flex justify-center items-center">
-                  <TagIcon className="size-5 opacity-50" />
-                </div>
-
-                <Link className="text-blue-600 dark:text-blue-500 font-bold" to={category.detailRoutePath}>
-                  {category.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
+        <div className="panel-body p-3">
+          <div className="panel-body-area">
+            <ProductCategoryListResults model={model} />
+          </div>
         </div>
       </div>
 

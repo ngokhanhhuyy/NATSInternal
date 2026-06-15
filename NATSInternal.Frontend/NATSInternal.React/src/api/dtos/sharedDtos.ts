@@ -40,6 +40,7 @@ declare global {
   type ProductCategoryBasicResponseDto = {
     id: number;
     name: string;
+    productCount: number | null;
     authorization: ProductCategoryExistingAuthorizationResponseDto | null;
   };
 

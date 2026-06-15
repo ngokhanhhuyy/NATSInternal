@@ -35,9 +35,15 @@ internal class ProductCategoryService : IProductCategoryService
     {
         return await _context.ProductCategories
             .OrderBy(pc => pc.Name)
-            .Select(pc => new ProductCategoryBasicResponseDto(
-                pc,
-                _authorizationService.GetProductCategoryExistingAuthorization(pc)))
+            .Select(pc => new
+            {
+                ProductCategory = pc,
+                ProductCount = pc.Products.Count
+            })
+            .AsAsyncEnumerable().Select(pcwpc => new ProductCategoryBasicResponseDto(
+                pcwpc.ProductCategory,
+                pcwpc.ProductCount,
+                _authorizationService.GetProductCategoryExistingAuthorization(pcwpc.ProductCategory)))
             .ToListAsync();
     }
 
@@ -47,6 +53,7 @@ internal class ProductCategoryService : IProductCategoryService
             .Where(pc => pc.Id == id)
             .Select(pc => new ProductCategoryDetailResponseDto(
                 pc,
+                pc.Products.Count,
                 _authorizationService.GetProductCategoryExistingAuthorization(pc)))
             .SingleOrDefaultAsync()
             ?? throw new NotFoundException();

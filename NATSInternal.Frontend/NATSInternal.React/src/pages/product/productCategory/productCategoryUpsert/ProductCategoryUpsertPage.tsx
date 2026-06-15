@@ -41,7 +41,7 @@ const ProductCategoryUpsertPage = <TUpsertResult extends number | void>(
           </span>
         </div>
 
-        <div className="panel-body flex flex-col gap-3 p-3">
+        <div className="panel-body flex flex-col gap-3 p-3 pt-2">
           <FormField path="name" displayName="Tên thương hiệu">
             <TextInput
               required

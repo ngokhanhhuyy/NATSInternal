@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useLoaderData } from "react-router";
 
 // Child components.
-import DetailPanel from "./DetailPanel";
+import ThumbnailAndNamePanel from "./ThumbnailAndNamePanel";
 import ProductListPanel from "./ProductListPanel";
 import { MainContainer } from "@/components/layouts";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
@@ -16,7 +16,7 @@ export default function ProductCategoryDetailPage(): React.ReactNode {
   return (
     <MainContainer className="gap-3">
       <div className="flex flex-col gap-3">
-        <DetailPanel model={model} />
+        <ThumbnailAndNamePanel model={model} />
         <ProductListPanel productCategoryModel={model} />
       </div>
 

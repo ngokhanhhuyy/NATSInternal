@@ -102,7 +102,7 @@ export default function ProductItem(props: ProductItemProps): React.ReactNode {
           {props.model.categories.map((category, index) => (
             <div className="flex justify-start items-center gap-1" key={index}>
               <TagIcon className="size-4" />
-              <span>{category.name}</span>
+              <Link to={category.detailRoutePath}>{category.name}</Link>
             </div>
           ))}
         </div>

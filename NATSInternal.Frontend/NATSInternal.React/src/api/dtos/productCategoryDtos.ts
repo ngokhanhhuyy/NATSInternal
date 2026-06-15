@@ -2,6 +2,7 @@ declare global {
   type ProductCategoryDetailResponseDto = {
     id: number;
     name: string;
+    productCount: number;
     authorization: ProductCategoryExistingAuthorizationResponseDto | null;
   };
 

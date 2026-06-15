@@ -4,6 +4,7 @@ declare global {
   type ProductCategoryBasicModel = {
     id: number;
     name: string;
+    productCount: number | null;
     detailRoutePath: string;
   };
 }
@@ -12,6 +13,7 @@ function createProductCategoryBasicModel(responseDto: ProductCategoryBasicRespon
   return {
     id: responseDto.id,
     name: responseDto.name,
+    productCount: responseDto.productCount,
     detailRoutePath: getProductCategoryDetailRoutePath(responseDto.id)
   };
 }

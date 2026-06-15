@@ -58,6 +58,7 @@ export default function IListModel<TListModel extends ListModel<TItemModel>, TIt
               <FilterOptionsArea
                 model={props.model}
                 onModelUpdated={props.onModelUpdated}
+                canCreate={props.canCreate}
                 displayName={displayName}
               >
                 {props.filterPanelChildren}

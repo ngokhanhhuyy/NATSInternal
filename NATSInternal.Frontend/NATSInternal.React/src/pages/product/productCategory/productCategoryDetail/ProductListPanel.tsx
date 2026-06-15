@@ -1,11 +1,12 @@
 import React, { useState, useEffect, startTransition } from "react";
-import { Link } from "react-router";
 import { api } from "@/api";
 import { createProductListModel } from "@/models";
 import { useInitialRendering } from "@/hooks";
+import { joinClassName } from "@/helpers";
 
 // Child components.
-import { ArchiveBoxIcon } from "@heroicons/react/24/outline";
+import ProductListResults from "@/pages/shared/list/productListResults";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
 // Props.
 type Props = {
@@ -32,63 +33,52 @@ export default function ProductListPanel(props: Props): React.ReactNode {
   }, [model.page]);
 
   // Template.
-  let listElement: React.ReactNode;
-  if (isInitialRendering) {
-    listElement = (
-      <div className="flex justify-center items-center p-5 opacity-50">
-        Đang tải...
-      </div>
-    );
-  } else if (model.items.length) {
-    listElement = (
-      <ul className="list-group list-group-flush">
-        {model.items.map((item, index) => (
-          <Product model={item} key={index} />
-        ))}
-      </ul>
-    );
-  } else {
-    listElement = (
-      <div className="flex justify-center items-center p-5 opacity-50">
-        Không có sản phẩm nào
-      </div>
-    );
-  }
-
   return (
     <div className="panel">
       <div className="panel-header">
-        <span className="panel-header-title">Sản phẩm</span>
+        <span className="panel-header-title">Danh sách sản phẩm</span>
       </div>
 
-      <div className="panel-body grid grid-cols-1">
-        {listElement}
+      <div className="panel-body flex flex-col gap-3 p-3">
+        {!isInitialRendering && (
+          <div className="flex justify-start items-center gap-3">
+            <div className="flex justify-start self-start">
+              <button
+                type="button"
+                className="btn rounded-e-none z-1"
+                onClick={() => setModel(m => ({ ...m, page: m.page - 1 }))}
+                disabled={model.page === 1}
+              >
+                <ChevronLeftIcon className="size-4" />
+              </button>
+
+              <span className={joinClassName(
+                "form-control border-x-0 rounded-none",
+                model.pageCount === 1 && "opacity-50"
+              )}>
+                Trang {model.page} / {model.pageCount}
+              </span>
+
+              <button
+                type="button"
+                className="btn rounded-s-none z-1"
+                onClick={() => setModel(m => ({ ...m, page: m.page + 1 }))}
+                disabled={model.page === model.pageCount}
+              >
+                <ChevronRightIcon className="size-4" />
+              </button>
+            </div>
+
+            <span className="opacity-50">
+              Hiển thị {Math.min(model.resultsPerPage, model.itemCount)} trên tổng số {model.itemCount} kết quả
+            </span>
+          </div>
+        )}
+
+        <div className="panel-body-area w-full">
+          <ProductListResults model={model} className="list-group-flush" />
+        </div>
       </div>
     </div>
-  );
-}
-
-function Product(props: { model: ProductBasicModel }): React.ReactNode {
-  // Template.
-  return (
-    <li className="list-group-item flex gap-2 justify-start items-start px-3 py-2">
-      {props.model.thumbnailUrl ? (
-        <img
-          src={props.model.thumbnailUrl}
-          className="img-thumbnail rounded size-6"
-          alt={props.model.name}
-        />
-      ) : (
-        <div className="img-thumbnail rounded size-6 flex justify-center items-center">
-          <ArchiveBoxIcon className="size-3 opacity-50" />
-        </div>
-      )}
-
-      <div className="flex flex-col">
-        <Link className="font-bold text-blue-600 dark:text-blue-400" to={props.model.detailRoutePath}>
-          {props.model.name}
-        </Link>
-      </div>
-    </li>
   );
 }
