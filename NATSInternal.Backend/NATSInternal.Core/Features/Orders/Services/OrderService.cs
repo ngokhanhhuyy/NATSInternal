@@ -95,12 +95,19 @@ internal class OrderService : IOrderService
                 .Include(o => o.ProductItems).ThenInclude(opi => opi.Product)
                 .Where(o => o.ProductItems.Any(opi => opi.Product.Id == requestDto.ProductId.Value));
         }
-        
-        if (requestDto.DebtOrdersOnly)
+
+        switch (requestDto.PaymentStatus)
         {
-            query = query.Where(o =>
-                o.Payments.SingleOrDefault(p => p.DeletedDateTime == null) != null ||
-                o.CachedAmountAfterVat > o.Payments.Single(p => p.DeletedDateTime == null).Amount);
+            case OrderListRequestDto.OrderPaymentStatus.Debt:
+                query = query.Where(o =>
+                    o.Payments.SingleOrDefault(p => p.DeletedDateTime == null) != null ||
+                    o.CachedAmountAfterVat > o.Payments.Single(p => p.DeletedDateTime == null).Amount);
+                break;
+            case OrderListRequestDto.OrderPaymentStatus.RefundNeeded:
+                query = query.Where(o =>
+                    o.Payments.SingleOrDefault(p => p.DeletedDateTime == null) != null &&
+                    o.CachedAmountAfterVat < o.Payments.Single(p => p.DeletedDateTime == null).Amount);
+                break;
         }
 
         switch (requestDto.SortByFieldName)

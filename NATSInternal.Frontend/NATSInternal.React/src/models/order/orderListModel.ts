@@ -10,6 +10,7 @@ declare global {
     sortByFieldNameOptions: string[];
     page: number;
     resultsPerPage: number;
+    type: OrderType | null;
     customer: CustomerBasicModel | null;
     product: ProductBasicModel | null;
     debtOrdersOnly: boolean;
@@ -25,17 +26,20 @@ declare global {
 }
 
 export function createOrderListModel(): OrderListModel {
+  const statsMonthYearOptions = metadata.statsMonthYearSeries.orderSeries.map(createStatsMonthYearModel);
+
   return {
     sortByAscending: metadata.listOptionsList.order.defaultSortByAscending,
     sortByFieldName: metadata.listOptionsList.order.defaultSortByFieldName,
     sortByFieldNameOptions: metadata.listOptionsList.order.sortByFieldNameOptions,
     page: 1,
     resultsPerPage: metadata.listOptionsList.order.defaultResultsPerPage,
+    type: null,
     customer: null,
     product: null,
     debtOrdersOnly: false,
-    statsMonthYear: null,
-    statsMonthYearOptions: metadata.statsMonthYearSeries.orderSeries.map(createStatsMonthYearModel),
+    statsMonthYear: statsMonthYearOptions.length ? statsMonthYearOptions[statsMonthYearOptions.length - 1] : null,
+    statsMonthYearOptions,
     items: [],
     pageCount: 0,
     itemCount: 0,
@@ -54,6 +58,7 @@ export function createOrderListModel(): OrderListModel {
         sortByFieldName: this.sortByFieldName,
         page: this.page,
         resultsPerPage: this.resultsPerPage,
+        type: this.type ?? undefined,
         customerId: this.customer?.id,
         productId: this.product?.id,
         debtOrdersOnly: this.debtOrdersOnly,

@@ -56,33 +56,40 @@ export default function SearchableListPage<TListModel extends ListModel<TItemMod
   // Template.
   return (
     <BaseListPage {...props} filterPanelChildren={
-      <FormField path="searchContent" displayName="Tìm kiếm" hideLabel>
-        <div className="form-input-group">
-          <TextInput
-            className={joinClassName("z-1 min-w-65", searchContentValidationMessage && "is-invalid")}
-            placeholder="Tìm kiếm"
-            autoComplete="off"
-            value={searchContent}
-            onValueChanged={setSearchContent}
-            onKeyDown={handleSearchBoxKeyDown}
-            onBlur={handleSearchBoxBlurredOrSearchButtonClicked}
-          />
+      <div className={joinClassName(
+        "grid grid-cols-1 gap-x-2 gap-y-3",
+        props.filterPanelChildren != null && "md:grid-cols-[auto_1fr] lg:grid-cols-1 xl:grid-cols-2"
+      )}>
+        <FormField path="searchContent" displayName="Tìm kiếm" hideLabel>
+          <div className="form-input-group">
+            <TextInput
+              className={joinClassName("z-1 min-w-65", searchContentValidationMessage && "is-invalid")}
+              placeholder="Tìm kiếm"
+              autoComplete="off"
+              value={searchContent}
+              onValueChanged={setSearchContent}
+              onKeyDown={handleSearchBoxKeyDown}
+              onBlur={handleSearchBoxBlurredOrSearchButtonClicked}
+            />
 
-          <button
-            type="button"
-            className="btn shrink-0 border-s-transparent gap-1 aspect-square"
-            onClick={handleSearchBoxBlurredOrSearchButtonClicked}
-          >
-            <MagnifyingGlassIcon />
-          </button>
-        </div>
+            <button
+              type="button"
+              className="btn shrink-0 border-s-transparent gap-1 aspect-square"
+              onClick={handleSearchBoxBlurredOrSearchButtonClicked}
+            >
+              <MagnifyingGlassIcon />
+            </button>
+          </div>
 
-        {searchContentValidationMessage && (
-          <span className="field-validation-error">
-            {searchContentValidationMessage}
-          </span>
-        )}
-      </FormField>
+          {searchContentValidationMessage && (
+            <span className="field-validation-error">
+              {searchContentValidationMessage}
+            </span>
+          )}
+        </FormField>
+
+        {props.filterPanelChildren}
+      </div>
     }/>
   );
 }

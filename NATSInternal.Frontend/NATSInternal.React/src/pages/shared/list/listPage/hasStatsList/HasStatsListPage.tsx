@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
-import { getDisplayName } from "@/metadata";
-import { compute } from "@/helpers";
+import { compute, joinClassName } from "@/helpers";
 
 // Child components.
 import BaseListPage, { type BaseListPageProps } from "../baseListPage";
@@ -57,21 +56,27 @@ export default function HasStatsListPage<TListModel extends ListModel<TItemModel
   // Template.
   return (
     <BaseListPage {...props} filterPanelChildren={
-      <FormField path="statsMonthYear" displayName="Thời gian thống kê" hideLabel>
-        <div className="form-input-group">
-          <div className="form-input-group-text border-e-0 flex gap-1.5 items-center shrink-0 sm:min-w-37.5">
-            <CalendarDaysIcon className="size-4.5" />
-            <span className="hidden sm:inline">{getDisplayName("statsDate")}</span>
-          </div>
+      <div className={joinClassName(
+        "grid grid-cols-1 gap-x-2 gap-y-3",
+        props.filterPanelChildren != null && "md:grid-cols-[auto_1fr] lg:grid-cols-1 xl:grid-cols-2"
+      )}>
+        <FormField path="statsMonthYear" displayName="Thời gian thống kê" hideLabel>
+          <div className="form-input-group">
+            <div className="form-input-group-text border-e-0 flex items-center shrink-0">
+              <CalendarDaysIcon className="size-4.5" />
+            </div>
 
-          <SelectInput
-            className="min-w-60"
-            options={statsMonthYearOptions}
-            value={selectedStatsMonthYearValue}
-            onValueChanged={handleStatsMonthYearInput}
-          />
-        </div>
-      </FormField>
+            <SelectInput
+              className="min-w-60"
+              options={statsMonthYearOptions}
+              value={selectedStatsMonthYearValue}
+              onValueChanged={handleStatsMonthYearInput}
+            />
+          </div>
+        </FormField>
+
+        {props.filterPanelChildren}
+      </div>
     }/>
   );
 }

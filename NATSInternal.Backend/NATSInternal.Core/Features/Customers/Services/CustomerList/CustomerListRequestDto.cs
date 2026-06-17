@@ -9,7 +9,8 @@ public class CustomerListRequestDto : ISearchableListRequestDto
     public bool SortByAscending { get; set; } = true;
     public string SortByFieldName { get; set; } = nameof(FieldToSort.Status);
     public int Page { get; set; } = 1;
-    public int ResultsPerPage { get; set; } = 10;
+    public int ResultsPerPage { get; set; } = 15;
+    public OrderPaymentStatus? PaymentStatus { get; set; }
     public string? SearchContent { get; set; }
     public int? ExcludedId { get; set; } = new();
     #endregion
@@ -23,6 +24,13 @@ public class CustomerListRequestDto : ISearchableListRequestDto
     #endregion
     
     #region Enums
+    public enum OrderPaymentStatus
+    {
+        DebtOnly,
+        RefundNeededOnly,
+        DebtAndRefundNeeded
+    }
+
     public enum FieldToSort
     {
         Status,

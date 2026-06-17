@@ -6,6 +6,7 @@ declare global {
     sortByFieldName: string;
     page: number;
     resultsPerPage: number;
+    type: OrderType;
     customerId: number;
     productId: number;
     debtOrdersOnly: boolean;

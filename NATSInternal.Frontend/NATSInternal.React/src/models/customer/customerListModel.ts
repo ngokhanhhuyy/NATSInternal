@@ -10,6 +10,7 @@ declare global {
     sortByFieldName: string;
     page: number;
     resultsPerPage: number;
+    paymentStatus: CustomerListOrderPaymentStatus | null;
     searchContent: string;
     excludedId: number | null;
     items: CustomerBasicModel[];
@@ -29,6 +30,7 @@ export function createCustomerListModel(responseDto?: CustomerListResponseDto): 
     sortByFieldName: customerListOptions.defaultSortByFieldName ?? "",
     page: 1,
     resultsPerPage:  customerListOptions.defaultResultsPerPage,
+    paymentStatus: null,
     searchContent: "",
     excludedId: null,
     items: [],
@@ -57,6 +59,10 @@ export function createCustomerListModel(responseDto?: CustomerListResponseDto): 
 
       if (this.resultsPerPage) {
         requestDto.resultsPerPage = this.resultsPerPage;
+      }
+
+      if (this.paymentStatus) {
+        requestDto.paymentStatus = this.paymentStatus;
       }
 
       if (this.searchContent) {

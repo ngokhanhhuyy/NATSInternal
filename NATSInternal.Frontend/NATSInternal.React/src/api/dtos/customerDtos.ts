@@ -1,11 +1,13 @@
 declare global {
   type Gender = "Male" | "Female";
+  type CustomerListOrderPaymentStatus = "DebtOnly" | "RefundNeededOnly" | "DebtAndRefundNeeded";
 
   type CustomerListRequestDto = ImplementsPartial<ISearchableListRequestDto, {
     sortByAscending: boolean;
     sortByFieldName: string;
     page: number;
     resultsPerPage: number;
+    paymentStatus: CustomerListOrderPaymentStatus;
     searchContent: string;
     excludedId: number;
   }>;

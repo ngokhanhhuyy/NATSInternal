@@ -12,7 +12,7 @@ public class OrderListRequestDto : IHasStatsListRequestDto
     public OrderType? Type { get; set; }
     public int? CustomerId { get; set; }
     public int? ProductId { get; set; }
-    public bool DebtOrdersOnly { get; set; }
+    public OrderPaymentStatus? PaymentStatus { get; set; }
     public int? StatsYear { get; set; }
     public int? StatsMonth { get; set; }
     #endregion
@@ -28,6 +28,12 @@ public class OrderListRequestDto : IHasStatsListRequestDto
         CreatedDateTime,
         LastUpdatedDateTime,
         Amount
+    }
+
+    public enum OrderPaymentStatus
+    {
+        Debt,
+        RefundNeeded
     }
     #endregion
 }

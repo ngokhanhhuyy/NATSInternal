@@ -32,7 +32,7 @@ export default function ProductListPage(): React.ReactNode {
 
         <div className="panel-body p-3">
           <div className="panel-body-area">
-            <ProductCategoryListResults model={model} />
+            <ProductCategoryListResults model={model} className="list-group-flush" />
           </div>
         </div>
       </div>

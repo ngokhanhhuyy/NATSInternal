@@ -41,7 +41,7 @@ export default function SelectInput(props: SelectInputProps): React.ReactNode {
           className={joinClassName(
             "bg-white/50 dark:bg-neutral-800/65 border border-black/25 dark:border-white/25 outline-none",
             "rounded-lg shadow-lg p-1.5 backdrop-blur-md origin-center",
-            "w-(--button-width) [--anchor-gap:--spacing(1.5)] max-h-100 overflow-y-auto",
+            "min-w-(--button-width) [--anchor-gap:--spacing(1.5)] max-h-100 overflow-y-auto",
             "origin-center transition duration-200 ease-out data-closed:scale-95 data-closed:opacity-0"
           )}
           anchor="bottom start"

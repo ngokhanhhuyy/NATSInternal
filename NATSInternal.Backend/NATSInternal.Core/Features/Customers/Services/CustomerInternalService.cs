@@ -56,6 +56,24 @@ internal class CustomerInternalService : ICustomerInternalService
 
         IQueryable<Customer> query = _context.Customers.Where(c => c.DeletedDateTime == null);
 
+        if (requestDto.PaymentStatus.HasValue)
+        {
+            switch (requestDto.PaymentStatus.Value)
+            {
+                case CustomerListRequestDto.OrderPaymentStatus.DebtOnly:
+                    query = query.Where(c => c.CachedDebtAmount > 0);
+                    break;
+                case CustomerListRequestDto.OrderPaymentStatus.RefundNeededOnly:
+                    query = query.Where(c => c.CachedDebtAmount < 0);
+                    break;
+                case CustomerListRequestDto.OrderPaymentStatus.DebtAndRefundNeeded:
+                    query = query.Where(c => c.CachedDebtAmount != 0);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
         if (!string.IsNullOrEmpty(requestDto.SearchContent))
         {
             string lowercasedSearchContent = requestDto.SearchContent.ToLower();

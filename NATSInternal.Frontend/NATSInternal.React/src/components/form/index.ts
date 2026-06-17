@@ -9,5 +9,6 @@ export { default as NumberInput } from "./NumberInput";
 export { default as NumberInputWithControlButtons } from "./NumberInputWithControlButtons";
 export { default as ButtonGroupInput, type ButtonGroupInputOption } from "./ButtonGroupInput";
 export { default as CheckBoxInput } from "./CheckBoxInput";
+export { default as RadioInput } from "./RadioInput";
 export { default as SubmitButton } from "./SubmitButton";
 export { default as DeleteButton } from "./DeleteButton";

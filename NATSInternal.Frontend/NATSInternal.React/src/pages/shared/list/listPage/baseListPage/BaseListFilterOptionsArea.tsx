@@ -39,79 +39,73 @@ function BaseListFilterOptionsArea<
   // Template.
   return (
     <div className="grid grid-cols-1 justify-stretch items-start w-full gap-x-3 transition-[gap]">
-      <div className={joinClassName(
-        "grid gap-2",
-        props.canCreate ? "grid-cols-[1fr_auto_auto]" : "grid-cols-[1fr_auto]"
-      )}>
+      <div className="grid grid-cols-[1fr_auto] gap-2">
         {props.children}
 
-        {(props.canCreate && props.model.createRoutePath) && (
-          <Link to={props.model.createRoutePath} className="btn aspect-square">
-            <PlusIcon className="size-4" />
-          </Link>
-        )}
-
-        <button
-          type="button"
-          className={joinClassName(
-            "btn gap-1 aspect-square",
-            isAdvancedFiltersVisible && "btn-primary"
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-x-2 gap-y-3">
+          {(props.canCreate && props.model.createRoutePath) && (
+            <Link to={props.model.createRoutePath} className="btn aspect-square">
+              <PlusIcon className="size-4" />
+            </Link>
           )}
-          onClick={() => setIsAdvancedFiltersVisible(isVisible => !isVisible)}
-        >
-          <Bars3BottomRightIcon className="size-4" />
-        </button>
+
+          <button
+            type="button"
+            className={joinClassName(
+              "btn gap-1 aspect-square",
+              isAdvancedFiltersVisible && "btn-primary"
+            )}
+            onClick={() => setIsAdvancedFiltersVisible(isVisible => !isVisible)}
+          >
+            <Bars3BottomRightIcon className="size-4" />
+          </button>
+        </div>
       </div>
 
       <div className={joinClassName(
-        "grid transition-[grid-template-rows,margin-top]",
-        isAdvancedFiltersVisible ? "grid-rows-[1fr] mt-3" : "grid-rows-[0fr]"
+        "grid grid-cols-1 sm:grid-cols-[1.5fr_1fr] md:grid-cols-2 gap-x-2 gap-y-3 min-w-fit",
+        isAdvancedFiltersVisible ? "h-fit mt-3 translate-x-0" : "h-0 translate-x-[15%] opacity-0"
       )}>
-        <div className={joinClassName(
-          "grid grid-cols-1 sm:grid-cols-[1.5fr_1fr] md:grid-cols-2",
-          "gap-x-2 gap-y-3 min-w-fit overflow-hidden"
-        )}>
-          <div className="form-input-group">
-            <div className="form-input-group-text gap-1.5 border-e-transparent">
-              <Bars3BottomRightIcon className="size-4" />
-            </div>
-
-            <SelectInput
-              className="shrink-0 min-w-40 flex-1"
-              options={sortByFieldNameOptions}
-              value={props.model.sortByFieldName}
-              onValueChanged={(sortByFieldName) => props.onModelUpdated({ sortByFieldName } as Partial<TListModel>)}
-            />
+        <div className="form-input-group">
+          <div className="form-input-group-text gap-1.5 border-e-transparent">
+            <Bars3BottomRightIcon className="size-4" />
           </div>
 
-          <div className="form-input-group">
-            <div className="form-input-group-text gap-1.5 border-e-transparent shrink-0">
-              {props.model.sortByAscending ? (
-                <BarsArrowDownIcon className="size-4" />
-              ) : (
-                <BarsArrowUpIcon className="size-4" />
-              )}
-            </div>
+          <SelectInput
+            className="shrink-0 min-w-40 flex-1"
+            options={sortByFieldNameOptions}
+            value={props.model.sortByFieldName}
+            onValueChanged={(sortByFieldName) => props.onModelUpdated({ sortByFieldName } as Partial<TListModel>)}
+          />
+        </div>
 
-            <Button
-              className="form-control justify-between gap-2 min-w-fit pe-2.5"
-              onClick={() => {
-                props.onModelUpdated({ sortByAscending: !props.model.sortByAscending } as Partial<TListModel>);
-              }}
-            >
-              {props.model.sortByAscending ? (
-                <>
-                  <span>Từ nhỏ đến lớn</span>
-                  <ArrowUpIcon className="size-3.5" />
-                </>
-              ) : (
-                <>
-                  <span>Từ lớn đến nhỏ</span>
-                  <ArrowDownIcon className="size-3.5" />
-                </>
-              )}
-            </Button>
+        <div className="form-input-group">
+          <div className="form-input-group-text gap-1.5 border-e-transparent shrink-0">
+            {props.model.sortByAscending ? (
+              <BarsArrowDownIcon className="size-4" />
+            ) : (
+              <BarsArrowUpIcon className="size-4" />
+            )}
           </div>
+
+          <Button
+            className="form-control justify-between gap-2 min-w-fit pe-2.5"
+            onClick={() => {
+              props.onModelUpdated({ sortByAscending: !props.model.sortByAscending } as Partial<TListModel>);
+            }}
+          >
+            {props.model.sortByAscending ? (
+              <>
+                <span>Từ nhỏ đến lớn</span>
+                <ArrowUpIcon className="size-3.5" />
+              </>
+            ) : (
+              <>
+                <span>Từ lớn đến nhỏ</span>
+                <ArrowDownIcon className="size-3.5" />
+              </>
+            )}
+          </Button>
         </div>
       </div>
     </div>

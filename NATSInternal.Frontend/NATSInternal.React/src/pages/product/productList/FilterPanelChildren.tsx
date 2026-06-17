@@ -5,6 +5,7 @@ import { getDisplayName } from "@/metadata";
 // Child components.
 import type { ProductListDataLoaderResults } from "./dataLoader";
 import { FormField, SelectInput, type SelectInputOption } from "@/components/form";
+import { TagIcon } from "@heroicons/react/24/outline";
 
 type Props = {
   model: ProductListModel;
@@ -42,12 +43,18 @@ export default function FilterPanelChildren(props: Props): React.ReactNode {
 
   // Template.
   return (
-    <FormField path="categoryId" displayName={getDisplayName("category") ?? undefined}>
-      <SelectInput
-        options={categoryOptions}
-        value={props.model.category?.id.toString() ?? ""}
-        onValueChanged={handleCategorySelectionChanged}
-      />
+    <FormField path="categoryId" displayName={getDisplayName("category") ?? undefined} hideLabel hideValidationMessage>
+      <div className="form-input-group">
+        <span className="form-input-group-text border-e-0">
+          <TagIcon className="size-4" />
+        </span>
+        
+        <SelectInput
+          options={categoryOptions}
+          value={props.model.category?.id.toString() ?? ""}
+          onValueChanged={handleCategorySelectionChanged}
+        />
+      </div>
     </FormField>
   );
 }
