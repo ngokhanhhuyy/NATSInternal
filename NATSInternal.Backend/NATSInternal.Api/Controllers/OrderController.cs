@@ -74,6 +74,46 @@ public class OrderController : ControllerBase
         return Ok();
     }
 
+    [HttpGet("revenue")]
+    [ProducesResponseType<CountResponseDto<long>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Revenue([FromQuery] CountRequestDto requestDto)
+    {
+        return Ok(await _service.GetRevenueAsync(requestDto));
+    }
+
+    [HttpGet("count")]
+    [ProducesResponseType<CountResponseDto<int>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Count([FromQuery] CountRequestDto requestDto)
+    {
+        return Ok(await _service.GetCountAsync(requestDto));
+    }
+
+    [HttpGet("consultant-count")]
+    [ProducesResponseType<CountResponseDto<int>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> ConsultantCount([FromQuery] CountRequestDto requestDto)
+    {
+        return Ok(await _service.GetConsultantCountAsync(requestDto));
+    }
+
+    [HttpGet("retail-count")]
+    [ProducesResponseType<CountResponseDto<int>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> RetailCount([FromQuery] CountRequestDto requestDto)
+    {
+        return Ok(await _service.GetRetailCountAsync(requestDto));
+    }
+
+    [HttpGet("treatment-count")]
+    [ProducesResponseType<CountResponseDto<int>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> TreatmentCount([FromQuery] CountRequestDto requestDto)
+    {
+        return Ok(await _service.GetTreatmentCountAsync(requestDto));
+    }
+
     [HttpGet("stats-month-year-series")]
     [ProducesResponseType<List<StatsMonthYearResponseDto>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

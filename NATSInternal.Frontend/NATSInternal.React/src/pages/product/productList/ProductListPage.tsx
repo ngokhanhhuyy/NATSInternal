@@ -38,7 +38,14 @@ export default function ProductListPage(): React.ReactNode {
     }
     
     startTransition(reloadAsync);
-  }, [model.sortByAscending, model.sortByFieldName, model.searchContent, model.page, model.resultsPerPage]);
+  }, [
+    model.sortByAscending,
+    model.sortByFieldName,
+    model.searchContent,
+    model.page,
+    model.resultsPerPage,
+    model.category
+  ]);
 
   // Template.
   return (

@@ -1,7 +1,5 @@
 declare global {
-  type TimeRangeUnitType = "Year" | "Month" | "Day";
-
-  type TopRequestDto = Partial<{
+  type TopRequestDto = ImplementsPartial<ITopAndCountRequestDto, {
     resultsCount: number;
     timeRangeUnitType: TimeRangeUnitType;
     timeRangeUnitCount: number;

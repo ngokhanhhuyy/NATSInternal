@@ -6,7 +6,7 @@ public class TopRequestDto : ITopAndCountRequestDto
 {
     #region Properties
     public int ResultsCount { get; set; }
-    public TopTimeRangeUnitType TimeRangeUnitType { get; set; }
+    public TimeRangeUnitType TimeRangeUnitType { get; set; }
     public int TimeRangeUnitCount { get; set; }
     #endregion
 

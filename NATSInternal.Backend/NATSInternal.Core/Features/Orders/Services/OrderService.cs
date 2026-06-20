@@ -28,6 +28,7 @@ internal class OrderService : IOrderService
     private readonly IListFetchingService _listFetchingService;
     private readonly IStatsMonthYearService _statsMonthYearService;
     private readonly IHasProductService<OrderProductItemUpsertRequestDto, OrderProductItem> _hasProductService;
+    private readonly ITopAndCountService _topAndCountService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IValidator<OrderListRequestDto> _listValidator;
     private readonly IValidator<OrderUpsertRequestDto> _upsertValidator;
@@ -44,6 +45,7 @@ internal class OrderService : IOrderService
         IListFetchingService listFetchingService,
         IStatsMonthYearService statsMonthYearService,
         IHasProductService<OrderProductItemUpsertRequestDto, OrderProductItem> hasProductService,
+        ITopAndCountService topAndCountService,
         IAuthorizationInternalService authorizationService,
         IValidator<OrderListRequestDto> listValidator,
         IValidator<OrderUpsertRequestDto> upsertValidator,
@@ -57,6 +59,7 @@ internal class OrderService : IOrderService
         _listFetchingService = listFetchingService;
         _statsMonthYearService = statsMonthYearService;
         _hasProductService = hasProductService;
+        _topAndCountService = topAndCountService;
         _authorizationService = authorizationService;
         _listValidator = listValidator;
         _upsertValidator = upsertValidator;
@@ -426,6 +429,43 @@ internal class OrderService : IOrderService
         }
     }
 
+    public async Task<CountResponseDto<long>> GetRevenueAsync(CountRequestDto requestDto)
+    {
+        return await _topAndCountService.GetCountAsync(requestDto, (minDate, maxDate) =>
+        {
+            return _context.Orders
+                .Where(o => o.DeletedDateTime == null)
+                .Where(o => o.StatsDate >= minDate && o.StatsDate <= maxDate)
+                .SumAsync(o => o.CachedAmountAfterVat);
+        });
+    }
+
+    public async Task<CountResponseDto<int>> GetCountAsync(CountRequestDto requestDto)
+    {
+        return await _topAndCountService.GetCountAsync(requestDto, (minDate, maxDate) =>
+        {
+            return _context.Orders
+                .Where(o => o.DeletedDateTime == null)
+                .Where(o => o.StatsDate >= minDate && o.StatsDate <= maxDate)
+                .CountAsync();
+        });
+    }
+
+    public async Task<CountResponseDto<int>> GetConsultantCountAsync(CountRequestDto requestDto)
+    {
+        return await GetOrderCountAsync(requestDto, OrderType.Consultant);
+    }
+
+    public async Task<CountResponseDto<int>> GetRetailCountAsync(CountRequestDto requestDto)
+    {
+        return await GetOrderCountAsync(requestDto, OrderType.Retail);
+    }
+
+    public async Task<CountResponseDto<int>> GetTreatmentCountAsync(CountRequestDto requestDto)
+    {
+        return await GetOrderCountAsync(requestDto, OrderType.Treatment);
+    }
+
     public async Task<List<StatsMonthYearResponseDto>> GetStatsMonthYearSeriesAsync()
     {
         return await _statsMonthYearService.GetStatsMonthYearSeries(_context.Orders);
@@ -444,6 +484,25 @@ internal class OrderService : IOrderService
             exception.AddPropertyPathElementToTheBeginning(new object[] { nameof(requestDto.Customer) });
             throw;
         }
+    }
+
+    private async Task<CountResponseDto<int>> GetOrderCountAsync(
+        CountRequestDto requestDto,
+        OrderType? type = null)
+    {
+        return await _topAndCountService.GetCountAsync(requestDto, (minDate, maxDate) =>
+        {
+            IQueryable<Order> query = _context.Orders
+                .Where(o => o.DeletedDateTime == null)
+                .Where(o => o.StatsDate >= minDate && o.StatsDate <= maxDate);
+
+            if (type is not null)
+            {
+                query = query.Where(o => o.Type == type);
+            }
+
+            return query.CountAsync();
+        });
     }
 
     private async Task CreatePaymentAsync(OrderUpsertRequestDto orderRequestDto, Order order)

@@ -93,10 +93,6 @@ internal class Order : IHasStatsEntity
 
     [NotMapped]
     public Payment? EffectivePayment => Payments.SingleOrDefault(p => p.DeletedDateTime is null);
-
-    [NotMapped]
-    public static Expression<Func<Order, long>> AmountAfterVatExpression => (order) =>
-        order.ProductItems.Sum(oi => (oi.AmountBeforeVatPerUnit + oi.VatAmountPerUnit) * oi.Quantity);
     #endregion
 
     #region Methods

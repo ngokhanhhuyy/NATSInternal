@@ -1,6 +1,6 @@
 namespace NATSInternal.Core.Common.Enums;
 
-public enum TopTimeRangeUnitType
+public enum TimeRangeUnitType
 {
     #region Elements
     Year,

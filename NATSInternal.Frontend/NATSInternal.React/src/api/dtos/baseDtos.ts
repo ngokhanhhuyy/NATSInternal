@@ -1,4 +1,6 @@
 declare global {
+  type TimeRangeUnitType = "Year" | "Month" | "Day";
+
   // RequestDtos.
   interface IListRequestDto {
     sortByAscending: boolean;
@@ -38,6 +40,11 @@ declare global {
     items: TBasic[];
     pageCount: number;
     itemCount: number;
+  }
+
+  interface ITopAndCountRequestDto {
+    timeRangeUnitType: TimeRangeUnitType;
+    timeRangeUnitCount: number;
   }
 }
 

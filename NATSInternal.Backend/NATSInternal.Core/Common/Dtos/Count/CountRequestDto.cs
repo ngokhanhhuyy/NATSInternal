@@ -5,7 +5,7 @@ namespace NATSInternal.Core.Common.Dtos;
 public class CountRequestDto : ITopAndCountRequestDto
 {
     #region Properties
-    public TopTimeRangeUnitType TimeRangeUnitType { get; set; }
+    public TimeRangeUnitType TimeRangeUnitType { get; set; }
     public int TimeRangeUnitCount { get; set; }
     #endregion
 

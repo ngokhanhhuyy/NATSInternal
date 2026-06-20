@@ -6,6 +6,11 @@ export type OrderApi = {
   createAsync(requestDto: OrderUpsertRequestDto): Promise<number>;
   updateAsync(id: number, requestDto: OrderUpsertRequestDto): Promise<void>;
   deleteAsync(id: number): Promise<void>;
+  getRevenueAsync(requestDto: CountRequestDto): Promise<CountResponseDto>;
+  getCountAsync(requestDto: CountRequestDto): Promise<CountResponseDto>;
+  getConsultantCountAsync(requestDto: CountRequestDto): Promise<CountResponseDto>;
+  getRetailCountAsync(requestDto: CountRequestDto): Promise<CountResponseDto>;
+  getTreatmentCountAsync(requestDto: CountRequestDto): Promise<CountResponseDto>;
   getStatsMonthYearSeriesAsync(): Promise<StatsMonthYearResponseDto[]>;
 };
 
@@ -24,6 +29,21 @@ export const orderApi: OrderApi = {
   },
   async deleteAsync(id: number): Promise<void> {
     await httpClient.deleteAndIgnoreAsync(`/orders/${id}`);
+  },
+  async getCountAsync(requestDto: CountRequestDto): Promise<CountResponseDto> {
+    return await httpClient.getAsync("/orders/count", requestDto);
+  },
+  async getRevenueAsync(requestDto: CountRequestDto): Promise<CountResponseDto> {
+    return await httpClient.getAsync("/orders/revenue", requestDto);
+  },
+  async getConsultantCountAsync(requestDto: CountRequestDto): Promise<CountResponseDto> {
+    return await httpClient.getAsync("/orders/consultant-count", requestDto);
+  },
+  async getRetailCountAsync(requestDto: CountRequestDto): Promise<CountResponseDto> {
+    return await httpClient.getAsync("/orders/retail-count", requestDto);
+  },
+  async getTreatmentCountAsync(requestDto: CountRequestDto): Promise<CountResponseDto> {
+    return await httpClient.getAsync("/orders/treatment-count", requestDto);
   },
   async getStatsMonthYearSeriesAsync(): Promise<StatsMonthYearResponseDto[]> {
     if (statsMonthYearResponseDtos == null) {

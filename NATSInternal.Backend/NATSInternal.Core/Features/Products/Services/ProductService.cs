@@ -357,7 +357,7 @@ internal class ProductService : IProductService
     public async Task<TopResponseDto<ProductBasicResponseDto, int>> GetTopBySoldQuantity(TopRequestDto requestDto)
     {
         return await _topService.GetTopAsync(requestDto, earliestDate => _context.Products
-            .Include(p => p.OrderProductItems)
+            .Include(p => p.OrderProductItems.Where(opi => opi.Order.StatsDate >= earliestDate))
             .OrderByDescending(p => p.OrderProductItems.Sum(opi => opi.Quantity))
             .Select(p => new TopItemResponseDto<ProductBasicResponseDto, int>(
                 new ProductBasicResponseDto(p),
@@ -372,7 +372,9 @@ internal class ProductService : IProductService
             .OrderByDescending(p => p.OrderProductItems.Sum(opi => opi.AmountBeforeVatPerUnit * opi.Quantity))
             .Select(p => new TopItemResponseDto<ProductBasicResponseDto, long>(
                 new ProductBasicResponseDto(p),
-                p.OrderProductItems.Sum(opi => opi.AmountBeforeVatPerUnit * opi.Quantity))));
+                p.OrderProductItems
+                    .Where(opi => opi.Order.StatsDate >= earliestDate)
+                    .Sum(opi => opi.AmountBeforeVatPerUnit * opi.Quantity))));
     }
     #endregion
 }

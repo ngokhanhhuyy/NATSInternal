@@ -75,20 +75,24 @@ export default function TopByCriterionPanel(props: TopPanelProps): React.ReactNo
                     {isInitialRendering ? "Đang tải ..." : "Không có sản phẩm nào"}
                   </span>
                 </li>
-              ) : model.items.map((item, index) => (
+              ) : Array.from({ length: model.resultsCount }).map((_, index) => (
                 <li className="list-group-item px-2 py-1 flex flex-col justify-center items-start min-w-0" key={index}>
-                  <Link
-                    className={joinClassName(
-                      "text-blue-700 dark:text-blue-400 font-bold",
-                      "overflow-hidden text-ellipsis whitespace-nowrap w-full"
-                    )}
-                    to={item.item.detailRoutePath}
-                  >
-                    {item.item.name}
-                  </Link>
+                  {model.items[index] ? (
+                    <Link
+                      className={joinClassName(
+                        "text-blue-700 dark:text-blue-400 font-bold",
+                        "overflow-hidden text-ellipsis whitespace-nowrap w-full"
+                      )}
+                      to={model.items[index].item.detailRoutePath}
+                    >
+                      {model.items[index].item.name}
+                    </Link>
+                  ) : (
+                    <span className="opacity-50">{index}</span>
+                  )}
 
-                  <span className="opacity-50 text-sm">
-                    {computeDisplayMetric(item)}
+                  <span className={joinClassName("text-sm", model.items[index] ? "opacity-50" : "opacity-0")}>
+                    {computeDisplayMetric(model.items[index])}
                   </span>
                 </li>
               ))}

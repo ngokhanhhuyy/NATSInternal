@@ -7,6 +7,7 @@ import { loadDataAsync } from "./dataLoader";
 // Child components.
 import HasStatsListPage from "@/pages/shared/list/listPage/hasStatsList";
 import OrderListResults from "@/pages/shared/list/orderListResults";
+import CountByCriteria from "./CountByCriteriaPanel";
 import { FormField, SelectInput, type SelectInputOption } from "@/components/form";
 import { TagIcon } from "@heroicons/react/24/outline";
 
@@ -80,7 +81,33 @@ export default function OrderListPage(): React.ReactNode {
           </div>
         </FormField>
       }
-      sideBarPanels={<></>}
+      sideBarPanels={
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 gap-3 items-start self-start">
+          <CountByCriteria
+            orderType="Retail"
+            unit="đơn"
+            getCountAsync={(api, requestDto) => api.order.getRetailCountAsync(requestDto)}
+          />
+          
+          <CountByCriteria
+            orderType="Retail"
+            unit="đơn"
+            getCountAsync={(api, requestDto) => api.order.getRetailCountAsync(requestDto)}
+          />
+
+          <CountByCriteria
+            orderType="Treatment"
+            unit="đơn"
+            getCountAsync={(api, requestDto) => api.order.getTreatmentCountAsync(requestDto)}
+          />
+
+          <CountByCriteria
+            orderType="Consultant"
+            unit="đơn"
+            getCountAsync={(api, requestDto) => api.order.getConsultantCountAsync(requestDto)}
+          />
+        </div>
+      }
       isReloading={isReloading}
       canCreate={metadata.creatingAuthorization.canCreateOrder}
     >
