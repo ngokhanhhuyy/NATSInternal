@@ -9,7 +9,8 @@ import { ArrowLongRightIcon, ArrowTrendingDownIcon, ArrowTrendingUpIcon } from "
 
 // Props.
 type CountByCriteriaPanelProps = {
-  orderType: OrderType;
+  criteriaName?: string;
+  criteriaDisplayName?: string;
   unit: string;
   format?(count: number): string;
   getCountAsync(api: IApi, requestDto: CountRequestDto): Promise<CountResponseDto>;
@@ -29,8 +30,8 @@ export default function CountByCriteria(props: CountByCriteriaPanelProps): React
   // Computed.
   const title = compute<string>(() => {
     return (
-      `${getDisplayName(props.orderType)} trong ${model.timeRangeUnitCount} ` +
-      `${getDisplayName(model.timeRangeUnitType)} gần nhất`
+      `${props.criteriaDisplayName ?? ( props.criteriaName && getDisplayName(props.criteriaName))} ` +
+      `${model.timeRangeUnitCount} ${getDisplayName(model.timeRangeUnitType)} gần nhất`
     );
   });
 

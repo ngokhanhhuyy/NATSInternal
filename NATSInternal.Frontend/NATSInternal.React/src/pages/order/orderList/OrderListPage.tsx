@@ -84,25 +84,40 @@ export default function OrderListPage(): React.ReactNode {
       sideBarPanels={
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 gap-3 items-start self-start">
           <CountByCriteria
-            orderType="Retail"
-            unit="đơn"
-            getCountAsync={(api, requestDto) => api.order.getRetailCountAsync(requestDto)}
+            criteriaDisplayName="Doanh thu"
+            unit="vnđ"
+            format={(revenue) => {
+              if (revenue < 1_000_000) {
+                return Math.ceil(revenue / 1_000) + "k";
+              }
+
+              if (revenue === 1_000_000) {
+                return "1tr";
+              }
+
+              if (revenue > 100_000_000) {
+                return Math.ceil(revenue / 1_000_000) + "tr";
+              }
+
+              return parseFloat((revenue / 1_000_000).toFixed(1)) + "tr";
+            }}
+            getCountAsync={(api, requestDto) => api.order.getRevenueAsync(requestDto)}
           />
           
           <CountByCriteria
-            orderType="Retail"
+            criteriaName="Retail"
             unit="đơn"
             getCountAsync={(api, requestDto) => api.order.getRetailCountAsync(requestDto)}
           />
 
           <CountByCriteria
-            orderType="Treatment"
+            criteriaName="Treatment"
             unit="đơn"
             getCountAsync={(api, requestDto) => api.order.getTreatmentCountAsync(requestDto)}
           />
 
           <CountByCriteria
-            orderType="Consultant"
+            criteriaName="Consultant"
             unit="đơn"
             getCountAsync={(api, requestDto) => api.order.getConsultantCountAsync(requestDto)}
           />
