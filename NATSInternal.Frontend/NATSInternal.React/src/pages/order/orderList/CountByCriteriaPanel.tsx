@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { api, type IApi } from "@/api";
 import { createCountModel } from "@/models";
 import { getDisplayName } from "@/metadata";
 import { compute, joinClassName } from "@/helpers";
 
 // Child components.
+import { SelectInput, type SelectInputOption } from "@/components/form";
 import { ArrowLongRightIcon, ArrowTrendingDownIcon, ArrowTrendingUpIcon } from "@heroicons/react/24/outline";
 
 // Props.
@@ -19,7 +20,7 @@ type CountByCriteriaPanelProps = {
 // Components.
 export default function CountByCriteria(props: CountByCriteriaPanelProps): React.ReactNode {
   // States.
-  const [isInitialRendering, setIsInitialRendering] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [model, setModel] = useState<CountModel>(() => {
     const m = createCountModel();
     m.timeRangeUnitType = "Day";
@@ -47,19 +48,48 @@ export default function CountByCriteria(props: CountByCriteriaPanelProps): React
     return "text-red-700 dark:text-red-400";
   });
 
+  const timeRangeValue = compute<string>(() => {
+    return `${model.timeRangeUnitCount}-${model.timeRangeUnitType.toLowerCase()}`;
+  });
+
+  const timeRangeOptions = useMemo<SelectInputOption[]>(() => {
+    return [
+      { value: "7-day", displayName: "7 ngày" },
+      { value: "14-day", displayName: "2 tuần" },
+      { value: "1-month", displayName: "1 tháng" },
+    ];
+  }, []);
+
+  // Callbacks.
+  function handleTimeRangeChanged(timeRange: string): void {
+    switch (timeRange) {
+      default:
+      case "7-day":
+        setModel(m => ({ ...m, timeRangeUnitType: "Day", timeRangeUnitCount: 7 }));
+        break;
+      case "14-day":
+        setModel(m => ({ ...m, timeRangeUnitType: "Day", timeRangeUnitCount: 14 }));
+        break;
+      case "1-month":
+        setModel(m => ({ ...m, timeRangeUnitType: "Month", timeRangeUnitCount: 1 }));
+        break;
+    }
+  }
+
   // Effect.
   useEffect(() => {
+    setIsLoading(true);
     const loadAsync = async () => {
       try {
         const responseDto = await props.getCountAsync(api, model.toRequestDto());
         setModel(m => m.mapFromResponseDto(responseDto));
       } finally {
-        setIsInitialRendering(false);
+        setIsLoading(false);
       }
     };
 
     loadAsync().then(() => { });
-  }, []);
+  }, [model.timeRangeUnitType, model.timeRangeUnitCount]);
 
   // Template.
   function renderIcon(): React.ReactNode {
@@ -83,31 +113,40 @@ export default function CountByCriteria(props: CountByCriteriaPanelProps): React
         </div>
       </div>
 
-      <div className="panel-body p-3">
-        {isInitialRendering ? (
+      <div className="panel-body flex flex-col p-3 gap-3">
+        {isLoading ? (
           <div className="panel-body-area px-3 py-5 flex justify-center items-center">
             <span className="opacity-50">Đang tải ...</span>
           </div>
         ) : (
-          <div className="panel-body-area grid grid-cols-[1fr_auto] gap-1 p-3">
-            <div className="flex flex-col">
-              <div className={joinClassName("flex gap-2 items-center", percentageTextColor)}>
-                <span>
-                  {model.percentageComparedToPreviousTimeRange >= 0 && "+"}
-                  {model.percentageComparedToPreviousTimeRange}%
-                </span>
-                {renderIcon()} 
+          <>
+            <div className="panel-body-area grid grid-cols-[1fr_auto] gap-1 p-3">
+              <div className="flex flex-col">
+                <div className={joinClassName("flex gap-2 items-center", percentageTextColor)}>
+                  <span>
+                    {model.percentageComparedToPreviousTimeRange >= 0 && "+"}
+                    {model.percentageComparedToPreviousTimeRange}%
+                  </span>
+                  {renderIcon()} 
+                </div>
+                <span className="opacity-50 text-sm">So với kì trước</span>
               </div>
-              <span className="opacity-50 text-sm">So với kì trước</span>
+
+              <div className="flex jusitfy-end items-end gap-1">
+                <span className="text-blue-700 dark:text-blue-400 text-4xl">
+                  {props.format?.(model.currentTimeRangeCount) ?? model.currentTimeRangeCount}
+                </span>
+                <span className="text-lg">{props.unit}</span>
+              </div>
             </div>
 
-            <div className="flex jusitfy-end items-end gap-1">
-              <span className="text-blue-700 dark:text-blue-400 text-4xl">
-                {props.format?.(model.currentTimeRangeCount) ?? model.currentTimeRangeCount}
-              </span>
-              <span className="text-lg">{props.unit}</span>
-            </div>
-          </div>
+            <SelectInput
+              className="form-control-sm self-end w-fit"
+              options={timeRangeOptions}
+              value={timeRangeValue}
+              onValueChanged={handleTimeRangeChanged}
+            />
+          </>
         )}
       </div>
     </div>
