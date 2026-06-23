@@ -429,7 +429,7 @@ internal class OrderService : IOrderService
         }
     }
 
-    public async Task<CountResponseDto<long>> GetRevenueAsync(CountRequestDto requestDto)
+    public async Task<CountOverTimeRangeResponseDto<long>> GetRevenueAsync(CountOverTimeRangeRequestDto requestDto)
     {
         return await _topAndCountService.GetCountAsync(requestDto, (minDate, maxDate) =>
         {
@@ -440,7 +440,7 @@ internal class OrderService : IOrderService
         });
     }
 
-    public async Task<CountResponseDto<int>> GetCountAsync(CountRequestDto requestDto)
+    public async Task<CountOverTimeRangeResponseDto<int>> GetCountAsync(CountOverTimeRangeRequestDto requestDto)
     {
         return await _topAndCountService.GetCountAsync(requestDto, (minDate, maxDate) =>
         {
@@ -451,17 +451,19 @@ internal class OrderService : IOrderService
         });
     }
 
-    public async Task<CountResponseDto<int>> GetConsultantCountAsync(CountRequestDto requestDto)
+    public async Task<CountOverTimeRangeResponseDto<int>> GetConsultantCountAsync(
+        CountOverTimeRangeRequestDto requestDto)
     {
         return await GetOrderCountAsync(requestDto, OrderType.Consultant);
     }
 
-    public async Task<CountResponseDto<int>> GetRetailCountAsync(CountRequestDto requestDto)
+    public async Task<CountOverTimeRangeResponseDto<int>> GetRetailCountAsync(CountOverTimeRangeRequestDto requestDto)
     {
         return await GetOrderCountAsync(requestDto, OrderType.Retail);
     }
 
-    public async Task<CountResponseDto<int>> GetTreatmentCountAsync(CountRequestDto requestDto)
+    public async Task<CountOverTimeRangeResponseDto<int>> GetTreatmentCountAsync(
+        CountOverTimeRangeRequestDto requestDto)
     {
         return await GetOrderCountAsync(requestDto, OrderType.Treatment);
     }
@@ -486,8 +488,8 @@ internal class OrderService : IOrderService
         }
     }
 
-    private async Task<CountResponseDto<int>> GetOrderCountAsync(
-        CountRequestDto requestDto,
+    private async Task<CountOverTimeRangeResponseDto<int>> GetOrderCountAsync(
+        CountOverTimeRangeRequestDto requestDto,
         OrderType? type = null)
     {
         return await _topAndCountService.GetCountAsync(requestDto, (minDate, maxDate) =>

@@ -6,6 +6,11 @@ export type CustomerApi = {
   createAsync(requestDto: CustomerUpsertRequestDto): Promise<number>;
   updateAsync(id: number, requestDto: CustomerUpsertRequestDto): Promise<void>;
   deleteAsync(id: number): Promise<void>;
+  getCountAsync(): Promise<number>;
+  getHavingDebtAsync(): Promise<number>;
+  getRefundNeededCountAsync(): Promise<number>;
+  getNewCountAsync(requestDto: CountOverTimeRangeRequestDto): Promise<CountOverTimeRangeResponseDto>;
+  getPurchasedCountAsync(requestDto: CountOverTimeRangeRequestDto): Promise<CountOverTimeRangeResponseDto>;
 };
 
 export const customerApi: CustomerApi = {
@@ -23,5 +28,20 @@ export const customerApi: CustomerApi = {
   },
   async deleteAsync(id: number): Promise<void> {
     return httpClient.deleteAndIgnoreAsync(`/customers/${id}`);
+  },
+  async getCountAsync(): Promise<number> {
+    return httpClient.getAsync("/customers/count");
+  },
+  async getHavingDebtAsync(): Promise<number> {
+    return httpClient.getAsync("/customers/having-debt-count");
+  },
+  async getRefundNeededCountAsync(): Promise<number> {
+    return httpClient.getAsync("/customers/refund-needed-count");
+  },
+  async getNewCountAsync(requestDto: CountOverTimeRangeRequestDto): Promise<CountOverTimeRangeResponseDto> {
+    return httpClient.getAsync("/customers/new-count", requestDto);
+  },
+  async getPurchasedCountAsync(requestDto: CountOverTimeRangeRequestDto): Promise<CountOverTimeRangeResponseDto> {
+    return httpClient.getAsync("/customers/purchased-count", requestDto);
   }
 };

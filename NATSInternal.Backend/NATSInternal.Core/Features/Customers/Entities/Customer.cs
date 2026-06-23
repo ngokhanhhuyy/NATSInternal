@@ -1,4 +1,5 @@
 using Bogus.Extensions;
+using NATSInternal.Core.Features.Orders;
 using NATSInternal.Core.Features.Users;
 using System.ComponentModel.DataAnnotations;
 
@@ -116,6 +117,7 @@ internal class Customer
     public User CreatedUser { get; set; } = null!;
     public User? LastUpdatedUser { get; set; }
     public User? DeletedUser { get; set; }
+    public List<Order> Orders { get; private set; } = new();
     #endregion
 
     #region PrivateMethods

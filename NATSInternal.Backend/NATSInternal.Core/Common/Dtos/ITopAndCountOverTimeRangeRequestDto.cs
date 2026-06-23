@@ -2,7 +2,7 @@ using NATSInternal.Core.Common.Enums;
 
 namespace NATSInternal.Core.Common.Dtos;
 
-public interface ITopAndCountRequestDto : IRequestDto
+public interface ITopAndCountOverTimeRangeRequestDto : IRequestDto
 {
     #region Properties
     TimeRangeUnitType TimeRangeUnitType { get; set; }

@@ -13,14 +13,14 @@ internal class TopAndCountService : ITopAndCountService
 {
     #region Fields
     private readonly IValidator<TopRequestDto> _topValidator;
-    private readonly IValidator<CountRequestDto> _countValidator;
+    private readonly IValidator<CountOverTimeRangeRequestDto> _countValidator;
     private readonly IClock _clock;
     #endregion
 
     #region Constructors
     public TopAndCountService(
         IValidator<TopRequestDto> topValidator,
-        IValidator<CountRequestDto> countValidator, IClock clock)
+        IValidator<CountOverTimeRangeRequestDto> countValidator, IClock clock)
     {
         _topValidator = topValidator;
         _countValidator = countValidator;
@@ -29,7 +29,7 @@ internal class TopAndCountService : ITopAndCountService
     #endregion
 
     #region Methods
-    public async Task<TopResponseDto<TBasicResponseDto, TMetric>> GetTopAsync<TBasicResponseDto, TMetric>(
+    public async Task<TopOverTimeRangeResponseDto<TBasicResponseDto, TMetric>> GetTopAsync<TBasicResponseDto, TMetric>(
         TopRequestDto requestDto,
         Func<DateOnly, IQueryable<TopItemResponseDto<TBasicResponseDto, TMetric>>> getQuery)
             where TBasicResponseDto : class
@@ -45,8 +45,8 @@ internal class TopAndCountService : ITopAndCountService
         return new(itemResponseDtos);
     }
 
-    public async Task<CountResponseDto<int>> GetCountAsync(
-        CountRequestDto requestDto,
+    public async Task<CountOverTimeRangeResponseDto<int>> GetCountAsync(
+        CountOverTimeRangeRequestDto requestDto,
         Func<DateOnly, DateOnly, Task<int>> getTask)
     {
         TimeRangeCounts<int> counts = await GetCountsAsync(requestDto, getTask);
@@ -56,8 +56,8 @@ internal class TopAndCountService : ITopAndCountService
         return new(counts.CurrentTimeRangeCount, counts.PreviousTimeRangeCount, percentageDifference);
     }
 
-    public async Task<CountResponseDto<long>> GetCountAsync(
-        CountRequestDto requestDto,
+    public async Task<CountOverTimeRangeResponseDto<long>> GetCountAsync(
+        CountOverTimeRangeRequestDto requestDto,
         Func<DateOnly, DateOnly, Task<long>> getTask)
     {
         TimeRangeCounts<long> counts = await GetCountsAsync(requestDto, getTask);
@@ -70,7 +70,7 @@ internal class TopAndCountService : ITopAndCountService
 
     #region PrivateMethods
     private async Task<TimeRangeCounts<TMetric>> GetCountsAsync<TMetric>(
-        CountRequestDto requestDto,
+        CountOverTimeRangeRequestDto requestDto,
         Func<DateOnly, DateOnly, Task<TMetric>> getTask) where TMetric : INumber<TMetric>
     {
         _countValidator.ValidateAndThrow(requestDto);
@@ -88,7 +88,7 @@ internal class TopAndCountService : ITopAndCountService
         };
     }
 
-    private TimeRangeDates GetTimeRangeDates(ITopAndCountRequestDto requestDto)
+    private TimeRangeDates GetTimeRangeDates(ITopAndCountOverTimeRangeRequestDto requestDto)
     {
         DateOnly GetMinDate(DateOnly baseDate)
         {

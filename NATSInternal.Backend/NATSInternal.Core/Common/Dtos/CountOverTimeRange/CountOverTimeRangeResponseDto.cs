@@ -1,9 +1,9 @@
 namespace NATSInternal.Core.Common.Dtos;
 
-public class CountResponseDto<TMetric> : IRequestDto
+public class CountOverTimeRangeResponseDto<TMetric> : IRequestDto
 {
     #region Constructors
-    public CountResponseDto(
+    public CountOverTimeRangeResponseDto(
         TMetric currentTimeRangeCount,
         TMetric previousTimeRangeCount,
         int percentageComparedToPreviousTimeRange)

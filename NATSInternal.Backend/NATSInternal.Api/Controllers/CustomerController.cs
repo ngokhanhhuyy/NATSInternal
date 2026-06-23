@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NATSInternal.Core.Common.Dtos;
 using NATSInternal.Core.Features.Customers;
 
 namespace NATSInternal.Api.Controllers;
@@ -73,6 +74,46 @@ public class CustomerController : ControllerBase
     {
         await _service.DeleteAsync(id);
         return Ok();
+    }
+
+    [HttpGet("count")]
+    [ProducesResponseType<int>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Count()
+    {
+        return Ok(await _service.GetCountAsync());
+    }
+
+    [HttpGet("having-debt-count")]
+    [ProducesResponseType<int>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> HavingDebtCount()
+    {
+        return Ok(await _service.GetHavingDebtCountAsync());
+    }
+
+    [HttpGet("refund-needed-count")]
+    [ProducesResponseType<int>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> RefundNeededCount()
+    {
+        return Ok(await _service.GetRefundNeededCountAsync());
+    }
+
+    [HttpGet("new-count")]
+    [ProducesResponseType<CountOverTimeRangeResponseDto<int>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> NewCount([FromQuery] CountOverTimeRangeRequestDto requestDto)
+    {
+        return Ok(await _service.GetNewCountAsync(requestDto));
+    }
+
+    [HttpGet("purchased-count")]
+    [ProducesResponseType<CountOverTimeRangeResponseDto<int>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> PurchasedCount([FromQuery] CountOverTimeRangeRequestDto requestDto)
+    {
+        return Ok(await _service.GetPurchasedCountAsync(requestDto));
     }
     #endregion
 }

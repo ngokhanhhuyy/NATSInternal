@@ -10,11 +10,11 @@ public interface IOrderService
     Task<int> CreateAsync(OrderUpsertRequestDto requestDto);
     Task UpdateAsync(int id, OrderUpsertRequestDto requestDto);
     Task DeleteAsync(int id);
-    Task<CountResponseDto<long>> GetRevenueAsync(CountRequestDto requestDto);
-    Task<CountResponseDto<int>> GetCountAsync(CountRequestDto requestDto);
-    Task<CountResponseDto<int>> GetConsultantCountAsync(CountRequestDto requestDto);
-    Task<CountResponseDto<int>> GetRetailCountAsync(CountRequestDto requestDto);
-    Task<CountResponseDto<int>> GetTreatmentCountAsync(CountRequestDto requestDto);
+    Task<CountOverTimeRangeResponseDto<long>> GetRevenueAsync(CountOverTimeRangeRequestDto requestDto);
+    Task<CountOverTimeRangeResponseDto<int>> GetCountAsync(CountOverTimeRangeRequestDto requestDto);
+    Task<CountOverTimeRangeResponseDto<int>> GetConsultantCountAsync(CountOverTimeRangeRequestDto requestDto);
+    Task<CountOverTimeRangeResponseDto<int>> GetRetailCountAsync(CountOverTimeRangeRequestDto requestDto);
+    Task<CountOverTimeRangeResponseDto<int>> GetTreatmentCountAsync(CountOverTimeRangeRequestDto requestDto);
     Task<List<StatsMonthYearResponseDto>> GetStatsMonthYearSeriesAsync();
     #endregion
 }

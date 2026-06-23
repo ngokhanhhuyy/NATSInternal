@@ -1,6 +1,7 @@
 using FluentValidation;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
+using NATSInternal.Core.Common.Dtos;
 using NATSInternal.Core.Common.Exceptions;
 using NATSInternal.Core.Common.Extensions;
 using NATSInternal.Core.Common.Localization;
@@ -19,6 +20,7 @@ internal class CustomerInternalService : ICustomerInternalService
     #region Fields
     private readonly AppDbContext _context;
     private readonly IListFetchingService _listFetchingService;
+    private readonly ITopAndCountService _topAndCountService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IValidator<CustomerListRequestDto> _listValidator;
     private readonly IValidator<CustomerUpsertRequestDto> _upsertValidator;
@@ -32,6 +34,7 @@ internal class CustomerInternalService : ICustomerInternalService
         AppDbContext context,
         IListFetchingService listFetchingService,
         IAuthorizationInternalService authorizationService,
+        ITopAndCountService topAndCountService,
         IValidator<CustomerListRequestDto> listValidator,
         IValidator<CustomerUpsertRequestDto> upsertValidator,
         IDbExceptionHandler exceptionHandler,
@@ -41,6 +44,7 @@ internal class CustomerInternalService : ICustomerInternalService
         _context = context;
         _listFetchingService = listFetchingService;
         _authorizationService = authorizationService;
+        _topAndCountService = topAndCountService;
         _listValidator = listValidator;
         _upsertValidator = upsertValidator;
         _exceptionHandler = exceptionHandler;
@@ -312,6 +316,48 @@ internal class CustomerInternalService : ICustomerInternalService
 
             throw;
         }
+    }
+
+    public async Task<int> GetCountAsync()
+    {
+        return await _context.Customers.CountAsync(c => c.DeletedDateTime == null);
+    }
+
+    public async Task<int> GetHavingDebtCountAsync()
+    {
+        return await _context.Customers
+            .Where(c => c.DeletedDateTime == null)
+            .Where(c => c.CachedDebtAmount > 0)
+            .CountAsync();
+    }
+
+    public async Task<int> GetRefundNeededCountAsync()
+    {
+        return await _context.Customers
+            .Where(c => c.DeletedDateTime == null)
+            .Where(c => c.CachedDebtAmount < 0)
+            .CountAsync();
+    }
+
+    public async Task<CountOverTimeRangeResponseDto<int>> GetNewCountAsync(CountOverTimeRangeRequestDto requestDto)
+    {
+        return await _topAndCountService.GetCountAsync(requestDto, (minDate, maxDate) => _context.Customers
+            .Where(c => c.DeletedDateTime == null)
+            .Where(c => DateOnly.FromDateTime(c.CreatedDateTime) >= minDate)
+            .Where(c => DateOnly.FromDateTime(c.CreatedDateTime) <= maxDate)
+            .CountAsync());
+    }
+
+    public async Task<CountOverTimeRangeResponseDto<int>> GetPurchasedCountAsync(
+        CountOverTimeRangeRequestDto requestDto)
+    {
+        return await _topAndCountService.GetCountAsync(requestDto, (minDate, maxDate) => _context.Customers
+            .Where(c => c.DeletedDateTime == null)
+            .Where(c => c.Orders.Any(o =>
+                o.DeletedDateTime == null &&
+                o.StatsDate >= minDate &&
+                o.StatsDate <= maxDate))
+            .CountAsync());
     }
     #endregion
 

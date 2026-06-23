@@ -6,7 +6,7 @@ declare global {
 }
 
 export function createTopItemModel<TBasicResponseDto extends object, TBasicModel extends object, TMetric>(
-  responseDto: TopItemResponseDto<TBasicResponseDto, TMetric>,
+  responseDto: TopOverTimeRangeItemResponseDto<TBasicResponseDto, TMetric>,
   createBasicModel: (basicResponseDto: TBasicResponseDto) => TBasicModel): TopItemModel<TBasicModel, TMetric>
 {
   return {

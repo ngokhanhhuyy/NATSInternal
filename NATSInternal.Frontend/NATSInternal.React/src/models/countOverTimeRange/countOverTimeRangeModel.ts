@@ -1,29 +1,32 @@
 declare global {
-  type CountModel = {
+  type CountOverTimeRangeModel = {
     timeRangeUnitType: TimeRangeUnitType;
     timeRangeUnitCount: number;
     currentTimeRangeCount: number;
     previousTimeRangeCount: number;
     percentageComparedToPreviousTimeRange: number;
-    toRequestDto(): CountRequestDto;
-    mapFromResponseDto(responseDto: CountResponseDto): CountModel;
+    toRequestDto(): CountOverTimeRangeRequestDto;
+    mapFromResponseDto(responseDto: CountOverTimeRangeResponseDto): CountOverTimeRangeModel;
   };
 }
 
-export function createCountModel(responseDto?: CountResponseDto, requestDto?: CountRequestDto): CountModel {
-  const model: CountModel = {
+export function createCountModel(
+  responseDto?: CountOverTimeRangeResponseDto,
+  requestDto?: CountOverTimeRangeRequestDto): CountOverTimeRangeModel
+{
+  const model: CountOverTimeRangeModel = {
     timeRangeUnitType: "Day",
     timeRangeUnitCount: 7,
     currentTimeRangeCount: responseDto?.currentTimeRangeCount ?? 0,
     previousTimeRangeCount: responseDto?.previousTimeRangeCount ?? 0,
     percentageComparedToPreviousTimeRange: responseDto?.percentageDiffComparedToPreviousTimeRange ?? 0,
-    toRequestDto(): CountRequestDto {
+    toRequestDto(): CountOverTimeRangeRequestDto {
       return {
         timeRangeUnitType: this.timeRangeUnitType,
         timeRangeUnitCount: this.timeRangeUnitCount
       };
     },
-    mapFromResponseDto(responseDto: CountResponseDto): CountModel {
+    mapFromResponseDto(responseDto: CountOverTimeRangeResponseDto): CountOverTimeRangeModel {
       return {
         ...this,
         currentTimeRangeCount: responseDto.currentTimeRangeCount,

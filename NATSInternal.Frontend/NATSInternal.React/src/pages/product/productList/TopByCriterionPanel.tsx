@@ -7,7 +7,7 @@ import { compute, joinClassName, getDisplayAmountText } from "@/helpers";
 
 // Props.
 type TopPanelProps = {
-  getTopAsync(api: IApi, requestDto: TopRequestDto): Promise<TopResponseDto<ProductBasicResponseDto, number>>;
+  getTopAsync(api: IApi, requestDto: TopOverTimeRangeRequestDto): Promise<TopOverTimeRangeResponseDto<ProductBasicResponseDto, number>>;
   criterion: "SoldQuantity" | "Revenue";
 };
 

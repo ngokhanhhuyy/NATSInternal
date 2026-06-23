@@ -64,7 +64,7 @@ function BaseListFilterOptionsArea<
 
       <div className={joinClassName(
         "grid grid-cols-1 sm:grid-cols-[1.5fr_1fr] md:grid-cols-2 gap-x-2 gap-y-3 min-w-fit",
-        isAdvancedFiltersVisible ? "h-fit mt-3 translate-x-0" : "h-0 translate-x-[15%] opacity-0"
+        isAdvancedFiltersVisible ? "mt-3" : "hidden opacity-0 pointer-events-none"
       )}>
         <div className="form-input-group">
           <div className="form-input-group-text gap-1.5 border-e-transparent">

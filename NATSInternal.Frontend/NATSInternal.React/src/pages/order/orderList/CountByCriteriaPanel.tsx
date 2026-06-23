@@ -14,14 +14,14 @@ type CountByCriteriaPanelProps = {
   criteriaDisplayName?: string;
   unit: string;
   format?(count: number): string;
-  getCountAsync(api: IApi, requestDto: CountRequestDto): Promise<CountResponseDto>;
+  getCountAsync(api: IApi, requestDto: CountOverTimeRangeRequestDto): Promise<CountOverTimeRangeResponseDto>;
 };
 
 // Components.
 export default function CountByCriteria(props: CountByCriteriaPanelProps): React.ReactNode {
   // States.
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [model, setModel] = useState<CountModel>(() => {
+  const [model, setModel] = useState<CountOverTimeRangeModel>(() => {
     const m = createCountModel();
     m.timeRangeUnitType = "Day";
     m.timeRangeUnitCount = 7;
@@ -141,7 +141,7 @@ export default function CountByCriteria(props: CountByCriteriaPanelProps): React
             </div>
 
             <SelectInput
-              className="form-control-sm self-end w-fit"
+              className="form-control-sm self-end w-fit min-w-30"
               options={timeRangeOptions}
               value={timeRangeValue}
               onValueChanged={handleTimeRangeChanged}

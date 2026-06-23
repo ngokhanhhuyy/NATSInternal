@@ -42,7 +42,7 @@ declare global {
     itemCount: number;
   }
 
-  interface ITopAndCountRequestDto {
+  interface ITopAndCountOverTimeRangeRequestDto {
     timeRangeUnitType: TimeRangeUnitType;
     timeRangeUnitCount: number;
   }

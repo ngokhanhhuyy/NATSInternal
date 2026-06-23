@@ -12,7 +12,7 @@ internal class OrderEntityConfiguration : IEntityTypeConfiguration<Order>
         // Relationships.
         entityBuilder
             .HasOne(o => o.Customer)
-            .WithMany()
+            .WithMany(c => c.Orders)
             .HasForeignKey(o => o.CustomerId)
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();

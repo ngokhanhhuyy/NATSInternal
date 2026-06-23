@@ -75,41 +75,41 @@ public class OrderController : ControllerBase
     }
 
     [HttpGet("revenue")]
-    [ProducesResponseType<CountResponseDto<long>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<CountOverTimeRangeResponseDto<long>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Revenue([FromQuery] CountRequestDto requestDto)
+    public async Task<IActionResult> Revenue([FromQuery] CountOverTimeRangeRequestDto requestDto)
     {
         return Ok(await _service.GetRevenueAsync(requestDto));
     }
 
     [HttpGet("count")]
-    [ProducesResponseType<CountResponseDto<int>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<CountOverTimeRangeResponseDto<int>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Count([FromQuery] CountRequestDto requestDto)
+    public async Task<IActionResult> Count([FromQuery] CountOverTimeRangeRequestDto requestDto)
     {
         return Ok(await _service.GetCountAsync(requestDto));
     }
 
     [HttpGet("consultant-count")]
-    [ProducesResponseType<CountResponseDto<int>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<CountOverTimeRangeResponseDto<int>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> ConsultantCount([FromQuery] CountRequestDto requestDto)
+    public async Task<IActionResult> ConsultantCount([FromQuery] CountOverTimeRangeRequestDto requestDto)
     {
         return Ok(await _service.GetConsultantCountAsync(requestDto));
     }
 
     [HttpGet("retail-count")]
-    [ProducesResponseType<CountResponseDto<int>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<CountOverTimeRangeResponseDto<int>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> RetailCount([FromQuery] CountRequestDto requestDto)
+    public async Task<IActionResult> RetailCount([FromQuery] CountOverTimeRangeRequestDto requestDto)
     {
         return Ok(await _service.GetRetailCountAsync(requestDto));
     }
 
     [HttpGet("treatment-count")]
-    [ProducesResponseType<CountResponseDto<int>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<CountOverTimeRangeResponseDto<int>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> TreatmentCount([FromQuery] CountRequestDto requestDto)
+    public async Task<IActionResult> TreatmentCount([FromQuery] CountOverTimeRangeRequestDto requestDto)
     {
         return Ok(await _service.GetTreatmentCountAsync(requestDto));
     }

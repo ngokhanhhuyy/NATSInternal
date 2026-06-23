@@ -1,4 +1,4 @@
-import { createTopItemModel } from "./topItemModel";
+import { createTopItemModel } from "./topOverTimeRangeItemModel";
 
 declare global {
   type TopModel<TBasicResponseDto extends object, TBasicModel extends object, TMetric> = {
@@ -6,9 +6,9 @@ declare global {
     timeRangeUnitType: TimeRangeUnitType;
     timeRangeUnitCount: number;
     items: TopItemModel<TBasicModel, TMetric>[];
-    toRequestDto(): TopRequestDto;
+    toRequestDto(): TopOverTimeRangeRequestDto;
     mapFromResponseDto(
-      responseDto: TopResponseDto<TBasicResponseDto, TMetric>,
+      responseDto: TopOverTimeRangeResponseDto<TBasicResponseDto, TMetric>,
       basicModelMapper: (responseDto: TBasicResponseDto) => TBasicModel):
         TopModel<TBasicResponseDto, TBasicModel, TMetric>;
   };
@@ -16,15 +16,15 @@ declare global {
 
 export function createTopModel<TBasicResponseDto extends object, TBasicModel extends object, TMetric>(
   basicModelMapper: (responseDto: TBasicResponseDto) => TBasicModel,
-  responseDto?: TopResponseDto<TBasicResponseDto, TMetric>,
-  requestDto?: TopRequestDto): TopModel<TBasicResponseDto, TBasicModel, TMetric>
+  responseDto?: TopOverTimeRangeResponseDto<TBasicResponseDto, TMetric>,
+  requestDto?: TopOverTimeRangeRequestDto): TopModel<TBasicResponseDto, TBasicModel, TMetric>
 {
   let model: TopModel<TBasicResponseDto, TBasicModel, TMetric> = {
     resultsCount: 5,
     timeRangeUnitType: "Day",
     timeRangeUnitCount: 7,
     items: [],
-    toRequestDto(): TopRequestDto {
+    toRequestDto(): TopOverTimeRangeRequestDto {
       return {
         resultsCount: this.resultsCount,
         timeRangeUnitType: this.timeRangeUnitType,
@@ -32,7 +32,7 @@ export function createTopModel<TBasicResponseDto extends object, TBasicModel ext
       };
     },
     mapFromResponseDto(
-      responseDto: TopResponseDto<TBasicResponseDto, TMetric>,
+      responseDto: TopOverTimeRangeResponseDto<TBasicResponseDto, TMetric>,
       basicModelMapper: (responseDto: TBasicResponseDto) => TBasicModel):
         TopModel<TBasicResponseDto, TBasicModel, TMetric>
     {

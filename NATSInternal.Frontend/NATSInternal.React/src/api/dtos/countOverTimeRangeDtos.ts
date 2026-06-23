@@ -1,10 +1,10 @@
 declare global {
-  type CountRequestDto = ImplementsPartial<ITopAndCountRequestDto, {
+  type CountOverTimeRangeRequestDto = ImplementsPartial<ITopAndCountOverTimeRangeRequestDto, {
     timeRangeUnitType: TimeRangeUnitType;
     timeRangeUnitCount: number;
   }>;
 
-  type CountResponseDto = {
+  type CountOverTimeRangeResponseDto = {
     currentTimeRangeCount: number;
     previousTimeRangeCount: number;
     percentageDiffComparedToPreviousTimeRange: number;

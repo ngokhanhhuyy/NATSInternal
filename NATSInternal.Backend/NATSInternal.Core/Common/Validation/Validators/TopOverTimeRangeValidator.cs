@@ -4,10 +4,10 @@ using NATSInternal.Core.Common.Localization;
 
 namespace NATSInternal.Core.Common.Validation;
 
-public class TopValidator : TopAndCountValidator<TopRequestDto>
+public class TopOverTimeRangeValidator : TopAndCountOverTimeRangeValidator<TopRequestDto>
 {
     #region Constructors
-    public TopValidator()
+    public TopOverTimeRangeValidator()
     {
         RuleFor(dto => dto.ResultsCount)
             .NotEmpty()

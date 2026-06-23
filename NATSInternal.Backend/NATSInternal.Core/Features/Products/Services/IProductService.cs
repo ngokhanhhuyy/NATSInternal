@@ -106,7 +106,7 @@ public interface IProductService
     /// <returns>
     /// A response dto containing products with sold quantity.
     /// </returns>
-    Task<TopResponseDto<ProductBasicResponseDto, int>> GetTopBySoldQuantity(TopRequestDto requestDto);
+    Task<TopOverTimeRangeResponseDto<ProductBasicResponseDto, int>> GetTopBySoldQuantity(TopRequestDto requestDto);
 
     /// <summary>
     /// Get top products by revenue over the last specified time range unit.
@@ -117,6 +117,6 @@ public interface IProductService
     /// <returns>
     /// A response dto containing products with revenue.
     /// </returns>
-    Task<TopResponseDto<ProductBasicResponseDto, long>> GetTopByRevenue(TopRequestDto requestDto);
+    Task<TopOverTimeRangeResponseDto<ProductBasicResponseDto, long>> GetTopByRevenue(TopRequestDto requestDto);
     #endregion
 }
