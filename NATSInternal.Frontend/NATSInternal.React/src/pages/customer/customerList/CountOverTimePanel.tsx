@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { api, type IApi } from "@/api";
 import { createCountModel } from "@/models";
 import { getDisplayName } from "@/metadata";
 import { compute, joinClassName } from "@/helpers";
@@ -12,13 +11,11 @@ import { ArrowLongRightIcon, ArrowTrendingDownIcon, ArrowTrendingUpIcon } from "
 type CountByCriteriaPanelProps = {
   criteriaName?: string;
   criteriaDisplayName?: string;
-  unit: string;
-  format?(count: number): string;
-  getCountAsync(api: IApi, requestDto: CountOverTimeRangeRequestDto): Promise<CountOverTimeRangeResponseDto>;
+  getCountAsync(requestDto: CountOverTimeRangeRequestDto): Promise<CountOverTimeRangeResponseDto>;
 };
 
 // Components.
-export default function CountByCriteria(props: CountByCriteriaPanelProps): React.ReactNode {
+export default function CountOverTimePanel(props: CountByCriteriaPanelProps): React.ReactNode {
   // States.
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [model, setModel] = useState<CountOverTimeRangeModel>(() => {
@@ -31,7 +28,7 @@ export default function CountByCriteria(props: CountByCriteriaPanelProps): React
   // Computed.
   const title = compute<string>(() => {
     return (
-      `${props.criteriaDisplayName ?? ( props.criteriaName && getDisplayName(props.criteriaName))} ` +
+      `${props.criteriaDisplayName ?? (props.criteriaName && getDisplayName(props.criteriaName))} ` +
       `${model.timeRangeUnitCount} ${getDisplayName(model.timeRangeUnitType)} gần nhất`
     );
   });
@@ -81,7 +78,7 @@ export default function CountByCriteria(props: CountByCriteriaPanelProps): React
     setIsLoading(true);
     const loadAsync = async () => {
       try {
-        const responseDto = await props.getCountAsync(api, model.toRequestDto());
+        const responseDto = await props.getCountAsync(model.toRequestDto());
         setModel(m => m.mapFromResponseDto(responseDto));
       } finally {
         setIsLoading(false);
@@ -134,9 +131,9 @@ export default function CountByCriteria(props: CountByCriteriaPanelProps): React
 
               <div className="flex jusitfy-end items-end gap-1">
                 <span className="text-blue-700 dark:text-blue-400 text-4xl">
-                  {props.format?.(model.currentTimeRangeCount) ?? model.currentTimeRangeCount}
+                  {model.currentTimeRangeCount}
                 </span>
-                <span className="text-lg">{props.unit}</span>
+                <span className="text-lg">khách</span>
               </div>
             </div>
 
