@@ -5,6 +5,7 @@ namespace NATSInternal.Core.Features.Metadata;
 public class MetadataStatsMonthYearSeries
 {
     #region Properties
+    public required List<StatsMonthYearResponseDto> SupplySeries { get; init; }
     public required List<StatsMonthYearResponseDto> OrderSeries { get; init; }
     #endregion
 }

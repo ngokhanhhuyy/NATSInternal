@@ -17,6 +17,10 @@ internal class OrderListValidator : Validator<OrderListRequestDto>
         RuleFor(dto => dto.CustomerId)
             .GreaterThan(0)
             .WithName(DisplayNames.Customer);
+
+        RuleFor(dto => dto.ProductId)
+            .GreaterThan(0)
+            .WithName(DisplayNames.ProductId);
     }
     #endregion
 }

@@ -28,8 +28,7 @@ export default function OrderItem(props: OrderItemProps): React.ReactNode {
 
     return <CheckCircleIcon className={joinClassName("size-6", iconClassName)} />;
   };
-
-  // Template.
+  
   const customerLink = (
     <Link className="text-blue-700 dark:text-blue-400" to={props.model.customer.detailRoutePath}>
       {props.model.customer.fullName}

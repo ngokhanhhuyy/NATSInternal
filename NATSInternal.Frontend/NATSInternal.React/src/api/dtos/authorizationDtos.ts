@@ -21,6 +21,11 @@ declare global {
     canDelete: boolean;
   };
 
+  type SupplyExistingAuthorizationResponseDto = {
+    canEdit: boolean;
+    canDelete: boolean;
+  };
+
   type OrderExistingAuthorizationResponseDto = {
     canEdit: boolean;
     canDelete: boolean;

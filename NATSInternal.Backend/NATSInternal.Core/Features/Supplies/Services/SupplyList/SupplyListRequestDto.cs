@@ -9,6 +9,7 @@ public class SupplyListRequestDto : IHasStatsListRequestDto
     public string SortByFieldName { get; set; } = nameof(FieldToSort.StatsDate);
     public int Page { get; set; } = 1;
     public int ResultsPerPage { get; set; } = 10;
+    public int? ProductId { get; set; }
     public int? StatsYear { get; set; }
     public int? StatsMonth { get; set; }
     #endregion

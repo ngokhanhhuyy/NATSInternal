@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using NATSInternal.Core.Common.Dtos;
 using NATSInternal.Core.Common.Exceptions;
 using NATSInternal.Core.Common.Extensions;
 using NATSInternal.Core.Common.Security;
@@ -18,6 +19,7 @@ internal class SupplyService : ISupplyService
     private readonly AppDbContext _context;
     private readonly IListFetchingService _listFetchingService;
     private readonly IHasProductService<SupplyUpsertItemRequestDto, SupplyItem> _hasProductService;
+    private readonly IStatsMonthYearService _statsMonthYearService;
     private readonly IAuthorizationInternalService _authorizationService;
     private readonly IValidator<SupplyListRequestDto> _listValidator;
     private readonly IValidator<SupplyCreateRequestDto> _createValidator;
@@ -32,6 +34,7 @@ internal class SupplyService : ISupplyService
         AppDbContext context,
         IListFetchingService listFetchingService,
         IHasProductService<SupplyUpsertItemRequestDto, SupplyItem> hasProductService,
+        IStatsMonthYearService statsMonthYearService,
         IAuthorizationInternalService authorizationService,
         IValidator<SupplyListRequestDto> listValidator,
         IValidator<SupplyCreateRequestDto> createValidator,
@@ -43,6 +46,7 @@ internal class SupplyService : ISupplyService
         _context = context;
         _listFetchingService = listFetchingService;
         _hasProductService = hasProductService;
+        _statsMonthYearService = statsMonthYearService;
         _authorizationService = authorizationService;
         _listValidator = listValidator;
         _createValidator = createValidator;
@@ -59,8 +63,14 @@ internal class SupplyService : ISupplyService
         _listValidator.ValidateAndThrow(requestDto);
 
         IQueryable<Supply> query = _context.Supplies
+            .Include(s => s.Itmes)
             .Include(s => s.Photos.Where(photo => photo.IsThumbnail))
             .Where(s => s.DeletedDateTime == null);
+
+        if (requestDto.ProductId.HasValue)
+        {
+            query = query.Where(s => s.Items.Any(si => si.ProductId == requestDto.ProductId.Value));
+        }
 
         query = query.HasStatsMonthYear(requestDto.StatsYear, requestDto.StatsMonth);
 
@@ -242,6 +252,11 @@ internal class SupplyService : ISupplyService
             ConvertAndThrowException(exception);
             throw;
         }
+    }
+
+    public async Task<List<StatsMonthYearResponseDto>> GetStatsMonthYearSeriesAsync()
+    {
+        return await _statsMonthYearService.GetStatsMonthYearSeries(_context.Supplies);
     }
     #endregion
 

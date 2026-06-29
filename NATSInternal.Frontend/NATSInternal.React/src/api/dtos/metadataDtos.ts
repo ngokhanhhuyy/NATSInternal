@@ -29,6 +29,7 @@ declare global {
   };
 
   type MetadataStatsMonthYearSeries = {
+    supplySeries: StatsMonthYearResponseDto[];
     orderSeries: StatsMonthYearResponseDto[];
   };
 

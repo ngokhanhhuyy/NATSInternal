@@ -1,3 +1,5 @@
+using NATSInternal.Core.Common.Dtos;
+
 namespace NATSInternal.Core.Features.Supplies;
 
 public interface ISupplyService
@@ -8,5 +10,6 @@ public interface ISupplyService
     Task<int> CreateAsync(SupplyCreateRequestDto requestDto);
     Task UpdateAsync(int id, SupplyUpdateRequestDto requestDto);
     Task DeleteAsync(int id);
+    Task<List<StatsMonthYearResponseDto>> GetStatsMonthYearSeriesAsync();
     #endregion
 }

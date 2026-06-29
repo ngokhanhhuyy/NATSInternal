@@ -17,6 +17,7 @@ internal class MetadataService : IMetadataService
 {
     #region Fields
     private readonly IAuthorizationService _authorizationService;
+    private readonly ISupplyService _supplyService;
     private readonly IOrderService _orderService;
     private static readonly IDictionary<string, string> _displayNames;
     #endregion
@@ -30,9 +31,13 @@ internal class MetadataService : IMetadataService
             .ToDictionary(f => f.Name, f => (string)f.GetValue(null)!);
     }
     
-    public MetadataService(IAuthorizationService authorizationService, IOrderService orderService)
+    public MetadataService(
+        IAuthorizationService authorizationService,
+        ISupplyService supplyService,
+        IOrderService orderService)
     {
         _authorizationService = authorizationService;
+        _supplyService = supplyService;
         _orderService = orderService;
     }
     #endregion
@@ -107,6 +112,7 @@ internal class MetadataService : IMetadataService
             ListOptionsList = listOptionsList,
             StatsMonthYearSeries = new()
             {
+                SupplySeries = await _supplyService.GetStatsMonthYearSeriesAsync(),
                 OrderSeries = await _orderService.GetStatsMonthYearSeriesAsync()
             },
             CreatingAuthorization = new()

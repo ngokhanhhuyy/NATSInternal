@@ -8,11 +8,13 @@ public class SupplyBasicResponseDto
     internal SupplyBasicResponseDto(Supply supply)
     {
         Id = supply.Id;
-        ShipmentFee = supply.ShipmentFee;
-        ItemAmount = supply.CachedItemsAmount;
+        Amount = supply.CachedAmount;
+        ProductCount = supply.Items.Count;
         StatsDate = supply.StatsDate;
         ThumbnailUrl = supply.Thumbnail?.Url;
     }
+
+    internal SupplyBasicResponseDto
 
     internal SupplyBasicResponseDto(Supply supply, SupplyExistingAuthorizationResponseDto authorization) : this(supply)
     {
@@ -22,8 +24,8 @@ public class SupplyBasicResponseDto
 
     #region Properties
     public int Id { get; }
-    public long ShipmentFee { get; }
-    public long ItemAmount { get; }
+    public long Amount { get; }
+    public int? ProductCount { get; }
     public DateOnly StatsDate { get; }
     public string? ThumbnailUrl { get; }
     public SupplyExistingAuthorizationResponseDto? Authorization { get; }

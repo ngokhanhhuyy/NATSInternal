@@ -44,6 +44,15 @@ declare global {
     authorization: ProductCategoryExistingAuthorizationResponseDto | null;
   };
 
+  type SupplyBasicResponseDto = {
+    id: number;
+    shipmentFee: number;
+    itemAmount: number;
+    statsDate: string;
+    thumbnailUrl: string | null;
+    authorization: SupplyExistingAuthorizationResponseDto;
+  };
+
   type OrderBasicResponseDto = {
     id: number;
     type: OrderType;

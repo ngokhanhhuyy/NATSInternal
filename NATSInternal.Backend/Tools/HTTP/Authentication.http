@@ -153,6 +153,12 @@ Content-Type: application/json
 Cookie: {{accessCookie}}
 
 ###
+# @name SupplyStatsMonthYearSeries
+GET {{host}}/supplies/stats-month-year-series
+Content-Type: application/json
+Cookie: {{accessCookie}}
+
+###
 # @name OrderList
 GET {{host}}/orders?sortByAscending=False
 Content-Type: application/json

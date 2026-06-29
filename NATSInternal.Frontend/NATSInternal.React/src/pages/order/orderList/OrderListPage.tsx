@@ -3,6 +3,7 @@ import { useLoaderData } from "react-router";
 import { useInitialRendering } from "@/hooks";
 import { metadata, getDisplayName } from "@/metadata";
 import { loadDataAsync } from "./dataLoader";
+import { joinClassName } from "@/helpers";
 
 // Child components.
 import HasStatsListPage from "@/pages/shared/list/listPage/hasStatsList";
@@ -82,7 +83,10 @@ export default function OrderListPage(): React.ReactNode {
         </FormField>
       }
       sideBarPanels={
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 gap-3 items-start self-start">
+        <div className={joinClassName(
+          "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 gap-3 items-start self-start",
+          "sticky top-[calc(var(--topbar-height)+(--spacing(3)))]"
+        )}>
           <CountOverTimePanel
             criteriaDisplayName="Doanh thu"
             unit="vnđ"

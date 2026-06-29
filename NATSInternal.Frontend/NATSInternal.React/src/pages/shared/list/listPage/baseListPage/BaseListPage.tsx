@@ -43,7 +43,7 @@ export default function IListModel<TListModel extends ListModel<TItemModel>, TIt
   return (
     <MainContainer className="gap-3">
       <div className={joinClassName(
-        "grid grid-cols-1 gap-3",
+        "grid grid-cols-1 gap-3 relative",
         props.sideBarPanels != null ? "lg:grid-cols-[1fr_20rem]" : null
       )}>
         <div className="flex flex-col items-stretch gap-3">

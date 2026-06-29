@@ -4,6 +4,7 @@ import { api } from "@/api";
 import { metadata } from "@/metadata";
 import { createCustomerListModel } from "@/models";
 import { useInitialRendering, useRequestHandlerQueue } from "@/hooks";
+import { joinClassName } from "@/helpers";
 
 // Child components.
 import CustomerListResults from "@/pages/shared/list/customerListResults";
@@ -94,7 +95,10 @@ export default function CustomerListPage(): React.ReactNode {
         </FormField>
       }
       sideBarPanels={
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-3 h-fit">
+        <div className={joinClassName(
+          "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-3 h-fit",
+          "sticky top-[calc(var(--topbar-height)+(--spacing(3)))]"
+        )}>
           <CountOverTimePanel
             criteriaDisplayName="Khách hàng mới"
             getCountAsync={async (requestDto) => api.customer.getNewCountAsync(requestDto)}
