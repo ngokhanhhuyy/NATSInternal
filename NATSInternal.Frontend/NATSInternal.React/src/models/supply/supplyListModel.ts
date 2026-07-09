@@ -10,7 +10,7 @@ declare global {
     sortByFieldNameOptions: string[];
     page: number;
     resultsPerPage: number;
-    product: ProductBasicModel | null;
+    product: ProductMinimalModel | null;
     statsMonthYear: StatsMonthYearModel | null;
     statsMonthYearOptions: StatsMonthYearModel[];
     items: SupplyBasicModel[];

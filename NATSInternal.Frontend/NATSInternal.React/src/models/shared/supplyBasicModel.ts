@@ -1,14 +1,15 @@
-import { getSupplyDetailRoutePath, getDisplayDateString } from "@/helpers";
+import { getSupplyDetailRoutePath, getDisplayDateString, getDisplayAmountText } from "@/helpers";
 
 declare global {
   type SupplyBasicModel = {
     id: number;
-    shipmentFee: number;
-    itemAmount: number;
+    amount: number;
+    productCount: number;
     statsDate: string;
     thumbnailUrl: string | null;
     authorization: SupplyExistingAuthorizationResponseDto;
     displayStatsDate: string;
+    displayAmount: string
     detailRoutePath: string;
   };
 }
@@ -16,11 +17,13 @@ declare global {
 export function createSupplyBasicModel(responseDto: SupplyBasicResponseDto): SupplyBasicModel {
   return {
     id: responseDto.id,
-    shipmentFee: responseDto.shipmentFee,
-    itemAmount: responseDto.itemAmount,
+    amount: responseDto.amount,
+    productCount: responseDto.productCount,
     statsDate: responseDto.statsDate,
     thumbnailUrl: responseDto.thumbnailUrl,
     authorization: responseDto.authorization,
+    displayStatsDate: getDisplayDateString(responseDto.statsDate),
+    displayAmount: getDisplayAmountText(responseDto.amount, { suffix: " vnđ" }),
     detailRoutePath: getSupplyDetailRoutePath(responseDto.id)
   };
 }

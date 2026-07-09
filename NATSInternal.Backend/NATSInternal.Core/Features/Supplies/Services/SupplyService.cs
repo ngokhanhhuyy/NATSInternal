@@ -63,7 +63,7 @@ internal class SupplyService : ISupplyService
         _listValidator.ValidateAndThrow(requestDto);
 
         IQueryable<Supply> query = _context.Supplies
-            .Include(s => s.Itmes)
+            .Include(s => s.Items)
             .Include(s => s.Photos.Where(photo => photo.IsThumbnail))
             .Where(s => s.DeletedDateTime == null);
 

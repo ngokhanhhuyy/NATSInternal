@@ -9,12 +9,14 @@ public class SupplyBasicResponseDto
     {
         Id = supply.Id;
         Amount = supply.CachedAmount;
-        ProductCount = supply.Items.Count;
         StatsDate = supply.StatsDate;
         ThumbnailUrl = supply.Thumbnail?.Url;
-    }
 
-    internal SupplyBasicResponseDto
+        if (supply.Items.Count > 0)
+        {
+            ProductCount = supply.Items.Count;
+        }
+    }
 
     internal SupplyBasicResponseDto(Supply supply, SupplyExistingAuthorizationResponseDto authorization) : this(supply)
     {

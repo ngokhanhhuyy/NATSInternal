@@ -20,6 +20,7 @@ export * from "./photo/photoUpsertRequestDto";
 export * from "./topOverTimeRange/topOverTimeRangeModel";
 export * from "./topOverTimeRange/topOverTimeRangeItemModel";
 export * from "./shared/customerBasicModel";
+export * from "./shared/productMinimalModel";
 export * from "./shared/productBasicModel";
 export * from "./shared/productCategoryBasicModel";
 export * from "./shared/supplyBasicModel";

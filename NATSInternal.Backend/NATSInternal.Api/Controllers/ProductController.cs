@@ -31,6 +31,14 @@ public class ProductController : ControllerBase
         return Ok(await _service.GetListAsync(requestDto));
     }
 
+    [HttpGet("all")]
+    [ProducesResponseType<List<ProductMinimalResponseDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> All()
+    {
+        return Ok(await _service.GetAllAsync());
+    }
+
     [HttpGet("{id:int}")]
     [ProducesResponseType<ProductDetailResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

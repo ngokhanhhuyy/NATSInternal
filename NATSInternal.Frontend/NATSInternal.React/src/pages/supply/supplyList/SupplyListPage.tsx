@@ -1,13 +1,15 @@
-import React, { useState, useCallback, useEffect, useTransition } from "react";
+import React, { useState, useMemo, useCallback, useEffect, useTransition } from "react";
 import { useLoaderData } from "react-router";
 import { useInitialRendering } from "@/hooks";
 import { metadata } from "@/metadata";
-import { loadDataAsync } from "./dataLoader";
+import { loadModelAsync } from "./dataLoader";
 import { joinClassName } from "@/helpers";
 
 // Child components.
 import HasStatsListPage from "@/pages/shared/list/listPage/hasStatsList";
-import { ArchiveBoxArrowDownIcon } from "@heroicons/react/24/outline";
+import SupplyListResults from "@/pages/shared/list/supplyListResults";
+import { FormField, SelectInput, type SelectInputOption } from "@/components/form";
+import { TagIcon } from "@heroicons/react/24/outline";
 
 // Component.
 export default function SupplyListPage(): React.ReactNode {
@@ -16,13 +18,22 @@ export default function SupplyListPage(): React.ReactNode {
   
   // States.
   const [model, setModel] = useState(() => initialModel);
+  const [productMinimalModels, setProductMinimalModels] = useState<ProductMinimalModel[]>([]);
   const [isReloading, startTransition] = useTransition();
   const isInitialRendering = useInitialRendering();
+
+  // Computed.
+  const productOptions = useMemo<SelectInputOption[]>(() => {
+    return [
+      { value: "", displayName: "Tất cả sản phẩm" },
+      ...productMinimalModels.map(p => ({ value: p.id.toString(), displayName: p.name }))
+    ];
+  }, [productMinimalModels]);
   
   // Callbacks.
   function reload(): void {
     startTransition(async () => {
-      const reloadedModel = await loadDataAsync(model);
+      const reloadedModel = await loadModelAsync(model);
       setModel(reloadedModel);
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
@@ -30,6 +41,14 @@ export default function SupplyListPage(): React.ReactNode {
   
   const handleModelUpdated = useCallback((updatedData: Partial<SupplyListModel>) => {
     setModel(m => ({ ...m, ...updatedData }));
+  }, []);
+
+  const handleProductChanged = useCallback((productIdAsString: string): void => {
+    if (!productIdAsString) {
+      setModel(m => ({ ...m, product: null }));
+    }
+
+    setModel(m => ({ ...m, product: productMinimalModels.find(p => p.id === parseInt(productIdAsString))! }));
   }, []);
 
   // Effect.
@@ -47,6 +66,22 @@ export default function SupplyListPage(): React.ReactNode {
       resourceName="order"
       model={model}
       onModelUpdated={handleModelUpdated}
+      filterPanelChildren={
+        <FormField path="type" displayName="Loại giao dịch" hideLabel>
+          <div className="form-input-group">
+            <span className="form-input-group-text border-e-0 shrink-0">
+              <TagIcon className="size-4" />
+            </span>
+            
+            <SelectInput
+              className="min-w-fit"
+              options={productOptions}
+              value={model.product?.id.toString() ?? ""}
+              onValueChanged={handleProductChanged}
+            />
+          </div>
+        </FormField>
+      }
       sideBarPanels={
         <div className={joinClassName(
           "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 gap-3 items-start self-start",

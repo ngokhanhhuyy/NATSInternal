@@ -560,6 +560,7 @@ internal class OrderService : IOrderService
                     nameof(OrderUpsertRequestDto.Customer),
                     nameof(OrderUpsertRequestDto.Customer.Id)
                 };
+                
                 throw OperationException.NotFound(propertyPathElements, DisplayNames.Customer);
             }
 

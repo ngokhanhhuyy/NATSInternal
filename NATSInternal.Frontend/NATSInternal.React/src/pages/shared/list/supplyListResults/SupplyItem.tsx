@@ -2,7 +2,8 @@ import React from "react";
 import { Link } from "react-router";
 
 // Child components.
-import { ArchiveBoxArrowDownIcon } from "@heroicons/react/24/outline";
+import { ArchiveBoxArrowDownIcon, CurrencyDollarIcon } from "@heroicons/react/24/outline";
+import { ClockIcon, ArchiveBoxIcon } from "@heroicons/react/24/outline";
 
 // Props.
 type SupplyItemProps = {
@@ -13,7 +14,7 @@ type SupplyItemProps = {
 // Components.
 export default function SupplyItem(props: SupplyItemProps): React.ReactNode {
   return (
-    <li className="list-group-item items-center px-3 py-1.5">
+    <li className="list-group-item items-center p-2">
       <div className="grid grid-cols-[auto_1fr] gap-3 items-start">
         {props.model.thumbnailUrl ? (
           <img
@@ -29,34 +30,35 @@ export default function SupplyItem(props: SupplyItemProps): React.ReactNode {
 
         <div className="grid grid-cols-1 md:grid-cols-[1.3fr_1fr] lg:grid-cols-2 gap-x-3">
           <div className="flex flex-col">
-            <div className="flex gap-x-2 justify-start items-center">
-              <Link to={props.model.detailRoutePath} className="text-blue-700 dark:text-blue-400">
-                <span className="font-bold">#{props.model.id}</span>
-              </Link>
-            </div>
+            <Link
+              to={props.model.detailRoutePath}
+              className="text-blue-700 dark:text-blue-400 flex gap-x-1 justify-start items-center"
+            >
+              <span className="font-bold">#{props.model.id}</span>
+              <span>Nhập hàng</span>
+            </Link>
 
             <div className="block md:hidden text-sm">
-              <span className="opacity-50">Mua bởi</span> {customerLink}&nbsp;
-              <span className="opacity-50">với giá</span> {props.model.displayAmountAfterVat}&nbsp;
+              <span className="opacity-50">Đã nhập</span> {props.model.productCount} sản phẩm&nbsp;
+              <span className="opacity-50">với giá</span> {props.model.displayAmount}&nbsp;
               <span className="opacity-50">vào</span> {props.model.displayStatsDate.toLowerCase()}
             </div>
             
             <div className="hidden md:flex items-center gap-1">
               <CurrencyDollarIcon className="size-5 opacity-50" />
-              <span className="opacity-50">{props.model.displayAmountAfterVat}</span>
+              <span className="opacity-50">{props.model.displayAmount}</span>
             </div>
           </div>
-          
 
-          <div className="hidden md:flex flex-col gap-x-10 w-fit">
+          <div className="hidden md:flex flex-col gap-x-10 w-fit opacity-50">
             <div className="flex items-center gap-1">
-              <ClockIcon className="size-5 opacity-50" />
-              <span className="opacity-50">{props.model.displayStatsDate}</span>
+              <ClockIcon className="size-5" />
+              <span>{props.model.displayStatsDate}</span>
             </div>
             
             <div className="flex items-center gap-1">
-              <UserIcon className="size-5 opacity-50" />
-              {customerLink}
+              <ArchiveBoxIcon className="size-5" />
+              <span>{props.model.productCount} sản phẩm</span>
             </div>
           </div>
         </div>

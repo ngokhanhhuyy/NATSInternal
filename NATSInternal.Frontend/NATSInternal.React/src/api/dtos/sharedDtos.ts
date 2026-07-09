@@ -21,6 +21,11 @@ declare global {
     isDeleted: boolean;
     authorization: CustomerExistingAuthorizationResponseDto | null;
   };
+
+  type ProductMinimalResponseDto = {
+    id: number;
+    name: string;
+  };
   
   type ProductBasicResponseDto = {
     id: number;
@@ -46,8 +51,8 @@ declare global {
 
   type SupplyBasicResponseDto = {
     id: number;
-    shipmentFee: number;
-    itemAmount: number;
+    amount: number;
+    productCount: number;
     statsDate: string;
     thumbnailUrl: string | null;
     authorization: SupplyExistingAuthorizationResponseDto;

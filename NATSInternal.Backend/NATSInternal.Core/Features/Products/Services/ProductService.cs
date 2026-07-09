@@ -11,7 +11,6 @@ using NATSInternal.Core.Features.Authorization;
 // using NATSInternal.Core.Features.Photos;
 using NATSInternal.Core.Persistence.DbContext;
 using NATSInternal.Core.Persistence.Handlers;
-using System.Numerics;
 
 namespace NATSInternal.Core.Features.Products;
 
@@ -126,6 +125,14 @@ internal class ProductService : IProductService
             .ToList();
 
         return new(productResponseDtos, queryResult.PageCount, queryResult.ItemCount);
+    }
+    
+    public async Task<List<ProductMinimalResponseDto>> GetAllAsync()
+    {
+        return await _context.Products
+            .OrderBy(p => p.Name)
+            .Select(p => new ProductMinimalResponseDto(p))
+            .ToListAsync();
     }
 
     public async Task<ProductDetailResponseDto> GetDetailAsync(int id)

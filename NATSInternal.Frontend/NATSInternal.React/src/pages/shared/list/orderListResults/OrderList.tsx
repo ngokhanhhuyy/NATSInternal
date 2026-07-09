@@ -21,7 +21,7 @@ export default function OrderList(props: ResultsPanelProps): React.ReactNode {
           key={index}
         />
       )) : (
-        <li className="list-group-item opacity-50 px-3 py-10">
+        <li className="list-group-item flex justify-center items-center opacity-50 px-3 py-10">
           Không có kết quả
         </li>
       )}

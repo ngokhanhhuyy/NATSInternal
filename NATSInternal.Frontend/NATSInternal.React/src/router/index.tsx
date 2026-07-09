@@ -12,6 +12,7 @@ import { authenticationRoutes } from "./authenticatinoRoutes";
 import { homeRoutes } from "./homeRoutes";
 import { customerRoutes } from "./customerRoutes";
 import { productRoutes } from "./productRoutes";
+import { supplyRoutes } from "./supplyRoutes";
 import { orderRoutes } from "./orderRoutes";
 
 // Components.
@@ -49,6 +50,7 @@ const router = createBrowserRouter([
           homeRoutes,
           customerRoutes,
           productRoutes,
+          supplyRoutes,
           orderRoutes
         ],
         handle: {
